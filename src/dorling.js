@@ -2,11 +2,11 @@ import * as d3 from "d3";
 import * as topojson from "topojson";
 import { legendColor } from "d3-svg-legend";
 
-let circleExaggerationFactor = 1;
-
 export function dorling(options) {
   var svg = d3.select(options.svgId);
-  let width = 800;
+
+  let circleExaggerationFactor = options.circleExaggerationFactor || 1;
+  let width = options.width || 800;
   svg.attr("viewBox", [0, 0, width, 500]);
   let promises = [];
 
@@ -14,16 +14,16 @@ export function dorling(options) {
   promises.push(
     d3.json(
       `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/4258/nutspt_${nutsLvl}.json`
-    ),
+    ), //centroids
     d3.json(
       `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/4258/60M/0.json`
-    ),
+    ), //regions
     d3.json(
       `https://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/demo_r_pjangrp3?geoLevel=nuts${nutsLvl}&sex=T&age=TOTAL&unit=NR&time=2018`
     ), //sizeData
     d3.json(
       `https://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/demo_r_gind3?geoLevel=nuts${nutsLvl}&indic_de=GROWRT&time=2018`
-    )
+    ) //colorData
   );
 
   Promise.all(promises).then(res => {
@@ -192,10 +192,10 @@ Variation: ${colorIndicator[f.properties.id]}‰`
         .text(d3.format(".1s"));
     }, 4500);
   });
-}
 
-function toRadius(val) {
-  return circleExaggerationFactor * 0.005 * Math.sqrt(val);
+  function toRadius(val) {
+    return circleExaggerationFactor * 0.005 * Math.sqrt(val);
+  }
 }
 
 function indexStat(data) {
