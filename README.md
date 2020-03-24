@@ -43,7 +43,7 @@ NutsDorlingCartogram.dorling({
 
 # Parameters
 
-name | description | type | required | default
+Name | Description | Type | Required | Default
 :-------------: | :-------------: | :-------------: | :-------------: | :-------------:
 svgId | Identifier of an SVG element | string | true | null
 width | Width of the visualization | number | false | 900
@@ -56,7 +56,7 @@ legendOrientation | Accepted values: "vertical" or "horizontal" | string | false
 legendWidth | Width of the legend | number | false | 200
 legendCells | Number of cells to be shown in the legend (see d3-svg-legend) | number | false | 5
 sizeDatasetId | Eurobase Dataset identifier used to determine circle sizes  | string | false | "demo_r_pjangrp3"
-sizeDatasetFilters | Eurobase Dataset URL parameter string to apply to the sizeDataset request  | string | false | "sex=T&age=TOTAL&unit=NR&time=2018"
+sizeDatasetFilters | URL parameter string to apply to the sizeDataset request  | string | false | "sex=T&age=TOTAL&unit=NR&time=2018"
 colorDatasetId | Eurobase Dataset identifier used to determine circle colors | number | false | 200
 colorDatasetFilters | URL parameter string to apply to the colorDataset request  | string | false | "indic_de=GROWRT&time=2018"
 
