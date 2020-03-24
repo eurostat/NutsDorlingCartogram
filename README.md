@@ -4,7 +4,7 @@ Dorling cartogram from NUTS regions with Eurostat statistics
 <div>
 <img src="assets/images/preview.png" alt="preview"/>
 <div>
-
+## [Live Demo](https://eurostat.github.io/NutsDorlingCartogram/examples/basic/)
 ## Installation
 
 'npm install nutsdorlingcartogram'
