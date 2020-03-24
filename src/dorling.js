@@ -12,12 +12,14 @@ export function dorling(options) {
   let legendWidth = options.legendWidth || 200;
   let legendCells = options.legendCells || 5;
   let legendOrientation = options.legendOrientation || "vertical";
+  let nutsLvl = options.nutsLvl || 2;
+  let enableZoom = options.zoom || true;
+
   svg.attr("viewBox", [0, 0, width, height]);
   svg.attr("width", width);
   svg.attr("height", height);
   let promises = [];
 
-  let nutsLvl = 2;
   promises.push(
     d3.json(
       `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/4258/nutspt_${nutsLvl}.json`
@@ -183,7 +185,7 @@ Variation: ${colorIndicator[f.properties.id]}‰`
 
       svg.select(".legendQuant").call(legend);
 
-      //circle size
+      //circle size legend
       const legC = svg
         .append("g")
         .attr("fill", "#444")
@@ -205,8 +207,33 @@ Variation: ${colorIndicator[f.properties.id]}‰`
         .attr("x", 30)
         .attr("dy", "1.3em")
         .text(d3.format(".1s"));
+
+      //d3 zoom
+      if (enableZoom) {
+        svg.call(
+          d3
+            .zoom()
+            .extent([
+              [0, 0],
+              [width, height]
+            ])
+            .translateExtent([
+              [0, 0],
+              [width, height]
+            ])
+            .scaleExtent([1, 8])
+            .on("zoom", () => {
+              zoomed(circles);
+            })
+        );
+      }
     }, 4500);
   });
+
+  function zoomed(circles) {
+    circles.attr("transform", d3.event.transform);
+    //circles.attr("transform", d3.event.transform);
+  }
 
   function toRadius(val) {
     return circleExaggerationFactor * 0.005 * Math.sqrt(val);
