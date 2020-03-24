@@ -2,7 +2,10 @@
   "name": "nutsdorlingcartogram",
   "version": "1.0.0",
   "description": "Library for creating dorling cartograms of NUTS regions",
-  "main": "src/index.js",
+  "main": "build/dorling.min.js",
+  "files": [
+    "build/dorling.min.js"
+  ],
   "directories": {
     "example": "examples"
   },
@@ -26,15 +29,12 @@
   "homepage": "https://github.com/eurostat/NutsDorlingCartogram#readme",
   "devDependencies": {
     "webpack": "^4.42.0",
-    "webpack-cli": "^3.3.11"
+    "webpack-cli": "^3.3.11",
+    "webpack-livereload-plugin": "^2.3.0"
   },
   "dependencies": {
     "d3": "^5.15.0",
-    "d3-color-legend": "^1.2.5",
     "d3-svg-legend": "^2.25.6",
-    "i": "^0.3.6",
-    "npm": "^6.14.3",
-    "topojson": "^3.0.2",
-    "webpack-livereload-plugin": "^2.3.0"
+    "topojson": "^3.0.2"
   }
 }
