@@ -2,9 +2,26 @@
 Dorling cartogram from NUTS regions with Eurostat statistics
 
 <div>
-<img src="assets/images/preview.png" alt="preview" width="100%"/>
+<img src="assets/images/preview.png" alt="preview"/>
 <div>
 
+## Installation
+
+npm install nutsdorlingcartogram
+then 
+```javascript
+NutsDorlingCartogram = require("nutsdorlingcartogram")
+```
+
+or
+
+```javascript
+<script src="https://unpkg.com/nutsdorlingcartogram/build/dorling.min.js"></script>
+```
+
+## Usage
+
+then:
 ```javascript
 NutsDorlingCartogram.dorling({
   svgId: "dorlingSvg",
