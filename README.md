@@ -31,7 +31,7 @@ NutsDorlingCartogram.dorling({
   sizeDatasetId: "demo_r_pjangrp3",
   sizeDatasetFilters: "sex=T&age=TOTAL&unit=NR&time=2018",
   colorDatasetId: "demo_r_gind3",
-  colorDatasetFilters: "indic_de=GROWRT&time=2018"
+  colorDatasetFilters: "indic_de=GROWRT&time=2018",
   colorScheme: "interpolateRdYlBu",
   zoom: true,
   legendTitle: "Population change (‰)",
@@ -46,7 +46,7 @@ NutsDorlingCartogram.dorling({
 
 Name | Description | Type | Required | Default
 :-------------: | :-------------: | :-------------: | :-------------: | :-------------:
-svgId | Identifier of an SVG element | string | true | null
+svgId | Identifier of the target SVG element | string | true | null
 width | Width of the visualization | number | false | 900
 height | Height of the visualization | number | false | 500
 nutsLvl | NUTS level | number | false | 2
