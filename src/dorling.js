@@ -9,11 +9,18 @@ export function dorling(options) {
   let legendTitle = options.legendTitle || "Legend";
   let width = options.width || 900;
   let height = options.height || 500;
+  let colorScheme = options.colorScheme || "interpolateRdYlBu";
   let legendWidth = options.legendWidth || 200;
   let legendCells = options.legendCells || 5;
   let legendOrientation = options.legendOrientation || "vertical";
   let nutsLvl = options.nutsLvl || 2;
   let enableZoom = options.zoom || true;
+  let sizeDatasetId = options.sizeDatasetId || "demo_r_pjangrp3";
+  let sizeDatasetFilters =
+    options.sizeDatasetFilters || "sex=T&age=TOTAL&unit=NR&time=2018";
+  let colorDatasetId = options.colorDatasetId || "demo_r_gind3";
+  let colorDatasetFilters =
+    options.colorDatasetFilters || "indic_de=GROWRT&time=2018";
 
   svg.attr("viewBox", [0, 0, width, height]);
   svg.attr("width", width);
@@ -28,10 +35,10 @@ export function dorling(options) {
       `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/4258/60M/0.json`
     ), //regions
     d3.json(
-      `https://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/demo_r_pjangrp3?geoLevel=nuts${nutsLvl}&sex=T&age=TOTAL&unit=NR&time=2018`
+      `https://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/${sizeDatasetId}?geoLevel=nuts${nutsLvl}&${sizeDatasetFilters}`
     ), //sizeData
     d3.json(
-      `https://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/demo_r_gind3?geoLevel=nuts${nutsLvl}&indic_de=GROWRT&time=2018`
+      `https://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/${colorDatasetId}?geoLevel=nuts${nutsLvl}&${colorDatasetFilters}`
     ) //colorData
   );
 
@@ -58,11 +65,11 @@ export function dorling(options) {
     let extent = d3.extent(Object.values(colorIndicator));
     //color scale
     let colorScale = d3
-      .scaleDivergingSymlog(t => d3.interpolateRdYlBu(1 - t))
+      .scaleDivergingSymlog(t => d3[colorScheme](1 - t))
       .domain([extent[0], 0, extent[1]])
       .nice();
     let legendScale = d3
-      .scaleDiverging(t => d3.interpolateRdYlBu(1 - t))
+      .scaleDiverging(t => d3[colorScheme](1 - t))
       .domain([extent[0], 0, extent[1]]);
 
     let countries = svg
