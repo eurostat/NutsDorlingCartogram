@@ -1,6 +1,10 @@
 # NutsDorlingCartogram
 Dorling cartogram from NUTS regions with Eurostat statistics
 
+<div>
+<img src="assets/images/preview.png" alt="preview" width="100%"/>
+<div>
+
 ```javascript
 NutsDorlingCartogram.dorling({
   svgId: "dorlingSvg",
