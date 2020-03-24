@@ -1,4 +1,4 @@
-let d = NutsDorlingCartogram.dorling({
+NutsDorlingCartogram.dorling({
   svgId: "dorlingSvg",
   width: 800,
   height: 500,
