@@ -44,6 +44,7 @@ NutsDorlingCartogram.dorling({
 # Parameters
 
 name | description | type | required | default
+:-------------: | :-------------: | :-------------: | :-------------: | :-------------:
 svgId | Identifier of an SVG element | string | true | null
 width | Width of the visualization | number | false | 900
 height | Height of the visualization | number | false | 500
