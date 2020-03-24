@@ -3,11 +3,18 @@ import * as topojson from "topojson";
 import { legendColor } from "d3-svg-legend";
 
 export function dorling(options) {
-  var svg = d3.select(options.svgId);
+  var svg = d3.select("#" + options.svgId);
 
   let circleExaggerationFactor = options.circleExaggerationFactor || 1;
-  let width = options.width || 800;
-  svg.attr("viewBox", [0, 0, width, 500]);
+  let legendTitle = options.legendTitle || "Legend";
+  let width = options.width || 900;
+  let height = options.height || 500;
+  let legendWidth = options.legendWidth || 200;
+  let legendCells = options.legendCells || 5;
+  let legendOrientation = options.legendOrientation || "vertical";
+  svg.attr("viewBox", [0, 0, width, height]);
+  svg.attr("width", width);
+  svg.attr("height", height);
   let promises = [];
 
   let nutsLvl = 2;
@@ -52,6 +59,9 @@ export function dorling(options) {
       .scaleDivergingSymlog(t => d3.interpolateRdYlBu(1 - t))
       .domain([extent[0], 0, extent[1]])
       .nice();
+    let legendScale = d3
+      .scaleDiverging(t => d3.interpolateRdYlBu(1 - t))
+      .domain([extent[0], 0, extent[1]]);
 
     let countries = svg
       .append("g")
@@ -149,6 +159,9 @@ Variation: ${colorIndicator[f.properties.id]}‰`
         circles.attr("cx", f => f.x).attr("cy", f => f.y);
       });
 
+      simulation.on("end", function() {
+        simulation.stop();
+      });
       //invalidation.then(() => simulation.stop());
     }, 3000);
 
@@ -161,9 +174,11 @@ Variation: ${colorIndicator[f.properties.id]}‰`
 
       var legend = legendColor()
         .labelFormat(d3.format(".2f"))
-        .useClass(true)
-        .title("A really really really really really long title")
-        .titleWidth(100)
+        //.useClass(true)
+        .title(legendTitle)
+        .titleWidth(legendWidth)
+        .cells(legendCells)
+        .orient(legendOrientation)
         .scale(colorScale);
 
       svg.select(".legendQuant").call(legend);
@@ -172,7 +187,7 @@ Variation: ${colorIndicator[f.properties.id]}‰`
       const legC = svg
         .append("g")
         .attr("fill", "#444")
-        .attr("transform", "translate(50,130)")
+        .attr("transform", "translate(40," + height + ")")
         .attr("text-anchor", "right")
         .style("font", "10px sans-serif")
         .selectAll("g")
