@@ -3,17 +3,21 @@ import * as topojson from "topojson";
 import { legendColor } from "d3-svg-legend";
 
 export function dorling(options) {
+  //the output object
+  let out = {};
+
+  //required params validation
   if (!options.svgId) {
     return console.error("Please define an svgId");
   }
-  var svg = d3.select("#" + options.svgId);
 
-  let circleExaggerationFactor = options.circleExaggerationFactor || 1;
-  let width = options.width || 900;
-  let height = options.height || 500;
-  let colorScheme = options.colorScheme || "interpolateRdYlBu";
-  let enableZoom = options.zoom || true;
-  
+  //params
+  out.circleExaggerationFactor = options.circleExaggerationFactor || 1;
+  out.width = options.width || 900;
+  out.height = options.height || 500;
+  out.colorScheme = options.colorScheme || "interpolateRdYlBu";
+  out.enableZoom = options.zoom || true;
+
   let defaultLegendOptions = {
     //https://d3-legend.susielu.com/#color
     titleWidth: 200,
@@ -27,7 +31,7 @@ export function dorling(options) {
     labelOffset: 10,
     labelFormat: d3.format(".1f")
   };
-  let legendOptions = {
+  out.legendOptions = {
     titleWidth: options.legend.titleWidth || defaultLegendOptions.titleWidth,
     title: options.legend.title || defaultLegendOptions.title,
     orient: options.legend.orient || defaultLegendOptions.orient,
@@ -42,31 +46,59 @@ export function dorling(options) {
   };
 
   //data params
-  let nutsLvl = options.nutsLvl || 2;
-  let sizeDatasetId = options.sizeDatasetId || "demo_r_pjangrp3";
-  let sizeDatasetFilters =
+  out.nutsLvl = options.nutsLvl || 2;
+  out.sizeDatasetCode = options.sizeDatasetCode || "demo_r_pjangrp3";
+  out.sizeDatasetFilters =
     options.sizeDatasetFilters || "sex=T&age=TOTAL&unit=NR&time=2018";
-  let colorDatasetId = options.colorDatasetId || "demo_r_gind3";
-  let colorDatasetFilters =
+  out.colorDatasetCode = options.colorDatasetCode || "demo_r_gind3";
+  out.colorDatasetFilters =
     options.colorDatasetFilters || "indic_de=GROWRT&time=2018";
 
-  svg.attr("viewBox", [0, 0, width, height]);
-  svg.attr("width", width);
-  svg.attr("height", height);
-  let promises = [];
+  //set up svg element
+  var svg = d3.select("#" + options.svgId);
+  svg.attr("viewBox", [0, 0, out.width, out.height]);
+  svg.attr("width", out.width);
+  svg.attr("height", out.height);
 
+  //definition of generic accessors based on the name of each parameter name
+  for (var p in out)
+    (function() {
+      var p_ = p;
+      out[p_.substring(0, p_.length - 1)] = function(v) {
+        if (!arguments.length) return out[p_];
+        out[p_] = v;
+        return out;
+      };
+    })();
+
+  //build function
+  out.build = function() {
+    //empty svg
+    select("#" + out.svgId_)
+      .selectAll("*")
+      .remove();
+
+    //get geo and stat data
+    out.updateGeoData();
+    out.updateStatData();
+
+    return out;
+  };
+
+  //data promises
+  let promises = [];
   promises.push(
     d3.json(
-      `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/4258/nutspt_${nutsLvl}.json`
+      `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/4258/nutspt_${out.nutsLvl}.json`
     ), //centroids
     d3.json(
       `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/4258/60M/0.json`
     ), //regions
     d3.json(
-      `https://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/${sizeDatasetId}?geoLevel=nuts${nutsLvl}&${sizeDatasetFilters}`
+      `https://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/${out.sizeDatasetCode}?geoLevel=nuts${out.nutsLvl}&${out.sizeDatasetFilters}`
     ), //sizeData
     d3.json(
-      `https://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/${colorDatasetId}?geoLevel=nuts${nutsLvl}&${colorDatasetFilters}`
+      `https://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/${out.colorDatasetCode}?geoLevel=nuts${out.nutsLvl}&${out.colorDatasetFilters}`
     ) //colorData
   );
 
@@ -93,11 +125,11 @@ export function dorling(options) {
     let extent = d3.extent(Object.values(colorIndicator));
     //color scale
     let colorScale = d3
-      .scaleDivergingSymlog(t => d3[colorScheme](1 - t))
+      .scaleDivergingSymlog(t => d3[out.colorScheme](1 - t))
       .domain([extent[0], 0, extent[1]])
       .nice();
     let legendScale = d3
-      .scaleDiverging(t => d3[colorScheme](1 - t))
+      .scaleDiverging(t => d3[out.colorScheme](1 - t))
       .domain([extent[0], 0, extent[1]]);
 
     let countries = svg
@@ -211,19 +243,19 @@ Variation: ${colorIndicator[f.properties.id]}‰`
 
       var legend = legendColor()
         //.useClass(true)
-        .title(legendOptions.title)
-        .titleWidth(legendOptions.titleWidth)
-        .cells(legendOptions.cells)
-        .orient(legendOptions.orient)
-        .shape(legendOptions.shape)
-        .shapePadding(legendOptions.shapePadding)
-        .labelAlign(legendOptions.labelAlign)
-        .labelOffset(legendOptions.labelOffset)
-        .labelFormat(legendOptions.labelFormat)
+        .title(out.legendOptions.title)
+        .titleWidth(out.legendOptions.titleWidth)
+        .cells(out.legendOptions.cells)
+        .orient(out.legendOptions.orient)
+        .shape(out.legendOptions.shape)
+        .shapePadding(out.legendOptions.shapePadding)
+        .labelAlign(out.legendOptions.labelAlign)
+        .labelOffset(out.legendOptions.labelOffset)
+        .labelFormat(out.legendOptions.labelFormat)
         .scale(colorScale);
 
-      if (legendOptions.shape == "circle")
-        legend.shapeRadius(legendOptions.shapeRadius);
+      if (out.legendOptions.shape == "circle")
+        legend.shapeRadius(out.legendOptions.shapeRadius);
 
       svg.select(".legendQuant").call(legend);
 
@@ -231,7 +263,7 @@ Variation: ${colorIndicator[f.properties.id]}‰`
       const legC = svg
         .append("g")
         .attr("fill", "#444")
-        .attr("transform", "translate(40," + height + ")")
+        .attr("transform", "translate(40," + out.height + ")")
         .attr("text-anchor", "right")
         .style("font", "10px sans-serif")
         .selectAll("g")
@@ -251,17 +283,17 @@ Variation: ${colorIndicator[f.properties.id]}‰`
         .text(d3.format(".1s"));
 
       //d3 zoom
-      if (enableZoom) {
+      if (out.enableZoom) {
         svg.call(
           d3
             .zoom()
             .extent([
               [0, 0],
-              [width, height]
+              [out.width, out.height]
             ])
             .translateExtent([
               [0, 0],
-              [width, height]
+              [out.width, out.height]
             ])
             .scaleExtent([1, 8])
             .on("zoom", () => {
@@ -278,8 +310,10 @@ Variation: ${colorIndicator[f.properties.id]}‰`
   }
 
   function toRadius(val) {
-    return circleExaggerationFactor * 0.005 * Math.sqrt(val);
+    return out.circleExaggerationFactor * 0.005 * Math.sqrt(val);
   }
+
+  return out;
 }
 
 function indexStat(data) {
