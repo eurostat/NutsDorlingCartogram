@@ -67,14 +67,14 @@ colorDatasetFilters | URL parameter string to apply to the colorDataset request 
 colorScheme | [d3 scale chromatic](https://github.com/d3/d3-scale-chromatic) function name | string | false | "interpolateRdYlBu"
 zoom | Enable d3 zoom | boolean | false | true
 legend | Object which stores the configuration parameters for the legend. See [here](https://d3-legend.susielu.com/#color) for more details on the following legend options. | object | false | See [here](https://d3-legend.susielu.com/#color) 
-&nbsp;&nbsp;&nbsp;&nbsp; legend.orient | Accepted values: "vertical" or "horizontal" | string | false | "vertical"
-&nbsp;&nbsp;&nbsp;&nbsp; legend.title | Legend title text | string | false | "Legend"
-&nbsp;&nbsp;&nbsp;&nbsp; legend.titleWidth | Width of the legend title | number | false | 200
-&nbsp;&nbsp;&nbsp;&nbsp; legend.cells | Number of cells to be shown in the legend | number | false | 5
-&nbsp;&nbsp;&nbsp;&nbsp; legend.shape | Shape of the legend cells ("circle" or "rect") | string | false | "rect"
-&nbsp;&nbsp;&nbsp;&nbsp; legend.shapeRadius | Radius of the circle when legend.shape is set to "circle" | string | false | null
-&nbsp;&nbsp;&nbsp;&nbsp; legend.shapePadding | Padding to be applied to the legend cells for spacing | number | false | 5
-&nbsp;&nbsp;&nbsp;&nbsp; legend.labelAlign | Alignment of the legend cell labels. | false | "middle"
-&nbsp;&nbsp;&nbsp;&nbsp; legend.labelOffset | Distance in pixels from legend label to its corresponding cell | false | 5
+&nbsp;&nbsp; legend.orient | Accepted values: "vertical" or "horizontal" | string | false | "vertical"
+&nbsp;&nbsp; legend.title | Legend title text | string | false | "Legend"
+&nbsp;&nbsp; legend.titleWidth | Width of the legend title | number | false | 200
+&nbsp;&nbsp; legend.cells | Number of cells to be shown in the legend | number | false | 5
+&nbsp;&nbsp; legend.shape | Shape of the legend cells ("circle" or "rect") | string | false | "rect"
+&nbsp;&nbsp; legend.shapeRadius | Radius of the circle when legend.shape is set to "circle" | string | false | null
+&nbsp;&nbsp; legend.shapePadding | Padding to be applied to the legend cells for spacing | number | false | 5
+&nbsp;&nbsp; legend.labelAlign | Alignment of the legend cell labels. | string | false | "middle"
+&nbsp;&nbsp; legend.labelOffset | Distance in pixels from legend label to its corresponding cell | number | false | 5
 
 
