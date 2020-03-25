@@ -9,11 +9,11 @@ export function dorling(options) {
   var svg = d3.select("#" + options.svgId);
 
   let circleExaggerationFactor = options.circleExaggerationFactor || 1;
-  let legendTitle = options.legendTitle || "Legend";
   let width = options.width || 900;
   let height = options.height || 500;
   let colorScheme = options.colorScheme || "interpolateRdYlBu";
-
+  let enableZoom = options.zoom || true;
+  
   let defaultLegendOptions = {
     //https://d3-legend.susielu.com/#color
     titleWidth: 200,
@@ -41,8 +41,8 @@ export function dorling(options) {
     labelFormat: options.legend.labelFormat || defaultLegendOptions.labelFormat
   };
 
+  //data params
   let nutsLvl = options.nutsLvl || 2;
-  let enableZoom = options.zoom || true;
   let sizeDatasetId = options.sizeDatasetId || "demo_r_pjangrp3";
   let sizeDatasetFilters =
     options.sizeDatasetFilters || "sex=T&age=TOTAL&unit=NR&time=2018";
