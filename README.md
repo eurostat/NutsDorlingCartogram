@@ -55,7 +55,7 @@ NutsDorlingCartogram.dorling({
 # Parameters
 
 Name | Description | Type | Required | Default
-:-------------: | :-------------: | :-------------: | :-------------: | :-------------:
+:--------- | :--------- | :--------- | :--------- | :---------
 svgId | Identifier of the target SVG element | string | true | null
 width | Width of the visualization | number | false | 900
 height | Height of the visualization | number | false | 500
@@ -66,15 +66,15 @@ colorDatasetId | Eurostat dataset identifier used to determine circle colors | n
 colorDatasetFilters | URL parameter string to apply to the colorDataset request  | string | false | "indic_de=GROWRT&time=2018"
 colorScheme | [d3 scale chromatic](https://github.com/d3/d3-scale-chromatic) function name | string | false | "interpolateRdYlBu"
 zoom | Enable d3 zoom | boolean | false | true
-legend | Object which stores the configuration parameters for the legend. See [here](https://d3-legend.susielu.com/#color) for more details on the following legend options | object | false | See [here](https://d3-legend.susielu.com/#color) 
-legend.orient | Accepted values: "vertical" or "horizontal" | string | false | "vertical"
-legend.title | Legend title text | string | false | "Legend"
-legend.titleWidth | Width of the legend title | number | false | 200
-legend.cells | Number of cells to be shown in the legend | number | false | 5
-legend.shape | Shape of the legend cells ("circle" or "rect") | string | false | "rect"
-legend.shapeRadius | Radius of the circle when legend.shape is set to "circle" | string | false | null
-legend.shapePadding | Padding to be applied to the legend cells for spacing | number | false | 5
-legend.labelAlign | Alignment of the legend cell labels. | false | "middle"
-legend.labelOffset | Distance in pixels from legend label to its corresponding cell | false | 5
+legend | Object which stores the configuration parameters for the legend. See [here](https://d3-legend.susielu.com/#color) for more details on the following legend options. | object | false | See [here](https://d3-legend.susielu.com/#color) 
+&nbsp;&nbsp;&nbsp;&nbsp; legend.orient | Accepted values: "vertical" or "horizontal" | string | false | "vertical"
+&nbsp;&nbsp;&nbsp;&nbsp; legend.title | Legend title text | string | false | "Legend"
+&nbsp;&nbsp;&nbsp;&nbsp; legend.titleWidth | Width of the legend title | number | false | 200
+&nbsp;&nbsp;&nbsp;&nbsp; legend.cells | Number of cells to be shown in the legend | number | false | 5
+&nbsp;&nbsp;&nbsp;&nbsp; legend.shape | Shape of the legend cells ("circle" or "rect") | string | false | "rect"
+&nbsp;&nbsp;&nbsp;&nbsp; legend.shapeRadius | Radius of the circle when legend.shape is set to "circle" | string | false | null
+&nbsp;&nbsp;&nbsp;&nbsp; legend.shapePadding | Padding to be applied to the legend cells for spacing | number | false | 5
+&nbsp;&nbsp;&nbsp;&nbsp; legend.labelAlign | Alignment of the legend cell labels. | false | "middle"
+&nbsp;&nbsp;&nbsp;&nbsp; legend.labelOffset | Distance in pixels from legend label to its corresponding cell | false | 5
 
 

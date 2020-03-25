@@ -11,14 +11,14 @@ NutsDorlingCartogram.dorling({
   colorDatasetFilters: "indic_de=GROWRT&time=2018",
   legend: {
     //https://d3-legend.susielu.com/#color
-    // titleWidth: 200,
-    // title: "Population change (‰)",
-    // orient: "horizontal",
-    // cells: 5,
-    // shape: "rect",
-    // shapeRadius: 20,
-    // shapePadding: 20,
-    // labelAlign: "middle",
-    // labelOffset: 10
+    titleWidth: 200,
+    title: "Population change (‰)",
+    orient: "horizontal",
+    cells: 5,
+    shape: "rect",
+    shapeRadius: 20,
+    shapePadding: 20,
+    labelAlign: "middle",
+    labelOffset: 10
   }
 });
