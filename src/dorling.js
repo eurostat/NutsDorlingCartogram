@@ -3,6 +3,9 @@ import * as topojson from "topojson";
 import { legendColor } from "d3-svg-legend";
 
 export function dorling(options) {
+  if (!options.svgId) {
+    return console.error("Please define an svgId");
+  }
   var svg = d3.select("#" + options.svgId);
 
   let circleExaggerationFactor = options.circleExaggerationFactor || 1;
@@ -10,9 +13,34 @@ export function dorling(options) {
   let width = options.width || 900;
   let height = options.height || 500;
   let colorScheme = options.colorScheme || "interpolateRdYlBu";
-  let legendWidth = options.legendWidth || 200;
-  let legendCells = options.legendCells || 5;
-  let legendOrientation = options.legendOrientation || "vertical";
+
+  let defaultLegendOptions = {
+    //https://d3-legend.susielu.com/#color
+    titleWidth: 200,
+    title: "Population change (‰)",
+    orient: "vertical",
+    cells: 5,
+    shape: "rect",
+    shapeRadius: 10,
+    shapePadding: 5,
+    labelAlign: "middle",
+    labelOffset: 10,
+    labelFormat: d3.format(".1f")
+  };
+  let legendOptions = {
+    titleWidth: options.legend.titleWidth || defaultLegendOptions.titleWidth,
+    title: options.legend.title || defaultLegendOptions.title,
+    orient: options.legend.orient || defaultLegendOptions.orient,
+    cells: options.legend.cells || defaultLegendOptions.cells,
+    shape: options.legend.shape || defaultLegendOptions.shape,
+    shapeRadius: options.legend.shapeRadius || defaultLegendOptions.shapeRadius,
+    shapePadding:
+      options.legend.shapePadding || defaultLegendOptions.shapePadding,
+    labelAlign: options.legend.labelAlign || defaultLegendOptions.labelAlign,
+    labelOffset: options.legend.labelOffset || defaultLegendOptions.labelOffset,
+    labelFormat: options.legend.labelFormat || defaultLegendOptions.labelFormat
+  };
+
   let nutsLvl = options.nutsLvl || 2;
   let enableZoom = options.zoom || true;
   let sizeDatasetId = options.sizeDatasetId || "demo_r_pjangrp3";
@@ -182,13 +210,20 @@ Variation: ${colorIndicator[f.properties.id]}‰`
         .attr("transform", "translate(20,20)");
 
       var legend = legendColor()
-        .labelFormat(d3.format(".2f"))
         //.useClass(true)
-        .title(legendTitle)
-        .titleWidth(legendWidth)
-        .cells(legendCells)
-        .orient(legendOrientation)
+        .title(legendOptions.title)
+        .titleWidth(legendOptions.titleWidth)
+        .cells(legendOptions.cells)
+        .orient(legendOptions.orient)
+        .shape(legendOptions.shape)
+        .shapePadding(legendOptions.shapePadding)
+        .labelAlign(legendOptions.labelAlign)
+        .labelOffset(legendOptions.labelOffset)
+        .labelFormat(legendOptions.labelFormat)
         .scale(colorScale);
+
+      if (legendOptions.shape == "circle")
+        legend.shapeRadius(legendOptions.shapeRadius);
 
       svg.select(".legendQuant").call(legend);
 
