@@ -52,21 +52,21 @@ NutsDorlingCartogram.dorling({
 });
 ```
 
-# Parameters
+# Cartogram Definition
 
-Name | Description | Type | Required | Default
+Method | Description | Type | Required | Default Value
 :--------- | :--------- | :--------- | :--------- | :---------
-svgId | Identifier of the target SVG element | string | true | null
-width | Width of the visualization | number | false | 900
-height | Height of the visualization | number | false | 500
-nutsLvl | NUTS level | number | false | 2
-sizeDatasetId | [Eurostat database](https://ec.europa.eu/eurostat/data/database) dataset identifier used to determine circle sizes  | string | false | "demo_r_pjangrp3"
-sizeDatasetFilters | URL parameter string to apply to the sizeDataset request  | string | false | "sex=T&age=TOTAL&unit=NR&time=2018"
-colorDatasetId | Eurostat dataset identifier used to determine circle colors | number | false | 200
-colorDatasetFilters | URL parameter string to apply to the colorDataset request  | string | false | "indic_de=GROWRT&time=2018"
-colorScheme | [d3 scale chromatic](https://github.com/d3/d3-scale-chromatic) function name | string | false | "interpolateRdYlBu"
-zoom | Enable d3 zoom | boolean | false | true
-legend | Object which stores the configuration parameters for the legend. See [here](https://d3-legend.susielu.com/#color) for more details on the following legend options. | object | false | See [here](https://d3-legend.susielu.com/#color) 
+dorling.**svgId** | Identifier of the target SVG element | string | true | null
+dorling.**width** | Width of the visualization | number | false | 900
+dorling.**height** | Height of the visualization | number | false | 500
+dorling.**nutsLvl** | NUTS level | number | false | 2
+dorling.**sizeDatasetCode** | [Eurostat database](https://ec.europa.eu/eurostat/data/database) datasetCodeentifier used to determine circle sizes  | string | false | "demo_r_pjangrp3"
+dorling.**sizeDatasetFilters** | URL parameter string to apply to the sizeDataset request  | string | false | "sex=T&age=TOTAL&unit=NR&time=2018"
+dorling.**colorDatasetCode** | Eurostat dataset identifier used to determine circle colors | number | false | 200
+dorling.**colorDatasetFilters** | URL parameter string to apply to the colorDataset request  | string | false | "indic_de=GROWRT&time=2018"
+dorling.**colorScheme** | [d3 scale chromatic](https://github.com/d3/d3-scale-chromatic) function name | string | false | "interpolateRdYlBu"
+dorling.**zoom** | Enable d3 zoom | boolean | false | true
+dorling.**legend** | Object which stores the configuration parameters for the legend. See [here](https://d3-legend.susielu.com/#color) for more details on the following legend options. | object | false | See [here](https://d3-legend.susielu.com/#color) 
 &nbsp;&nbsp; legend.orient | Accepted values: "vertical" or "horizontal" | string | false | "vertical"
 &nbsp;&nbsp; legend.title | Legend title text | string | false | "Legend"
 &nbsp;&nbsp; legend.titleWidth | Width of the legend title | number | false | 200
