@@ -9,9 +9,21 @@ export function dorling(options) {
 
   //default values
   out.svgId_ = "map";
-  out.circleExaggerationFactor_ = 1;
-  out.width_ = 700;
-  out.height_ = 400;
+  //d3 force
+  out.circleExaggerationFactor_ = 0.8;
+  out.collisionPadding_ = 0.2;
+  out.positionStrength_ = 3;
+  out.collisionStrength_ = 0.4;
+  //d3-geo
+  out.scale_ = 1000;
+  out.rotateX_ = -13;
+  out.rotateY_ = -61;
+  out.translateX_ = 340;
+  out.translateY_ = 216;
+  //container
+  out.width_ = 600;
+  out.height_ = 600;
+
   out.colorScheme_ = "interpolateRdYlBu";
   out.zoom_ = true;
 
@@ -52,7 +64,6 @@ export function dorling(options) {
     for (var key in v) {
       out.legend_[key] = v[key];
     }
-
     return out;
   };
 
@@ -107,9 +118,9 @@ export function dorling(options) {
       //d3 geo
       let projection = d3
         .geoAzimuthalEqualArea()
-        .rotate([-10, -52])
-        .translate([out.width_ / 2.5, out.height_ / 2])
-        .scale(600);
+        .rotate([out.rotateX_, out.rotateY_])
+        .translate([out.translateX_, out.translateY_])
+        .scale(out.scale_);
 
       // let path = geoPath().projection(
       //   geoIdentity()
@@ -203,15 +214,24 @@ Variation: ${colorIndicator[f.properties.id]}‰`
           .forceSimulation(n2j.features)
           .force(
             "x",
-            d3.forceX().x(f => projection(f.geometry.coordinates)[0])
+            d3
+              .forceX()
+              .x(f => projection(f.geometry.coordinates)[0])
+              .strength(out.positionStrength_)
           )
           .force(
             "y",
-            d3.forceY().y(f => projection(f.geometry.coordinates)[1])
+            d3
+              .forceY()
+              .y(f => projection(f.geometry.coordinates)[1])
+              .strength(out.positionStrength_)
           )
           .force(
             "collide",
-            d3.forceCollide().radius(f => toRadius(+sizeInd[f.properties.id]))
+            d3
+              .forceCollide()
+              .radius(f => toRadius(+sizeInd[f.properties.id]))
+              .strength(out.collisionStrength_)
           );
 
         //set initial position of the circles

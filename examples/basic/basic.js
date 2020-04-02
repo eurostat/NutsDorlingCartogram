@@ -1,7 +1,7 @@
 NutsDorlingCartogram.dorling()
   .svgId("dorlingSvg")
-  .width(900)
-  .height(500)
+  .width(800)
+  .height(700)
   .nutsLvl(2)
   .colorScheme("interpolateRdYlBu")
   .zoom(true)
@@ -13,7 +13,7 @@ NutsDorlingCartogram.dorling()
     //https://d3-legend.susielu.com/#color
     titleWidth: 200,
     title: "Population change (‰)",
-    //orient: "horizontal",
+    orient: "vertical",
     cells: 5,
     shape: "rect",
     shapeRadius: 10,
@@ -21,4 +21,9 @@ NutsDorlingCartogram.dorling()
     labelAlign: "middle",
     labelOffset: 10
   })
+  .scale(1000)
+  .rotateX(-13)
+  .rotateY(-61)
+  .translateX(340)
+  .translateY(216)
   .build();
