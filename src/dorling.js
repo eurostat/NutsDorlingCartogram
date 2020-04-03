@@ -13,7 +13,7 @@ export function dorling(options) {
   out.circleExaggerationFactor_ = 0.8;
   out.collisionPadding_ = 0.2;
   out.positionStrength_ = 3;
-  out.collisionStrength_ = 0.4;
+  out.collisionStrength_ = 0.1;
   //d3-geo
   out.scale_ = 1000;
   out.rotateX_ = -13;
