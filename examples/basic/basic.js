@@ -1,9 +1,11 @@
 NutsDorlingCartogram.dorling()
   .svgId("dorlingSvg")
-  .width(800)
+  .width(900)
   .height(700)
   .nutsLvl(2)
-  .colorScheme("interpolateRdYlBu")
+  //.colorScheme("interpolateRdYlBu")
+  .colors(["#2d50a0", "#6487c3", "#aab9e1", "#f0cd91", "#e6a532", "#d76e2d"])
+  .thresholdValues([-15, -10, 0, 10, 15, 20])
   .zoom(true)
   .sizeDatasetCode("demo_r_pjangrp3")
   .sizeDatasetFilters("sex=T&age=TOTAL&unit=NR&time=2018")
@@ -14,16 +16,15 @@ NutsDorlingCartogram.dorling()
     titleWidth: 200,
     title: "Population change (‰)",
     orient: "vertical",
-    cells: 5,
     shape: "rect",
     shapeRadius: 10,
     shapePadding: 5,
     labelAlign: "middle",
-    labelOffset: 10
+    labelOffset: 10,
   })
   .scale(1000)
-  .rotateX(-13)
+  .rotateX(-10)
   .rotateY(-61)
-  .translateX(340)
+  .translateX(400)
   .translateY(216)
   .build();
