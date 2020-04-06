@@ -1,6 +1,5 @@
 import * as d3 from "d3";
 import * as d3Array from "d3-array";
-import { geoIdentity, geoPath } from "d3-geo";
 import * as topojson from "topojson";
 import { legendColor } from "d3-svg-legend";
 import "./styles.css";
@@ -315,8 +314,9 @@ export function dorling(options) {
           .labelFormat(out.legend_.labelFormat)
           .scale(out.colorScale)
           .labelDelimiter(out.legend_.labelDelimiter)
-          .labelWrap(out.legend_.labelWrap)
-          .labels(function (d) {
+          .labelWrap(out.legend_.labelWrap);
+        if (out.colors_) {
+          legend.labels(function (d) {
             if (d.i === 0)
               return (
                 "< " +
@@ -331,6 +331,7 @@ export function dorling(options) {
               );
             else return "≥ " + d.generatedLabels[d.i] + out.legend_.labelUnit;
           });
+        }
 
         if (out.legend_.shape == "circle")
           legend.shapeRadius(out.legend_.shapeRadius);
@@ -400,10 +401,17 @@ export function dorling(options) {
         .domain(out.thresholdValues_)
         .range(out.colors_);
     } else {
-      return d3
-        .scaleDivergingSymlog((t) => d3[out.colorScheme_](1 - t))
-        .domain([out.extent[0], 0, out.extent[1]])
-        .nice();
+      if (out.thresholdValues_) {
+        return d3
+          .scaleDivergingSymlog((t) => d3[out.colorScheme_](1 - t))
+          .domain(out.thresholdValues_)
+          .nice();
+      } else {
+        return d3
+          .scaleDivergingSymlog((t) => d3[out.colorScheme_](1 - t))
+          .domain([out.extent[0], 0, out.extent[1]])
+          .nice();
+      }
     }
   }
 
