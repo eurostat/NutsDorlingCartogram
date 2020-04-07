@@ -9,8 +9,8 @@
   opacity: 0.8;
 }
 .dorling-tooltip:after {
-  top: 100%;
-  left: 50%;
+  right: 100%;
+  top: 35%;
   border: solid transparent;
   content: " ";
   height: 0;
@@ -18,9 +18,9 @@
   position: absolute;
   pointer-events: none;
   border-color: rgba(255, 255, 255, 0);
-  border-top-color: #ffffff;
-  border-width: 15px;
-  margin-left: -15px;
+  border-right-color: #ffffff;
+  border-width: 10px;
+  margin-top: -10px;
 }
 .dorling-legend-container {
   width: 175px;

@@ -210,17 +210,24 @@ export function dorling(options) {
     Population: ${sizeIndicator[f.properties.id]
       .toLocaleString("en")
       .replace(/,/gi, " ")}<br>
-      Share of National Population ${(
+      Share of National Population: ${(
         (sizeIndicator[f.properties.id] /
           totalsIndex[f.properties.id.substring(0, 2)]) *
         100
       ).toFixed(0)}% <br>
     Population Change: <strong>${colorIndicator[f.properties.id]}‰</strong><br>
 `);
+          let matrix = this.getScreenCTM().translate(
+            +this.getAttribute("cx"),
+            +this.getAttribute("cy")
+          );
           tooltip.style("visibility", "visible");
           tooltip
-            .style("top", d3.event.pageY - 110 + "px")
-            .style("left", d3.event.pageX - 120 + "px");
+            .style("left", window.pageXOffset + matrix.e + 15 + "px")
+            .style("top", window.pageYOffset + matrix.f - 30 + "px");
+          // tooltip
+          //   .style("top", d3.event.pageY - 110 + "px")
+          //   .style("left", d3.event.pageX - 120 + "px");
         });
         // .on("mousemove", function () {
         //   tooltip
@@ -342,7 +349,7 @@ export function dorling(options) {
         const legC = out.svg
           .append("g")
           .attr("fill", "#444")
-          .attr("transform", "translate(40," + out.height_ + ")")
+          .attr("transform", "translate(20," + (out.height_ - 20) + ")")
           .attr("text-anchor", "right")
           .style("font", "10px sans-serif")
           .selectAll("g")
@@ -356,7 +363,7 @@ export function dorling(options) {
           .attr("r", toRadius);
         legC
           .append("text")
-          .attr("y", (d) => -10 - 2 * toRadius(d))
+          .attr("y", (d) => -5 - 2 * toRadius(d))
           .attr("x", 30)
           .attr("dy", "1.3em")
           .text((d) => {
@@ -388,13 +395,6 @@ export function dorling(options) {
   };
 
   function defineColorScale() {
-    //return [0,1,2,3,...,nb-1]
-    let getA = function (nb) {
-      var a = [];
-      for (var i = 0; i < nb; i++) a.push(i);
-      return a;
-    };
-
     if (out.colors_) {
       return d3
         .scaleThreshold()
@@ -409,7 +409,7 @@ export function dorling(options) {
       } else {
         return d3
           .scaleDivergingSymlog((t) => d3[out.colorScheme_](1 - t))
-          .domain([out.extent[0], 0, out.extent[1]])
+          .domain([out.extent[0], out.extent[1] / 2, out.extent[1]])
           .nice();
       }
     }
