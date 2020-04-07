@@ -36,7 +36,7 @@ export function dorling(options) {
     titleWidth: 200,
     title: "Population change (‰)",
     orient: "vertical",
-    cells: 5,
+    cells: null,
     shape: "rect",
     shapeRadius: 10,
     shapePadding: 5,
@@ -298,7 +298,7 @@ export function dorling(options) {
       //show legend
       setTimeout(function () {
         //background container
-        out.svg
+        let legendContainer = out.svg
           .append("rect")
           .attr("class", "dorling-legend-container")
           .attr("transform", "translate(0,0)");
@@ -312,7 +312,6 @@ export function dorling(options) {
           //.useClass(true)
           .title(out.legend_.title)
           .titleWidth(out.legend_.titleWidth)
-          //.cells(out.legend_.cells)
           .orient(out.legend_.orient)
           .shape(out.legend_.shape)
           .shapePadding(out.legend_.shapePadding)
@@ -322,6 +321,9 @@ export function dorling(options) {
           .scale(out.colorScale)
           .labelDelimiter(out.legend_.labelDelimiter)
           .labelWrap(out.legend_.labelWrap);
+        if (out.legend_.cells) {
+          legend.cells(out.legend_.cells);
+        }
         if (out.colors_) {
           legend.labels(function (d) {
             if (d.i === 0)
@@ -344,6 +346,13 @@ export function dorling(options) {
           legend.shapeRadius(out.legend_.shapeRadius);
 
         out.svg.select(".legendQuant").call(legend);
+
+        //adjust legend bacgkround box height
+        let node = document
+          .getElementsByClassName("legendQuant")[0]
+          .getBoundingClientRect();
+        legendContainer.style("height", node.height + 15 + "px");
+        legendContainer.style("width", node.width + 35 + "px");
 
         //circle size legend
         const legC = out.svg
@@ -395,6 +404,12 @@ export function dorling(options) {
   };
 
   function defineColorScale() {
+    //return [0,1,2,3,...,nb-1]
+    var getA = function (nb) {
+      var a = [];
+      for (var i = 0; i < nb; i++) a.push(i);
+      return a;
+    };
     if (out.colors_) {
       return d3
         .scaleThreshold()
@@ -403,9 +418,10 @@ export function dorling(options) {
     } else {
       if (out.thresholdValues_) {
         return d3
-          .scaleDivergingSymlog((t) => d3[out.colorScheme_](1 - t))
-          .domain(out.thresholdValues_)
-          .nice();
+          .scaleDiverging()
+          .domain([out.extent[0], 0, out.extent[1]])
+          .interpolator(d3[out.colorScheme_]);
+        //.range();
       } else {
         return d3
           .scaleDivergingSymlog((t) => d3[out.colorScheme_](1 - t))
