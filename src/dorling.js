@@ -236,7 +236,6 @@ export function dorling(options) {
         // })
         circles.on("mouseout", function () {
           tooltip.style("visibility", "hidden");
-          d3.select(this).attr("stroke", "none");
           d3.select(this).attr("fill", (f) =>
             colorFunction(+colorIndicator[f.properties.id])
           );
