@@ -60,7 +60,7 @@ dorling.**svgId** | Identifier of the target SVG element | string | true | null
 dorling.**width** | Width of the visualization | number | false | 900
 dorling.**height** | Height of the visualization | number | false | 500
 dorling.**nutsLvl** | NUTS level | number | false | 2
-dorling.**sizeDatasetCode** | [Eurostat database](https://ec.europa.eu/eurostat/data/database) datasetCodeentifier used to determine circle sizes  | string | false | "demo_r_pjangrp3"
+dorling.**sizeDatasetCode** | [Eurostat database](https://ec.europa.eu/eurostat/data/database) dataset identifier used to determine circle sizes  | string | false | "demo_r_pjangrp3"
 dorling.**sizeDatasetFilters** | URL parameter string to apply to the sizeDataset request  | string | false | "sex=T&age=TOTAL&unit=NR&time=2018"
 dorling.**colorDatasetCode** | Eurostat dataset identifier used to determine circle colors | number | false | 200
 dorling.**colorDatasetFilters** | URL parameter string to apply to the colorDataset request  | string | false | "indic_de=GROWRT&time=2018"
