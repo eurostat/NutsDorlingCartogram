@@ -3,8 +3,8 @@ NutsDorlingCartogram.dorling()
   .width(900)
   .height(700)
   .nutsLvl(2)
-  .colorScheme("interpolateRdYlBu")
-  //.colors(["#2d50a0", "#6487c3", "#aab9e1", "#f0cd91", "#e6a532", "#d76e2d"])
+  //.colorScheme("interpolateRdYlBu")
+  .colors(["#2d50a0", "#6487c3", "#aab9e1", "#f0cd91", "#e6a532", "#d76e2d"])
   .thresholdValues([-15, -10, 0, 10, 15, 20])
   .zoom(true)
   .sizeDatasetCode("demo_r_pjangrp3")
@@ -22,7 +22,7 @@ NutsDorlingCartogram.dorling()
     labelAlign: "middle",
     labelOffset: 10,
     shape: "circle",
-    cells: 10,
+    //cells: 10,
   })
   .scale(1000)
   .rotateX(-10)

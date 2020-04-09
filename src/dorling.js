@@ -119,7 +119,7 @@ export function dorling(options) {
       let colorData = res[3];
 
       let bn = topojson.feature(n2jrg, n2jrg.objects.nutsbn).features;
-      let rg = topojson.feature(n2jrg, n2jrg.objects.nutsrg).features;
+      let coastlines = topojson.feature(n2jrg, n2jrg.objects.nutsbn).features;
 
       let sizeIndicator = indexStat(sizeData);
       let colorIndicator = indexStat(colorData);
@@ -131,6 +131,7 @@ export function dorling(options) {
         .rotate([out.rotateX_, out.rotateY_])
         .fitSize([out.width_, out.height_], n2j)
         .scale(out.scale_);
+      out.path = d3.geoPath().projection(projection);
 
       if (out.translateX_ && out.translateY_) {
         projection.translate([out.translateX_, out.translateY_]);
@@ -152,9 +153,24 @@ export function dorling(options) {
         .data(bn)
         .enter()
         .append("path")
-        .attr("d", d3.geoPath().projection(projection))
+        .attr("d", out.path)
         .attr("fill", "none")
         .attr("stroke", "#404040ff");
+
+      //add coastlines
+      let coastL = out.svg
+        .append("g")
+        .attr("id", "g_coast_margin_cnt")
+        .selectAll("path")
+        .data(coastlines)
+        .enter()
+        .filter(function (bn) {
+          return bn.properties.co === "T";
+        })
+        .append("path")
+        .attr("fill", "none")
+        .attr("stroke", "#40404000")
+        .attr("d", out.path);
 
       // initialize tooltip
       var tooltip = d3
@@ -176,21 +192,6 @@ export function dorling(options) {
         .attr("fill", "#ffffff00")
         .attr("stroke", "#40404000");
 
-      //tooltip
-      //       circles.append("title").text(
-      //         (f) => `${f.properties.na}
-      //       ${f.properties.id}
-      // Total Population: ${sizeIndicator[f.properties.id]
-      //           .toLocaleString("en")
-      //           .replace(/,/gi, " ")}
-      // Population Change: ${colorIndicator[f.properties.id]}‰
-      // Share of National Population ${(
-      //           (sizeIndicator[f.properties.id] /
-      //             totalsIndex[f.properties.id.substring(0, 2)]) *
-      //           100
-      //         ).toFixed(0)}%`
-      //       );
-
       //Show the regions as circles
 
       setTimeout(function () {
@@ -206,34 +207,41 @@ export function dorling(options) {
         circles.on("mouseover", function (f) {
           d3.select(this).attr("fill", "purple");
           tooltip.html(`<strong>${f.properties.na}</strong>
-          ${f.properties.id} <br>
-    Population: ${sizeIndicator[f.properties.id]
-      .toLocaleString("en")
-      .replace(/,/gi, " ")}<br>
-      Share of National Population: ${(
-        (sizeIndicator[f.properties.id] /
-          totalsIndex[f.properties.id.substring(0, 2)]) *
-        100
-      ).toFixed(0)}% <br>
-    Population Change: <strong>${colorIndicator[f.properties.id]}‰</strong><br>
-`);
+              (${f.properties.id})<br>
+              Population: ${sizeIndicator[f.properties.id]
+                .toLocaleString("en")
+                .replace(/,/gi, " ")}<br>
+                Share of national population: ${(
+                  (sizeIndicator[f.properties.id] /
+                    totalsIndex[f.properties.id.substring(0, 2)]) *
+                  100
+                ).toFixed(0)} % <br>
+              Population Change: <strong>${
+                colorIndicator[f.properties.id]
+              } ‰</strong><br>
+          `);
           let matrix = this.getScreenCTM().translate(
             +this.getAttribute("cx"),
             +this.getAttribute("cy")
           );
           tooltip.style("visibility", "visible");
-          tooltip
-            .style("left", window.pageXOffset + matrix.e + 15 + "px")
-            .style("top", window.pageYOffset + matrix.f - 30 + "px");
+          //position + offsets
+          let node = tooltip.node();
+          let tooltipWidth = node.offsetWidth;
+          let tooltipHeight = node.offsetHeight;
+          let left = window.pageXOffset + matrix.e + 20;
+          let top = window.pageYOffset + matrix.f - 100;
+          if (left > out.width_ - tooltipWidth) {
+            left = left - (tooltipWidth + 40);
+          }
+          if (top < 0) {
+            top = top + (tooltipHeight + 40);
+          }
+          tooltip.style("left", left + "px").style("top", top + "px");
           // tooltip
           //   .style("top", d3.event.pageY - 110 + "px")
           //   .style("left", d3.event.pageX - 120 + "px");
         });
-        // .on("mousemove", function () {
-        //   tooltip
-        //     .style("top", d3.event.pageY - 10 + "px")
-        //     .style("left", d3.event.pageX + 10 + "px");
-        // })
         circles.on("mouseout", function () {
           tooltip.style("visibility", "hidden");
           d3.select(this).attr("fill", (f) =>
@@ -294,7 +302,7 @@ export function dorling(options) {
         //invalidation.then(() => simulation.stop());
       }, 3000);
 
-      //show legend
+      //show legend, add coastlines and define Zoom
       setTimeout(function () {
         //background container
         let legendContainer = out.svg
@@ -357,7 +365,7 @@ export function dorling(options) {
         const legC = out.svg
           .append("g")
           .attr("fill", "#444")
-          .attr("transform", "translate(20," + (out.height_ - 20) + ")")
+          .attr("transform", "translate(30," + (out.height_ - 30) + ")")
           .attr("text-anchor", "right")
           .style("font", "10px sans-serif")
           .selectAll("g")
@@ -378,7 +386,10 @@ export function dorling(options) {
             return d.toLocaleString("en").replace(/,/gi, " ");
           });
 
-        //d3 zoom
+        //fade in coastlines
+        coastL.transition().duration(1000).attr("stroke", "#404040ff");
+
+        //add d3 zoom
         if (out.zoom_) {
           out.svg.call(
             d3
@@ -393,7 +404,7 @@ export function dorling(options) {
               ])
               .scaleExtent([1, 8])
               .on("zoom", () => {
-                zoomed(circles);
+                zoomed(circles, coastL);
               })
           );
         }
@@ -435,9 +446,9 @@ export function dorling(options) {
     return color;
   }
 
-  function zoomed(circles) {
+  function zoomed(circles, coastL) {
     circles.attr("transform", d3.event.transform);
-    //circles.attr("transform", d3.event.transform);
+    coastL.attr("transform", d3.event.transform);
   }
 
   function toRadius(val) {
