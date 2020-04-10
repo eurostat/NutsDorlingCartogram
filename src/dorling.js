@@ -196,37 +196,92 @@ export function dorling(options) {
       addZoom();
       addLegendsToDOM();
 
+      out.stage = 1; //current transition number
       animate();
     });
     return out;
   };
 
   function animate() {
-    //Show the regions as circles & configure tooltip
-    if (playing) {
-      setTimeout(function () {
-        firstTransition();
-        if (playing) {
-          setTimeout(function () {
-            secondTransition();
-            //Dorling cartogram deformation
-            if (playing) {
-              setTimeout(function () {
-                thirdTransition();
-                //add coastlines
-                if (playing) {
-                  setTimeout(function () {
-                    //fade in coastlines
-                    fourthTransition();
-                  }, 4500);
-                }
-              }, 3000);
-            }
-          }, 2500);
-        }
-      }, 1000);
+    if (out.stage == 1) {
+      if (playing) {
+        setTimeout(function () {
+          out.stage = 1;
+          //Show the regions as circles & configure tooltip
+          firstTransition();
+          if (playing) {
+            setTimeout(function () {
+              out.stage = 2;
+              //Change circle size and color with population figures
+              secondTransition();
+              if (playing) {
+                setTimeout(function () {
+                  out.stage = 3;
+                  //Dorling cartogram deformation
+                  thirdTransition();
+                  if (playing) {
+                    setTimeout(function () {
+                      out.stage = 4;
+                      //fade in coastlines
+                      fourthTransition();
+                    }, 3000);
+                  }
+                }, 2000);
+              }
+            }, 1000);
+          }
+        }, 1);
+      }
+      return;
+    } else if (out.stage == 2) {
+      if (playing) {
+        setTimeout(function () {
+          out.stage = 2;
+          //Change circle size and color with population figures
+          secondTransition();
+          if (playing) {
+            setTimeout(function () {
+              out.stage = 3;
+              //Dorling cartogram deformation
+              thirdTransition();
+              if (playing) {
+                setTimeout(function () {
+                  out.stage = 4;
+                  //fade in coastlines
+                  fourthTransition();
+                }, 2000);
+              }
+            }, 1000);
+          }
+        }, 1);
+      }
+      return;
+    } else if (out.stage == 3) {
+      if (playing) {
+        setTimeout(function () {
+          out.stage = 3;
+          //Dorling cartogram deformation
+          thirdTransition();
+          if (playing) {
+            setTimeout(function () {
+              out.stage = 4;
+              //fade in coastlines
+              fourthTransition();
+            }, 1000);
+          }
+        }, 1);
+      }
+      return;
+    } else if (out.stage == 4) {
+      if (playing) {
+        setTimeout(function () {
+          out.stage = 4;
+          //fade in coastlines
+          fourthTransition();
+        }, 1);
+      }
+      return;
     }
-    //Change circle size and color with population figures
   }
 
   //polygons to circles
@@ -332,33 +387,36 @@ export function dorling(options) {
 
     simulation.on("end", function () {
       simulation.stop();
-      //fade circles
-      out.circles
-        .transition()
-        .delay(500)
-        .duration(1000)
-        .attr("fill", "#40404000")
-        .attr("stroke", "#40404000");
-      // fade-in countries
-      out.countries
-        .transition()
-        .delay(500)
-        .duration(1000)
-        .attr("stroke", "#404040ff");
-      setTimeout(function () {
-        //reset circle locations & color
-        out.circles
-          .attr("cx", (f) => out.projection(f.geometry.coordinates)[0])
-          .attr("cy", (f) => out.projection(f.geometry.coordinates)[1])
-          .attr("r", (f) => 0.000055 * Math.sqrt(f.properties.ar));
-        animate();
-      }, 1500);
     });
     //invalidation.then(() => simulation.stop());
   }
   function fourthTransition() {
     //fade in coastlines
     out.coastL.transition().duration(1000).attr("stroke", "#404040ff");
+
+    //reset styles and restart animation
+    //fade circles
+    out.circles
+      .transition()
+      .delay(500)
+      .duration(1000)
+      .attr("fill", "#40404000")
+      .attr("stroke", "#40404000");
+    // fade-in countries
+    out.countries
+      .transition()
+      .delay(500)
+      .duration(1000)
+      .attr("stroke", "#404040ff");
+    setTimeout(function () {
+      //reset circle locations & color
+      out.circles
+        .attr("cx", (f) => out.projection(f.geometry.coordinates)[0])
+        .attr("cy", (f) => out.projection(f.geometry.coordinates)[1])
+        .attr("r", (f) => 0.000055 * Math.sqrt(f.properties.ar));
+      out.stage = 1;
+      animate();
+    }, 1500);
   }
   function addZoom() {
     //add d3 zoom
@@ -376,7 +434,7 @@ export function dorling(options) {
           ])
           .scaleExtent([1, 8])
           .on("zoom", () => {
-            zoomed(circles, coastL);
+            zoomed(out.circles, out.coastL);
           })
       );
     }
@@ -533,9 +591,14 @@ export function dorling(options) {
     buttonContainer.on("mousedown", function () {
       playing = !playing;
 
-      //fade in btn
+      //change icon
       playBtn.style("visibility", playing ? "hidden" : "visible");
       pauseBtn.style("visibility", playing ? "visible" : "hidden");
+
+      //continue animation
+      if (playing) {
+        animate();
+      }
     });
 
     return buttonContainer;
