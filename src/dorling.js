@@ -30,6 +30,7 @@ export function dorling(options) {
   out.thresholdValues_ = null; //[1,100,1000]
   out.thresholds_ = 7;
   out.zoom_ = true;
+  out.sizeLegendTitle_ = "Total Population";
 
   out.legend_ = {
     //https://d3-legend.susielu.com/#color
@@ -58,9 +59,9 @@ export function dorling(options) {
   out.colorDatasetFilters_ = "indic_de=GROWRT&time=2018";
 
   //definition of generic accessors based on the name of each parameter name
-  for (var p in out)
+  for (let p in out)
     (function () {
-      var p_ = p;
+      let p_ = p;
       out[p_.substring(0, p_.length - 1)] = function (v) {
         if (!arguments.length) return out[p_];
         out[p_] = v;
@@ -70,7 +71,7 @@ export function dorling(options) {
 
   //override some accesors
   out.legend = function (v) {
-    for (var key in v) {
+    for (let key in v) {
       out.legend_[key] = v[key];
     }
     return out;
@@ -173,13 +174,13 @@ export function dorling(options) {
         .attr("d", out.path);
 
       // initialize tooltip
-      var tooltip = d3
+      let tooltip = d3
         .select("body")
         .append("div")
         .attr("class", "dorling-tooltip")
         .text("");
 
-      //Show the regions as circles
+      //define region centroids
       let circles = out.svg
         .append("g")
         .selectAll("circle")
@@ -192,8 +193,10 @@ export function dorling(options) {
         .attr("fill", "#ffffff00")
         .attr("stroke", "#40404000");
 
-      //Show the regions as circles
+      //add play button to svg container
+      addPlayButtonToDOM();
 
+      //Show the regions as circles
       setTimeout(function () {
         //hide countries
         countries.transition().duration(1000).attr("stroke", "#40404000");
@@ -257,7 +260,7 @@ export function dorling(options) {
           .duration(1500)
           .attr("r", (f) => toRadius(+sizeIndicator[f.properties.id]))
           .attr("fill", (f) => colorFunction(+colorIndicator[f.properties.id]))
-          .attr("stroke", "#40404030");
+          .attr("stroke", "black");
       }, 2500);
 
       //Dorling cartogram deformation
@@ -305,17 +308,21 @@ export function dorling(options) {
       //show legend, add coastlines and define Zoom
       setTimeout(function () {
         //background container
-        let legendContainer = out.svg
-          .append("rect")
+        out.legendContainer = out.svg
+          .append("g")
           .attr("class", "dorling-legend-container")
           .attr("transform", "translate(0,0)");
+        let containerBackground = out.legendContainer
+          .append("rect")
+          .attr("class", "dorling-legend-container-background")
+          .attr("transform", "translate(0,0)");
         //legend <g>
-        out.svg
+        out.legendContainer
           .append("g")
-          .attr("class", "legendQuant")
+          .attr("class", "dorling-color-legend")
           .attr("transform", "translate(20,20)");
 
-        var legend = legendColor()
+        let legend = legendColor()
           //.useClass(true)
           .title(out.legend_.title)
           .titleWidth(out.legend_.titleWidth)
@@ -352,39 +359,68 @@ export function dorling(options) {
         if (out.legend_.shape == "circle")
           legend.shapeRadius(out.legend_.shapeRadius);
 
-        out.svg.select(".legendQuant").call(legend);
+        out.svg.select(".dorling-color-legend").call(legend);
 
-        //adjust legend bacgkround box height
-        let node = document
-          .getElementsByClassName("legendQuant")[0]
+        let colorLegendNode = document
+          .getElementsByClassName("dorling-color-legend")[0]
           .getBoundingClientRect();
-        legendContainer.style("height", node.height + 15 + "px");
-        legendContainer.style("width", node.width + 35 + "px");
 
         //circle size legend
-        const legC = out.svg
+        let sizeLegendContainer = out.svg
           .append("g")
-          .attr("fill", "#444")
-          .attr("transform", "translate(30," + (out.height_ - 30) + ")")
+          .attr("class", "dorling-size-legend")
+          .attr("transform", "translate(0," + (out.height_ - 100) + ")");
+        let sizeLegendBackground = sizeLegendContainer
+          .append("rect")
+          .attr("class", "dorling-legend-container-background")
+          .attr("transform", "translate(0,0)");
+        const legendTitle = sizeLegendContainer
+          .append("g")
+          .attr("fill", "black")
+          .attr("transform", "translate(20,0)")
+          .attr("text-anchor", "right");
+        legendTitle
+          .append("text")
+          .attr("y", 5)
+          .attr("x", 0)
+          .attr("dy", "1.3em")
+          .text(out.sizeLegendTitle_);
+        const legC = sizeLegendContainer
+          .append("g")
+          .attr("fill", "black")
+          .attr("transform", "translate(40, 85)")
           .attr("text-anchor", "right")
-          .style("font", "10px sans-serif")
           .selectAll("g")
           .data([20e6, 10e6, 1e6])
           .join("g");
         legC
           .append("circle")
           .attr("fill", "none")
-          .attr("stroke", "#444")
+          .attr("stroke", "black")
           .attr("cy", (d) => -toRadius(d))
           .attr("r", toRadius);
         legC
           .append("text")
-          .attr("y", (d) => -5 - 2 * toRadius(d))
+          //.attr("y", (d) => 9 - 2 * toRadius(d))
+          .attr("y", (d) => {
+            if (d == 20e6) {
+              return -1 - 2 * toRadius(d) - 10 - 4; //add padding
+            } else {
+              return -1 - 2 * toRadius(d) - 10;
+            }
+          })
           .attr("x", 30)
           .attr("dy", "1.3em")
           .text((d) => {
             return d.toLocaleString("en").replace(/,/gi, " ");
           });
+
+        //adjust legend bacgkround box height
+        let containerNode = document
+          .getElementsByClassName("dorling-legend-container")[0]
+          .getBoundingClientRect();
+        containerBackground.style("height", containerNode.height + 10 + "px");
+        containerBackground.style("width", containerNode.width + 10 + "px");
 
         //fade in coastlines
         coastL.transition().duration(1000).attr("stroke", "#404040ff");
@@ -413,11 +449,24 @@ export function dorling(options) {
     return out;
   };
 
+  function addPlayButtonToDOM() {
+    let button = document.createElement("button");
+    button.classList.add("dorling-play-button");
+    //circle size legend
+    let playButton = out.svg
+      .append("g")
+      .attr("class", "dorling-play-button")
+      .attr(
+        "transform",
+        "translate(" + out.width_ / 2 + "," + (out.height_ - 50) + ")"
+      );
+  }
+
   function defineColorScale() {
     //return [0,1,2,3,...,nb-1]
-    var getA = function (nb) {
-      var a = [];
-      for (var i = 0; i < nb; i++) a.push(i);
+    let getA = function (nb) {
+      let a = [];
+      for (let i = 0; i < nb; i++) a.push(i);
       return a;
     };
     if (out.colors_) {
@@ -463,7 +512,7 @@ function indexStat(data) {
     data.dimension.geo.category.index
   ).map(([key, val]) => ({ id: key, val: +data.value[val] || null }));
   const ind = {};
-  for (var i = 0; i < arr.length; i++) ind[arr[i].id] = arr[i].val;
+  for (let i = 0; i < arr.length; i++) ind[arr[i].id] = arr[i].val;
   return ind;
 }
 

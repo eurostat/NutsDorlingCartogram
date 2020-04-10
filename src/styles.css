@@ -22,9 +22,36 @@
   border-width: 10px;
   margin-top: -10px;
 } */
-.dorling-legend-container {
+.dorling-legend-container-background {
   width: 175px;
   height: 170px;
   fill: white;
   opacity: 0.7;
+}
+.dorling-legend-container {
+  width: 175px;
+  height: 170px;
+}
+.dorling-size-legend {
+  width: 175px;
+  height: 100px;
+}
+.dorling-play-button {
+  border: 0;
+  background: transparent;
+  box-sizing: border-box;
+  width: 0;
+  height: 74px;
+  border-color: transparent transparent transparent #202020;
+  transition: 100ms all ease;
+  cursor: pointer;
+  border-style: solid;
+  border-width: 37px 0 37px 60px;
+}
+.dorling-play-button.paused {
+  border-style: double;
+  border-width: 0px 0 0px 60px;
+}
+.dorling-play-button:hover {
+  border-color: transparent transparent transparent #404040;
 }

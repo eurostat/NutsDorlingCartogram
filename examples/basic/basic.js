@@ -22,9 +22,9 @@ NutsDorlingCartogram.dorling()
     labelAlign: "middle",
     labelOffset: 10,
     shape: "circle",
-    //cells: 10,
+    //So peaceful cells: 10,
   })
-  .scale(1000)
+  .scale(900)
   .rotateX(-10)
   .rotateY(-61)
   .translateX(400)
