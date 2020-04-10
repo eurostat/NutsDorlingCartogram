@@ -93,6 +93,7 @@ export function dorling(options) {
     return out;
   };
 
+  let playing = true;
   out.main = function () {
     //data promises
     let promises = [];
@@ -113,7 +114,7 @@ export function dorling(options) {
 
     Promise.all(promises).then((res) => {
       //data loaded
-      let n2j = res[0];
+      out.n2j = res[0];
       let n2jrg = res[1];
 
       let sizeData = res[2];
@@ -122,20 +123,20 @@ export function dorling(options) {
       let bn = topojson.feature(n2jrg, n2jrg.objects.nutsbn).features;
       let coastlines = topojson.feature(n2jrg, n2jrg.objects.nutsbn).features;
 
-      let sizeIndicator = indexStat(sizeData);
-      let colorIndicator = indexStat(colorData);
-      let totalsIndex = getTotals(sizeIndicator); //total of sizeIndicator for each country
+      out.sizeIndicator = indexStat(sizeData);
+      out.colorIndicator = indexStat(colorData);
+      out.totalsIndex = getTotals(out.sizeIndicator); //total of sizeIndicator for each country
 
       //d3 geo
-      let projection = d3
+      out.projection = d3
         .geoAzimuthalEqualArea()
         .rotate([out.rotateX_, out.rotateY_])
-        .fitSize([out.width_, out.height_], n2j)
+        .fitSize([out.width_, out.height_], out.n2j)
         .scale(out.scale_);
-      out.path = d3.geoPath().projection(projection);
+      out.path = d3.geoPath().projection(out.projection);
 
       if (out.translateX_ && out.translateY_) {
-        projection.translate([out.translateX_, out.translateY_]);
+        out.projection.translate([out.translateX_, out.translateY_]);
       }
 
       // let path = geoPath().projection(
@@ -145,10 +146,10 @@ export function dorling(options) {
       // );
 
       //d3 scale
-      out.extent = d3.extent(Object.values(colorIndicator));
+      out.extent = d3.extent(Object.values(out.colorIndicator));
       //color scale
       out.colorScale = defineColorScale();
-      let countries = out.svg
+      out.countries = out.svg
         .append("g")
         .selectAll("path")
         .data(bn)
@@ -159,7 +160,7 @@ export function dorling(options) {
         .attr("stroke", "#404040ff");
 
       //add coastlines
-      let coastL = out.svg
+      out.coastL = out.svg
         .append("g")
         .attr("id", "g_coast_margin_cnt")
         .selectAll("path")
@@ -174,292 +175,378 @@ export function dorling(options) {
         .attr("d", out.path);
 
       // initialize tooltip
-      let tooltip = d3
-        .select("body")
-        .append("div")
-        .attr("class", "dorling-tooltip")
-        .text("");
+      out.tooltip = addTooltipToDOM();
+
+      //add play button
+      out.playButton = addPlayButtonToDOM();
 
       //define region centroids
-      let circles = out.svg
+      out.circles = out.svg
         .append("g")
         .selectAll("circle")
-        .data(n2j.features)
+        .data(out.n2j.features)
         .enter()
         .append("circle")
-        .attr("cx", (f) => projection(f.geometry.coordinates)[0])
-        .attr("cy", (f) => projection(f.geometry.coordinates)[1])
+        .attr("cx", (f) => out.projection(f.geometry.coordinates)[0])
+        .attr("cy", (f) => out.projection(f.geometry.coordinates)[1])
         .attr("r", (f) => 0.000055 * Math.sqrt(f.properties.ar))
         .attr("fill", "#ffffff00")
         .attr("stroke", "#40404000");
 
-      //add play button to svg container
-      addPlayButtonToDOM();
+      addZoom();
+      addLegendsToDOM();
 
-      //Show the regions as circles
-      setTimeout(function () {
-        //hide countries
-        countries.transition().duration(1000).attr("stroke", "#40404000");
-
-        //show circles
-        circles
-          .transition()
-          .duration(1000)
-          .attr("fill", "#ffffff44")
-          .attr("stroke", "#404040ff");
-        circles.on("mouseover", function (f) {
-          d3.select(this).attr("fill", "purple");
-          tooltip.html(`<strong>${f.properties.na}</strong>
-              (${f.properties.id})<br>
-              Population: ${sizeIndicator[f.properties.id]
-                .toLocaleString("en")
-                .replace(/,/gi, " ")}<br>
-                Share of national population: ${(
-                  (sizeIndicator[f.properties.id] /
-                    totalsIndex[f.properties.id.substring(0, 2)]) *
-                  100
-                ).toFixed(0)} % <br>
-              Population Change: <strong>${
-                colorIndicator[f.properties.id]
-              } ‰</strong><br>
-          `);
-          let matrix = this.getScreenCTM().translate(
-            +this.getAttribute("cx"),
-            +this.getAttribute("cy")
-          );
-          tooltip.style("visibility", "visible");
-          //position + offsets
-          let node = tooltip.node();
-          let tooltipWidth = node.offsetWidth;
-          let tooltipHeight = node.offsetHeight;
-          let left = window.pageXOffset + matrix.e + 20;
-          let top = window.pageYOffset + matrix.f - 100;
-          if (left > out.width_ - tooltipWidth) {
-            left = left - (tooltipWidth + 40);
-          }
-          if (top < 0) {
-            top = top + (tooltipHeight + 40);
-          }
-          tooltip.style("left", left + "px").style("top", top + "px");
-          // tooltip
-          //   .style("top", d3.event.pageY - 110 + "px")
-          //   .style("left", d3.event.pageX - 120 + "px");
-        });
-        circles.on("mouseout", function () {
-          tooltip.style("visibility", "hidden");
-          d3.select(this).attr("fill", (f) =>
-            colorFunction(+colorIndicator[f.properties.id])
-          );
-        });
-      }, 1000);
-
-      //Change circle size and color with population figures
-      setTimeout(function () {
-        circles
-          .transition()
-          .duration(1500)
-          .attr("r", (f) => toRadius(+sizeIndicator[f.properties.id]))
-          .attr("fill", (f) => colorFunction(+colorIndicator[f.properties.id]))
-          .attr("stroke", "black");
-      }, 2500);
-
-      //Dorling cartogram deformation
-      setTimeout(function () {
-        const simulation = d3
-          .forceSimulation(n2j.features)
-          .force(
-            "x",
-            d3
-              .forceX()
-              .x((f) => projection(f.geometry.coordinates)[0])
-              .strength(out.positionStrength_)
-          )
-          .force(
-            "y",
-            d3
-              .forceY()
-              .y((f) => projection(f.geometry.coordinates)[1])
-              .strength(out.positionStrength_)
-          )
-          .force(
-            "collide",
-            d3
-              .forceCollide()
-              .radius((f) => toRadius(+sizeIndicator[f.properties.id]))
-              .strength(out.collisionStrength_)
-          );
-
-        //set initial position of the circles
-        for (const f of n2j.features) {
-          f.x = projection(f.geometry.coordinates)[0];
-          f.y = projection(f.geometry.coordinates)[1];
-        }
-
-        simulation.on("tick", () => {
-          circles.attr("cx", (f) => f.x).attr("cy", (f) => f.y);
-        });
-
-        simulation.on("end", function () {
-          simulation.stop();
-        });
-        //invalidation.then(() => simulation.stop());
-      }, 3000);
-
-      //show legend, add coastlines and define Zoom
-      setTimeout(function () {
-        //background container
-        out.legendContainer = out.svg
-          .append("g")
-          .attr("class", "dorling-legend-container")
-          .attr("transform", "translate(0,0)");
-        let containerBackground = out.legendContainer
-          .append("rect")
-          .attr("class", "dorling-legend-container-background")
-          .attr("transform", "translate(0,0)");
-        //legend <g>
-        out.legendContainer
-          .append("g")
-          .attr("class", "dorling-color-legend")
-          .attr("transform", "translate(20,20)");
-
-        let legend = legendColor()
-          //.useClass(true)
-          .title(out.legend_.title)
-          .titleWidth(out.legend_.titleWidth)
-          .orient(out.legend_.orient)
-          .shape(out.legend_.shape)
-          .shapePadding(out.legend_.shapePadding)
-          .labelAlign(out.legend_.labelAlign)
-          .labelOffset(out.legend_.labelOffset)
-          .labelFormat(out.legend_.labelFormat)
-          .scale(out.colorScale)
-          .labelDelimiter(out.legend_.labelDelimiter)
-          .labelWrap(out.legend_.labelWrap);
-        if (out.legend_.cells) {
-          legend.cells(out.legend_.cells);
-        }
-        if (out.colors_) {
-          legend.labels(function (d) {
-            if (d.i === 0)
-              return (
-                "< " +
-                d.generatedLabels[d.i].split(d.labelDelimiter)[1] +
-                out.legend_.labelUnit
-              );
-            else if (d.i === d.genLength - 1)
-              return (
-                "≥ " +
-                d.generatedLabels[d.i].split(d.labelDelimiter)[0] +
-                out.legend_.labelUnit
-              );
-            else return "≥ " + d.generatedLabels[d.i] + out.legend_.labelUnit;
-          });
-        }
-
-        if (out.legend_.shape == "circle")
-          legend.shapeRadius(out.legend_.shapeRadius);
-
-        out.svg.select(".dorling-color-legend").call(legend);
-
-        let colorLegendNode = document
-          .getElementsByClassName("dorling-color-legend")[0]
-          .getBoundingClientRect();
-
-        //circle size legend
-        let sizeLegendContainer = out.svg
-          .append("g")
-          .attr("class", "dorling-size-legend")
-          .attr("transform", "translate(0," + (out.height_ - 100) + ")");
-        let sizeLegendBackground = sizeLegendContainer
-          .append("rect")
-          .attr("class", "dorling-legend-container-background")
-          .attr("transform", "translate(0,0)");
-        const legendTitle = sizeLegendContainer
-          .append("g")
-          .attr("fill", "black")
-          .attr("transform", "translate(20,0)")
-          .attr("text-anchor", "right");
-        legendTitle
-          .append("text")
-          .attr("y", 5)
-          .attr("x", 0)
-          .attr("dy", "1.3em")
-          .text(out.sizeLegendTitle_);
-        const legC = sizeLegendContainer
-          .append("g")
-          .attr("fill", "black")
-          .attr("transform", "translate(40, 85)")
-          .attr("text-anchor", "right")
-          .selectAll("g")
-          .data([20e6, 10e6, 1e6])
-          .join("g");
-        legC
-          .append("circle")
-          .attr("fill", "none")
-          .attr("stroke", "black")
-          .attr("cy", (d) => -toRadius(d))
-          .attr("r", toRadius);
-        legC
-          .append("text")
-          //.attr("y", (d) => 9 - 2 * toRadius(d))
-          .attr("y", (d) => {
-            if (d == 20e6) {
-              return -1 - 2 * toRadius(d) - 10 - 4; //add padding
-            } else {
-              return -1 - 2 * toRadius(d) - 10;
-            }
-          })
-          .attr("x", 30)
-          .attr("dy", "1.3em")
-          .text((d) => {
-            return d.toLocaleString("en").replace(/,/gi, " ");
-          });
-
-        //adjust legend bacgkround box height
-        let containerNode = document
-          .getElementsByClassName("dorling-legend-container")[0]
-          .getBoundingClientRect();
-        containerBackground.style("height", containerNode.height + 10 + "px");
-        containerBackground.style("width", containerNode.width + 10 + "px");
-
-        //fade in coastlines
-        coastL.transition().duration(1000).attr("stroke", "#404040ff");
-
-        //add d3 zoom
-        if (out.zoom_) {
-          out.svg.call(
-            d3
-              .zoom()
-              .extent([
-                [0, 0],
-                [out.width_, out.height_],
-              ])
-              .translateExtent([
-                [0, 0],
-                [out.width_, out.height_],
-              ])
-              .scaleExtent([1, 8])
-              .on("zoom", () => {
-                zoomed(circles, coastL);
-              })
-          );
-        }
-      }, 4500);
+      animate();
     });
     return out;
   };
 
-  function addPlayButtonToDOM() {
-    let button = document.createElement("button");
-    button.classList.add("dorling-play-button");
+  function animate() {
+    //Show the regions as circles & configure tooltip
+    if (playing) {
+      setTimeout(function () {
+        firstTransition();
+        if (playing) {
+          setTimeout(function () {
+            secondTransition();
+            //Dorling cartogram deformation
+            if (playing) {
+              setTimeout(function () {
+                thirdTransition();
+                //add coastlines
+                if (playing) {
+                  setTimeout(function () {
+                    //fade in coastlines
+                    fourthTransition();
+                  }, 4500);
+                }
+              }, 3000);
+            }
+          }, 2500);
+        }
+      }, 1000);
+    }
+    //Change circle size and color with population figures
+  }
+
+  //polygons to circles
+  function firstTransition() {
+    //hide out.countries
+    out.countries.transition().duration(1000).attr("stroke", "#40404000");
+
+    //show circles
+    out.circles
+      .transition()
+      .duration(1000)
+      .attr("fill", "#ffffff44")
+      .attr("stroke", "#404040ff");
+    out.circles.on("mouseover", function (f) {
+      d3.select(this).attr("fill", "purple");
+      out.tooltip.html(`<strong>${f.properties.na}</strong>
+                    (${f.properties.id})<br>
+                    Population: ${out.sizeIndicator[f.properties.id]
+                      .toLocaleString("en")
+                      .replace(/,/gi, " ")}<br>
+                      Share of national population: ${(
+                        (out.sizeIndicator[f.properties.id] /
+                          out.totalsIndex[f.properties.id.substring(0, 2)]) *
+                        100
+                      ).toFixed(0)} % <br>
+                    Population Change: <strong>${
+                      out.colorIndicator[f.properties.id]
+                    } ‰</strong><br>
+                `);
+      let matrix = this.getScreenCTM().translate(
+        +this.getAttribute("cx"),
+        +this.getAttribute("cy")
+      );
+      out.tooltip.style("visibility", "visible");
+      //position + offsets
+      let node = out.tooltip.node();
+      let tooltipWidth = node.offsetWidth;
+      let tooltipHeight = node.offsetHeight;
+      let left = window.pageXOffset + matrix.e + 20;
+      let top = window.pageYOffset + matrix.f - 100;
+      if (left > out.width_ - tooltipWidth) {
+        left = left - (tooltipWidth + 40);
+      }
+      if (top < 0) {
+        top = top + (tooltipHeight + 40);
+      }
+      out.tooltip.style("left", left + "px").style("top", top + "px");
+      // tooltip
+      //   .style("top", d3.event.pageY - 110 + "px")
+      //   .style("left", d3.event.pageX - 120 + "px");
+    });
+    out.circles.on("mouseout", function () {
+      out.tooltip.style("visibility", "hidden");
+      d3.select(this).attr("fill", (f) =>
+        colorFunction(+out.colorIndicator[f.properties.id])
+      );
+    });
+  }
+  //hide circles
+  function secondTransition() {
+    out.circles
+      .transition()
+      .duration(1500)
+      .attr("r", (f) => toRadius(+out.sizeIndicator[f.properties.id]))
+      .attr("fill", (f) => colorFunction(+out.colorIndicator[f.properties.id]))
+      .attr("stroke", "black");
+  }
+  //d3 simulation of dorling deformation
+  function thirdTransition() {
+    const simulation = d3
+      .forceSimulation(out.n2j.features)
+      .force(
+        "x",
+        d3
+          .forceX()
+          .x((f) => out.projection(f.geometry.coordinates)[0])
+          .strength(out.positionStrength_)
+      )
+      .force(
+        "y",
+        d3
+          .forceY()
+          .y((f) => out.projection(f.geometry.coordinates)[1])
+          .strength(out.positionStrength_)
+      )
+      .force(
+        "collide",
+        d3
+          .forceCollide()
+          .radius((f) => toRadius(+out.sizeIndicator[f.properties.id]))
+          .strength(out.collisionStrength_)
+      );
+
+    //set initial position of the circles
+    for (const f of out.n2j.features) {
+      f.x = out.projection(f.geometry.coordinates)[0];
+      f.y = out.projection(f.geometry.coordinates)[1];
+    }
+
+    simulation.on("tick", () => {
+      out.circles.attr("cx", (f) => f.x).attr("cy", (f) => f.y);
+    });
+
+    simulation.on("end", function () {
+      simulation.stop();
+      //fade circles
+      out.circles
+        .transition()
+        .delay(500)
+        .duration(1000)
+        .attr("fill", "#40404000")
+        .attr("stroke", "#40404000");
+      // fade-in countries
+      out.countries
+        .transition()
+        .delay(500)
+        .duration(1000)
+        .attr("stroke", "#404040ff");
+      setTimeout(function () {
+        //reset circle locations & color
+        out.circles
+          .attr("cx", (f) => out.projection(f.geometry.coordinates)[0])
+          .attr("cy", (f) => out.projection(f.geometry.coordinates)[1])
+          .attr("r", (f) => 0.000055 * Math.sqrt(f.properties.ar));
+        animate();
+      }, 1500);
+    });
+    //invalidation.then(() => simulation.stop());
+  }
+  function fourthTransition() {
+    //fade in coastlines
+    out.coastL.transition().duration(1000).attr("stroke", "#404040ff");
+  }
+  function addZoom() {
+    //add d3 zoom
+    if (out.zoom_) {
+      out.svg.call(
+        d3
+          .zoom()
+          .extent([
+            [0, 0],
+            [out.width_, out.height_],
+          ])
+          .translateExtent([
+            [0, 0],
+            [out.width_, out.height_],
+          ])
+          .scaleExtent([1, 8])
+          .on("zoom", () => {
+            zoomed(circles, coastL);
+          })
+      );
+    }
+  }
+  function addLegendsToDOM() {
+    //background container
+    out.legendContainer = out.svg
+      .append("g")
+      .attr("class", "dorling-legend-container")
+      .attr("transform", "translate(0,0)");
+    let containerBackground = out.legendContainer
+      .append("rect")
+      .attr("class", "dorling-legend-container-background")
+      .attr("transform", "translate(0,0)");
+    //legend <g>
+    out.legendContainer
+      .append("g")
+      .attr("class", "dorling-color-legend")
+      .attr("transform", "translate(20,20)");
+
+    let legend = legendColor()
+      //.useClass(true)
+      .title(out.legend_.title)
+      .titleWidth(out.legend_.titleWidth)
+      .orient(out.legend_.orient)
+      .shape(out.legend_.shape)
+      .shapePadding(out.legend_.shapePadding)
+      .labelAlign(out.legend_.labelAlign)
+      .labelOffset(out.legend_.labelOffset)
+      .labelFormat(out.legend_.labelFormat)
+      .scale(out.colorScale)
+      .labelDelimiter(out.legend_.labelDelimiter)
+      .labelWrap(out.legend_.labelWrap);
+    if (out.legend_.cells) {
+      legend.cells(out.legend_.cells);
+    }
+    if (out.colors_) {
+      legend.labels(function (d) {
+        if (d.i === 0)
+          return (
+            "< " +
+            d.generatedLabels[d.i].split(d.labelDelimiter)[1] +
+            out.legend_.labelUnit
+          );
+        else if (d.i === d.genLength - 1)
+          return (
+            "≥ " +
+            d.generatedLabels[d.i].split(d.labelDelimiter)[0] +
+            out.legend_.labelUnit
+          );
+        else return "≥ " + d.generatedLabels[d.i] + out.legend_.labelUnit;
+      });
+    }
+
+    if (out.legend_.shape == "circle")
+      legend.shapeRadius(out.legend_.shapeRadius);
+
+    out.svg.select(".dorling-color-legend").call(legend);
+
+    let colorLegendNode = document
+      .getElementsByClassName("dorling-color-legend")[0]
+      .getBoundingClientRect();
+
     //circle size legend
-    let playButton = out.svg
+    let sizeLegendContainer = out.svg
+      .append("g")
+      .attr("class", "dorling-size-legend")
+      .attr("transform", "translate(0," + (out.height_ - 100) + ")");
+    let sizeLegendBackground = sizeLegendContainer
+      .append("rect")
+      .attr("class", "dorling-legend-container-background")
+      .attr("transform", "translate(0,0)");
+    const legendTitle = sizeLegendContainer
+      .append("g")
+      .attr("fill", "black")
+      .attr("transform", "translate(20,0)")
+      .attr("text-anchor", "right");
+    legendTitle
+      .append("text")
+      .attr("y", 5)
+      .attr("x", 0)
+      .attr("dy", "1.3em")
+      .text(out.sizeLegendTitle_);
+    const legC = sizeLegendContainer
+      .append("g")
+      .attr("fill", "black")
+      .attr("transform", "translate(40, 85)")
+      .attr("text-anchor", "right")
+      .selectAll("g")
+      .data([20e6, 10e6, 1e6])
+      .join("g");
+    legC
+      .append("circle")
+      .attr("fill", "none")
+      .attr("stroke", "black")
+      .attr("cy", (d) => -toRadius(d))
+      .attr("r", toRadius);
+    legC
+      .append("text")
+      //.attr("y", (d) => 9 - 2 * toRadius(d))
+      .attr("y", (d) => {
+        if (d == 20e6) {
+          return -1 - 2 * toRadius(d) - 10 - 4; //add padding
+        } else {
+          return -1 - 2 * toRadius(d) - 10;
+        }
+      })
+      .attr("x", 30)
+      .attr("dy", "1.3em")
+      .text((d) => {
+        return d.toLocaleString("en").replace(/,/gi, " ");
+      });
+
+    //adjust legend bacgkround box height
+    let containerNode = document
+      .getElementsByClassName("dorling-legend-container")[0]
+      .getBoundingClientRect();
+    containerBackground.style("height", containerNode.height + 10 + "px");
+    containerBackground.style("width", containerNode.width + 10 + "px");
+  }
+  function addPlayButtonToDOM() {
+    let buttonContainer = out.svg
       .append("g")
       .attr("class", "dorling-play-button")
       .attr(
         "transform",
-        "translate(" + out.width_ / 2 + "," + (out.height_ - 50) + ")"
+        "translate(" + out.width_ / 2 + "," + (out.height_ - 60) + ")"
       );
+    let playBtn = buttonContainer.append("g").style("visibility", "hidden");
+    let pauseBtn = buttonContainer.append("g").style("visibility", "visible");
+
+    playBtn
+      .append("rect")
+      .attr("width", 50)
+      .attr("height", 50)
+      .attr("rx", 4)
+      .style("fill", "steelblue");
+    playBtn
+      .append("path")
+      .attr("d", "M15 10 L15 40 L35 25 Z")
+      .style("fill", "white");
+
+    pauseBtn
+      .append("rect")
+      .attr("width", 50)
+      .attr("height", 50)
+      .attr("rx", 4)
+      .style("fill", "steelblue");
+    pauseBtn
+      .append("path")
+      .attr("d", "M12,11 L23,11 23,40 12,40 M26,11 L37,11 37,40 26,40")
+      .style("fill", "white");
+
+    buttonContainer.on("mousedown", function () {
+      playing = !playing;
+
+      //fade in btn
+      playBtn.style("visibility", playing ? "hidden" : "visible");
+      pauseBtn.style("visibility", playing ? "visible" : "hidden");
+    });
+
+    return buttonContainer;
+  }
+
+  function addTooltipToDOM() {
+    return d3
+      .select("body")
+      .append("div")
+      .attr("class", "dorling-tooltip")
+      .text("");
   }
 
   function defineColorScale() {

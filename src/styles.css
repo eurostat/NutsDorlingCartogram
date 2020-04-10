@@ -55,3 +55,7 @@
 .dorling-play-button:hover {
   border-color: transparent transparent transparent #404040;
 }
+.dorling-visible {
+  opacity: 1;
+  visibility: visible;
+}
