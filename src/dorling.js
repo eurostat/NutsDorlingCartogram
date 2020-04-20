@@ -11,9 +11,9 @@ export function dorling(options) {
   //default values
   out.svgId_ = "map";
   //d3 force
-  out.circleExaggerationFactor_ = 0.8;
-  out.collisionPadding_ = 0.2;
-  out.positionStrength_ = 0.6;
+  out.circleExaggerationFactor_ = 0.9;
+  out.collisionPadding_ = 0;
+  out.positionStrength_ = 0.1;
   out.collisionStrength_ = 0.3;
   //d3-geo
   out.scale_ = 1000;
