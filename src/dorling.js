@@ -9,9 +9,12 @@ export function dorling(options) {
   let out = {};
 
   //default values
-  out.svgId_ = "map";
+  out.containerId_ = "";
+  //styles
+  out.backgroundColor_ = "aliceblue";
+  out.playButtonFill_ = "#777777";
   //d3 force
-  out.circleExaggerationFactor_ = 0.9;
+  out.circleExaggerationFactor_ = 0.8;
   out.collisionPadding_ = 0;
   out.positionStrength_ = 0.1;
   out.collisionStrength_ = 0.3;
@@ -21,9 +24,9 @@ export function dorling(options) {
   out.rotateY_ = -61;
   out.translateX_ = null; //340;
   out.translateY_ = null; //216;
-  //container
-  out.width_ = 600;
-  out.height_ = 600;
+  //viewbox
+  out.width_ = 900;
+  out.height_ = 700;
 
   out.colorScheme_ = "interpolateRdYlBu";
   out.colors_ = null; //["#000",etc]
@@ -46,10 +49,16 @@ export function dorling(options) {
     labelFormat: d3.format(".1f"),
     labelFontSize: 15,
     labelDelimiter: " to ",
-    labelUnit: " % ",
+    labelUnit: " ",
     labelWrap: 140,
     labelDecNb: 2,
   };
+
+  //tooltip html
+  out.tooltipColorLabel_ = "Population change per 1000 persons";
+  out.tooltipSizeLabel_ = "Total population";
+  out.tooltipColorUnit_ = "";
+  out.tooltipSizeUnit_ = "";
 
   //data params
   out.nutsLvl_ = 2;
@@ -57,6 +66,9 @@ export function dorling(options) {
   out.sizeDatasetFilters_ = "sex=T&age=TOTAL&unit=NR&time=2018";
   out.colorDatasetCode_ = "demo_r_gind3";
   out.colorDatasetFilters_ = "indic_de=GROWRT&time=2018";
+
+  //animation loop
+  out.playing = true;
 
   //definition of generic accessors based on the name of each parameter name
   for (let p in out)
@@ -79,21 +91,58 @@ export function dorling(options) {
 
   //build function
   out.build = function () {
-    out.svg = d3.select("#" + out.svgId_);
+    out.container_ = d3.select("#" + out.containerId_);
     //empty svg
-    out.svg.selectAll("*").remove();
+    out.container_.selectAll("*").remove();
 
     //set up svg element
+    out.svg = d3.create("svg");
     out.svg
       .attr("viewBox", [0, 0, out.width_, out.height_])
-      .attr("width", out.width_)
-      .attr("height", out.height_);
+      .attr("id", "dorling-svg")
+      .style("background-color", out.backgroundColor_)
+    out.container_.node().appendChild(out.svg.node());
+    out.container_.attr("class", "dorling-container");
+
+    addLoadingSpinnerToDOM();
+    showLoadingSpinner();
+
+    // initialize tooltip
+    out.tooltip = addTooltipToDOM();
+
+    addNutsSelectorToDOM();
+
     //get data and animate
     out.main();
     return out;
   };
 
-  let playing = true;
+
+  //e.g. when changing nuts level
+  out.rebuild = function () {
+    endTransition();
+    out.playing = false;
+    out.stage = 1;
+
+    out.container_ = d3.select("#" + out.containerId_);
+    //empty svg
+    out.container_.selectAll("g").remove();
+    out.container_.selectAll("svg").remove();
+
+    //set up svg element
+    out.svg = d3.create("svg");
+    out.svg
+      .attr("viewBox", [0, 0, out.width_, out.height_])
+      .attr("id", "dorling-svg")
+      .style("background-color", out.backgroundColor_)
+    out.container_.node().appendChild(out.svg.node());
+    out.container_.attr("class", "dorling-container");
+    showLoadingSpinner();
+    out.main();
+    return out;
+  }
+
+
   out.main = function () {
     //data promises
     let promises = [];
@@ -113,6 +162,10 @@ export function dorling(options) {
     );
 
     Promise.all(promises).then((res) => {
+      hideLoadingSpinner();
+      //add play button
+      out.playButton = addPlayButtonToDOM();
+      out.playing = true;
       //data loaded
       out.n2j = res[0];
       let n2jrg = res[1];
@@ -126,6 +179,7 @@ export function dorling(options) {
       out.sizeIndicator = indexStat(sizeData);
       out.colorIndicator = indexStat(colorData);
       out.totalsIndex = getTotals(out.sizeIndicator); //total of sizeIndicator for each country
+      out.countryNamesIndex_ = getCountryNamesIndex();
 
       //d3 geo
       out.projection = d3
@@ -174,12 +228,6 @@ export function dorling(options) {
         .attr("stroke", "#40404000")
         .attr("d", out.path);
 
-      // initialize tooltip
-      out.tooltip = addTooltipToDOM();
-
-      //add play button
-      out.playButton = addPlayButtonToDOM();
-
       //define region centroids
       out.circles = out.svg
         .append("g")
@@ -204,29 +252,29 @@ export function dorling(options) {
 
   function animate() {
     if (out.stage == 1) {
-      if (playing) {
+      if (out.playing) {
         setTimeout(function () {
           out.stage = 1;
           //Show the regions as circles & configure tooltip
 
-          if (playing) {
+          if (out.playing) {
             firstTransition();
             setTimeout(function () {
               out.stage = 2;
               //Change circle size and color with population figures
 
-              if (playing) {
+              if (out.playing) {
                 secondTransition();
                 setTimeout(function () {
                   out.stage = 3;
                   //Dorling cartogram deformation
 
-                  if (playing) {
+                  if (out.playing) {
                     thirdTransition();
                     // setTimeout(function () {
                     //   out.stage = 4;
                     //   //fade in coastlines
-                    //   if (playing) fourthTransition();
+                    //   if (out.playing) fourthTransition();
                     // }, 3000);
                   }
                 }, 3000);
@@ -237,21 +285,21 @@ export function dorling(options) {
       }
       return;
     } else if (out.stage == 2) {
-      if (playing) {
+      if (out.playing) {
         setTimeout(function () {
           out.stage = 2;
           //Change circle size and color with population figures
-          if (playing) {
+          if (out.playing) {
             secondTransition();
             setTimeout(function () {
               out.stage = 3;
               //Dorling cartogram deformation
-              if (playing) {
+              if (out.playing) {
                 thirdTransition();
                 // setTimeout(function () {
                 //   out.stage = 4;
                 //   //fade in coastlines
-                //   if (playing) {
+                //   if (out.playing) {
                 //     fourthTransition();
                 //   }
                 // }, 2000);
@@ -262,16 +310,16 @@ export function dorling(options) {
       }
       return;
     } else if (out.stage == 3) {
-      if (playing) {
+      if (out.playing) {
         setTimeout(function () {
           out.stage = 3;
           //Dorling cartogram deformation
-          if (playing) {
+          if (out.playing) {
             endTransition();
             // setTimeout(function () {
             //   out.stage = 4;
             //   //fade in coastlines
-            //   if (playing) fourthTransition();
+            //   if (out.playing) fourthTransition();
             // }, 1000);
           }
         }, 1000);
@@ -279,7 +327,7 @@ export function dorling(options) {
       return;
     }
     // else if (out.stage == 4) {
-    //   if (playing) {
+    //   if (out.playing) {
     //     setTimeout(function () {
     //       out.stage = 4;
     //       //fade in coastlines
@@ -304,18 +352,18 @@ export function dorling(options) {
     out.circles.on("mouseover", function (f) {
       d3.select(this).attr("fill", "purple");
       out.tooltip.html(`<strong>${f.properties.na}</strong>
-                    (${f.properties.id})<br>
-                    Population: ${out.sizeIndicator[f.properties.id]
+                    (${f.properties.id}) <i>${out.countryNamesIndex_[f.properties.id[0] + f.properties.id[1]]}</i><br>
+                    ${out.tooltipSizeLabel_}: ${out.sizeIndicator[f.properties.id]
           .toLocaleString("en")
-          .replace(/,/gi, " ")}<br>
+          .replace(/,/gi, " ")} ${out.tooltipSizeUnit_}<br>
                       Share of national population: ${(
           (out.sizeIndicator[f.properties.id] /
             out.totalsIndex[f.properties.id.substring(0, 2)]) *
           100
         ).toFixed(0)} % <br>
-                    Population Change: <strong>${
+        ${out.tooltipColorLabel_}: <strong>${
         out.colorIndicator[f.properties.id]
-        } ‰</strong><br>
+        } ${out.tooltipColorUnit_}</strong><br>
                 `);
       let matrix = this.getScreenCTM().translate(
         +this.getAttribute("cx"),
@@ -363,7 +411,7 @@ export function dorling(options) {
   function thirdTransition() {
     //fade in coastlines
     out.coastL.transition().duration(1000).attr("stroke", "#404040ff");
-    const simulation = d3
+    out.simulation = d3
       .forceSimulation(out.n2j.features)
       .force(
         "x",
@@ -393,16 +441,19 @@ export function dorling(options) {
       f.y = out.projection(f.geometry.coordinates)[1];
     }
 
-    simulation.on("tick", () => {
+    out.simulation.on("tick", () => {
       out.circles.attr("cx", (f) => f.x).attr("cy", (f) => f.y);
     });
 
-    simulation.on("end", function () {
+    out.simulation.on("end", function () {
       simulation.stop();
-      if (playing) {
+    });
+    setTimeout(function () {
+      out.simulation.stop();
+      if (out.playing) {
         endTransition();
       }
-    });
+    }, 4000)
     //invalidation.then(() => simulation.stop());
   }
   function endTransition() {
@@ -573,7 +624,7 @@ export function dorling(options) {
       .attr("class", "dorling-play-button")
       .attr(
         "transform",
-        "translate(" + out.width_ / 2 + "," + (out.height_ - 60) + ")"
+        "translate(" + ((out.width_ / 2) - 50) + "," + (out.height_ - 60) + ")"
       );
     let playBtn = buttonContainer.append("g").style("visibility", "hidden");
     let pauseBtn = buttonContainer.append("g").style("visibility", "visible");
@@ -583,7 +634,7 @@ export function dorling(options) {
       .attr("width", 50)
       .attr("height", 50)
       .attr("rx", 4)
-      .style("fill", "steelblue");
+      .style("fill", out.playButtonFill_);
     playBtn
       .append("path")
       .attr("d", "M15 10 L15 40 L35 25 Z")
@@ -594,26 +645,85 @@ export function dorling(options) {
       .attr("width", 50)
       .attr("height", 50)
       .attr("rx", 4)
-      .style("fill", "steelblue");
+      .style("fill", out.playButtonFill_);
     pauseBtn
       .append("path")
       .attr("d", "M12,11 L23,11 23,40 12,40 M26,11 L37,11 37,40 26,40")
       .style("fill", "white");
 
     buttonContainer.on("mousedown", function () {
-      playing = !playing;
+      out.playing = !out.playing;
 
       //change icon
-      playBtn.style("visibility", playing ? "hidden" : "visible");
-      pauseBtn.style("visibility", playing ? "visible" : "hidden");
+      playBtn.style("visibility", out.playing ? "hidden" : "visible");
+      pauseBtn.style("visibility", out.playing ? "visible" : "hidden");
 
       //continue animation
-      if (playing) {
+      if (out.playing) {
         animate();
       }
     });
 
     return buttonContainer;
+  }
+  function addNutsSelectorToDOM() {
+    let container = document.createElement("div");
+    container.classList.add("dorling-nuts-selector-container");
+    let title = document.createElement("div");
+    title.innerHTML = "Geographic level <br>"
+    title.style.marginBottom = "6px";
+    container.appendChild(title);
+    out.container_.node().appendChild(container);
+
+    //radios
+    //1
+    let radio1 = document.createElement("input");
+    radio1.type = "radio";
+    radio1.value = 1;
+    radio1.id = "dorling-nuts-radio1";
+    radio1.name = "dorling-nuts-radios";
+    if (out.nutsLvl_ == 1) radio1.checked = "true";
+    radio1.onclick = nutsRadioEventHandler;
+    let radio1Label = document.createElement("label");
+    radio1Label.for = "dorling-nuts-radio1";
+    radio1Label.innerHTML = "NUTS 1"
+    //2
+    let radio2 = document.createElement("input");
+    radio2.type = "radio";
+    radio2.value = 2;
+    radio2.id = "dorling-nuts-radio2";
+    radio2.name = "dorling-nuts-radios";
+    if (out.nutsLvl_ == 2) radio2.checked = "true";
+    radio2.onclick = nutsRadioEventHandler;
+    let radio2Label = document.createElement("label");
+    radio2Label.for = "dorling-nuts-radio2";
+    radio2Label.innerHTML = "NUTS 2"
+    //3
+    let radio3 = document.createElement("input");
+    radio3.type = "radio";
+    radio3.value = 3;
+    radio3.id = "dorling-nuts-radio3";
+    radio3.name = "dorling-nuts-radios";
+    if (out.nutsLvl_ == 3) radio3.checked = "true";
+    radio3.onclick = nutsRadioEventHandler;
+    let radio3Label = document.createElement("label");
+    radio3Label.for = "dorling-nuts-radio3";
+    radio3Label.innerHTML = "NUTS 3"
+
+    container.appendChild(radio1);
+    container.appendChild(radio1Label);
+    container.appendChild(radio2);
+    container.appendChild(radio2Label);
+    container.appendChild(radio3);
+    container.appendChild(radio3Label);
+  }
+
+  function nutsRadioEventHandler(evt) {
+    let nuts = evt.currentTarget.value;
+    if (out.nutsLvl_ !== nuts) {
+      out.nutsLvl_ = nuts;
+      out.rebuild()
+    }
   }
 
   function addTooltipToDOM() {
@@ -666,6 +776,24 @@ export function dorling(options) {
     return out.circleExaggerationFactor_ * 0.005 * Math.sqrt(val);
   }
 
+  function addLoadingSpinnerToDOM() {
+    out.spinner = document.createElement("div");
+    out.spinner.classList.add("lds-ripple");
+    let son1 = document.createElement("div");
+    let son2 = document.createElement("div");
+    out.spinner.appendChild(son1);
+    out.spinner.appendChild(son2);
+    out.container_.node().appendChild(out.spinner);
+  }
+  function showLoadingSpinner() {
+    out.spinner.classList.remove("hide");
+    out.spinner.classList.add("show");
+  }
+  function hideLoadingSpinner() {
+    out.spinner.classList.remove("show");
+    out.spinner.classList.add("hide");
+  }
+
   return out;
 }
 
@@ -691,6 +819,51 @@ function getTotals(data) {
     }
     result[country[0]] = countryTotal;
   });
-
   return result;
 }
+
+function getCountryNamesIndex() {
+  return {
+    BE: "Belgium",
+    BG: "Bulgaria",
+    CZ: "Czechia",
+    DK: "Denmark",
+    DE: "Germany",
+    EE: "Estonia",
+    IE: "Ireland",
+    EL: "Greece",
+    ES: "Spain",
+    FR: "France",
+    HR: "Croatia",
+    IT: "Italy",
+    CY: "Cyprus",
+    LV: "Latvia",
+    LT: "Lithuania",
+    LU: "Luxembourg",
+    HU: "Hungary",
+    MT: "Malta",
+    NL: "Netherlands",
+    AT: "Austria",
+    PL: "Poland",
+    PT: "Portugal",
+    RO: "Romania",
+    SI: "Slovenia",
+    SK: "Slovakia",
+    FI: "Finland",
+    SE: "Sweden",
+    IS: "Iceland",
+    LI: "Liechtenstein",
+    NO: "Norway",
+    CH: "Switzerland",
+    ME: "Montenegro",
+    MK: "North Macedonia",
+    AL: "Albania",
+    RS: "Serbia",
+    TR: "Turkey",
+    BA: "Bosnia and Herzegovina",
+    XK: "Kosovo",
+    UK: "United Kingdom"
+  }
+}
+
+
