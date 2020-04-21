@@ -722,10 +722,13 @@ export function dorling(options) {
 
     container.appendChild(radio1);
     container.appendChild(radio1Label);
+    container.appendChild(document.createElement('br'))
     container.appendChild(radio2);
     container.appendChild(radio2Label);
+    container.appendChild(document.createElement('br'))
     container.appendChild(radio3);
     container.appendChild(radio3Label);
+    container.appendChild(document.createElement('br'))
   }
 
   function nutsRadioEventHandler(evt) {
