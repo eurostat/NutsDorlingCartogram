@@ -8,8 +8,8 @@
 </head>
 
 <body>
-  <div id="containerDiv" style="height:700px; width:900px;">
-    <!-- <svg id="dorlingSvg" style="background-color: aliceblue;"></svg> -->
+  <div id="containerDiv" style="height:700px; width:900px; resize: both;
+  overflow: auto;">
   </div>
 
   <script src="../../build/dorling.js"></script>
@@ -29,7 +29,7 @@
       .colorDatasetFilters("indic_de=GROWRT&time=2018")
       .legend({
         //https://d3-legend.susielu.com/#color
-        titleWidth: 200,
+        titleWidth: 170,
         title: "Population change 2018 (per 1000 persons)",
         orient: "vertical",
         shape: "rect",

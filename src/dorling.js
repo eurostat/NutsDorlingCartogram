@@ -37,7 +37,7 @@ export function dorling(options) {
 
   out.legend_ = {
     //https://d3-legend.susielu.com/#color
-    titleWidth: 200,
+    titleWidth: 170,
     title: "Population change (‰)",
     orient: "vertical",
     cells: null,
@@ -62,6 +62,7 @@ export function dorling(options) {
 
   //data params
   out.nutsLvl_ = 2;
+  out.showNutsSelector_ = true;
   out.sizeDatasetCode_ = "demo_r_pjangrp3";
   out.sizeDatasetFilters_ = "sex=T&age=TOTAL&unit=NR&time=2018";
   out.colorDatasetCode_ = "demo_r_gind3";
@@ -110,7 +111,10 @@ export function dorling(options) {
     // initialize tooltip
     out.tooltip = addTooltipToDOM();
 
-    addNutsSelectorToDOM();
+    if (out.showNutsSelector_) {
+      addNutsSelectorToDOM();
+    }
+
 
     //get data and animate
     out.main();
@@ -658,7 +662,7 @@ export function dorling(options) {
       playBtn.style("visibility", out.playing ? "hidden" : "visible");
       pauseBtn.style("visibility", out.playing ? "visible" : "hidden");
 
-      //continue animation
+      //continue animation or end simulation
       if (out.playing) {
         animate();
       }
