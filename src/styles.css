@@ -28,7 +28,8 @@ position:relative;
 } */
 .dorling-nuts-selector-container{
   text-align:right;
-  background-color: rgba(255, 255, 255, 0.7);
+  background-color: white;
+  opacity:0.8;
   padding:10px;
   position: absolute;
   top: 0px;
@@ -47,6 +48,7 @@ position:relative;
 .dorling-size-legend {
   width: 175px;
   height: 100px;
+  pointer-events: none;
 }
 .dorling-play-button {
   border: 0;

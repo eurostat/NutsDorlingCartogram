@@ -400,7 +400,7 @@ export function dorling(options) {
   }
 
 
-  //resize circles
+  //resize & colour circles
   function secondTransition() {
     out.circles
       .transition()
@@ -408,6 +408,10 @@ export function dorling(options) {
       .attr("r", (f) => toRadius(+out.sizeIndicator[f.properties.id]))
       .attr("fill", (f) => colorFunction(+out.colorIndicator[f.properties.id]))
       .attr("stroke", "black");
+
+    //TODO show legendds
+    out.legendContainer.transition().duration(1000).attr("opacity", 0.8);
+    out.sizeLegendContainer.transition().duration(1000).attr("opacity", 0.8);
   }
 
 
@@ -450,7 +454,7 @@ export function dorling(options) {
     });
 
     out.simulation.on("end", function () {
-      simulation.stop();
+      out.simulation.stop();
     });
     setTimeout(function () {
       out.simulation.stop();
@@ -511,7 +515,8 @@ export function dorling(options) {
     out.legendContainer = out.svg
       .append("g")
       .attr("class", "dorling-legend-container")
-      .attr("transform", "translate(0,0)");
+      .attr("transform", "translate(0,0)")
+      .attr("opacity", 0);
     let containerBackground = out.legendContainer
       .append("rect")
       .attr("class", "dorling-legend-container-background")
@@ -566,15 +571,16 @@ export function dorling(options) {
       .getBoundingClientRect();
 
     //circle size legend
-    let sizeLegendContainer = out.svg
+    out.sizeLegendContainer = out.svg
       .append("g")
       .attr("class", "dorling-size-legend")
-      .attr("transform", "translate(0," + (out.height_ - 100) + ")");
-    let sizeLegendBackground = sizeLegendContainer
+      .attr("transform", "translate(0," + (out.height_ - 100) + ")")
+      .attr("opacity", 0);
+    let sizeLegendBackground = out.sizeLegendContainer
       .append("rect")
       .attr("class", "dorling-legend-container-background")
       .attr("transform", "translate(0,0)");
-    const legendTitle = sizeLegendContainer
+    const legendTitle = out.sizeLegendContainer
       .append("g")
       .attr("fill", "black")
       .attr("transform", "translate(20,0)")
@@ -585,7 +591,7 @@ export function dorling(options) {
       .attr("x", 0)
       .attr("dy", "1.3em")
       .text(out.sizeLegendTitle_);
-    const legC = sizeLegendContainer
+    const legC = out.sizeLegendContainer
       .append("g")
       .attr("fill", "black")
       .attr("transform", "translate(40, 85)")
