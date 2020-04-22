@@ -14,10 +14,11 @@ export function dorling(options) {
   out.backgroundColor_ = "aliceblue";
   out.playButtonFill_ = "#777777";
   //d3 force
-  out.circleExaggerationFactor_ = 0.8;
-  out.collisionPadding_ = 0;
-  out.positionStrength_ = 1;
-  out.collisionStrength_ = 0.3;
+  out.circleExaggerationFactor_ = 1.2;
+  out.collisionPadding_ = 0.1;
+  out.positionStrength_ = 0.2;
+  out.collisionStrength_ = 0.6;
+  out.simulationDuration_ = 5000; //duration of d3 force simulation in miliseconds
   //d3-geo
   out.scale_ = 1000;
   out.rotateX_ = -13;
@@ -27,14 +28,19 @@ export function dorling(options) {
   //viewbox
   out.width_ = 900;
   out.height_ = 700;
-
+  //d3 scale
   out.colorScheme_ = "interpolateRdYlBu";
   out.colors_ = null; //["#000",etc]
   out.thresholdValues_ = null; //[1,100,1000]
   out.thresholds_ = 7;
   out.zoom_ = true;
-  out.sizeLegendTitle_ = "Total Population";
 
+  //size legend
+  out.sizeLegendTitle_ = "Total population";
+  out.sizeLegendTitleYOffset_ = -20;
+  out.sizeLegendTitleXOffset_ = 10;
+
+  //color legend
   out.legend_ = {
     //https://d3-legend.susielu.com/#color
     titleWidth: 170,
@@ -155,8 +161,11 @@ export function dorling(options) {
         `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/4258/nutspt_${out.nutsLvl_}.json`
       ), //centroids
       d3.json(
-        `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/4258/60M/0.json`
-      ), //regions
+        `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/4258/20M/${out.nutsLvl_}.json`
+      ), //NUTS
+      d3.json(
+        `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/4258/20M/0.json`
+      ), //countries
       d3.json(
         `https://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/${out.sizeDatasetCode_}?geoLevel=nuts${out.nutsLvl_}&${out.sizeDatasetFilters_}`
       ), //sizeData
@@ -172,13 +181,15 @@ export function dorling(options) {
       out.playing = true;
       //data loaded
       out.n2j = res[0];
-      let n2jrg = res[1];
+      let n2 = res[1];
+      let countries = res[2];
 
-      let sizeData = res[2];
-      let colorData = res[3];
+      let sizeData = res[3];
+      let colorData = res[4];
 
-      let bn = topojson.feature(n2jrg, n2jrg.objects.nutsbn).features;
-      let coastlines = topojson.feature(n2jrg, n2jrg.objects.nutsbn).features;
+      let nuts = topojson.feature(n2, n2.objects.nutsbn).features;
+      let country = topojson.feature(countries, countries.objects.nutsbn).features;
+      let coastlines = topojson.feature(n2, n2.objects.nutsbn).features;
 
       out.sizeIndicator = indexStat(sizeData);
       out.colorIndicator = indexStat(colorData);
@@ -191,6 +202,9 @@ export function dorling(options) {
         .rotate([out.rotateX_, out.rotateY_])
         .fitSize([out.width_, out.height_], out.n2j)
         .scale(out.scale_);
+      // out.projection = d3.geoIdentity()
+      //   .reflectY(true)
+      //   .fitSize([out.width_, out.height_], nuts2)
       out.path = d3.geoPath().projection(out.projection);
 
       if (out.translateX_ && out.translateY_) {
@@ -207,30 +221,53 @@ export function dorling(options) {
       out.extent = d3.extent(Object.values(out.colorIndicator));
       //color scale
       out.colorScale = defineColorScale();
+
+      //add countries svg
+      // out.countries = out.svg
+      //   .selectAll("path")
+      //   .data(nuts2)
+      //   .enter()
+      //   .append("path")
+      //   .attr("fill", "white")
+      //   .attr("stroke", "black")
+      //   .attr("d", out.path);
+
       out.countries = out.svg
         .append("g")
+        //.attr("class", "dorling-boundary")
         .selectAll("path")
-        .data(bn)
+        .data(country)
         .enter()
         .append("path")
-        .attr("d", out.path)
+        .attr("stroke", "#404040ff")
         .attr("fill", "none")
-        .attr("stroke", "#404040ff");
+        .attr("d", out.path)
+
+      out.nuts = out.svg
+        .append("g")
+        .attr("class", "dorling-boundary")
+        .selectAll("path")
+        .data(nuts)
+        .enter()
+        .append("path")
+        .attr("stroke", "#404040ff")
+        .attr("fill", "none")
+        .attr("d", out.path)
 
       //add coastlines
-      out.coastL = out.svg
-        .append("g")
-        .attr("id", "g_coast_margin_cnt")
-        .selectAll("path")
-        .data(coastlines)
-        .enter()
-        .filter(function (bn) {
-          return bn.properties.co === "T";
-        })
-        .append("path")
-        .attr("fill", "none")
-        .attr("stroke", "#40404000")
-        .attr("d", out.path);
+      // out.coastL = out.svg
+      //   .append("g")
+      //   .attr("id", "g_coast_margin_cnt")
+      //   .selectAll("path")
+      //   .data(coastlines)
+      //   .enter()
+      //   .filter(function (nuts2) {
+      //     return nuts2.properties.co === "T";
+      //   })
+      //   .append("path")
+      //   .attr("fill", "white")
+      //   .attr("stroke", "#40404000")
+      //   .attr("d", out.path);
 
       //define region centroids
       out.circles = out.svg
@@ -342,10 +379,10 @@ export function dorling(options) {
     // }
   }
 
-  //hide countries show circles
+  //hide nuts show circles
   function firstTransition() {
-    //hide out.countries
-    out.countries.transition().duration(1000).attr("stroke", "#40404000");
+    //hide nuts
+    out.nuts.transition().duration(1000).attr("stroke", "#40404000");
 
     //show circles
     out.circles
@@ -417,8 +454,10 @@ export function dorling(options) {
 
   //d3 simulation of dorling deformation
   function thirdTransition() {
-    //fade in coastlines
-    out.coastL.transition().duration(1000).attr("stroke", "#404040ff");
+    //fade in coastlines/country borders
+    //out.coastL.transition().duration(1000).attr("stroke", "#404040ff");
+    out.countries.transition().duration(1000).attr("stroke", "#404040ff");
+
     out.simulation = d3
       .forceSimulation(out.n2j.features)
       .force(
@@ -461,7 +500,7 @@ export function dorling(options) {
       if (out.playing) {
         endTransition();
       }
-    }, 4000)
+    }, out.simulationDuration_)
     //invalidation.then(() => simulation.stop());
   }
   function endTransition() {
@@ -474,7 +513,7 @@ export function dorling(options) {
       .attr("fill", "#40404000")
       .attr("stroke", "#40404000");
     // fade-in countries
-    out.countries
+    out.nuts
       .transition()
       .delay(500)
       .duration(1000)
@@ -583,7 +622,7 @@ export function dorling(options) {
     const legendTitle = out.sizeLegendContainer
       .append("g")
       .attr("fill", "black")
-      .attr("transform", "translate(20,0)")
+      .attr("transform", "translate(" + out.sizeLegendTitleXOffset_ + "," + out.sizeLegendTitleYOffset_ + ")")
       .attr("text-anchor", "right");
     legendTitle
       .append("text")
