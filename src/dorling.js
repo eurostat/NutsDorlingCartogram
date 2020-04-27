@@ -33,7 +33,9 @@ export function dorling(options) {
   out.colors_ = null; //["#000",etc]
   out.thresholdValues_ = null; //[1,100,1000]
   out.thresholds_ = 7;
+  //interactivity
   out.zoom_ = true;
+  out.animate_ = true;
 
   //size legend
   out.sizeLegendTitle_ = "Total population";
@@ -177,8 +179,11 @@ export function dorling(options) {
     Promise.all(promises).then((res) => {
       hideLoadingSpinner();
       //add play button
-      out.playButton = addPlayButtonToDOM();
-      out.playing = true;
+      if (out.animate_) {
+        out.playButton = addPlayButtonToDOM();
+        out.playing = true;
+      }
+
       //data loaded
       out.n2j = res[0];
       let n2 = res[1];
@@ -285,11 +290,114 @@ export function dorling(options) {
       addZoom();
       addLegendsToDOM();
 
-      out.stage = 1; //current transition number
-      animate();
+
+      if (out.animate_) {
+        out.stage = 1; //current transition number
+        animate();
+      } else {
+        showDorlingWithoutAnimation();
+      }
+
     });
     return out;
   };
+
+  function showDorlingWithoutAnimation() {
+    //hide nuts
+    out.nuts.attr("stroke", "#40404000");
+    //show circles
+    out.circles
+      .attr("r", (f) => toRadius(+out.sizeIndicator[f.properties.id]))
+      .attr("fill", (f) => colorFunction(+out.colorIndicator[f.properties.id]))
+      .attr("stroke", "black");
+    //tooltip
+    out.circles.on("mouseover", function (f) {
+      d3.select(this).attr("fill", "purple");
+      out.tooltip.html(`<strong>${f.properties.na}</strong>
+                  (${f.properties.id}) <i>${out.countryNamesIndex_[f.properties.id[0] + f.properties.id[1]]}</i><br>
+                  ${out.tooltipSizeLabel_}: ${out.sizeIndicator[f.properties.id]
+          .toLocaleString("en")
+          .replace(/,/gi, " ")} ${out.tooltipSizeUnit_}<br>
+                    Share of national population: ${(
+          (out.sizeIndicator[f.properties.id] /
+            out.totalsIndex[f.properties.id.substring(0, 2)]) *
+          100
+        ).toFixed(0)} % <br>
+      ${out.tooltipColorLabel_}: <strong>${
+        out.colorIndicator[f.properties.id]
+        } ${out.tooltipColorUnit_}</strong><br>
+              `);
+      let matrix = this.getScreenCTM().translate(
+        +this.getAttribute("cx"),
+        +this.getAttribute("cy")
+      );
+      out.tooltip.style("visibility", "visible");
+      //position + offsets
+      let node = out.tooltip.node();
+      let tooltipWidth = node.offsetWidth;
+      let tooltipHeight = node.offsetHeight;
+      let left = window.pageXOffset + matrix.e + 20;
+      let top = window.pageYOffset + matrix.f - 100;
+      if (left > out.width_ - tooltipWidth) {
+        left = left - (tooltipWidth + 40);
+      }
+      if (top < 0) {
+        top = top + (tooltipHeight + 40);
+      }
+      out.tooltip.style("left", left + "px").style("top", top + "px");
+      // tooltip
+      //   .style("top", d3.event.pageY - 110 + "px")
+      //   .style("left", d3.event.pageX - 120 + "px");
+    });
+    out.circles.on("mouseout", function () {
+      out.tooltip.style("visibility", "hidden");
+      d3.select(this).attr("fill", (f) =>
+        colorFunction(+out.colorIndicator[f.properties.id])
+      );
+    });
+
+    //show legends
+    out.legendContainer.transition().duration(1000).attr("opacity", 0.8);
+    out.sizeLegendContainer.transition().duration(1000).attr("opacity", 0.8);
+    //dorling deformation
+    out.simulation = d3
+      .forceSimulation(out.n2j.features)
+      .force(
+        "x",
+        d3
+          .forceX()
+          .x((f) => out.projection(f.geometry.coordinates)[0])
+          .strength(out.positionStrength_)
+      )
+      .force(
+        "y",
+        d3
+          .forceY()
+          .y((f) => out.projection(f.geometry.coordinates)[1])
+          .strength(out.positionStrength_)
+      )
+      .force(
+        "collide",
+        d3
+          .forceCollide()
+          .radius((f) => toRadius(+out.sizeIndicator[f.properties.id]))
+          .strength(out.collisionStrength_)
+      );
+
+    //set initial position of the circles
+    for (const f of out.n2j.features) {
+      f.x = out.projection(f.geometry.coordinates)[0];
+      f.y = out.projection(f.geometry.coordinates)[1];
+    }
+
+    out.simulation.on("tick", () => {
+      out.circles.attr("cx", (f) => f.x).attr("cy", (f) => f.y);
+    });
+
+    out.simulation.on("end", function () {
+      out.simulation.stop();
+    });
+  }
 
   function animate() {
     if (out.stage == 1) {
