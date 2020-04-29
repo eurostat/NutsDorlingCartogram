@@ -606,7 +606,10 @@ export function dorling(options) {
     out.simulation.on("end", function () {
       out.simulation.stop();
       if (out.loop_) {
-        restartTransition();
+        setTimeout(function () {
+          restartTransition();
+        }, 1000)
+
       }
 
     });
