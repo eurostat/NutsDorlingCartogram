@@ -838,10 +838,6 @@ export function dorling(options) {
 
     out.svg.select(".dorling-color-legend").call(legend);
 
-    let colorLegendNode = document
-      .getElementsByClassName("dorling-color-legend")[0]
-      .getBoundingClientRect();
-
     //circle size legend
     out.sizeLegendContainer = out.svg
       .append("g")
@@ -897,9 +893,9 @@ export function dorling(options) {
     //adjust legend bacgkround box height
     let containerNode = document
       .getElementsByClassName("dorling-legend-container")[0]
-      .getBoundingClientRect();
-    containerBackground.style("height", containerNode.height + 20 + "px");
-    containerBackground.style("width", containerNode.width + 20 + "px");
+    let brect = containerNode.getBoundingClientRect();
+    containerBackground.style("height", brect.height + 20 + "px");
+    containerBackground.style("width", brect.width + 20 + "px");
   }
   function addPlayButtonToDOM() {
     let buttonContainer = out.svg
