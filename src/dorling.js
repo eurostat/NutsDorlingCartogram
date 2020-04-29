@@ -359,11 +359,13 @@ export function dorling(options) {
       //nuts
       out.nutsBorders = out.svg.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.nutsbn).features)
         .enter().append("path").attr("d", out.path)
-        .attr("class", function (bn) {
-          return "nutsbn" + (bn.properties.co === "T" ? " coastal" : "")
-            + ((bn.properties.oth === "T" || bn.properties.lvl == 0) ? " white" : "")
-            + (bn.properties.lvl == 3 ? " thin" : "");
-        });
+        .attr("stroke", "black").attr("fill", "none")
+      // .attr("class", function (bn) {
+      //   return "nutsbn" + bn.properties.co === "T" ? " coastal" : ""
+      //   // return "nutsbn" + (bn.properties.co === "T" ? " coastal" : "")
+      //   // + ((bn.properties.oth === "T" || bn.properties.lvl == 0) ? " white" : "")
+      //   // + (bn.properties.lvl == 3 ? " thin" : "");
+      // })
 
       // out.nutsBorders = out.svg
       //   .append("g")
@@ -494,7 +496,7 @@ export function dorling(options) {
   function firstTransition() {
     //hide nuts
     if (out.showBorders_) {
-      out.nutsBorders.transition().duration(1000).attr("stroke", "#969696");
+      out.nutsBorders.transition().duration(1000).attr("stroke", "grey");
     } else {
       //out.nuts.transition().duration(1000).attr("stroke", "#1f1f1f00").attr("fill", "none");
       out.countries.transition().duration(1000).attr("stroke", "#1f1f1f00").attr("fill", "none");
@@ -646,6 +648,8 @@ export function dorling(options) {
             .attr("stroke-linejoin", "round");
         })
       }
+    } else {
+      out.nutsBorders.transition().duration(1000).attr("stroke", "black");
     }
 
 
