@@ -1,4 +1,35 @@
 
+.dorling-graticule {
+  fill: none;
+  stroke-width: 2px;
+  stroke: white;
+}
+
+.cntrg {
+  fill: lightgray;
+}
+
+
+.nutsrg {
+  fill: white;
+}
+
+
+.cntbn {
+  fill: none;
+  stroke-width: 1px;
+  stroke: black;
+}
+.nutsbn {
+  fill: none;
+  stroke-width: 1px;
+  stroke: #333;
+}
+.white { stroke: black; }
+.thin { stroke-width: 0.5px; }
+.coastal { stroke: #1f78b4; }
+
+
 .dorling-container {
 position:relative;
 }
@@ -30,29 +61,36 @@ position:relative;
   border-width: 10px;
   margin-top: -10px;
 } */
+.dorling-plugin{
+  width:187px !important;
+}
 .dorling-nuts-selector-container{
-  text-align:right;
+  /* text-align:right; */
   background-color: #ffffffa3;
   opacity:0.8;
   padding:10px;
   position: absolute;
-  top: 0px;
-  right: 0px;
+  top: 315px;
+  right: 4px;
+  width:159px;
 }
-.dorling-legend-container-background {
-  width: 175px;
-  height: 170px;
-  fill: white;
-  opacity: 0.7;
-}
+
 .dorling-legend-container {
   width: 175px;
-  height: 170px;
+  height: 177px;
+  transform: translate(708px,10px);
 }
 .dorling-size-legend {
   width: 175px;
   height: 100px;
+  transform: translate(708px,215px);
   pointer-events: none;
+}
+.dorling-legend-container-background {
+  width: 177px;
+  height: 110px;
+  fill: white;
+  opacity: 0.7;
 }
 .dorling-play-button {
   border: 0;

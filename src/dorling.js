@@ -18,19 +18,21 @@ export function dorling(options) {
   out.backgroundColor_ = "aliceblue";
   out.playButtonFill_ = "#777777";
   out.coastalMargins_ = false;
+  out.graticule_ = true;
   //d3 force
   out.circleExaggerationFactor_ = 1.2;
   out.collisionPadding_ = 0.1;
   out.positionStrength_ = 0.2;
   out.collisionStrength_ = 0.6;
   out.simulationDuration_ = 8000; //duration of d3 force simulation in miliseconds
+
   //d3-geo
   out.scale_ = null;
   out.rotateX_ = -13;
   out.rotateY_ = -61;
   out.translateX_ = null; //340;
   out.translateY_ = null; //216;
-  out.fitSizePadding_ = 55;
+  out.fitSizePadding_ = 0;
   //viewbox
   out.width_ = 900;
   out.height_ = 700;
@@ -48,8 +50,9 @@ export function dorling(options) {
 
   //size legend
   out.sizeLegendTitle_ = "Total population";
-  out.sizeLegendTitleYOffset_ = -20;
-  out.sizeLegendTitleXOffset_ = 10;
+  out.sizeLegendTitleYOffset_ = 0;
+  out.sizeLegendTitleXOffset_ = 23;
+
 
   //color legend
   out.legend_ = {
@@ -69,6 +72,8 @@ export function dorling(options) {
     labelUnit: " ",
     labelWrap: 140,
     labelDecNb: 2,
+    x: 0,
+    y: 0
   };
 
   //tooltip html
@@ -109,29 +114,10 @@ export function dorling(options) {
 
   //build function
   out.build = function () {
+
     out.container_ = d3.select("#" + out.containerId_);
-    //empty svg
-    out.container_.selectAll("*").remove();
-
-    //set up svg element
-    out.svg = d3.create("svg");
-    out.svg
-      .attr("viewBox", [0, 0, out.width_, out.height_])
-      .attr("id", "dorling-svg")
-      .style("background-color", out.backgroundColor_)
-    out.container_.node().appendChild(out.svg.node());
-    out.container_.attr("class", "dorling-container");
-
     addLoadingSpinnerToDOM();
     showLoadingSpinner();
-
-    // initialize tooltip
-    out.tooltip = addTooltipToDOM();
-
-    if (out.showNutsSelector_) {
-      addNutsSelectorToDOM();
-    }
-
 
     //get data and animate
     out.main();
@@ -212,6 +198,25 @@ export function dorling(options) {
       out.totalsIndex = getTotals(out.sizeIndicator); //total of sizeIndicator for each country
       out.countryNamesIndex_ = getCountryNamesIndex();
 
+      out.height_ = out.width_ * (out.n2j.bbox[3] - out.n2j.bbox[1]) / (out.n2j.bbox[2] - out.n2j.bbox[0])
+
+      //empty svg
+      out.container_.selectAll("*").remove();
+
+      //set up svg element
+      out.svg = d3.create("svg");
+      out.svg
+        .attr("viewBox", [0, 0, out.width_, out.height_])
+        .attr("id", "dorling-svg")
+        .style("background-color", out.backgroundColor_)
+      out.container_.node().appendChild(out.svg.node());
+      out.container_.attr("class", "dorling-container");
+      // initialize tooltip
+      out.tooltip = addTooltipToDOM();
+
+      if (out.showNutsSelector_) {
+        addNutsSelectorToDOM();
+      }
       //d3 geo
       // out.projection = d3
       //   .geoAzimuthalEqualArea()
@@ -222,9 +227,15 @@ export function dorling(options) {
       out.projection = d3Geo
         .geoIdentity()
         .reflectY(true)
-        .fitSize([out.width_ - out.fitSizePadding_, out.height_ - out.fitSizePadding_], topojson.feature(out.n2j, out.n2j.objects.gra))
+        .fitExtent([[0, 0], [out.width_ + out.fitSizePadding_, out.height_ + out.fitSizePadding_]], topojson.feature(out.n2j, out.n2j.objects.nutsrg))
       //out.path = d3.geoPath().projection(out.projection);
       out.path = d3Geo.geoPath().projection(out.projection);
+
+      out.graticuleProjection = d3Geo
+        .geoIdentity()
+        .reflectY(true)
+        .fitSize([out.width_, out.height_], topojson.feature(out.n2j, out.n2j.objects.gra))
+      out.graticulePath = d3Geo.geoPath().projection(out.graticuleProjection);
 
       if (out.translateX_ && out.translateY_) {
         out.projection.translate([out.translateX_, out.translateY_]);
@@ -232,7 +243,6 @@ export function dorling(options) {
       if (out.scale_) {
         out.projection.scale(out.scale_);
       }
-
       // let path = geoPath().projection(
       //   geoIdentity()
       //     .reflectY(true)
@@ -294,6 +304,10 @@ export function dorling(options) {
       //   .attr("width", out.width_ - 50)
       //   .attr("height", out.height_ - 50)
       //   .style("fill", "c6efff");
+      if (out.graticule_) {
+        out.graticule = out.svg.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.gra).features)
+          .enter().append("path").attr("d", out.graticulePath).attr("class", "dorling-graticule");
+      }
 
       //coastal margin
       if (out.coastalMargins_) {
@@ -317,44 +331,52 @@ export function dorling(options) {
         }
       }
 
-      //draw regions
-      out.nuts = out.svg
-        .append("g")
-        .selectAll("path")
-        .data(topojson.feature(out.n2j, out.n2j.objects.nutsrg).features)
-        .enter()
-        .append("path")
-        //   .filter(function (bn) {
-        //     return bn.properties.co === 'F';
-        //   })
-        .attr("d", out.path)
-        .attr("stroke", "none")
-        .attr("fill", "white")
 
-      out.countries = out.svg
-        .append("g")
-        .selectAll("path")
-        .data(topojson.feature(out.nuts0, out.nuts0.objects.nutsbn).features)
-        .enter()
-        .append("path")
-        .attr("d", out.path)
-        .attr("fill", "none")
-        .attr("stroke-width", "2px")
-        .attr("stroke", "black")
+
+      // out.countries = out.svg
+      //   .append("g")
+      //   .selectAll("path")
+      //   .data(topojson.feature(out.n2j, out.n2j.objects.cntrg).features)
+      //   .enter()
+      //   .append("path")
+      //   .attr("d", out.path)
+      //   .attr("fill", "none")
+      //   .attr("stroke-width", "2px")
+      //   .attr("stroke", "black")
+      //draw regions
+      out.countries = out.svg.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.cntrg).features)
+        .enter().append("path").attr("d", out.path).attr("class", "cntrg");
+
+      //nuts
+      out.nuts = out.svg.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.nutsrg).features)
+        .enter().append("path").attr("d", out.path).attr("class", "nutsrg");
 
       //draw boundaries
-      out.nutsBorders = out.svg
-        .append("g")
-        .selectAll("path")
-        .data(topojson.feature(out.n2j, out.n2j.objects.nutsbn).features)
-        .enter()
-        .append("path")
-        .filter(function (bn) {
-          return bn.properties.co === 'F';
-        })
-        .attr("d", out.path)
-        .attr("stroke", "#4f4f4f")
-        .attr("fill", "none");
+      //countries
+      out.countryBorders = out.svg.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.cntbn).features)
+        .enter().append("path").attr("d", out.path)
+        .attr("class", function (bn) { return "cntbn" + (bn.properties.co === "T" ? " coastal" : ""); });
+      //nuts
+      out.nutsBorders = out.svg.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.nutsbn).features)
+        .enter().append("path").attr("d", out.path)
+        .attr("class", function (bn) {
+          return "nutsbn" + (bn.properties.co === "T" ? " coastal" : "")
+            + ((bn.properties.oth === "T" || bn.properties.lvl == 0) ? " white" : "")
+            + (bn.properties.lvl == 3 ? " thin" : "");
+        });
+
+      // out.nutsBorders = out.svg
+      //   .append("g")
+      //   .selectAll("path")
+      //   .data(topojson.feature(out.n2j, out.n2j.objects.nutsbn).features)
+      //   .enter()
+      //   .append("path")
+      //   .filter(function (bn) {
+      //     return bn.properties.co === 'F';
+      //   })
+      //   .attr("d", out.path)
+      //   .attr("stroke", "#4f4f4f")
+      //   .attr("fill", "none");
 
       //define region centroids
       out.circles = out.svg
@@ -760,8 +782,8 @@ export function dorling(options) {
     //background container
     out.legendContainer = out.svg
       .append("g")
-      .attr("class", "dorling-legend-container")
-      .attr("transform", "translate(0,0)")
+      .attr("class", "dorling-legend-container dorling-plugin")
+      .attr("transform", "translate(" + out.legend_.x + "," + out.legend_.y + ")")
       .attr("opacity", 0);
     let containerBackground = out.legendContainer
       .append("rect")
@@ -824,11 +846,12 @@ export function dorling(options) {
       .attr("opacity", 0);
     let sizeLegendBackground = out.sizeLegendContainer
       .append("rect")
-      .attr("class", "dorling-legend-container-background")
+      .attr("class", "dorling-legend-container-background dorling-plugin")
       .attr("transform", "translate(0,0)");
     const legendTitle = out.sizeLegendContainer
       .append("g")
       .attr("fill", "black")
+      .attr("class", "dorling-size-legend-title")
       .attr("transform", "translate(" + out.sizeLegendTitleXOffset_ + "," + out.sizeLegendTitleYOffset_ + ")")
       .attr("text-anchor", "right");
     legendTitle
@@ -871,8 +894,8 @@ export function dorling(options) {
     let containerNode = document
       .getElementsByClassName("dorling-legend-container")[0]
       .getBoundingClientRect();
-    containerBackground.style("height", containerNode.height + 10 + "px");
-    containerBackground.style("width", containerNode.width + 10 + "px");
+    containerBackground.style("height", containerNode.height + 20 + "px");
+    containerBackground.style("width", containerNode.width + 20 + "px");
   }
   function addPlayButtonToDOM() {
     let buttonContainer = out.svg
