@@ -422,6 +422,11 @@ export function dorling(options) {
           }
         }, 2000);
       }
+    } else if (out.stage == 2) {
+      if (out.playing) {
+        out.stage = 1;
+        restartTransition();
+      }
     }
 
     // if (out.stage == 1) {
