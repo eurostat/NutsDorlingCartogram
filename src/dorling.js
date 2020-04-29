@@ -132,21 +132,15 @@ export function dorling(options) {
     out.stage = 1;
 
     out.container_ = d3.select("#" + out.containerId_);
-    //empty svg
-    out.container_.selectAll("g").remove();
-    out.container_.selectAll("svg").remove();
-
-    //set up svg element
-    out.svg = d3.create("svg");
-    out.svg
-      .attr("viewBox", [0, 0, out.width_, out.height_])
-      .attr("id", "dorling-svg")
-      .style("background-color", out.backgroundColor_)
-    out.container_.node().appendChild(out.svg.node());
-    out.container_.attr("class", "dorling-container");
+    clearSvg();
     showLoadingSpinner();
     out.main();
     return out;
+  }
+  function clearSvg() {
+    //empty svg
+    out.container_.selectAll("g").remove();
+    out.container_.selectAll("svg").remove();
   }
 
 
@@ -200,9 +194,6 @@ export function dorling(options) {
 
       out.height_ = out.width_ * (out.n2j.bbox[3] - out.n2j.bbox[1]) / (out.n2j.bbox[2] - out.n2j.bbox[0])
 
-      //empty svg
-      out.container_.selectAll("*").remove();
-
       //set up svg element
       out.svg = d3.create("svg");
       out.svg
@@ -212,11 +203,15 @@ export function dorling(options) {
       out.container_.node().appendChild(out.svg.node());
       out.container_.attr("class", "dorling-container");
       // initialize tooltip
-      out.tooltip = addTooltipToDOM();
-
-      if (out.showNutsSelector_) {
+      if (!out.tooltip) {
+        out.tooltip = addTooltipToDOM();
+      }
+      if (out.showNutsSelector_ && !out.nutsSelector) {
+        out.nutsSelector = true;
         addNutsSelectorToDOM();
       }
+
+
       //d3 geo
       // out.projection = d3
       //   .geoAzimuthalEqualArea()
@@ -605,11 +600,12 @@ export function dorling(options) {
 
     out.simulation.on("end", function () {
       out.simulation.stop();
-      if (out.loop_) {
-        setTimeout(function () {
-          restartTransition();
-        }, 1000)
-
+      if (out.playing_) {
+        if (out.loop_) {
+          setTimeout(function () {
+            restartTransition();
+          }, 1000)
+        }
       }
 
     });
@@ -1021,7 +1017,7 @@ export function dorling(options) {
     let nuts = evt.currentTarget.value;
     if (out.nutsLvl_ !== nuts) {
       out.nutsLvl_ = nuts;
-      out.rebuild()
+      out.rebuild();
     }
   }
 

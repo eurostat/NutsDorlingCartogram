@@ -65,7 +65,8 @@ position:relative;
 }
 .dorling-nuts-selector-container{
   /* text-align:right; */
-  background-color: #ffffffa3;
+  /* background-color: #ffffffa3; */
+  background-color:#ffffffc4;
   opacity:0.8;
   padding:10px;
   position: absolute;

@@ -8,7 +8,8 @@
 </head>
 
 <body>
-  <div id="containerDiv" style="max-width:90vh !important">
+  <div id="containerDiv" style="max-width:90vh; height:700px">
+
   </div>
 
   <script src="../../build/dorling.js"></script>
@@ -45,14 +46,14 @@
       })
       .coastalMargins(false)
       .animate(true)
-      .loop(false)
+      .loop(true)
+      .pauseButton(true)
       .showBorders(true)
       .sizeLegendTitle("Total population")
       .sizeLegendTitleYOffset(-5)
       .backgroundColor("lightblue")
       .tooltipColorLabel("Population change per 1 000 inhabitants")
       .tooltipSizeLabel("Total population")
-      .loop(true)
       //.scale(0.1)
       // .rotateX(-10)
       // .rotateY(-61)
