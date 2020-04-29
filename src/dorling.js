@@ -1,8 +1,12 @@
 import * as d3 from "d3";
 import * as d3Array from "d3-array";
+
+import * as d3Geo from "d3-geo";
+
 import * as topojson from "topojson";
 import { legendColor } from "d3-svg-legend";
 import "./styles.css";
+import { interpolateBlues } from "d3";
 
 export function dorling(options) {
   //the output object
@@ -13,18 +17,20 @@ export function dorling(options) {
   //styles
   out.backgroundColor_ = "aliceblue";
   out.playButtonFill_ = "#777777";
+  out.coastalMargins_ = false;
   //d3 force
   out.circleExaggerationFactor_ = 1.2;
   out.collisionPadding_ = 0.1;
   out.positionStrength_ = 0.2;
   out.collisionStrength_ = 0.6;
-  out.simulationDuration_ = 5000; //duration of d3 force simulation in miliseconds
+  out.simulationDuration_ = 8000; //duration of d3 force simulation in miliseconds
   //d3-geo
-  out.scale_ = 1000;
+  out.scale_ = null;
   out.rotateX_ = -13;
   out.rotateY_ = -61;
   out.translateX_ = null; //340;
   out.translateY_ = null; //216;
+  out.fitSizePadding_ = 55;
   //viewbox
   out.width_ = 900;
   out.height_ = 700;
@@ -36,6 +42,9 @@ export function dorling(options) {
   //interactivity
   out.zoom_ = true;
   out.animate_ = true;
+  out.loop_ = true;
+  out.pauseButton_ = false;
+  out.showBorders_ = false;
 
   //size legend
   out.sizeLegendTitle_ = "Total population";
@@ -132,7 +141,7 @@ export function dorling(options) {
 
   //e.g. when changing nuts level
   out.rebuild = function () {
-    endTransition();
+    restartTransition();
     out.playing = false;
     out.stage = 1;
 
@@ -156,45 +165,47 @@ export function dorling(options) {
 
 
   out.main = function () {
+    let nutsParam;
+    if (out.nutsLvl_ == 0) {
+      nutsParam = "country"
+    } else {
+      nutsParam = "nuts" + out.nutsLvl_
+    }
     //data promises
     let promises = [];
     promises.push(
       d3.json(
-        `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/4258/nutspt_${out.nutsLvl_}.json`
+        `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/3035/nutspt_${out.nutsLvl_}.json`
       ), //centroids
       d3.json(
-        `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/4258/20M/${out.nutsLvl_}.json`
+        `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/3035/20M/${out.nutsLvl_}.json`
       ), //NUTS
       d3.json(
-        `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/4258/20M/0.json`
+        `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/3035/20M/0.json`
       ), //countries
       d3.json(
-        `https://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/${out.sizeDatasetCode_}?geoLevel=nuts${out.nutsLvl_}&${out.sizeDatasetFilters_}`
+        `https://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/${out.sizeDatasetCode_}?geoLevel=${nutsParam}&${out.sizeDatasetFilters_}`
       ), //sizeData
       d3.json(
-        `https://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/${out.colorDatasetCode_}?geoLevel=nuts${out.nutsLvl_}&${out.colorDatasetFilters_}`
+        `https://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/${out.colorDatasetCode_}?geoLevel=${nutsParam}&${out.colorDatasetFilters_}`
       ) //colorData
     );
 
     Promise.all(promises).then((res) => {
       hideLoadingSpinner();
-      //add play button
-      if (out.animate_) {
-        out.playButton = addPlayButtonToDOM();
-        out.playing = true;
-      }
+
 
       //data loaded
-      out.n2j = res[0];
-      let n2 = res[1];
-      let countries = res[2];
+      out.centroids = res[0];
+      out.n2j = res[1];
+      out.nuts0 = res[2];
 
       let sizeData = res[3];
       let colorData = res[4];
 
-      let nuts = topojson.feature(n2, n2.objects.nutsbn).features;
-      let country = topojson.feature(countries, countries.objects.nutsbn).features;
-      let coastlines = topojson.feature(n2, n2.objects.nutsbn).features;
+      // let nuts = topojson.feature(n2, n2.objects.nutsbn).features;
+      // let country = topojson.feature(countries, countries.objects.nutsbn).features;
+      // let coastlines = topojson.feature(n2, n2.objects.nutsbn).features;
 
       out.sizeIndicator = indexStat(sizeData);
       out.colorIndicator = indexStat(colorData);
@@ -202,18 +213,24 @@ export function dorling(options) {
       out.countryNamesIndex_ = getCountryNamesIndex();
 
       //d3 geo
-      out.projection = d3
-        .geoAzimuthalEqualArea()
-        .rotate([out.rotateX_, out.rotateY_])
-        .fitSize([out.width_, out.height_], out.n2j)
-        .scale(out.scale_);
-      // out.projection = d3.geoIdentity()
-      //   .reflectY(true)
-      //   .fitSize([out.width_, out.height_], nuts2)
-      out.path = d3.geoPath().projection(out.projection);
+      // out.projection = d3
+      //   .geoAzimuthalEqualArea()
+      //   .rotate([out.rotateX_, out.rotateY_])
+      //   .fitSize([out.width_, out.height_], out.n2j)
+      //   .scale(out.scale_);
+      // 
+      out.projection = d3Geo
+        .geoIdentity()
+        .reflectY(true)
+        .fitSize([out.width_ - out.fitSizePadding_, out.height_ - out.fitSizePadding_], topojson.feature(out.n2j, out.n2j.objects.gra))
+      //out.path = d3.geoPath().projection(out.projection);
+      out.path = d3Geo.geoPath().projection(out.projection);
 
       if (out.translateX_ && out.translateY_) {
         out.projection.translate([out.translateX_, out.translateY_]);
+      }
+      if (out.scale_) {
+        out.projection.scale(out.scale_);
       }
 
       // let path = geoPath().projection(
@@ -226,7 +243,6 @@ export function dorling(options) {
       out.extent = d3.extent(Object.values(out.colorIndicator));
       //color scale
       out.colorScale = defineColorScale();
-
       //add countries svg
       // out.countries = out.svg
       //   .selectAll("path")
@@ -237,48 +253,114 @@ export function dorling(options) {
       //   .attr("stroke", "black")
       //   .attr("d", out.path);
 
-      out.countries = out.svg
-        .append("g")
-        //.attr("class", "dorling-boundary")
-        .selectAll("path")
-        .data(country)
-        .enter()
-        .append("path")
-        .attr("stroke", "#404040ff")
-        .attr("fill", "none")
-        .attr("d", out.path)
-
-      out.nuts = out.svg
-        .append("g")
-        .attr("class", "dorling-boundary")
-        .selectAll("path")
-        .data(nuts)
-        .enter()
-        .append("path")
-        .attr("stroke", "#404040ff")
-        .attr("fill", "none")
-        .attr("d", out.path)
-
-      //add coastlines
-      // out.coastL = out.svg
-      //   .append("g")
-      //   .attr("id", "g_coast_margin_cnt")
+      // out.nuts = out.svg
       //   .selectAll("path")
-      //   .data(coastlines)
+      //   .data(nuts)
       //   .enter()
-      //   .filter(function (nuts2) {
-      //     return nuts2.properties.co === "T";
-      //   })
       //   .append("path")
       //   .attr("fill", "white")
-      //   .attr("stroke", "#40404000")
-      //   .attr("d", out.path);
+      //   .attr("stroke", "black")
+      //   .attr("d", out.path)
+
+      // out.countries = out.svg
+      //   .append("g")
+      //   //.attr("class", "dorling-boundary")
+      //   .selectAll("path")
+      //   .data(country)
+      //   .enter()
+      //   .append("path")
+      //   .attr("stroke", "black")
+      //   .attr("fill", "white")
+      //   .attr("d", out.path)
+
+      // out.nuts = out.svg
+      //   .append("g")
+      //   .attr("class", "dorling-boundary")
+      //   .selectAll("path")
+      //   .data(nuts)
+      //   .enter()
+      //   .append("path")
+      //   .attr("stroke", "black")
+      //   .attr("fill", "white")
+      //   .attr("d", out.path)
+
+
+
+      // sea
+      // out.svg
+      //   .append("rect")
+      //   .attr("x", 0)
+      //   .attr("y", 0)
+      //   .attr("width", out.width_ - 50)
+      //   .attr("height", out.height_ - 50)
+      //   .style("fill", "c6efff");
+
+      //coastal margin
+      if (out.coastalMargins_) {
+        out.marginNb = 3;
+        out.margins = []
+        for (let m = out.marginNb; m >= 1; m--) {
+          out.margins.push(out.svg
+            .append("g")
+            .selectAll("path")
+            .data(topojson.feature(out.n2j, out.n2j.objects.nutsbn).features)
+            .enter()
+            .append("path")
+            .attr("d", out.path)
+            //.attr("class", "dorling-cmarg")
+            .attr("fill", "none")
+            .attr("stroke-linecap", "round")
+            .attr("stroke-linejoin", "round")
+            .attr("stroke-width", m * 10 + "px")
+            .attr("stroke", d3.interpolateBlues(1 - Math.sqrt(m / out.marginNb)))
+          );
+        }
+      }
+
+      //draw regions
+      out.nuts = out.svg
+        .append("g")
+        .selectAll("path")
+        .data(topojson.feature(out.n2j, out.n2j.objects.nutsrg).features)
+        .enter()
+        .append("path")
+        //   .filter(function (bn) {
+        //     return bn.properties.co === 'F';
+        //   })
+        .attr("d", out.path)
+        .attr("stroke", "none")
+        .attr("fill", "white")
+
+      out.countries = out.svg
+        .append("g")
+        .selectAll("path")
+        .data(topojson.feature(out.nuts0, out.nuts0.objects.nutsbn).features)
+        .enter()
+        .append("path")
+        .attr("d", out.path)
+        .attr("fill", "none")
+        .attr("stroke-width", "2px")
+        .attr("stroke", "black")
+
+      //draw boundaries
+      out.nutsBorders = out.svg
+        .append("g")
+        .selectAll("path")
+        .data(topojson.feature(out.n2j, out.n2j.objects.nutsbn).features)
+        .enter()
+        .append("path")
+        .filter(function (bn) {
+          return bn.properties.co === 'F';
+        })
+        .attr("d", out.path)
+        .attr("stroke", "#4f4f4f")
+        .attr("fill", "none");
 
       //define region centroids
       out.circles = out.svg
         .append("g")
         .selectAll("circle")
-        .data(out.n2j.features)
+        .data(out.centroids.features)
         .enter()
         .append("circle")
         .attr("cx", (f) => out.projection(f.geometry.coordinates)[0])
@@ -290,8 +372,11 @@ export function dorling(options) {
       addZoom();
       addLegendsToDOM();
 
-
       if (out.animate_) {
+        if (out.pauseButton_) {
+          out.playButton = addPlayButtonToDOM();
+        }
+        out.playing = true;
         out.stage = 1; //current transition number
         animate();
       } else {
@@ -301,6 +386,258 @@ export function dorling(options) {
     });
     return out;
   };
+
+
+
+  function animate() {
+    if (out.stage == 1) {
+      if (out.playing) {
+        setTimeout(function () {
+          out.stage = 1;
+          if (out.playing) {
+            firstTransition();
+            setTimeout(function () {
+              out.stage = 2;
+              //restartTransition();
+            }, 3000);
+          }
+        }, 2000);
+      }
+    }
+
+    // if (out.stage == 1) {
+    //   if (out.playing) {
+    //     setTimeout(function () {
+    //       out.stage = 1;
+    //       if (out.playing) {
+    //         firstTransition();
+    //         setTimeout(function () {
+    //           out.stage = 2;
+    //           //Change circle size and color with population figures
+
+    //           if (out.playing) {
+    //             secondTransition();
+    //             setTimeout(function () {
+    //               out.stage = 3;
+    //               //Dorling cartogram deformation
+
+    //               if (out.playing) {
+    //                 thirdTransition();
+    //                 // setTimeout(function () {
+    //                 //   out.stage = 4;
+    //                 //   //fade in coastlines
+    //                 //   if (out.playing) fourthTransition();
+    //                 // }, 3000);
+    //               }
+    //             }, 3000);
+    //           }
+    //         }, 2000);
+    //       }
+    //     }, 1000);
+    //   }
+    //   return;
+    // } else if (out.stage == 2) {
+    //   if (out.playing) {
+    //     setTimeout(function () {
+    //       out.stage = 2;
+    //       //Change circle size and color with population figures
+    //       if (out.playing) {
+    //         secondTransition();
+    //         setTimeout(function () {
+    //           out.stage = 3;
+    //           //Dorling cartogram deformation
+    //           if (out.playing) {
+    //             thirdTransition();
+    //           }
+    //         }, 2000);
+    //       }
+    //     }, 1000);
+    //   }
+    //   return;
+    // } else if (out.stage == 3) {
+    //   if (out.playing) {
+    //     setTimeout(function () {
+    //       out.stage = 3;
+    //       //Dorling cartogram deformation
+    //       if (out.playing) {
+    //         restartTransition();
+    //       }
+    //     }, 1000);
+    //   }
+    //   return;
+    // }
+  }
+
+  //hide nuts show circles
+  function firstTransition() {
+    //hide nuts
+    if (out.showBorders_) {
+      out.nutsBorders.transition().duration(1000).attr("stroke", "#969696");
+    } else {
+      //out.nuts.transition().duration(1000).attr("stroke", "#1f1f1f00").attr("fill", "none");
+      out.countries.transition().duration(1000).attr("stroke", "#1f1f1f00").attr("fill", "none");
+      if (out.coastalMargins_) {
+
+        out.margins.forEach((margin => {
+          margin.attr("stroke", "#1f1f1f00").attr("stroke-width", "0px");
+        }))
+      }
+
+    }
+
+    //show circles
+    out.circles
+      .transition()
+      .duration(1500)
+      .attr("r", (f) => toRadius(+out.sizeIndicator[f.properties.id]))
+      .attr("fill", (f) => colorFunction(+out.colorIndicator[f.properties.id]))
+      .attr("stroke", "black");
+
+    //TODO show legendds
+    out.legendContainer.transition().duration(1000).attr("opacity", 0.8);
+    out.sizeLegendContainer.transition().duration(1000).attr("opacity", 0.8);
+    //mouse events
+    out.circles.on("mouseover", function (f) {
+      d3.select(this).attr("fill", "purple");
+      out.tooltip.html(`<strong>${f.properties.na}</strong>
+                    (${f.properties.id}) <i>${out.countryNamesIndex_[f.properties.id[0] + f.properties.id[1]]}</i><br>
+                    ${out.tooltipSizeLabel_}: ${out.sizeIndicator[f.properties.id]
+          .toLocaleString("en")
+          .replace(/,/gi, " ")} ${out.tooltipSizeUnit_}<br>
+                      Share of national population: ${(
+          (out.sizeIndicator[f.properties.id] /
+            out.totalsIndex[f.properties.id.substring(0, 2)]) *
+          100
+        ).toFixed(0)} % <br>
+        ${out.tooltipColorLabel_}: <strong>${
+        out.colorIndicator[f.properties.id]
+        } ${out.tooltipColorUnit_}</strong><br>
+                `);
+      let matrix = this.getScreenCTM().translate(
+        +this.getAttribute("cx"),
+        +this.getAttribute("cy")
+      );
+      out.tooltip.style("visibility", "visible");
+      //position + offsets
+      let node = out.tooltip.node();
+      let tooltipWidth = node.offsetWidth;
+      let tooltipHeight = node.offsetHeight;
+      let left = window.pageXOffset + matrix.e + 20;
+      let top = window.pageYOffset + matrix.f - 100;
+      if (left > out.width_ - tooltipWidth) {
+        left = left - (tooltipWidth + 40);
+      }
+      if (top < 0) {
+        top = top + (tooltipHeight + 40);
+      }
+      out.tooltip.style("left", left + "px").style("top", top + "px");
+      // tooltip
+      //   .style("top", d3.event.pageY - 110 + "px")
+      //   .style("left", d3.event.pageX - 120 + "px");
+    });
+    out.circles.on("mouseout", function () {
+      out.tooltip.style("visibility", "hidden");
+      d3.select(this).attr("fill", (f) =>
+        colorFunction(+out.colorIndicator[f.properties.id])
+      );
+    });
+    applyForce();
+  }
+
+  function applyForce() {
+    out.simulation = d3
+      .forceSimulation(out.centroids.features)
+      .force(
+        "x",
+        d3
+          .forceX()
+          .x((f) => out.projection(f.geometry.coordinates)[0])
+          .strength(out.positionStrength_)
+      )
+      .force(
+        "y",
+        d3
+          .forceY()
+          .y((f) => out.projection(f.geometry.coordinates)[1])
+          .strength(out.positionStrength_)
+      )
+      .force(
+        "collide",
+        d3
+          .forceCollide()
+          .radius((f) => toRadius(+out.sizeIndicator[f.properties.id]))
+          .strength(out.collisionStrength_)
+      );
+
+    //set initial position of the circles
+    for (const f of out.centroids.features) {
+      f.x = out.projection(f.geometry.coordinates)[0];
+      f.y = out.projection(f.geometry.coordinates)[1];
+    }
+
+    out.simulation.on("tick", () => {
+      out.circles.attr("cx", (f) => f.x).attr("cy", (f) => f.y);
+    });
+
+    out.simulation.on("end", function () {
+      out.simulation.stop();
+      if (out.loop_) {
+        restartTransition();
+      }
+
+    });
+    // setTimeout(function () {
+    //   out.simulation.stop();
+    //   if (out.playing) {
+    //     restartTransition();
+    //   }
+    // }, out.simulationDuration_)
+    //invalidation.then(() => simulation.stop());
+  }
+
+
+  function restartTransition() {
+    //reset styles and restart animation
+    //fade circles
+    out.circles
+      .transition()
+      .duration(500)
+      .attr("fill", "#40404000")
+      .attr("stroke", "#40404000");
+    // fade-in countries
+    out.nuts
+      .transition()
+      .duration(500)
+      //.attr("stroke", "#404040ff")
+      .attr("fill", "white");
+
+    out.countries.transition().duration(1000).attr("stroke", "#404040ff").attr("fill", "white");
+    if (!out.showBorders_) {
+      if (out.coastalMargins_) {
+        out.margins.forEach((margin, m) => {
+          margin
+            .attr("stroke", "#404040ff")
+            .attr("stroke-width", m * 10 + "px")
+            .attr("stroke", d3.interpolateBlues(1 - Math.sqrt(m / out.marginNb)))
+            .attr("fill", "none")
+            .attr("stroke-linecap", "round")
+            .attr("stroke-linejoin", "round");
+        })
+      }
+    }
+
+
+    setTimeout(function () {
+      //reset circle locations & color
+      out.circles
+        .attr("cx", (f) => out.projection(f.geometry.coordinates)[0])
+        .attr("cy", (f) => out.projection(f.geometry.coordinates)[1])
+        .attr("r", (f) => 0.000055 * Math.sqrt(f.properties.ar));
+      out.stage = 1;
+      animate();
+    }, 1500);
+  }
+
 
   function showDorlingWithoutAnimation() {
     //hide nuts
@@ -361,7 +698,7 @@ export function dorling(options) {
     out.sizeLegendContainer.transition().duration(1000).attr("opacity", 0.8);
     //dorling deformation
     out.simulation = d3
-      .forceSimulation(out.n2j.features)
+      .forceSimulation(out.centroids.features)
       .force(
         "x",
         d3
@@ -385,7 +722,7 @@ export function dorling(options) {
       );
 
     //set initial position of the circles
-    for (const f of out.n2j.features) {
+    for (const f of out.centroids.features) {
       f.x = out.projection(f.geometry.coordinates)[0];
       f.y = out.projection(f.geometry.coordinates)[1];
     }
@@ -397,244 +734,6 @@ export function dorling(options) {
     out.simulation.on("end", function () {
       out.simulation.stop();
     });
-  }
-
-  function animate() {
-    if (out.stage == 1) {
-      if (out.playing) {
-        setTimeout(function () {
-          out.stage = 1;
-          //Show the regions as circles & configure tooltip
-
-          if (out.playing) {
-            firstTransition();
-            setTimeout(function () {
-              out.stage = 2;
-              //Change circle size and color with population figures
-
-              if (out.playing) {
-                secondTransition();
-                setTimeout(function () {
-                  out.stage = 3;
-                  //Dorling cartogram deformation
-
-                  if (out.playing) {
-                    thirdTransition();
-                    // setTimeout(function () {
-                    //   out.stage = 4;
-                    //   //fade in coastlines
-                    //   if (out.playing) fourthTransition();
-                    // }, 3000);
-                  }
-                }, 3000);
-              }
-            }, 2000);
-          }
-        }, 1000);
-      }
-      return;
-    } else if (out.stage == 2) {
-      if (out.playing) {
-        setTimeout(function () {
-          out.stage = 2;
-          //Change circle size and color with population figures
-          if (out.playing) {
-            secondTransition();
-            setTimeout(function () {
-              out.stage = 3;
-              //Dorling cartogram deformation
-              if (out.playing) {
-                thirdTransition();
-                // setTimeout(function () {
-                //   out.stage = 4;
-                //   //fade in coastlines
-                //   if (out.playing) {
-                //     fourthTransition();
-                //   }
-                // }, 2000);
-              }
-            }, 2000);
-          }
-        }, 1000);
-      }
-      return;
-    } else if (out.stage == 3) {
-      if (out.playing) {
-        setTimeout(function () {
-          out.stage = 3;
-          //Dorling cartogram deformation
-          if (out.playing) {
-            endTransition();
-            // setTimeout(function () {
-            //   out.stage = 4;
-            //   //fade in coastlines
-            //   if (out.playing) fourthTransition();
-            // }, 1000);
-          }
-        }, 1000);
-      }
-      return;
-    }
-    // else if (out.stage == 4) {
-    //   if (out.playing) {
-    //     setTimeout(function () {
-    //       out.stage = 4;
-    //       //fade in coastlines
-    //       fourthTransition();
-    //     }, 1);
-    //   }
-    //   return;
-    // }
-  }
-
-  //hide nuts show circles
-  function firstTransition() {
-    //hide nuts
-    out.nuts.transition().duration(1000).attr("stroke", "#40404000");
-
-    //show circles
-    out.circles
-      .transition()
-      .duration(1000)
-      .attr("fill", "#ffffff44")
-      .attr("stroke", "#404040ff");
-    out.circles.on("mouseover", function (f) {
-      d3.select(this).attr("fill", "purple");
-      out.tooltip.html(`<strong>${f.properties.na}</strong>
-                    (${f.properties.id}) <i>${out.countryNamesIndex_[f.properties.id[0] + f.properties.id[1]]}</i><br>
-                    ${out.tooltipSizeLabel_}: ${out.sizeIndicator[f.properties.id]
-          .toLocaleString("en")
-          .replace(/,/gi, " ")} ${out.tooltipSizeUnit_}<br>
-                      Share of national population: ${(
-          (out.sizeIndicator[f.properties.id] /
-            out.totalsIndex[f.properties.id.substring(0, 2)]) *
-          100
-        ).toFixed(0)} % <br>
-        ${out.tooltipColorLabel_}: <strong>${
-        out.colorIndicator[f.properties.id]
-        } ${out.tooltipColorUnit_}</strong><br>
-                `);
-      let matrix = this.getScreenCTM().translate(
-        +this.getAttribute("cx"),
-        +this.getAttribute("cy")
-      );
-      out.tooltip.style("visibility", "visible");
-      //position + offsets
-      let node = out.tooltip.node();
-      let tooltipWidth = node.offsetWidth;
-      let tooltipHeight = node.offsetHeight;
-      let left = window.pageXOffset + matrix.e + 20;
-      let top = window.pageYOffset + matrix.f - 100;
-      if (left > out.width_ - tooltipWidth) {
-        left = left - (tooltipWidth + 40);
-      }
-      if (top < 0) {
-        top = top + (tooltipHeight + 40);
-      }
-      out.tooltip.style("left", left + "px").style("top", top + "px");
-      // tooltip
-      //   .style("top", d3.event.pageY - 110 + "px")
-      //   .style("left", d3.event.pageX - 120 + "px");
-    });
-    out.circles.on("mouseout", function () {
-      out.tooltip.style("visibility", "hidden");
-      d3.select(this).attr("fill", (f) =>
-        colorFunction(+out.colorIndicator[f.properties.id])
-      );
-    });
-  }
-
-
-  //resize & colour circles
-  function secondTransition() {
-    out.circles
-      .transition()
-      .duration(1500)
-      .attr("r", (f) => toRadius(+out.sizeIndicator[f.properties.id]))
-      .attr("fill", (f) => colorFunction(+out.colorIndicator[f.properties.id]))
-      .attr("stroke", "black");
-
-    //TODO show legendds
-    out.legendContainer.transition().duration(1000).attr("opacity", 0.8);
-    out.sizeLegendContainer.transition().duration(1000).attr("opacity", 0.8);
-  }
-
-
-  //d3 simulation of dorling deformation
-  function thirdTransition() {
-    //fade in coastlines/country borders
-    //out.coastL.transition().duration(1000).attr("stroke", "#404040ff");
-    out.countries.transition().duration(1000).attr("stroke", "#404040ff");
-
-    out.simulation = d3
-      .forceSimulation(out.n2j.features)
-      .force(
-        "x",
-        d3
-          .forceX()
-          .x((f) => out.projection(f.geometry.coordinates)[0])
-          .strength(out.positionStrength_)
-      )
-      .force(
-        "y",
-        d3
-          .forceY()
-          .y((f) => out.projection(f.geometry.coordinates)[1])
-          .strength(out.positionStrength_)
-      )
-      .force(
-        "collide",
-        d3
-          .forceCollide()
-          .radius((f) => toRadius(+out.sizeIndicator[f.properties.id]))
-          .strength(out.collisionStrength_)
-      );
-
-    //set initial position of the circles
-    for (const f of out.n2j.features) {
-      f.x = out.projection(f.geometry.coordinates)[0];
-      f.y = out.projection(f.geometry.coordinates)[1];
-    }
-
-    out.simulation.on("tick", () => {
-      out.circles.attr("cx", (f) => f.x).attr("cy", (f) => f.y);
-    });
-
-    out.simulation.on("end", function () {
-      out.simulation.stop();
-    });
-    setTimeout(function () {
-      out.simulation.stop();
-      if (out.playing) {
-        endTransition();
-      }
-    }, out.simulationDuration_)
-    //invalidation.then(() => simulation.stop());
-  }
-  function endTransition() {
-    //reset styles and restart animation
-    //fade circles
-    out.circles
-      .transition()
-      .delay(500)
-      .duration(1000)
-      .attr("fill", "#40404000")
-      .attr("stroke", "#40404000");
-    // fade-in countries
-    out.nuts
-      .transition()
-      .delay(500)
-      .duration(1000)
-      .attr("stroke", "#404040ff");
-    setTimeout(function () {
-      //reset circle locations & color
-      out.circles
-        .attr("cx", (f) => out.projection(f.geometry.coordinates)[0])
-        .attr("cy", (f) => out.projection(f.geometry.coordinates)[1])
-        .attr("r", (f) => 0.000055 * Math.sqrt(f.properties.ar));
-      out.stage = 1;
-      animate();
-    }, 1500);
   }
   function addZoom() {
     //add d3 zoom
@@ -704,7 +803,7 @@ export function dorling(options) {
             d.generatedLabels[d.i].split(d.labelDelimiter)[0] +
             out.legend_.labelUnit
           );
-        else return "≥ " + d.generatedLabels[d.i] + out.legend_.labelUnit;
+        else return d.generatedLabels[d.i] + out.legend_.labelUnit;
       });
     }
 
@@ -833,6 +932,17 @@ export function dorling(options) {
     out.container_.node().appendChild(container);
 
     //radios
+    //0
+    let radio0 = document.createElement("input");
+    radio0.type = "radio";
+    radio0.value = 0;
+    radio0.id = "dorling-nuts-radio0";
+    radio0.name = "dorling-nuts-radios";
+    if (out.nutsLvl_ == 0) radio0.checked = "true";
+    radio0.onclick = nutsRadioEventHandler;
+    let radio0Label = document.createElement("label");
+    radio0Label.for = "dorling-nuts-radio0";
+    radio0Label.innerHTML = "Country"
     //1
     let radio1 = document.createElement("input");
     radio1.type = "radio";
@@ -867,6 +977,9 @@ export function dorling(options) {
     radio3Label.for = "dorling-nuts-radio3";
     radio3Label.innerHTML = "NUTS 3"
 
+    container.appendChild(radio0);
+    container.appendChild(radio0Label);
+    container.appendChild(document.createElement('br'))
     container.appendChild(radio1);
     container.appendChild(radio1Label);
     container.appendChild(document.createElement('br'))
