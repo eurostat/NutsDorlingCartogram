@@ -894,8 +894,8 @@ export function dorling(options) {
     let containerNode = document
       .getElementsByClassName("dorling-legend-container")[0]
     let brect = containerNode.getBoundingClientRect();
-    containerBackground.style("height", brect.height + 20 + "px");
-    containerBackground.style("width", brect.width + 20 + "px");
+    containerBackground.style("height", brect.height + 25 + "px");
+    containerBackground.style("width", brect.width + 25 + "px");
   }
   function addPlayButtonToDOM() {
     let buttonContainer = out.svg
