@@ -605,7 +605,7 @@ export function dorling(options) {
 
     out.simulation.on("end", function () {
       out.simulation.stop();
-      if (out.playing_) {
+      if (out.playing) {
         if (out.loop_) {
           setTimeout(function () {
             restartTransition();
