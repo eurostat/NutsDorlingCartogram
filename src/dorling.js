@@ -907,32 +907,40 @@ export function dorling(options) {
       .attr("class", "dorling-play-button")
       .attr(
         "transform",
-        "translate(" + ((out.width_ / 2) - 50) + "," + (out.height_ - 60) + ")"
+        "translate(" + ((out.width_ / 2) - 22) + "," + (out.height_ - 45) + ")"
       );
     let playBtn = buttonContainer.append("g").style("visibility", "hidden");
     let pauseBtn = buttonContainer.append("g").style("visibility", "visible");
 
     playBtn
       .append("rect")
-      .attr("width", 50)
-      .attr("height", 50)
-      .attr("rx", 4)
+      .attr("width", 38)
+      .attr("height", 38)
+      //.attr("rx", 4)
       .style("fill", out.playButtonFill_);
     playBtn
       .append("path")
       .attr("d", "M15 10 L15 40 L35 25 Z")
-      .style("fill", "white");
+      .style("fill", "white")
+      .attr(
+        "transform",
+        "translate(-5,-5)"
+      )
 
     pauseBtn
       .append("rect")
-      .attr("width", 50)
-      .attr("height", 50)
-      .attr("rx", 4)
+      .attr("width", 39)
+      .attr("height", 40)
+      //.attr("rx", 4)
       .style("fill", out.playButtonFill_);
     pauseBtn
       .append("path")
       .attr("d", "M12,11 L23,11 23,40 12,40 M26,11 L37,11 37,40 26,40")
-      .style("fill", "white");
+      .style("fill", "white")
+      .attr(
+        "transform",
+        "translate(-5,-5)"
+      )
 
     buttonContainer.on("mousedown", function () {
       out.playing = !out.playing;
