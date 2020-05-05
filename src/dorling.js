@@ -19,6 +19,7 @@ export function dorling(options) {
   out.playButtonFill_ = "#777777";
   out.coastalMargins_ = false;
   out.graticule_ = true;
+  out.highlightColor_ = "cyan";
   //d3 force
   out.circleExaggerationFactor_ = 1.2;
   out.collisionPadding_ = 0.1;
@@ -177,6 +178,9 @@ export function dorling(options) {
       d3.json(
         `https://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/${out.colorDatasetCode_}?geoLevel=${nutsParam}&${out.colorDatasetFilters_}`
       ) //colorData
+      // d3.json(
+      //   `https://raw.githubusercontent.com/jhjanicki/Ukraine/master/data/kosova.topojson`
+      // ) //kosovo
     );
 
     Promise.all(promises).then((res) => {
@@ -248,24 +252,40 @@ export function dorling(options) {
 
       //coastal margin
       if (out.coastalMargins_) {
-        out.marginNb = 3;
-        out.margins = []
-        for (let m = out.marginNb; m >= 1; m--) {
-          out.margins.push(out.svg
-            .append("g")
-            .selectAll("path")
-            .data(topojson.feature(out.n2j, out.n2j.objects.nutsbn).features)
-            .enter()
-            .append("path")
-            .attr("d", out.path)
-            //.attr("class", "dorling-cmarg")
-            .attr("fill", "none")
-            .attr("stroke-linecap", "round")
-            .attr("stroke-linejoin", "round")
-            .attr("stroke-width", m * 10 + "px")
-            .attr("stroke", d3.interpolateBlues(1 - Math.sqrt(m / out.marginNb)))
-          );
-        }
+        //define filter for coastal margin
+        out.svg.append("filter").attr("id", "blur").attr("x", "-200%").attr("y", "-200%").attr("width", "400%").attr("height", "400%")
+          .append("feGaussianBlur").attr("in", "SourceGraphic").attr("stdDeviation", "4")
+          ;		//draw coastal margin
+        out.svg.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.cntbn).features).enter()
+          .append("path").attr("d", out.path)
+          .style("fill", "none").style("stroke-width", "5px").style("filter", "url(#blur)").style("stroke-linejoin", "round").style("stroke-linecap", "round")
+          .style("stroke", function (bn) { if (bn.properties.co === "T") return "white"; return "none"; })
+          ;
+        out.svg.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.nutsbn).features).enter()
+          .append("path").attr("d", out.path)
+          .style("fill", "none").style("stroke-width", "5px").style("filter", "url(#blur)").style("stroke-linejoin", "round").style("stroke-linecap", "round")
+          .style("stroke", function (bn) { if (bn.properties.co === "T") return "white"; return "none"; })
+          ;
+
+        //multiple margins
+        // out.marginNb = 3;
+        // out.margins = []
+        // for (let m = out.marginNb; m >= 1; m--) {
+        //   out.margins.push(out.svg
+        //     .append("g")
+        //     .selectAll("path")
+        //     .data(topojson.feature(out.n2j, out.n2j.objects.nutsbn).features)
+        //     .enter()
+        //     .append("path")
+        //     .attr("d", out.path)
+        //     //.attr("class", "dorling-cmarg")
+        //     .attr("fill", "none")
+        //     .attr("stroke-linecap", "round")
+        //     .attr("stroke-linejoin", "round")
+        //     .attr("stroke-width", m * 10 + "px")
+        //     .attr("stroke", d3.interpolateBlues(1 - Math.sqrt(m / out.marginNb)))
+        //   );
+        // }
       }
 
 
@@ -278,6 +298,9 @@ export function dorling(options) {
 
         out.nuts = out.svg.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.nutsrg).features)
           .enter().append("path").attr("d", out.path).attr("class", "nutsrg");
+
+        // out.kosovo = out.svg.append("g").selectAll("path").data(topojson.feature(res[5], res[5].objects.kosovatopo).features)
+        //   .enter().append("path").attr("d", out.path).attr("class", "cntrg");
 
         //draw boundaries
         //countries
@@ -339,13 +362,10 @@ export function dorling(options) {
     if (out.stage == 1) {
       if (out.playing) {
         setTimeout(function () {
-          out.stage = 1;
+          //out.stage = 1;
           if (out.playing) {
             firstTransition();
-            setTimeout(function () {
-              out.stage = 2;
-              //restartTransition();
-            }, 3000);
+            out.stage = 2;
           }
         }, 2000);
       }
@@ -421,6 +441,13 @@ export function dorling(options) {
 
   //hide nuts show circles
   function firstTransition() {
+    //show circles
+    out.circles
+      .transition()
+      .duration(1000)
+      .attr("r", (f) => toRadius(+out.sizeIndicator[f.properties.id]))
+      .attr("fill", (f) => colorFunction(+out.colorIndicator[f.properties.id]))
+      .attr("stroke", "black");
     //hide nuts
     if (out.showBorders_) {
       out.nutsBorders.transition().duration(1000).attr("stroke", "grey");
@@ -430,67 +457,68 @@ export function dorling(options) {
       //out.countries.transition().duration(1000).attr("stroke", "#1f1f1f00").attr("fill", "none");
       if (out.coastalMargins_) {
 
-        out.margins.forEach((margin => {
-          margin.attr("stroke", "#1f1f1f00").attr("stroke-width", "0px");
-        }))
+        if (out.margins) {
+          out.margins.forEach((margin => {
+            margin.attr("stroke", "#1f1f1f00").attr("stroke-width", "0px");
+          }))
+        }
       }
 
     }
 
-    //show circles
-    out.circles
-      .transition()
-      .duration(1500)
-      .attr("r", (f) => toRadius(+out.sizeIndicator[f.properties.id]))
-      .attr("fill", (f) => colorFunction(+out.colorIndicator[f.properties.id]))
-      .attr("stroke", "black");
 
-    //TODO show legendds
+
+    // show legends
     out.legendContainer.transition().duration(1000).attr("opacity", 0.9);
     out.sizeLegendContainer.transition().duration(1000).attr("opacity", 0.9);
+    out.radioContainer.transition().duration(1000).attr("opacity", 0.9);
 
     //mouse events
     out.circles.on("mouseover", function (f) {
-      d3.select(this).attr("fill", "purple");
-      out.tooltip.html(`<strong>${f.properties.na}</strong>
+      if (out.stage == 2) {
+        d3.select(this).attr("fill", out.highlightColor_);
+        out.tooltip.html(`<strong>${f.properties.na}</strong>
                     (${f.properties.id}) <i>${out.countryNamesIndex_[f.properties.id[0] + f.properties.id[1]]}</i><br>
                     ${out.tooltipSizeLabel_}: ${formatNumber(out.sizeIndicator[f.properties.id])} ${out.tooltipSizeUnit_}<br>
                       Share of national population: ${(
-          (out.sizeIndicator[f.properties.id] /
-            out.totalsIndex[f.properties.id.substring(0, 2)]) *
-          100
-        ).toFixed(0)} % <br>
+            (out.sizeIndicator[f.properties.id] /
+              out.totalsIndex[f.properties.id.substring(0, 2)]) *
+            100
+          ).toFixed(0)} % <br>
         ${out.tooltipColorLabel_}: <strong>${
-        formatNumber(parseInt(out.colorIndicator[f.properties.id]))
-        } ${out.tooltipColorUnit_}</strong><br>
+          formatNumber(parseInt(out.colorIndicator[f.properties.id]))
+          } ${out.tooltipColorUnit_}</strong><br>
                 `);
-      let matrix = this.getScreenCTM().translate(
-        +this.getAttribute("cx"),
-        +this.getAttribute("cy")
-      );
-      out.tooltip.style("visibility", "visible");
-      //position + offsets
-      let node = out.tooltip.node();
-      let tooltipWidth = node.offsetWidth;
-      let tooltipHeight = node.offsetHeight;
-      let left = window.pageXOffset + matrix.e + 20;
-      let top = window.pageYOffset + matrix.f - 100;
-      if (left > out.width_ - tooltipWidth) {
-        left = left - (tooltipWidth + 40);
+        let matrix = this.getScreenCTM().translate(
+          +this.getAttribute("cx"),
+          +this.getAttribute("cy")
+        );
+        out.tooltip.style("visibility", "visible");
+        //position + offsets
+        let node = out.tooltip.node();
+        let tooltipWidth = node.offsetWidth;
+        let tooltipHeight = node.offsetHeight;
+        let left = window.pageXOffset + matrix.e + 20;
+        let top = window.pageYOffset + matrix.f - 100;
+        if (left > out.width_ - tooltipWidth) {
+          left = left - (tooltipWidth + 40);
+        }
+        if (top < 0) {
+          top = top + (tooltipHeight + 40);
+        }
+        out.tooltip.style("left", left + "px").style("top", top + "px");
+        // tooltip
+        //   .style("top", d3.event.pageY - 110 + "px")
+        //   .style("left", d3.event.pageX - 120 + "px");
       }
-      if (top < 0) {
-        top = top + (tooltipHeight + 40);
-      }
-      out.tooltip.style("left", left + "px").style("top", top + "px");
-      // tooltip
-      //   .style("top", d3.event.pageY - 110 + "px")
-      //   .style("left", d3.event.pageX - 120 + "px");
     });
     out.circles.on("mouseout", function () {
-      out.tooltip.style("visibility", "hidden");
-      d3.select(this).attr("fill", (f) =>
-        colorFunction(+out.colorIndicator[f.properties.id])
-      );
+      if (out.stage == 2) {
+        out.tooltip.style("visibility", "hidden");
+        d3.select(this).attr("fill", (f) =>
+          colorFunction(+out.colorIndicator[f.properties.id])
+        );
+      }
     });
     applyForce();
   }
@@ -558,6 +586,7 @@ export function dorling(options) {
 
 
   function restartTransition() {
+    out.stage = 1;
     //reset styles and restart animation
     //fade circles
     out.circles
@@ -576,16 +605,20 @@ export function dorling(options) {
 
     //out.countries.transition().duration(1000).attr("stroke", "#404040ff").attr("fill", "white");
     if (!out.showBorders_) {
+      //hide coastal margins
       if (out.coastalMargins_) {
-        out.margins.forEach((margin, m) => {
-          margin
-            .attr("stroke", "#404040ff")
-            .attr("stroke-width", m * 10 + "px")
-            .attr("stroke", d3.interpolateBlues(1 - Math.sqrt(m / out.marginNb)))
-            .attr("fill", "none")
-            .attr("stroke-linecap", "round")
-            .attr("stroke-linejoin", "round");
-        })
+        if (out.margins) {
+          out.margins.forEach((margin, m) => {
+            margin
+              .attr("stroke", "#404040ff")
+              .attr("stroke-width", m * 10 + "px")
+              .attr("stroke", d3.interpolateBlues(1 - Math.sqrt(m / out.marginNb)))
+              .attr("fill", "none")
+              .attr("opacity", "0.6")
+              .attr("stroke-linecap", "round")
+              .attr("stroke-linejoin", "round");
+          })
+        }
       }
     } else {
       out.nutsBorders.transition().duration(1000).attr("stroke", "black");
@@ -598,7 +631,7 @@ export function dorling(options) {
       //   .attr("cx", (f) => out.projection(f.geometry.coordinates)[0])
       //   .attr("cy", (f) => out.projection(f.geometry.coordinates)[1])
       //   .attr("r", (f) => 0.000055 * Math.sqrt(f.properties.ar));
-      out.stage = 1;
+
       animate();
     }, 1500);
   }
@@ -614,7 +647,7 @@ export function dorling(options) {
       .attr("stroke", "black");
     //tooltip
     out.circles.on("mouseover", function (f) {
-      d3.select(this).attr("fill", "purple");
+      d3.select(this).attr("fill", out.highlightColor_);
       out.tooltip.html(`<strong>${f.properties.na}</strong>
                   (${f.properties.id}) <i>${out.countryNamesIndex_[f.properties.id[0] + f.properties.id[1]]}</i><br>
                   ${out.tooltipSizeLabel_}: ${formatNumber(out.sizeIndicator[f.properties.id])}
@@ -660,6 +693,7 @@ export function dorling(options) {
     //show legends
     out.legendContainer.transition().duration(1000).attr("opacity", 0.9);
     out.sizeLegendContainer.transition().duration(1000).attr("opacity", 0.9);
+    out.radioContainer.transition().duration(1000).attr("opacity", 0.9);
     //dorling deformation
     out.simulation = d3
       .forceSimulation(out.centroids.features)
@@ -905,8 +939,8 @@ export function dorling(options) {
   function addNutsSelectorToDOM() {
     let radioWidth = 30;
     let radioHeight = 30;
-    let radioRadius = 10;
-    let radioDotRadius = 7;
+    let radioRadius = 8;
+    let radioDotRadius = 6;
     let padding = 0;//vertical padding between radios
     let marginTop = 40;
     let marginLeft = 30;
@@ -916,25 +950,26 @@ export function dorling(options) {
 
 
     //main container
-    let radioContainer = out.svg
+    out.radioContainer = out.svg
       .append("g")
       .attr("class", "dorling-nuts-selector-container dorling-plugin")
+      .attr("opacity", 0)
     //"translate(" + (out.width_ - 200) + "," + (out.height_ / 2) + ")"
 
     //background
-    radioContainer
+    out.radioContainer
       .append("rect")
       .attr("class", "dorling-legend-container-background dorling-plugin")
       .style("height", backgroundHeight)
       .attr("transform", "translate(0,0)");
 
     //title
-    radioContainer.append("text")
+    out.radioContainer.append("text")
       .text("Geographic Level")
       .attr("transform", "translate(" + (marginLeft - 5) + ",20)");
 
     //RADIO 0
-    let radio0 = radioContainer.append("g")
+    let radio0 = out.radioContainer.append("g")
       .attr("fill", "currentColor")
       .attr("class", "dorling-radio-button")
       .attr("preserveAspectRatio", "xMidYMid meet")
@@ -964,7 +999,7 @@ export function dorling(options) {
       .attr("transform", "translate(25,10)");
 
     //RADIO 1
-    let radio1 = radioContainer.append("g")
+    let radio1 = out.radioContainer.append("g")
       .attr("fill", "currentColor")
       .attr("class", "dorling-radio-button")
       .attr("preserveAspectRatio", "xMidYMid meet")
@@ -994,7 +1029,7 @@ export function dorling(options) {
       .attr("transform", "translate(25,10)");
 
     //RADIO 2
-    let radio2 = radioContainer.append("g")
+    let radio2 = out.radioContainer.append("g")
       .attr("fill", "currentColor")
       .attr("class", "dorling-radio-button")
       .attr("preserveAspectRatio", "xMidYMid meet")
@@ -1024,7 +1059,7 @@ export function dorling(options) {
       .attr("transform", "translate(25,10)");
 
     //RADIO 3
-    let radio3 = radioContainer.append("g")
+    let radio3 = out.radioContainer.append("g")
       .attr("fill", "currentColor")
       .attr("class", "dorling-radio-button")
       .attr("preserveAspectRatio", "xMidYMid meet")
