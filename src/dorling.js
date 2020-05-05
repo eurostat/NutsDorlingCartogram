@@ -31,8 +31,8 @@ export function dorling(options) {
   out.scale_ = null;
   out.rotateX_ = -13;
   out.rotateY_ = -61;
-  out.translateX_ = null; //340;
-  out.translateY_ = null; //216;
+  out.translateX_ = -470; //340;
+  out.translateY_ = 1015; //216;
   out.fitSizePadding_ = 0;
   //viewbox
   out.width_ = 900;

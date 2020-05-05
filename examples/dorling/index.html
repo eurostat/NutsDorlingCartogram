@@ -19,7 +19,6 @@
             .width(900)
             .height(700)
             .nutsLevel(2)
-            //.colorScheme("interpolateRdYlBu")
             .colors(["#2d50a0", "#6487c3", "#aab9e1", "#f0cd91", "#e6a532", "#d76e2d"])
             .thresholdValues([-15, -10, 0, 10, 15, 20])
             .zoom(false)
@@ -29,9 +28,7 @@
             .colorDatasetFilters("indic_de=GROWRT&time=2018")
             .circleExaggerationFactor(1.9)
             .positionStrength(0.5)
-            .positionStrength(0.5)
             .legend({
-                //https://d3-legend.susielu.com/#color
                 titleWidth: 170,
                 title: "Population change 2018 (per 1 000 inhabitants)",
                 orient: "vertical",
@@ -55,11 +52,6 @@
             .seaColor("white")
             .tooltipColorLabel("Population change per 1 000 inhabitants")
             .tooltipSizeLabel("Total population")
-            //.scale(0.1)
-            // .rotateX(-10)
-            // .rotateY(-61)
-            .translateX(-470)
-            .translateY(1015)
             .build();
     </script>
 </body>
