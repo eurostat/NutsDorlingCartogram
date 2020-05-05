@@ -18,7 +18,7 @@
 .cntbn {
   fill: none;
   stroke-width: 1px;
-  stroke: black;
+  stroke: none;
 }
 .nutsbn {
   fill: none;
@@ -31,6 +31,7 @@
 
 .dorling-container {
 position:relative;
+font-family: 'Open Sans', "Helvetica Neue", Arial,"Noto Sans",sans-serif
 }
 .dorling-tooltip {
   box-shadow: 0 3px 14px rgba(0, 0, 0, 0.4);
@@ -46,51 +47,30 @@ position:relative;
   fill:white;
 }
 
-/* .dorling-tooltip:after {
-  right: 100%;
-  top: 35%;
-  border: solid transparent;
-  content: " ";
-  height: 0;
-  width: 0;
-  position: absolute;
-  pointer-events: none;
-  border-color: rgba(255, 255, 255, 0);
-  border-right-color: #ffffff;
-  border-width: 10px;
-  margin-top: -10px;
-} */
 .dorling-plugin{
-  width:187px !important;
+  width:192px !important;
 }
-.dorling-nuts-selector-container{
-  /* text-align:right; */
-  /* background-color: #ffffffa3; */
-  background-color:#ffffffc4;
-  opacity:0.8;
-  padding:10px;
-  position: absolute;
-  top: 315px;
-  right: 4px;
-  width:159px;
-}
+
 
 .dorling-legend-container {
   width: 175px;
   height: 177px;
-  transform: translate(708px,10px);
+  transform: translate(77%,1%);
 }
 .dorling-size-legend {
   width: 175px;
   height: 100px;
-  transform: translate(708px,215px);
+  transform: translate(77%,30%);
   pointer-events: none;
+}
+circle.swatch {
+  stroke: black;
 }
 .dorling-legend-container-background {
   width: 177px;
   height: 110px;
   fill: white;
-  opacity: 0.7;
+  opacity: 0.9;
 }
 .dorling-play-button {
   border: 0;
@@ -153,4 +133,29 @@ position:relative;
     height: 72px;
     opacity: 0;
   }
+}
+
+
+.dorling-nuts-selector-container{
+  background-color:#ffffffc4;
+  padding:10px;
+  /* position: absolute;
+  top: 315px;
+  right: 4px;
+  width:159px; */
+  transform:translate(77%,46.5%);
+}
+
+/* //svg radio buttons  */
+.dorling-radio-button {
+  font-size: 1rem;
+  display: -webkit-box;
+  display: flex;
+  -webkit-box-align: center;
+          align-items: center;
+          cursor:pointer;
+}
+
+.dorling-radio-dot{
+  fill:black
 }

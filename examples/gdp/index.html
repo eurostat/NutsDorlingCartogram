@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dorling cartogram example</title>
+</head>
+
+<body>
+    <div id="containerDiv" style="max-width:90vh; height:700px">
+
+    </div>
+    <script src="https://d3js.org/d3-format.v1.min.js"></script>
+    <script src="../../build/dorling.js"></script>
+    <script>
+        NutsDorlingCartogram.dorling()
+            .containerId("containerDiv")
+            .width(900)
+            .height(700)
+            .nutsLevel(2)
+            //.colorScheme("interpolateRdYlBu")
+            .colors(["#2d50a0", "#6487c3", "#aab9e1", "#f0cd91", "#e6a532", "#d76e2d"])
+            .thresholdValues([40000, 50000, 60000, 70000, 80000, 100000])
+            .showNutsSelector(true)
+            .zoom(false)
+            .sizeDatasetCode("demo_r_pjangrp3")
+            .sizeDatasetFilters("sex=T&age=TOTAL&unit=NR&time=2018")
+            .colorDatasetCode("nama_10r_2gdp")
+            .colorDatasetFilters("&precision=1&unit=MIO_EUR&time=2018")
+            .circleExaggerationFactor(1.1)
+            .positionStrength(0.5)
+            .positionStrength(0.5)
+            .legend({
+                //https://d3-legend.susielu.com/#color
+                titleWidth: 170,
+                title: "GDP (million euro) 2018",
+                orient: "vertical",
+                shape: "rect",
+                shapeRadius: 10,
+                shapePadding: 5,
+                locale: {
+                    "decimal": "\u066b",
+                    "thousands": " ",
+                    "grouping": [3],
+                    "currency": ["", " \u062f\u002e\u0625\u002e"],
+                    "numerals": ["\u0660", "\u0661", "\u0662", "\u0663", "\u0664", "\u0665", "\u0666", "\u0667", "\u0668", "\u0669"]
+                },
+                labelAlign: "middle",
+                labelFormat: d3.format(".0f"),
+                labelUnit: " ",
+                labelOffset: 10,
+                shape: "circle",
+                //cells: 10,
+            })
+            .coastalMargins(false)
+            .graticule(false)
+            .animate(true)
+            .loop(true)
+            .pauseButton(true)
+            .showBorders(true)
+            .sizeLegendTitle("Total population")
+            .sizeLegendTitleYOffset(-5)
+            .backgroundColor("lightblue")
+            .tooltipColorLabel("GDP (million euro)")
+            .tooltipSizeLabel("Total population")
+            //.scale(0.1)
+            // .rotateX(-10)
+            // .rotateY(-61)
+            .translateX(-470)
+            .translateY(1015)
+            .build();
+    </script>
+</body>
+
+</html>

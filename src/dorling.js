@@ -67,6 +67,13 @@ export function dorling(options) {
     labelAlign: "middle",
     labelOffset: 10,
     labelFormat: d3.format(".1f"),
+    locale: {
+      "decimal": "\u066b",
+      "thousands": " ",
+      "grouping": [3],
+      "currency": ["", " \u062f\u002e\u0625\u002e"],
+      "numerals": ["\u0660", "\u0661", "\u0662", "\u0663", "\u0664", "\u0665", "\u0666", "\u0667", "\u0668", "\u0669"]
+    },
     labelFontSize: 15,
     labelDelimiter: " to ",
     labelUnit: " ",
@@ -77,18 +84,19 @@ export function dorling(options) {
   };
 
   //tooltip html
-  out.tooltipColorLabel_ = "Population change per 1000 persons";
-  out.tooltipSizeLabel_ = "Total population";
+  out.tooltipColorLabel_ = "Colour value: ";
+  out.tooltipSizeLabel_ = "Size value: ";
   out.tooltipColorUnit_ = "";
   out.tooltipSizeUnit_ = "";
 
   //data params
-  out.nutsLvl_ = 2;
+  out.nutsLevel_ = 2;
   out.showNutsSelector_ = true;
   out.sizeDatasetCode_ = "demo_r_pjangrp3";
   out.sizeDatasetFilters_ = "sex=T&age=TOTAL&unit=NR&time=2018";
   out.colorDatasetCode_ = "demo_r_gind3";
   out.colorDatasetFilters_ = "indic_de=GROWRT&time=2018";
+  out.exclude_ = null; //list of country codes to exclude from the data
 
   //animation loop
   out.playing = true;
@@ -146,19 +154,19 @@ export function dorling(options) {
 
   out.main = function () {
     let nutsParam;
-    if (out.nutsLvl_ == 0) {
+    if (out.nutsLevel_ == 0) {
       nutsParam = "country"
     } else {
-      nutsParam = "nuts" + out.nutsLvl_
+      nutsParam = "nuts" + out.nutsLevel_
     }
     //data promises
     let promises = [];
     promises.push(
       d3.json(
-        `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/3035/nutspt_${out.nutsLvl_}.json`
+        `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/3035/nutspt_${out.nutsLevel_}.json`
       ), //centroids
       d3.json(
-        `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/3035/20M/${out.nutsLvl_}.json`
+        `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/3035/20M/${out.nutsLevel_}.json`
       ), //NUTS
       d3.json(
         `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/3035/20M/0.json`
@@ -206,31 +214,15 @@ export function dorling(options) {
       if (!out.tooltip) {
         out.tooltip = addTooltipToDOM();
       }
-      if (out.showNutsSelector_ && !out.nutsSelector) {
-        out.nutsSelector = true;
-        addNutsSelectorToDOM();
-      }
 
 
-      //d3 geo
-      // out.projection = d3
-      //   .geoAzimuthalEqualArea()
-      //   .rotate([out.rotateX_, out.rotateY_])
-      //   .fitSize([out.width_, out.height_], out.n2j)
-      //   .scale(out.scale_);
-      // 
+      // d3-geo
       out.projection = d3Geo
         .geoIdentity()
         .reflectY(true)
-        .fitExtent([[0, 0], [out.width_ + out.fitSizePadding_, out.height_ + out.fitSizePadding_]], topojson.feature(out.n2j, out.n2j.objects.nutsrg))
+        .fitExtent([[25, 25], [out.width_ + out.fitSizePadding_, out.height_ + out.fitSizePadding_]], topojson.feature(out.n2j, out.n2j.objects.nutsrg))
       //out.path = d3.geoPath().projection(out.projection);
       out.path = d3Geo.geoPath().projection(out.projection);
-
-      out.graticuleProjection = d3Geo
-        .geoIdentity()
-        .reflectY(true)
-        .fitSize([out.width_, out.height_], topojson.feature(out.n2j, out.n2j.objects.gra))
-      out.graticulePath = d3Geo.geoPath().projection(out.graticuleProjection);
 
       if (out.translateX_ && out.translateY_) {
         out.projection.translate([out.translateX_, out.translateY_]);
@@ -238,68 +230,18 @@ export function dorling(options) {
       if (out.scale_) {
         out.projection.scale(out.scale_);
       }
-      // let path = geoPath().projection(
-      //   geoIdentity()
-      //     .reflectY(true)
-      //     .fitSize([out.width_, out.height_], n2j)
-      // );
 
       //d3 scale
       out.extent = d3.extent(Object.values(out.colorIndicator));
       //color scale
       out.colorScale = defineColorScale();
-      //add countries svg
-      // out.countries = out.svg
-      //   .selectAll("path")
-      //   .data(nuts2)
-      //   .enter()
-      //   .append("path")
-      //   .attr("fill", "white")
-      //   .attr("stroke", "black")
-      //   .attr("d", out.path);
 
-      // out.nuts = out.svg
-      //   .selectAll("path")
-      //   .data(nuts)
-      //   .enter()
-      //   .append("path")
-      //   .attr("fill", "white")
-      //   .attr("stroke", "black")
-      //   .attr("d", out.path)
-
-      // out.countries = out.svg
-      //   .append("g")
-      //   //.attr("class", "dorling-boundary")
-      //   .selectAll("path")
-      //   .data(country)
-      //   .enter()
-      //   .append("path")
-      //   .attr("stroke", "black")
-      //   .attr("fill", "white")
-      //   .attr("d", out.path)
-
-      // out.nuts = out.svg
-      //   .append("g")
-      //   .attr("class", "dorling-boundary")
-      //   .selectAll("path")
-      //   .data(nuts)
-      //   .enter()
-      //   .append("path")
-      //   .attr("stroke", "black")
-      //   .attr("fill", "white")
-      //   .attr("d", out.path)
-
-
-
-      // sea
-      // out.svg
-      //   .append("rect")
-      //   .attr("x", 0)
-      //   .attr("y", 0)
-      //   .attr("width", out.width_ - 50)
-      //   .attr("height", out.height_ - 50)
-      //   .style("fill", "c6efff");
       if (out.graticule_) {
+        out.graticuleProjection = d3Geo
+          .geoIdentity()
+          .reflectY(true)
+          .fitSize([out.width_, out.height_], topojson.feature(out.n2j, out.n2j.objects.gra))
+        out.graticulePath = d3Geo.geoPath().projection(out.graticuleProjection);
         out.graticule = out.svg.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.gra).features)
           .enter().append("path").attr("d", out.graticulePath).attr("class", "dorling-graticule");
       }
@@ -326,18 +268,6 @@ export function dorling(options) {
         }
       }
 
-
-
-      // out.countries = out.svg
-      //   .append("g")
-      //   .selectAll("path")
-      //   .data(topojson.feature(out.n2j, out.n2j.objects.cntrg).features)
-      //   .enter()
-      //   .append("path")
-      //   .attr("d", out.path)
-      //   .attr("fill", "none")
-      //   .attr("stroke-width", "2px")
-      //   .attr("stroke", "black")
       //draw regions
       out.countries = out.svg.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.cntrg).features)
         .enter().append("path").attr("d", out.path).attr("class", "cntrg");
@@ -362,19 +292,6 @@ export function dorling(options) {
       //   // + (bn.properties.lvl == 3 ? " thin" : "");
       // })
 
-      // out.nutsBorders = out.svg
-      //   .append("g")
-      //   .selectAll("path")
-      //   .data(topojson.feature(out.n2j, out.n2j.objects.nutsbn).features)
-      //   .enter()
-      //   .append("path")
-      //   .filter(function (bn) {
-      //     return bn.properties.co === 'F';
-      //   })
-      //   .attr("d", out.path)
-      //   .attr("stroke", "#4f4f4f")
-      //   .attr("fill", "none");
-
       //define region centroids
       out.circles = out.svg
         .append("g")
@@ -390,6 +307,10 @@ export function dorling(options) {
 
       addZoom();
       addLegendsToDOM();
+      if (out.showNutsSelector_ && !out.nutsSelector) {
+        //out.nutsSelector = true;
+        addNutsSelectorToDOM();
+      }
 
       if (out.animate_) {
         if (out.pauseButton_) {
@@ -499,7 +420,7 @@ export function dorling(options) {
       out.nutsBorders.transition().duration(1000).attr("stroke", "grey");
     } else {
       //out.nuts.transition().duration(1000).attr("stroke", "#1f1f1f00").attr("fill", "none");
-      out.countries.transition().duration(1000).attr("stroke", "#1f1f1f00").attr("fill", "none");
+      //out.countries.transition().duration(1000).attr("stroke", "#1f1f1f00").attr("fill", "none");
       if (out.coastalMargins_) {
 
         out.margins.forEach((margin => {
@@ -518,8 +439,9 @@ export function dorling(options) {
       .attr("stroke", "black");
 
     //TODO show legendds
-    out.legendContainer.transition().duration(1000).attr("opacity", 0.8);
-    out.sizeLegendContainer.transition().duration(1000).attr("opacity", 0.8);
+    out.legendContainer.transition().duration(1000).attr("opacity", 0.9);
+    out.sizeLegendContainer.transition().duration(1000).attr("opacity", 0.9);
+
     //mouse events
     out.circles.on("mouseover", function (f) {
       d3.select(this).attr("fill", "purple");
@@ -639,7 +561,7 @@ export function dorling(options) {
       //.attr("stroke", "#404040ff")
       .attr("fill", "white");
 
-    out.countries.transition().duration(1000).attr("stroke", "#404040ff").attr("fill", "white");
+    //out.countries.transition().duration(1000).attr("stroke", "#404040ff").attr("fill", "white");
     if (!out.showBorders_) {
       if (out.coastalMargins_) {
         out.margins.forEach((margin, m) => {
@@ -724,8 +646,8 @@ export function dorling(options) {
     });
 
     //show legends
-    out.legendContainer.transition().duration(1000).attr("opacity", 0.8);
-    out.sizeLegendContainer.transition().duration(1000).attr("opacity", 0.8);
+    out.legendContainer.transition().duration(1000).attr("opacity", 0.9);
+    out.sizeLegendContainer.transition().duration(1000).attr("opacity", 0.9);
     //dorling deformation
     out.simulation = d3
       .forceSimulation(out.centroids.features)
@@ -791,7 +713,7 @@ export function dorling(options) {
     out.legendContainer = out.svg
       .append("g")
       .attr("class", "dorling-legend-container dorling-plugin")
-      .attr("transform", "translate(" + out.legend_.x + "," + out.legend_.y + ")")
+      //.attr("transform", "translate(" + out.legend_.x + "," + out.legend_.y + ")")
       .attr("opacity", 0);
     let containerBackground = out.legendContainer
       .append("rect")
@@ -802,6 +724,8 @@ export function dorling(options) {
       .append("g")
       .attr("class", "dorling-color-legend")
       .attr("transform", "translate(20,20)");
+
+    //d3.formatDefaultLocale(out.legend_.locale);
 
     let legend = legendColor()
       //.useClass(true)
@@ -820,21 +744,29 @@ export function dorling(options) {
       legend.cells(out.legend_.cells);
     }
     if (out.colors_) {
-      legend.labels(function (d) {
-        if (d.i === 0)
-          return (
-            "< " +
-            d.generatedLabels[d.i].split(d.labelDelimiter)[1] +
-            out.legend_.labelUnit
-          );
-        else if (d.i === d.genLength - 1)
-          return (
-            "≥ " +
-            d.generatedLabels[d.i].split(d.labelDelimiter)[0] +
-            out.legend_.labelUnit
-          );
-        else return d.generatedLabels[d.i] + out.legend_.labelUnit;
-      });
+      if (out.legend_.labels) {
+        legend.labels(out.legend_.labels)
+      } else {
+        legend.labels(function (d) {
+          if (d.i === 0)
+            return (
+              "< " +
+              d.generatedLabels[d.i].split(d.labelDelimiter)[1] +
+              out.legend_.labelUnit
+            );
+          else if (d.i === d.genLength - 1)
+            return (
+              "≥ " +
+              d.generatedLabels[d.i].split(d.labelDelimiter)[0] +
+              out.legend_.labelUnit
+            );
+          else return d.generatedLabels[d.i] + out.legend_.labelUnit;
+        });
+      }
+    } else {
+      if (out.legend_.labels) {
+        legend.labels(out.legend_.labels)
+      }
     }
 
     if (out.legend_.shape == "circle")
@@ -845,8 +777,8 @@ export function dorling(options) {
     //circle size legend
     out.sizeLegendContainer = out.svg
       .append("g")
-      .attr("class", "dorling-size-legend")
-      .attr("transform", "translate(0," + (out.height_ - 100) + ")")
+      .attr("class", "dorling-size-legend dorling-plugin")
+      //.attr("transform", "translate(0," + (out.height_ - 100) + ")")
       .attr("opacity", 0);
     let sizeLegendBackground = out.sizeLegendContainer
       .append("rect")
@@ -891,7 +823,8 @@ export function dorling(options) {
       .attr("x", 30)
       .attr("dy", "1.3em")
       .text((d) => {
-        return d.toLocaleString("en").replace(/,/gi, " ");
+        return d / 1000000 + " million"
+        //return d.toLocaleString("en").replace(/,/gi, " ");
       });
 
     //adjust legend bacgkround box height
@@ -958,78 +891,270 @@ export function dorling(options) {
     return buttonContainer;
   }
   function addNutsSelectorToDOM() {
-    let container = document.createElement("div");
-    container.classList.add("dorling-nuts-selector-container");
-    let title = document.createElement("div");
-    title.innerHTML = "Geographic level <br>"
-    title.style.marginBottom = "6px";
-    container.appendChild(title);
-    out.container_.node().appendChild(container);
+    let radioWidth = 30;
+    let radioHeight = 30;
+    let radioRadius = 10;
+    let radioDotRadius = 7;
+    let padding = 0;//vertical padding between radios
+    let marginTop = 40;
+    let marginLeft = 30;
+    let radioCxy = 5;
+    let backgroundHeight = 160;
 
-    //radios
-    //0
-    let radio0 = document.createElement("input");
-    radio0.type = "radio";
-    radio0.value = 0;
-    radio0.id = "dorling-nuts-radio0";
-    radio0.name = "dorling-nuts-radios";
-    if (out.nutsLvl_ == 0) radio0.checked = "true";
-    radio0.onclick = nutsRadioEventHandler;
-    let radio0Label = document.createElement("label");
-    radio0Label.for = "dorling-nuts-radio0";
-    radio0Label.innerHTML = "Country"
-    //1
-    let radio1 = document.createElement("input");
-    radio1.type = "radio";
-    radio1.value = 1;
-    radio1.id = "dorling-nuts-radio1";
-    radio1.name = "dorling-nuts-radios";
-    if (out.nutsLvl_ == 1) radio1.checked = "true";
-    radio1.onclick = nutsRadioEventHandler;
-    let radio1Label = document.createElement("label");
-    radio1Label.for = "dorling-nuts-radio1";
-    radio1Label.innerHTML = "NUTS 1"
-    //2
-    let radio2 = document.createElement("input");
-    radio2.type = "radio";
-    radio2.value = 2;
-    radio2.id = "dorling-nuts-radio2";
-    radio2.name = "dorling-nuts-radios";
-    if (out.nutsLvl_ == 2) radio2.checked = "true";
-    radio2.onclick = nutsRadioEventHandler;
-    let radio2Label = document.createElement("label");
-    radio2Label.for = "dorling-nuts-radio2";
-    radio2Label.innerHTML = "NUTS 2"
-    //3
-    let radio3 = document.createElement("input");
-    radio3.type = "radio";
-    radio3.value = 3;
-    radio3.id = "dorling-nuts-radio3";
-    radio3.name = "dorling-nuts-radios";
-    if (out.nutsLvl_ == 3) radio3.checked = "true";
-    radio3.onclick = nutsRadioEventHandler;
-    let radio3Label = document.createElement("label");
-    radio3Label.for = "dorling-nuts-radio3";
-    radio3Label.innerHTML = "NUTS 3"
 
-    container.appendChild(radio0);
-    container.appendChild(radio0Label);
-    container.appendChild(document.createElement('br'))
-    container.appendChild(radio1);
-    container.appendChild(radio1Label);
-    container.appendChild(document.createElement('br'))
-    container.appendChild(radio2);
-    container.appendChild(radio2Label);
-    container.appendChild(document.createElement('br'))
-    container.appendChild(radio3);
-    container.appendChild(radio3Label);
-    container.appendChild(document.createElement('br'))
+    //main container
+    let radioContainer = out.svg
+      .append("g")
+      .attr("class", "dorling-nuts-selector-container dorling-plugin")
+    //"translate(" + (out.width_ - 200) + "," + (out.height_ / 2) + ")"
+
+    //background
+    radioContainer
+      .append("rect")
+      .attr("class", "dorling-legend-container-background dorling-plugin")
+      .style("height", backgroundHeight)
+      .attr("transform", "translate(0,0)");
+
+    //title
+    radioContainer.append("text")
+      .text("Geographic Level")
+      .attr("transform", "translate(" + (marginLeft - 5) + ",20)");
+
+    //RADIO 0
+    let radio0 = radioContainer.append("g")
+      .attr("fill", "currentColor")
+      .attr("class", "dorling-radio-button")
+      .attr("preserveAspectRatio", "xMidYMid meet")
+      .attr("height", "" + radioHeight + "px")
+      .attr("width", "" + radioWidth + "px")
+      .attr("viewBox", "0 0 " + radioWidth + " " + radioHeight + "")
+      .attr("transform", "translate(" + marginLeft + "," + marginTop + ")");
+
+    radio0.append("circle")
+      .attr("class", "dorling-radio-outline")
+      .attr("cx", "" + radioCxy + "")
+      .attr("cy", "" + radioCxy + "")
+      .attr("r", "" + radioRadius + "")
+      .attr("fill", "none")
+      .attr("stroke", "black")
+      .attr("stroke-width", "3")
+
+    let dot0 = radio0.append("circle")
+      .attr("opacity", "0.5")
+      .attr("cx", "" + radioCxy + "")
+      .attr("cy", "" + radioCxy + "")
+      .attr("r", "" + radioDotRadius + "")
+      .attr("class", "dorling-radio-dot")
+
+    let label0 = radio0.append("text")
+      .text("Country")
+      .attr("transform", "translate(25,10)");
+
+    //RADIO 1
+    let radio1 = radioContainer.append("g")
+      .attr("fill", "currentColor")
+      .attr("class", "dorling-radio-button")
+      .attr("preserveAspectRatio", "xMidYMid meet")
+      .attr("height", "" + radioHeight + "px")
+      .attr("width", "" + radioWidth + "px")
+      .attr("viewBox", "0 0 " + radioWidth + " " + radioHeight + "")
+      .attr("transform", "translate(" + marginLeft + "," + (radioHeight + padding + marginTop) + ")");
+
+    radio1.append("circle")
+      .attr("class", "dorling-radio-outline")
+      .attr("cx", "" + radioCxy + "")
+      .attr("cy", "" + radioCxy + "")
+      .attr("r", "" + radioRadius + "")
+      .attr("fill", "none")
+      .attr("stroke", "black")
+      .attr("stroke-width", "3")
+
+    let dot1 = radio1.append("circle")
+      .attr("opacity", "0.5")
+      .attr("cx", "" + radioCxy + "")
+      .attr("cy", "" + radioCxy + "")
+      .attr("r", "" + radioDotRadius + "")
+      .attr("class", "dorling-radio-dot")
+
+    let label1 = radio1.append("text")
+      .text("NUTS 1")
+      .attr("transform", "translate(25,10)");
+
+    //RADIO 2
+    let radio2 = radioContainer.append("g")
+      .attr("fill", "currentColor")
+      .attr("class", "dorling-radio-button")
+      .attr("preserveAspectRatio", "xMidYMid meet")
+      .attr("height", "" + radioHeight + "px")
+      .attr("width", "" + radioWidth + "px")
+      .attr("viewBox", "0 0 " + radioWidth + " " + radioHeight + "")
+      .attr("transform", "translate(" + marginLeft + "," + (radioHeight * 2 + padding * 2 + marginTop) + ")")
+
+    radio2.append("circle")
+      .attr("class", "dorling-radio-outline")
+      .attr("cx", "" + radioCxy + "")
+      .attr("cy", "" + radioCxy + "")
+      .attr("r", "" + radioRadius + "")
+      .attr("fill", "none")
+      .attr("stroke", "black")
+      .attr("stroke-width", "3")
+
+    let dot2 = radio2.append("circle")
+      .attr("opacity", "0.5")
+      .attr("cx", "" + radioCxy + "")
+      .attr("cy", "" + radioCxy + "")
+      .attr("r", "" + radioDotRadius + "")
+      .attr("class", "dorling-radio-dot")
+
+    let label2 = radio2.append("text")
+      .text("NUTS 2")
+      .attr("transform", "translate(25,10)");
+
+    //RADIO 3
+    let radio3 = radioContainer.append("g")
+      .attr("fill", "currentColor")
+      .attr("class", "dorling-radio-button")
+      .attr("preserveAspectRatio", "xMidYMid meet")
+      .attr("height", "" + radioHeight + "px")
+      .attr("width", "" + radioWidth + "px")
+      .attr("viewBox", "0 0 " + radioWidth + " " + radioHeight + "")
+      .attr("transform", "translate(" + marginLeft + "," + (radioHeight * 3 + padding * 3 + marginTop) + ")")
+
+    radio3.append("circle")
+      .attr("class", "dorling-radio-outline")
+      .attr("cx", "" + radioCxy + "")
+      .attr("cy", "" + radioCxy + "")
+      .attr("r", "" + radioRadius + "")
+      .attr("fill", "none")
+      .attr("stroke", "black")
+      .attr("stroke-width", "3")
+
+    let dot3 = radio3.append("circle")
+      .attr("opacity", "0.5")
+      .attr("cx", "" + radioCxy + "")
+      .attr("cy", "" + radioCxy + "")
+      .attr("r", "" + radioDotRadius + "")
+      .attr("class", "dorling-radio-dot")
+
+    let label3 = radio3.append("text")
+      .text("NUTS 3")
+      .attr("transform", "translate(25,10)");
+
+    //current nutsLevel
+    if (out.nutsLevel_ == 0) {
+      dot0.attr("opacity", "1");
+    } else if (out.nutsLevel_ == 1) {
+      dot1.attr("opacity", "1");
+    } else if (out.nutsLevel_ == 2) {
+      dot2.attr("opacity", "1");
+    } else if (out.nutsLevel_ == 3) {
+      dot3.attr("opacity", "1");
+    }
+
+
+    radio0.on("click", function (e) {
+      dot0.attr("opacity", "1");
+      dot1.attr("opacity", "0.5");
+      dot2.attr("opacity", "0.5");
+      dot3.attr("opacity", "0.5");
+      nutsRadioEventHandler(0)
+    });
+    radio1.on("click", function (e) {
+      dot0.attr("opacity", "0.5");
+      dot1.attr("opacity", "1");
+      dot2.attr("opacity", "0.5");
+      dot3.attr("opacity", "0.5");
+      nutsRadioEventHandler(1)
+    });
+    radio2.on("click", function (e) {
+      dot0.attr("opacity", "0.5");
+      dot1.attr("opacity", "0.5");
+      dot2.attr("opacity", "1");
+      dot3.attr("opacity", "0.5");
+      nutsRadioEventHandler(2)
+    });
+    radio3.on("click", function (e) {
+      dot0.attr("opacity", "0.5");
+      dot1.attr("opacity", "0.5");
+      dot2.attr("opacity", "0.5");
+      dot3.attr("opacity", "1");
+      nutsRadioEventHandler(3)
+    });
+
+
+    //HTML
+    // let container = document.createElement("div");
+    // container.classList.add("dorling-nuts-selector-container");
+    // let title = document.createElement("div");
+    // title.innerHTML = "Geographic level <br>"
+    // title.style.marginBottom = "6px";
+    // container.appendChild(title);
+    // out.container_.node().appendChild(container);
+
+    // //radios
+    // //0
+    // let radio0 = document.createElement("input");
+    // radio0.type = "radio";
+    // radio0.value = 0;
+    // radio0.id = "dorling-nuts-radio0";
+    // radio0.name = "dorling-nuts-radios";
+    // if (out.nutsLevel_ == 0) radio0.checked = "true";
+    // radio0.onclick = nutsRadioEventHandler;
+    // let radio0Label = document.createElement("label");
+    // radio0Label.for = "dorling-nuts-radio0";
+    // radio0Label.innerHTML = "Country"
+    // //1
+    // let radio1 = document.createElement("input");
+    // radio1.type = "radio";
+    // radio1.value = 1;
+    // radio1.id = "dorling-nuts-radio1";
+    // radio1.name = "dorling-nuts-radios";
+    // if (out.nutsLevel_ == 1) radio1.checked = "true";
+    // radio1.onclick = nutsRadioEventHandler;
+    // let radio1Label = document.createElement("label");
+    // radio1Label.for = "dorling-nuts-radio1";
+    // radio1Label.innerHTML = "NUTS 1"
+    // //2
+    // let radio2 = document.createElement("input");
+    // radio2.type = "radio";
+    // radio2.value = 2;
+    // radio2.id = "dorling-nuts-radio2";
+    // radio2.name = "dorling-nuts-radios";
+    // if (out.nutsLevel_ == 2) radio2.checked = "true";
+    // radio2.onclick = nutsRadioEventHandler;
+    // let radio2Label = document.createElement("label");
+    // radio2Label.for = "dorling-nuts-radio2";
+    // radio2Label.innerHTML = "NUTS 2"
+    // //3
+    // let radio3 = document.createElement("input");
+    // radio3.type = "radio";
+    // radio3.value = 3;
+    // radio3.id = "dorling-nuts-radio3";
+    // radio3.name = "dorling-nuts-radios";
+    // if (out.nutsLevel_ == 3) radio3.checked = "true";
+    // radio3.onclick = nutsRadioEventHandler;
+    // let radio3Label = document.createElement("label");
+    // radio3Label.for = "dorling-nuts-radio3";
+    // radio3Label.innerHTML = "NUTS 3"
+
+    // container.appendChild(radio0);
+    // container.appendChild(radio0Label);
+    // container.appendChild(document.createElement('br'))
+    // container.appendChild(radio1);
+    // container.appendChild(radio1Label);
+    // container.appendChild(document.createElement('br'))
+    // container.appendChild(radio2);
+    // container.appendChild(radio2Label);
+    // container.appendChild(document.createElement('br'))
+    // container.appendChild(radio3);
+    // container.appendChild(radio3Label);
+    // container.appendChild(document.createElement('br'))
   }
 
-  function nutsRadioEventHandler(evt) {
-    let nuts = evt.currentTarget.value;
-    if (out.nutsLvl_ !== nuts) {
-      out.nutsLvl_ = nuts;
+  function nutsRadioEventHandler(nuts) {
+    // let nuts = evt.currentTarget.value;
+    if (out.nutsLevel_ !== nuts) {
+      out.nutsLevel_ = nuts;
       out.rebuild();
     }
   }
@@ -1053,7 +1178,8 @@ export function dorling(options) {
       return d3
         .scaleThreshold()
         .domain(out.thresholdValues_)
-        .range(out.colors_);
+        .range(out.colors_)
+        .unknown("#ccc")
     } else {
       if (out.thresholdValues_) {
         return d3
@@ -1062,6 +1188,7 @@ export function dorling(options) {
           .interpolator(d3[out.colorScheme_]);
         //.range();
       } else {
+        //default
         return d3
           .scaleDivergingSymlog((t) => d3[out.colorScheme_](1 - t))
           .domain([out.extent[0], out.extent[1] / 2, out.extent[1]])
