@@ -573,8 +573,10 @@ export function dorling(options) {
     if (out.playing) {
       if (out.loop_) {
         setTimeout(function () {
-          out.simulation.stop();
-          restartTransition();
+          if (out.playing) {
+            out.simulation.stop();
+            restartTransition();
+          }
         }, 8000)
       }
     }
