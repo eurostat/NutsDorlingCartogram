@@ -565,16 +565,17 @@ export function dorling(options) {
     });
 
     out.simulation.on("end", function () {
-      out.simulation.stop();
-      if (out.playing) {
-        if (out.loop_) {
-          setTimeout(function () {
-            restartTransition();
-          }, 1000)
-        }
-      }
-
+      // out.simulation.stop();
     });
+
+    if (out.playing) {
+      if (out.loop_) {
+        setTimeout(function () {
+          out.simulation.stop();
+          restartTransition();
+        }, 8000)
+      }
+    }
     // setTimeout(function () {
     //   out.simulation.stop();
     //   if (out.playing) {
