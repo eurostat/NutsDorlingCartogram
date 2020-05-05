@@ -565,7 +565,9 @@ export function dorling(options) {
     });
 
     out.simulation.on("end", function () {
-      // out.simulation.stop();
+      if (!out.loop_) {
+        out.simulation.stop();
+      }
     });
 
     if (out.playing) {
