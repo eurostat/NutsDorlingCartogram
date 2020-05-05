@@ -11,7 +11,7 @@
   <div id="containerDiv" style="max-width:90vh; height:700px">
 
   </div>
-
+  <script src="https://d3js.org/d3-format.v1.min.js"></script>
   <script src="../../build/dorling.js"></script>
   <script>
     NutsDorlingCartogram.dorling()
@@ -42,7 +42,7 @@
         labelUnit: " ",
         labelOffset: 10,
         shape: "square",
-        //cells: 10,
+        labelFormat: d3.format(".0f")
       })
       .coastalMargins(false)
       .graticule(false)
@@ -52,14 +52,14 @@
       .showBorders(true)
       .sizeLegendTitle("Total population")
       .sizeLegendTitleYOffset(-5)
-      .backgroundColor("lightblue")
+      .seaColor("lightblue")
       .tooltipColorLabel("Population change per 1 000 inhabitants")
       .tooltipSizeLabel("Total population")
       //.scale(0.1)
       // .rotateX(-10)
       // .rotateY(-61)
-      .translateX(210)
-      // .translateY(850)
+      .translateX(-470)
+      .translateY(1015)
       .build();
   </script>
 </body>

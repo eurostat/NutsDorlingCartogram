@@ -15,7 +15,7 @@ export function dorling(options) {
   //default values
   out.containerId_ = "";
   //styles
-  out.backgroundColor_ = "aliceblue";
+  out.seaColor_ = "aliceblue";
   out.playButtonFill_ = "#777777";
   out.coastalMargins_ = false;
   out.graticule_ = true;
@@ -207,7 +207,7 @@ export function dorling(options) {
       out.svg
         .attr("viewBox", [0, 0, out.width_, out.height_])
         .attr("id", "dorling-svg")
-        .style("background-color", out.backgroundColor_)
+        .style("background-color", out.seaColor_)
       out.container_.node().appendChild(out.svg.node());
       out.container_.attr("class", "dorling-container");
       // initialize tooltip
@@ -268,23 +268,29 @@ export function dorling(options) {
         }
       }
 
-      //draw regions
-      out.countries = out.svg.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.cntrg).features)
-        .enter().append("path").attr("d", out.path).attr("class", "cntrg");
+
 
       //nuts
-      out.nuts = out.svg.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.nutsrg).features)
-        .enter().append("path").attr("d", out.path).attr("class", "nutsrg");
+      if (out.showBorders_) {
+        //draw regions
+        out.countries = out.svg.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.cntrg).features)
+          .enter().append("path").attr("d", out.path).attr("class", "cntrg");
 
-      //draw boundaries
-      //countries
-      out.countryBorders = out.svg.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.cntbn).features)
-        .enter().append("path").attr("d", out.path)
-        .attr("class", function (bn) { return "cntbn" + (bn.properties.co === "T" ? " coastal" : ""); });
+        out.nuts = out.svg.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.nutsrg).features)
+          .enter().append("path").attr("d", out.path).attr("class", "nutsrg");
+
+        //draw boundaries
+        //countries
+        out.countryBorders = out.svg.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.cntbn).features)
+          .enter().append("path").attr("d", out.path)
+          .attr("class", function (bn) { return "cntbn" + (bn.properties.co === "T" ? " coastal" : ""); });
+
+      }
       //nuts
       out.nutsBorders = out.svg.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.nutsbn).features)
         .enter().append("path").attr("d", out.path)
         .attr("stroke", "black").attr("fill", "none")
+
       // .attr("class", function (bn) {
       //   return "nutsbn" + bn.properties.co === "T" ? " coastal" : ""
       //   // return "nutsbn" + (bn.properties.co === "T" ? " coastal" : "")
@@ -419,6 +425,7 @@ export function dorling(options) {
     if (out.showBorders_) {
       out.nutsBorders.transition().duration(1000).attr("stroke", "grey");
     } else {
+      out.nutsBorders.transition().duration(1000).attr("stroke", "#1f1f1f00");
       //out.nuts.transition().duration(1000).attr("stroke", "#1f1f1f00").attr("fill", "none");
       //out.countries.transition().duration(1000).attr("stroke", "#1f1f1f00").attr("fill", "none");
       if (out.coastalMargins_) {
@@ -447,16 +454,14 @@ export function dorling(options) {
       d3.select(this).attr("fill", "purple");
       out.tooltip.html(`<strong>${f.properties.na}</strong>
                     (${f.properties.id}) <i>${out.countryNamesIndex_[f.properties.id[0] + f.properties.id[1]]}</i><br>
-                    ${out.tooltipSizeLabel_}: ${out.sizeIndicator[f.properties.id]
-          .toLocaleString("en")
-          .replace(/,/gi, " ")} ${out.tooltipSizeUnit_}<br>
+                    ${out.tooltipSizeLabel_}: ${formatNumber(out.sizeIndicator[f.properties.id])} ${out.tooltipSizeUnit_}<br>
                       Share of national population: ${(
           (out.sizeIndicator[f.properties.id] /
             out.totalsIndex[f.properties.id.substring(0, 2)]) *
           100
         ).toFixed(0)} % <br>
         ${out.tooltipColorLabel_}: <strong>${
-        out.colorIndicator[f.properties.id]
+        formatNumber(parseInt(out.colorIndicator[f.properties.id]))
         } ${out.tooltipColorUnit_}</strong><br>
                 `);
       let matrix = this.getScreenCTM().translate(
@@ -488,6 +493,12 @@ export function dorling(options) {
       );
     });
     applyForce();
+  }
+
+  function formatNumber(n) {
+    return n
+      .toLocaleString("en")
+      .replace(/,/gi, " ")
   }
 
   function applyForce() {
@@ -555,11 +566,13 @@ export function dorling(options) {
       .attr("fill", "#40404000")
       .attr("stroke", "#40404000");
     // fade-in countries
-    out.nuts
-      .transition()
-      .duration(500)
-      //.attr("stroke", "#404040ff")
-      .attr("fill", "white");
+    if (out.nuts) {
+      out.nuts
+        .transition()
+        .duration(500)
+        //.attr("stroke", "#404040ff")
+        .attr("fill", "white");
+    }
 
     //out.countries.transition().duration(1000).attr("stroke", "#404040ff").attr("fill", "white");
     if (!out.showBorders_) {
@@ -581,10 +594,10 @@ export function dorling(options) {
 
     setTimeout(function () {
       //reset circle locations & color
-      out.circles
-        .attr("cx", (f) => out.projection(f.geometry.coordinates)[0])
-        .attr("cy", (f) => out.projection(f.geometry.coordinates)[1])
-        .attr("r", (f) => 0.000055 * Math.sqrt(f.properties.ar));
+      // out.circles
+      //   .attr("cx", (f) => out.projection(f.geometry.coordinates)[0])
+      //   .attr("cy", (f) => out.projection(f.geometry.coordinates)[1])
+      //   .attr("r", (f) => 0.000055 * Math.sqrt(f.properties.ar));
       out.stage = 1;
       animate();
     }, 1500);
@@ -604,9 +617,8 @@ export function dorling(options) {
       d3.select(this).attr("fill", "purple");
       out.tooltip.html(`<strong>${f.properties.na}</strong>
                   (${f.properties.id}) <i>${out.countryNamesIndex_[f.properties.id[0] + f.properties.id[1]]}</i><br>
-                  ${out.tooltipSizeLabel_}: ${out.sizeIndicator[f.properties.id]
-          .toLocaleString("en")
-          .replace(/,/gi, " ")} ${out.tooltipSizeUnit_}<br>
+                  ${out.tooltipSizeLabel_}: ${formatNumber(out.sizeIndicator[f.properties.id])}
+           ${out.tooltipSizeUnit_}<br>
                     Share of national population: ${(
           (out.sizeIndicator[f.properties.id] /
             out.totalsIndex[f.properties.id.substring(0, 2)]) *
@@ -900,6 +912,7 @@ export function dorling(options) {
     let marginLeft = 30;
     let radioCxy = 5;
     let backgroundHeight = 160;
+    let radioDotOpacity = 0.3;
 
 
     //main container
@@ -940,7 +953,7 @@ export function dorling(options) {
       .attr("stroke-width", "3")
 
     let dot0 = radio0.append("circle")
-      .attr("opacity", "0.5")
+      .attr("opacity", radioDotOpacity)
       .attr("cx", "" + radioCxy + "")
       .attr("cy", "" + radioCxy + "")
       .attr("r", "" + radioDotRadius + "")
@@ -970,7 +983,7 @@ export function dorling(options) {
       .attr("stroke-width", "3")
 
     let dot1 = radio1.append("circle")
-      .attr("opacity", "0.5")
+      .attr("opacity", radioDotOpacity)
       .attr("cx", "" + radioCxy + "")
       .attr("cy", "" + radioCxy + "")
       .attr("r", "" + radioDotRadius + "")
@@ -1000,7 +1013,7 @@ export function dorling(options) {
       .attr("stroke-width", "3")
 
     let dot2 = radio2.append("circle")
-      .attr("opacity", "0.5")
+      .attr("opacity", radioDotOpacity)
       .attr("cx", "" + radioCxy + "")
       .attr("cy", "" + radioCxy + "")
       .attr("r", "" + radioDotRadius + "")
@@ -1030,7 +1043,7 @@ export function dorling(options) {
       .attr("stroke-width", "3")
 
     let dot3 = radio3.append("circle")
-      .attr("opacity", "0.5")
+      .attr("opacity", radioDotOpacity)
       .attr("cx", "" + radioCxy + "")
       .attr("cy", "" + radioCxy + "")
       .attr("r", "" + radioDotRadius + "")
@@ -1054,29 +1067,29 @@ export function dorling(options) {
 
     radio0.on("click", function (e) {
       dot0.attr("opacity", "1");
-      dot1.attr("opacity", "0.5");
-      dot2.attr("opacity", "0.5");
-      dot3.attr("opacity", "0.5");
+      dot1.attr("opacity", radioDotOpacity);
+      dot2.attr("opacity", radioDotOpacity);
+      dot3.attr("opacity", radioDotOpacity);
       nutsRadioEventHandler(0)
     });
     radio1.on("click", function (e) {
-      dot0.attr("opacity", "0.5");
+      dot0.attr("opacity", radioDotOpacity);
       dot1.attr("opacity", "1");
-      dot2.attr("opacity", "0.5");
-      dot3.attr("opacity", "0.5");
+      dot2.attr("opacity", radioDotOpacity);
+      dot3.attr("opacity", radioDotOpacity);
       nutsRadioEventHandler(1)
     });
     radio2.on("click", function (e) {
-      dot0.attr("opacity", "0.5");
-      dot1.attr("opacity", "0.5");
+      dot0.attr("opacity", radioDotOpacity);
+      dot1.attr("opacity", radioDotOpacity);
       dot2.attr("opacity", "1");
-      dot3.attr("opacity", "0.5");
+      dot3.attr("opacity", radioDotOpacity);
       nutsRadioEventHandler(2)
     });
     radio3.on("click", function (e) {
-      dot0.attr("opacity", "0.5");
-      dot1.attr("opacity", "0.5");
-      dot2.attr("opacity", "0.5");
+      dot0.attr("opacity", radioDotOpacity);
+      dot1.attr("opacity", radioDotOpacity);
+      dot2.attr("opacity", radioDotOpacity);
       dot3.attr("opacity", "1");
       nutsRadioEventHandler(3)
     });

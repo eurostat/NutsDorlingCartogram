@@ -60,8 +60,13 @@ font-family: 'Open Sans', "Helvetica Neue", Arial,"Noto Sans",sans-serif
 .dorling-size-legend {
   width: 175px;
   height: 100px;
-  transform: translate(77%,30%);
+  transform: translate(77%,31%);
   pointer-events: none;
+}
+.dorling-nuts-selector-container{
+  background-color:#ffffffc4;
+  padding:10px;
+  transform:translate(77%,46.5%);
 }
 circle.swatch {
   stroke: black;
@@ -136,15 +141,7 @@ circle.swatch {
 }
 
 
-.dorling-nuts-selector-container{
-  background-color:#ffffffc4;
-  padding:10px;
-  /* position: absolute;
-  top: 315px;
-  right: 4px;
-  width:159px; */
-  transform:translate(77%,46.5%);
-}
+
 
 /* //svg radio buttons  */
 .dorling-radio-button {
