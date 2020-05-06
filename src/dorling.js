@@ -177,18 +177,32 @@ export function dorling(options) {
       ), //sizeData
       d3.json(
         `https://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/${out.colorDatasetCode_}?geoLevel=${nutsParam}&${out.colorDatasetFilters_}`
-      ) //colorData
-      // d3.json(
-      //   `https://raw.githubusercontent.com/jhjanicki/Ukraine/master/data/kosova.topojson`
-      // ) //kosovo
+      ), //colorData
+      d3.json(
+        `https://ec.europa.eu/eurostat/statistical-atlas/gis/arcgis/rest/services/Basemaps/StatAtlas_Continents/MapServer/0/query?where=1%3D1&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=3035&having=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&queryByDistance=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&f=geojson`
+      ) //kosovo
     );
 
     Promise.all(promises).then((res) => {
       hideLoadingSpinner();
+      //stop previous simulation
+      if (out.simulation) {
+        out.simulation.stop()
+        out.forceInProgress = false;
+      }
 
-
-      //data loaded
       out.centroids = res[0];
+      //remove excluded country codes from centroids feature array
+      if (out.exclude_) {
+        let newFeatures = [];
+        out.centroids.features.forEach((f) => {
+          if (out.exclude_.indexOf(f.properties.id.substring(0, 2)) == -1) {
+            newFeatures.push(f);
+          }
+        });
+        out.centroids.features = newFeatures;
+      }
+
       out.n2j = res[1];
       out.nuts0 = res[2];
 
@@ -218,7 +232,6 @@ export function dorling(options) {
       if (!out.tooltip) {
         out.tooltip = addTooltipToDOM();
       }
-
 
       // d3-geo
       out.projection = d3Geo
@@ -253,19 +266,37 @@ export function dorling(options) {
       //coastal margin
       if (out.coastalMargins_) {
         //define filter for coastal margin
-        out.svg.append("filter").attr("id", "blur").attr("x", "-200%").attr("y", "-200%").attr("width", "400%").attr("height", "400%")
-          .append("feGaussianBlur").attr("in", "SourceGraphic").attr("stdDeviation", "4")
+        out.svg.append("filter").attr("id", "coastal_blur").attr("x", "-200%").attr("y", "-200%").attr("width", "400%").attr("height", "400%")
+          .append("feGaussianBlur").attr("in", "SourceGraphic").attr("stdDeviation", "14")
           ;		//draw coastal margin
-        out.svg.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.cntbn).features).enter()
-          .append("path").attr("d", out.path)
-          .style("fill", "none").style("stroke-width", "5px").style("filter", "url(#blur)").style("stroke-linejoin", "round").style("stroke-linecap", "round")
-          .style("stroke", function (bn) { if (bn.properties.co === "T") return "white"; return "none"; })
-          ;
-        out.svg.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.nutsbn).features).enter()
-          .append("path").attr("d", out.path)
-          .style("fill", "none").style("stroke-width", "5px").style("filter", "url(#blur)").style("stroke-linejoin", "round").style("stroke-linecap", "round")
-          .style("stroke", function (bn) { if (bn.properties.co === "T") return "white"; return "none"; })
-          ;
+
+        //draw coastal margin
+        var cg = out.svg.append("g").attr("id", "g_coast_margin")
+          .style("fill", "none")
+          .style("stroke-width", 12)
+          .style("stroke", "white")
+          .style("filter", "url(#coastal_blur)")
+          .style("stroke-linejoin", "round")
+          .style("stroke-linecap", "round");
+        //countries bn
+        cg.append("g").attr("id", "g_coast_margin_cnt")
+          .selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.cntbn)).enter().filter(function (bn) { return bn.properties.co === "T"; })
+          .append("path").attr("d", out.path);
+        //nuts bn
+        cg.append("g").attr("id", "g_coast_margin_nuts")
+          .selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.nutsbn)).enter().filter(function (bn) { return bn.properties.co === "T"; })
+          .append("path").attr("d", out.path);
+
+        // out.svg.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.cntbn).features).enter()
+        //   .append("path").attr("d", out.path)
+        //   .style("fill", "none").style("stroke-width", "14").style("filter", "url(#blur)").style("stroke-linejoin", "round").style("stroke-linecap", "round")
+        //   .style("stroke", function (bn) { if (bn.properties.co === "T") return "white"; return "none"; })
+        //   ;
+        // out.svg.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.nutsbn).features).enter()
+        //   .append("path").attr("d", out.path)
+        //   .style("fill", "none").style("stroke-width", "14").style("filter", "url(#blur)").style("stroke-linejoin", "round").style("stroke-linecap", "round")
+        //   .style("stroke", function (bn) { if (bn.properties.co === "T") return "white"; return "none"; })
+        //   ;
 
         //multiple margins
         // out.marginNb = 3;
@@ -299,9 +330,6 @@ export function dorling(options) {
         out.nuts = out.svg.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.nutsrg).features)
           .enter().append("path").attr("d", out.path).attr("class", "nutsrg");
 
-        // out.kosovo = out.svg.append("g").selectAll("path").data(topojson.feature(res[5], res[5].objects.kosovatopo).features)
-        //   .enter().append("path").attr("d", out.path).attr("class", "cntrg");
-
         //draw boundaries
         //countries
         out.countryBorders = out.svg.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.cntbn).features)
@@ -313,6 +341,9 @@ export function dorling(options) {
       out.nutsBorders = out.svg.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.nutsbn).features)
         .enter().append("path").attr("d", out.path)
         .attr("stroke", "black").attr("fill", "none")
+
+      out.kosovo = out.svg.append("g").selectAll("path").data(res[5].features)
+        .enter().append("path").attr("d", out.path).attr("class", "kosovo").attr("stroke", "lightgray");
 
       // .attr("class", function (bn) {
       //   return "nutsbn" + bn.properties.co === "T" ? " coastal" : ""
@@ -336,6 +367,7 @@ export function dorling(options) {
 
       addZoom();
       addLegendsToDOM();
+      addMouseEvents();
       if (out.showNutsSelector_ && !out.nutsSelector) {
         //out.nutsSelector = true;
         addNutsSelectorToDOM();
@@ -351,129 +383,11 @@ export function dorling(options) {
       } else {
         showDorlingWithoutAnimation();
       }
-
     });
     return out;
   };
 
-
-
-  function animate() {
-    if (out.stage == 1) {
-      if (out.playing) {
-        setTimeout(function () {
-          //out.stage = 1;
-          if (out.playing) {
-            firstTransition();
-            out.stage = 2;
-          }
-        }, 2000);
-      }
-    } else if (out.stage == 2) {
-      if (out.playing) {
-        out.stage = 1;
-        restartTransition();
-      }
-    }
-
-    // if (out.stage == 1) {
-    //   if (out.playing) {
-    //     setTimeout(function () {
-    //       out.stage = 1;
-    //       if (out.playing) {
-    //         firstTransition();
-    //         setTimeout(function () {
-    //           out.stage = 2;
-    //           //Change circle size and color with population figures
-
-    //           if (out.playing) {
-    //             secondTransition();
-    //             setTimeout(function () {
-    //               out.stage = 3;
-    //               //Dorling cartogram deformation
-
-    //               if (out.playing) {
-    //                 thirdTransition();
-    //                 // setTimeout(function () {
-    //                 //   out.stage = 4;
-    //                 //   //fade in coastlines
-    //                 //   if (out.playing) fourthTransition();
-    //                 // }, 3000);
-    //               }
-    //             }, 3000);
-    //           }
-    //         }, 2000);
-    //       }
-    //     }, 1000);
-    //   }
-    //   return;
-    // } else if (out.stage == 2) {
-    //   if (out.playing) {
-    //     setTimeout(function () {
-    //       out.stage = 2;
-    //       //Change circle size and color with population figures
-    //       if (out.playing) {
-    //         secondTransition();
-    //         setTimeout(function () {
-    //           out.stage = 3;
-    //           //Dorling cartogram deformation
-    //           if (out.playing) {
-    //             thirdTransition();
-    //           }
-    //         }, 2000);
-    //       }
-    //     }, 1000);
-    //   }
-    //   return;
-    // } else if (out.stage == 3) {
-    //   if (out.playing) {
-    //     setTimeout(function () {
-    //       out.stage = 3;
-    //       //Dorling cartogram deformation
-    //       if (out.playing) {
-    //         restartTransition();
-    //       }
-    //     }, 1000);
-    //   }
-    //   return;
-    // }
-  }
-
-  //hide nuts show circles
-  function firstTransition() {
-    //show circles
-    out.circles
-      .transition()
-      .duration(1000)
-      .attr("r", (f) => toRadius(+out.sizeIndicator[f.properties.id]))
-      .attr("fill", (f) => colorFunction(+out.colorIndicator[f.properties.id]))
-      .attr("stroke", "black");
-    //hide nuts
-    if (out.showBorders_) {
-      out.nutsBorders.transition().duration(1000).attr("stroke", "grey");
-    } else {
-      out.nutsBorders.transition().duration(1000).attr("stroke", "#1f1f1f00");
-      //out.nuts.transition().duration(1000).attr("stroke", "#1f1f1f00").attr("fill", "none");
-      //out.countries.transition().duration(1000).attr("stroke", "#1f1f1f00").attr("fill", "none");
-      if (out.coastalMargins_) {
-
-        if (out.margins) {
-          out.margins.forEach((margin => {
-            margin.attr("stroke", "#1f1f1f00").attr("stroke-width", "0px");
-          }))
-        }
-      }
-
-    }
-
-
-
-    // show legends
-    out.legendContainer.transition().duration(1000).attr("opacity", 0.9);
-    out.sizeLegendContainer.transition().duration(1000).attr("opacity", 0.9);
-    out.radioContainer.transition().duration(1000).attr("opacity", 0.9);
-
-    //mouse events
+  function addMouseEvents() {
     out.circles.on("mouseover", function (f) {
       if (out.stage == 2) {
         d3.select(this).attr("fill", out.highlightColor_);
@@ -507,9 +421,6 @@ export function dorling(options) {
           top = top + (tooltipHeight + 40);
         }
         out.tooltip.style("left", left + "px").style("top", top + "px");
-        // tooltip
-        //   .style("top", d3.event.pageY - 110 + "px")
-        //   .style("left", d3.event.pageX - 120 + "px");
       }
     });
     out.circles.on("mouseout", function () {
@@ -520,7 +431,65 @@ export function dorling(options) {
         );
       }
     });
-    applyForce();
+  }
+
+
+  function animate() {
+    if (out.stage == 1) {
+      if (out.playing) {
+        setTimeout(function () {
+          //out.stage = 1;
+          if (out.playing) {
+            firstTransition();
+            out.stage = 2;
+          }
+        }, 2000);
+      }
+    } else if (out.stage == 2) {
+      if (out.playing) {
+        out.stage = 1;
+        restartTransition();
+      }
+    }
+  }
+
+  //hide nuts show circles
+  function firstTransition() {
+    //show circles
+    out.circles
+      .transition()
+      .duration(1000)
+      .attr("r", (f) => toRadius(+out.sizeIndicator[f.properties.id]))
+      .attr("fill", (f) => colorFunction(+out.colorIndicator[f.properties.id]))
+      .attr("stroke", "black");
+    //hide nuts
+    if (out.showBorders_) {
+      out.nutsBorders.transition().duration(1000).attr("stroke", "grey");
+      out.kosovo.transition().duration(1000).attr("stroke", "#eaeaea");
+    } else {
+      out.nutsBorders.transition().duration(1000).attr("stroke", "#1f1f1f00");
+      //out.nuts.transition().duration(1000).attr("stroke", "#1f1f1f00").attr("fill", "none");
+      //out.countries.transition().duration(1000).attr("stroke", "#1f1f1f00").attr("fill", "none");
+      if (out.coastalMargins_) {
+        if (out.margins) {
+          out.margins.forEach((margin => {
+            margin.attr("stroke", "#1f1f1f00").attr("stroke-width", "0px");
+          }))
+        }
+      }
+
+    }
+
+    // show legends
+    out.legendContainer.transition().duration(1000).attr("opacity", 0.9);
+    out.sizeLegendContainer.transition().duration(1000).attr("opacity", 0.9);
+    out.radioContainer.transition().duration(1000).attr("opacity", 0.9);
+
+
+    if (!out.forceInProgress) {
+      applyForce();
+    }
+
   }
 
   function formatNumber(n) {
@@ -530,6 +499,10 @@ export function dorling(options) {
   }
 
   function applyForce() {
+    if (out.simulation) {
+      out.simulation.stop()
+      out.forceInProgress = false;
+    }
     out.simulation = d3
       .forceSimulation(out.centroids.features)
       .force(
@@ -537,21 +510,21 @@ export function dorling(options) {
         d3
           .forceX()
           .x((f) => out.projection(f.geometry.coordinates)[0])
-          .strength(out.positionStrength_)
+        //.strength(out.positionStrength_)
       )
       .force(
         "y",
         d3
           .forceY()
           .y((f) => out.projection(f.geometry.coordinates)[1])
-          .strength(out.positionStrength_)
+        //.strength(out.positionStrength_)
       )
       .force(
         "collide",
         d3
           .forceCollide()
           .radius((f) => toRadius(+out.sizeIndicator[f.properties.id]))
-          .strength(out.collisionStrength_)
+        //.strength(out.collisionStrength_)
       );
 
     //set initial position of the circles
@@ -564,22 +537,21 @@ export function dorling(options) {
       out.circles.attr("cx", (f) => f.x).attr("cy", (f) => f.y);
     });
 
+    out.forceInProgress = true;
+
     out.simulation.on("end", function () {
-      if (!out.loop_) {
-        out.simulation.stop();
+      out.forceInProgress = false;
+      // if (!out.loop_) {
+      //   out.simulation.stop();
+      //   restartTransition();
+      // }
+      out.simulation.stop();
+      if (out.playing) {
+        restartTransition();
       }
+      //restart after 8 seconds
     });
 
-    if (out.playing) {
-      if (out.loop_) {
-        setTimeout(function () {
-          if (out.playing) {
-            out.simulation.stop();
-            restartTransition();
-          }
-        }, 8000)
-      }
-    }
     // setTimeout(function () {
     //   out.simulation.stop();
     //   if (out.playing) {
@@ -627,18 +599,17 @@ export function dorling(options) {
       }
     } else {
       out.nutsBorders.transition().duration(1000).attr("stroke", "black");
+      out.kosovo.transition().duration(1000).attr("stroke", "#D3D3D3");
     }
 
 
-    setTimeout(function () {
-      //reset circle locations & color
-      // out.circles
-      //   .attr("cx", (f) => out.projection(f.geometry.coordinates)[0])
-      //   .attr("cy", (f) => out.projection(f.geometry.coordinates)[1])
-      //   .attr("r", (f) => 0.000055 * Math.sqrt(f.properties.ar));
+    //reset circle locations & color
+    // out.circles
+    //   .attr("cx", (f) => out.projection(f.geometry.coordinates)[0])
+    //   .attr("cy", (f) => out.projection(f.geometry.coordinates)[1])
+    //   .attr("r", (f) => 0.000055 * Math.sqrt(f.properties.ar));
 
-      animate();
-    }, 1500);
+    animate();
   }
 
 

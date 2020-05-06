@@ -8,12 +8,13 @@
 .cntrg {
   fill: lightgray;
 }
-
-
+.kosovo {
+   fill: none; 
+  /* stroke-dasharray: 7; */
+}
 .nutsrg {
   fill: white;
 }
-
 
 .cntbn {
   fill: none;
@@ -31,9 +32,11 @@
 
 .dorling-container {
 position:relative;
-font-family: 'Open Sans', "Helvetica Neue", Arial,"Noto Sans",sans-serif
+font-family: 'Open Sans', "Helvetica Neue", Arial,"Noto Sans",sans-serif;
 }
 .dorling-tooltip {
+  font-family: 'Open Sans', "Helvetica Neue", Arial,"Noto Sans",sans-serif;
+  font-size:14px;
   box-shadow: 0 3px 14px rgba(0, 0, 0, 0.4);
   position: absolute;
   visibility: hidden;
