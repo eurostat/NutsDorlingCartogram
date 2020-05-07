@@ -32,7 +32,7 @@ export function dorling(options) {
   out.rotateX_ = -13;
   out.rotateY_ = -61;
   out.translateX_ = -470; //340;
-  out.translateY_ = 1011; //216;
+  out.translateY_ = 1015; //216;
   out.fitSizePadding_ = 0;
   //viewbox
   out.width_ = 900;
@@ -178,9 +178,6 @@ export function dorling(options) {
       d3.json(
         `https://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/${out.colorDatasetCode_}?geoLevel=${nutsParam}&${out.colorDatasetFilters_}`
       ), //colorData
-      d3.json(
-        `https://ec.europa.eu/eurostat/statistical-atlas/gis/arcgis/rest/services/Basemaps/StatAtlas_Continents/MapServer/0/query?where=1%3D1&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=3035&having=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&queryByDistance=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&f=geojson`
-      ) //kosovo
     );
 
     Promise.all(promises).then((res) => {
@@ -342,8 +339,17 @@ export function dorling(options) {
         .enter().append("path").attr("d", out.path)
         .attr("stroke", "black").attr("fill", "none")
 
-      out.kosovo = out.svg.append("g").selectAll("path").data(res[5].features)
-        .enter().append("path").attr("d", out.path).attr("class", "kosovo").attr("stroke", "lightgray");
+      out.kosovo = out.svg.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.cntbn).features)
+        .enter().append("path").filter(function (f) {
+          return f.properties.id == 999999
+        }).attr("d", out.path)
+        .attr("stroke", "lightgrey").attr("fill", "none")
+
+      // out.kosovo = out.svg.append("path")
+      //   .datum(topojson.mesh(out.n2j, out.n2j.objects.nutsbn, function (a, b) { return a.properties.id === 999999; }))
+      //   .attr("d", out.path)
+      //   .attr("stroke", "red")
+      //   .attr("class", "kosovo");
 
       // .attr("class", function (bn) {
       //   return "nutsbn" + bn.properties.co === "T" ? " coastal" : ""
@@ -869,8 +875,8 @@ export function dorling(options) {
 
     playBtn
       .append("rect")
-      .attr("width", 38)
-      .attr("height", 38)
+      .attr("width", 39)
+      .attr("height", 40)
       //.attr("rx", 4)
       .style("fill", out.playButtonFill_);
     playBtn
@@ -1226,9 +1232,13 @@ export function dorling(options) {
     return color;
   }
 
-  function zoomed(circles, coastL) {
-    circles.attr("transform", d3.event.transform);
-    coastL.attr("transform", d3.event.transform);
+  function zoomed() {
+    out.circles.attr("transform", d3.event.transform);
+    out.countries.attr("transform", d3.event.transform);
+    out.countryBorders.attr("transform", d3.event.transform);
+    out.nuts.attr("transform", d3.event.transform);
+    out.nutsBorders.attr("transform", d3.event.transform);
+    out.kosovo.attr("transform", d3.event.transform);
   }
 
   function toRadius(val) {
