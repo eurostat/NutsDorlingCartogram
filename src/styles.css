@@ -15,6 +15,9 @@
 .nutsrg {
   fill: white;
 }
+.dorling-non {
+  stroke: none !important;
+}
 
 .cntbn {
   fill: none;
