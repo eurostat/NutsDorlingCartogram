@@ -20,6 +20,7 @@ export function dorling(options) {
   out.coastalMargins_ = false;
   out.graticule_ = true;
   out.highlightColor_ = "cyan";
+  out.nutsBorderColor_ = "grey";
   //d3 force
   out.circleExaggerationFactor_ = 1.2;
   out.collisionPadding_ = 0.1;
@@ -337,7 +338,7 @@ export function dorling(options) {
           return f;
           // }
         }).attr("d", out.path)
-        .attr("stroke", "grey").attr("fill", "none").attr("class", function (f) {
+        .attr("stroke", out.nutsBorderColor_).attr("fill", "none").attr("class", function (f) {
           if (f.properties.co === "T") {
             return "coastal"
           } else {
@@ -600,7 +601,7 @@ export function dorling(options) {
         }
       }
     } else {
-      out.nutsBorders.transition().duration(1000).attr("stroke", "black");
+      out.nutsBorders.transition().duration(1000).attr("stroke", out.nutsBorderColor_);
       //out.kosovo.transition().duration(1000).attr("stroke", "#D3D3D3");
     }
 
