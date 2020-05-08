@@ -276,11 +276,13 @@ export function dorling(options) {
           .style("stroke-linejoin", "round")
           .style("stroke-linecap", "round");
 
+        //country coastal margins
         out.svg.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.cntbn).features).enter()
           .append("path").attr("d", out.path)
           .style("fill", "none").style("stroke-width", "10").style("filter", "url(#coastal_blur)").style("stroke-linejoin", "round").style("stroke-linecap", "round")
           .style("stroke", function (bn) { if (bn.properties.co === "T") return "white"; return "none"; })
           ;
+        //nuts coastal margins
         out.svg.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.nutsbn).features).enter()
           .append("path").attr("d", out.path)
           .style("fill", "none").style("stroke-width", "10").style("filter", "url(#coastal_blur)").style("stroke-linejoin", "round").style("stroke-linecap", "round")
@@ -308,15 +310,12 @@ export function dorling(options) {
         // }
       }
 
-
-
-
       if (out.showBorders_) {
         //draw regions
-        out.countries = out.svg.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.cntrg).features)
+        out.countries = out.svg.append("g").attr("id", "dorling-countries").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.cntrg).features)
           .enter().append("path").attr("d", out.path).attr("class", "cntrg");
 
-        out.nuts = out.svg.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.nutsrg).features)
+        out.nuts = out.svg.append("g").attr("id", "dorling-nuts").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.nutsrg).features)
           .enter().append("path").attr("d", out.path).attr("class", function (bn) {
             if (out.exclude_.indexOf(bn.properties.id.substring(0, 2)) == -1) {
               return "nutsrg"
@@ -343,7 +342,7 @@ export function dorling(options) {
             return "coastal"
           } else {
             if (f.properties.eu !== "T" && f.properties.efta !== "T") {
-              return "dorling-non";
+              return "dorling-no-data";
             }
           }
         });
