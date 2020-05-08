@@ -263,31 +263,31 @@ export function dorling(options) {
       //coastal margin
       if (out.coastalMargins_) {
         //define filter for coastal margin
-        out.svg.append("filter").attr("id", "coastal_blur").attr("x", "-200%").attr("y", "-200%").attr("width", "400%").attr("height", "400%")
-          .append("feGaussianBlur").attr("in", "SourceGraphic").attr("stdDeviation", "14")
-          ;		//draw coastal margin
+        // out.svg.append("filter").attr("id", "coastal_blur").attr("x", "-200%").attr("y", "-200%").attr("width", "400%").attr("height", "400%")
+        //   .append("feGaussianBlur").attr("in", "SourceGraphic").attr("stdDeviation", "14")
+        //   ;		//draw coastal margin
 
-        //draw coastal margin
-        var cg = out.svg.append("g").attr("id", "g_coast_margin")
-          .style("fill", "none")
-          .style("stroke-width", "13")
-          .style("stroke", "white")
-          .style("filter", "url(#coastal_blur)")
-          .style("stroke-linejoin", "round")
-          .style("stroke-linecap", "round");
+        // //draw coastal margin
+        // var cg = out.svg.append("g").attr("id", "g_coast_margin")
+        //   .style("fill", "none")
+        //   .style("stroke-width", "13")
+        //   .style("stroke", "white")
+        //   .style("filter", "url(#coastal_blur)")
+        //   .style("stroke-linejoin", "round")
+        //   .style("stroke-linecap", "round");
 
-        //country coastal margins
-        out.svg.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.cntbn).features).enter()
-          .append("path").attr("d", out.path)
-          .style("fill", "none").style("stroke-width", "10").style("filter", "url(#coastal_blur)").style("stroke-linejoin", "round").style("stroke-linecap", "round")
-          .style("stroke", function (bn) { if (bn.properties.co === "T") return "white"; return "none"; })
-          ;
-        //nuts coastal margins
-        out.svg.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.nutsbn).features).enter()
-          .append("path").attr("d", out.path)
-          .style("fill", "none").style("stroke-width", "10").style("filter", "url(#coastal_blur)").style("stroke-linejoin", "round").style("stroke-linecap", "round")
-          .style("stroke", function (bn) { if (bn.properties.co === "T") return "white"; return "none"; })
-          ;
+        // //country coastal margins
+        // out.svg.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.cntbn).features).enter()
+        //   .append("path").attr("d", out.path)
+        //   .style("fill", "none").style("stroke-width", "10").style("filter", "url(#coastal_blur)").style("stroke-linejoin", "round").style("stroke-linecap", "round")
+        //   .style("stroke", function (bn) { if (bn.properties.co === "T") return "white"; return "none"; })
+        //   ;
+        // //nuts coastal margins
+        // out.svg.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.nutsbn).features).enter()
+        //   .append("path").attr("d", out.path)
+        //   .style("fill", "none").style("stroke-width", "10").style("filter", "url(#coastal_blur)").style("stroke-linejoin", "round").style("stroke-linecap", "round")
+        //   .style("stroke", function (bn) { if (bn.properties.co === "T") return "white"; return "none"; })
+        //   ;
 
         //multiple margins
         // out.marginNb = 3;
@@ -337,7 +337,7 @@ export function dorling(options) {
           return f;
           // }
         }).attr("d", out.path)
-        .attr("stroke", "black").attr("fill", "none").attr("class", function (f) {
+        .attr("stroke", "grey").attr("fill", "none").attr("class", function (f) {
           if (f.properties.co === "T") {
             return "coastal"
           } else {

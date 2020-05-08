@@ -24,7 +24,6 @@
 
 .cntbn {
   fill: none;
-  stroke-width: 1px;
   stroke: none;
 }
 .nutsbn {
@@ -35,7 +34,7 @@
 .thin { stroke-width: 0.5px; }
 .coastal { 
   /* stroke: #1f78b4;  */
-  stroke:grey;
+  stroke:lightgrey;
 }
 
 
