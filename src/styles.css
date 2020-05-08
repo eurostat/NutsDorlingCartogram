@@ -33,7 +33,10 @@
 }
 .white { stroke: white; }
 .thin { stroke-width: 0.5px; }
-.coastal { stroke: #1f78b4; }
+.coastal { 
+  /* stroke: #1f78b4;  */
+  stroke:grey;
+}
 
 
 .dorling-container {

@@ -15,7 +15,7 @@ export function dorling(options) {
   //default values
   out.containerId_ = "";
   //styles
-  out.seaColor_ = "aliceblue";
+  out.seaColor_ = "#bee0ea";
   out.playButtonFill_ = "#777777";
   out.coastalMargins_ = false;
   out.graticule_ = true;
