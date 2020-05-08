@@ -1,3 +1,6 @@
+#dorling-svg{
+  position:fixed; top:0; left:0; height:100%; width:100%
+}
 
 .dorling-graticule {
   fill: none;
@@ -28,7 +31,7 @@
   fill: none;
   stroke-width: 1px;
 }
-.white { stroke: black; }
+.white { stroke: white; }
 .thin { stroke-width: 0.5px; }
 .coastal { stroke: #1f78b4; }
 

@@ -8,7 +8,7 @@
 </head>
 
 <body>
-  <div id="containerDiv" style="max-width:90vh; height:700px">
+  <div id="containerDiv">
 
   </div>
   <script src="https://d3js.org/d3-format.v1.min.js"></script>
@@ -16,8 +16,6 @@
   <script>
     NutsDorlingCartogram.dorling()
       .containerId("containerDiv")
-      .width(900)
-      .height(700)
       .nutsLevel(2)
       .colors(["#2d50a0", "#6487c3", "#aab9e1", "#f0cd91", "#e6a532", "#d76e2d"])
       .thresholdValues([-15, -10, 0, 10, 15, 20])
