@@ -339,13 +339,13 @@ export function dorling(options) {
           // }
         }).attr("d", out.path)
         .attr("stroke", out.nutsBorderColor_).attr("fill", "none").attr("class", function (f) {
-          if (f.properties.co === "T") {
-            return "coastal"
-          } else {
-            if (f.properties.eu !== "T" && f.properties.efta !== "T") {
-              return "dorling-no-data";
-            }
+          // if (f.properties.co === "T") {
+          //   return "coastal"
+          // } else {
+          if (f.properties.eu !== "T" && f.properties.efta !== "T") {
+            return "dorling-no-data";
           }
+          // }
         });
 
       // out.kosovo = out.svg.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.cntbn).features)
