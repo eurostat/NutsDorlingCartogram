@@ -235,7 +235,7 @@ export function dorling(options) {
       out.projection = d3Geo
         .geoIdentity()
         .reflectY(true)
-        .fitExtent([[25, 25], [out.width_ + out.fitSizePadding_, out.height_ + out.fitSizePadding_]], topojson.feature(out.n2j, out.n2j.objects.nutsrg))
+        .fitExtent([[0, 0], [out.width_ + out.fitSizePadding_, out.height_ + out.fitSizePadding_]], topojson.feature(out.n2j, out.n2j.objects.cntbn))
       //out.path = d3.geoPath().projection(out.projection);
       out.path = d3Geo.geoPath().projection(out.projection);
 
@@ -314,7 +314,12 @@ export function dorling(options) {
       if (out.showBorders_) {
         //draw regions
         out.countries = out.svg.append("g").attr("id", "dorling-countries").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.cntrg).features)
-          .enter().append("path").attr("d", out.path).attr("class", "cntrg");
+          .enter().append("path").filter((f) => {
+            //exclude GL
+            if (f.properties.id !== "GL") {
+              return f;
+            }
+          }).attr("d", out.path).attr("class", "cntrg");
 
         out.nuts = out.svg.append("g").attr("id", "dorling-nuts").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.nutsrg).features)
           .enter().append("path").attr("d", out.path).attr("class", function (bn) {
@@ -328,7 +333,12 @@ export function dorling(options) {
         //draw boundaries
         //countries
         out.countryBorders = out.svg.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.cntbn).features)
-          .enter().append("path").attr("d", out.path)
+          .enter().append("path").filter((f) => {
+            //exclude GL
+            if (f.properties.id !== "GL") {
+              return f;
+            }
+          }).attr("d", out.path)
           .attr("class", function (bn) { return "cntbn" + (bn.properties.co === "T" ? " coastal" : ""); });
       }
       //nuts
@@ -339,12 +349,14 @@ export function dorling(options) {
           // }
         }).attr("d", out.path)
         .attr("stroke", out.nutsBorderColor_).attr("fill", "none").attr("class", function (f) {
-          // if (f.properties.co === "T") {
-          //   return "coastal"
-          // } else {
-          if (f.properties.eu !== "T" && f.properties.efta !== "T") {
-            return "dorling-no-data";
+          let c = "";
+          if (f.properties.co === "T") {
+            c = c + "coastal"
           }
+          if (f.properties.eu !== "T" && f.properties.efta !== "T") {
+            c = c + "dorling-no-data";
+          }
+          return c
           // }
         });
 
@@ -735,13 +747,13 @@ export function dorling(options) {
     }
   }
   function addLegendsToDOM() {
-
+    console.log(out.projection.scale());
     addColorLegend();
     addSizeLegend();
+
+
     //adjust legend bacgkround box height
-    let containerNode = document
-      .getElementsByClassName("dorling-legend-container")[0]
-    out.legendBRect = containerNode.getBoundingClientRect();
+    out.legendBRect = out.legendContainerNode.getBoundingClientRect();
     out.legendContainerBackground.style("height", out.legendBRect.height + 25 + "px");
     out.legendContainerBackground.style("width", out.legendBRect.width + 25 + "px");
   }
@@ -750,9 +762,11 @@ export function dorling(options) {
     //background container
     out.legendContainer = out.svg
       .append("g")
-      .attr("class", "dorling-legend-container dorling-plugin")
-      //.attr("transform", "translate(" + out.legend_.x + "," + out.legend_.y + ")")
+      .attr("id", "dorling-legend-container")
+      //svg width - legendContainer width
+      .attr("transform", "translate(0,0)")
       .attr("opacity", 0);
+
     out.legendContainerBackground = out.legendContainer
       .append("rect")
       .attr("class", "dorling-legend-container-background")
@@ -809,14 +823,21 @@ export function dorling(options) {
       legend.shapeRadius(out.legend_.shapeRadius);
 
     out.svg.select(".dorling-color-legend").call(legend);
+
+    //ajust size of legend container
+    out.legendContainerNode = out.legendContainer.node();
+    let boundRect = out.legendContainerNode.getBoundingClientRect();
+    let countriesRect = document.getElementById("dorling-countries").getBoundingClientRect();
+    //out.legendContainer.attr("transform", "translate(0px, 0px )");
   }
   function addSizeLegend() {
     //circle size legend
-    let colorLegend = out.legendContainer.node();
+    let brect = out.legendContainerNode.getBoundingClientRect();
+    out.sizeLegendTranslateY = brect.height;
     out.sizeLegendContainer = out.legendContainer
       .append("g")
       .attr("id", "dorling-size-legend-container")
-      .attr("transform", "translate(0," + colorLegend.clientHeight + ")")
+      .attr("transform", "translate(0," + out.sizeLegendTranslateY + ")")
       .attr("opacity", 0);
     let sizeLegendBackground = out.sizeLegendContainer
       .append("rect")
@@ -866,70 +887,6 @@ export function dorling(options) {
       });
   }
 
-  function addPlayButtonToDOM() {
-    let buttonContainer = out.svg
-      .append("g")
-      .attr("class", "dorling-play-button")
-      .attr(
-        "transform",
-        "translate(" + ((out.width_ / 2) - 22) + "," + (out.height_ - 45) + ")"
-      );
-    let playBtn = buttonContainer.append("g").style("visibility", "hidden");
-    let pauseBtn = buttonContainer.append("g").style("visibility", "visible");
-
-    playBtn
-      .append("rect")
-      .attr("width", 39)
-      .attr("height", 40)
-      //.attr("rx", 4)
-      .style("fill", out.playButtonFill_);
-    playBtn
-      .append("path")
-      .attr("d", "M15 10 L15 40 L35 25 Z")
-      .style("fill", "white")
-      .attr(
-        "transform",
-        "translate(-5,-5)"
-      )
-
-    pauseBtn
-      .append("rect")
-      .attr("width", 39)
-      .attr("height", 40)
-      //.attr("rx", 4)
-      .style("fill", out.playButtonFill_);
-    pauseBtn
-      .append("path")
-      .attr("d", "M12,11 L23,11 23,40 12,40 M26,11 L37,11 37,40 26,40")
-      .style("fill", "white")
-      .attr(
-        "transform",
-        "translate(-5,-5)"
-      )
-
-    buttonContainer.on("mousedown", function () {
-      out.playing = !out.playing;
-
-      //change icon
-      playBtn.style("visibility", out.playing ? "hidden" : "visible");
-      pauseBtn.style("visibility", out.playing ? "visible" : "hidden");
-
-      //continue animation or end simulation
-      if (out.playing) {
-        animate();
-      }
-    });
-
-    return buttonContainer;
-  }
-
-  out.play = function () {
-    animate();
-  }
-  out.pause = function () {
-    out.playing = false;
-  }
-
   function addNutsSelectorToDOM() {
     let radioWidth = 30;
     let radioHeight = 30;
@@ -944,18 +901,21 @@ export function dorling(options) {
 
 
     //main container
-    out.radioContainer = out.svg
+    let sl = document.getElementById("dorling-size-legend-container")
+    let slbr = sl.getBoundingClientRect();
+    out.radioContainer = out.legendContainer
       .append("g")
-      .attr("class", "dorling-nuts-selector-container dorling-plugin")
+      .attr("id", "dorling-nuts-selector")
+      //.attr("class", "dorling-nuts-selector-container dorling-plugin")
       .attr("opacity", 0)
-    //"translate(" + (out.width_ - 200) + "," + (out.height_ / 2) + ")"
+      .attr("transform", "translate(0, " + (out.sizeLegendTranslateY + slbr.height + 15) + ")")
 
     //background
     out.radioContainer
       .append("rect")
       .attr("class", "dorling-legend-container-background dorling-plugin")
-      .style("height", backgroundHeight)
-      .attr("transform", "translate(0,0)");
+    //.style("height", backgroundHeight)
+    //.attr("transform", "translate(0,0)");
 
     //title
     out.radioContainer.append("text")
@@ -1093,7 +1053,6 @@ export function dorling(options) {
       dot3.attr("opacity", "1");
     }
 
-
     radio0.on("click", function (e) {
       dot0.attr("opacity", "1");
       dot1.attr("opacity", radioDotOpacity);
@@ -1193,12 +1152,79 @@ export function dorling(options) {
     // container.appendChild(document.createElement('br'))
   }
 
+
+
   function nutsRadioEventHandler(nuts) {
     // let nuts = evt.currentTarget.value;
     if (out.nutsLevel_ !== nuts) {
       out.nutsLevel_ = nuts;
       out.rebuild();
     }
+  }
+
+  function addPlayButtonToDOM() {
+    let buttonContainer = out.svg
+      .append("g")
+      .attr("class", "dorling-play-button")
+      .attr(
+        "transform",
+        "translate(" + ((out.width_ / 2) - 22) + "," + (out.height_ - 45) + ")"
+      );
+    let playBtn = buttonContainer.append("g").style("visibility", "hidden");
+    let pauseBtn = buttonContainer.append("g").style("visibility", "visible");
+
+    playBtn
+      .append("rect")
+      .attr("width", 39)
+      .attr("height", 40)
+      //.attr("rx", 4)
+      .style("fill", out.playButtonFill_);
+    playBtn
+      .append("path")
+      .attr("d", "M15 10 L15 40 L35 25 Z")
+      .style("fill", "white")
+      .attr(
+        "transform",
+        "translate(-5,-5)"
+      )
+
+    pauseBtn
+      .append("rect")
+      .attr("width", 39)
+      .attr("height", 40)
+      //.attr("rx", 4)
+      .style("fill", out.playButtonFill_);
+    pauseBtn
+      .append("path")
+      .attr("d", "M12,11 L23,11 23,40 12,40 M26,11 L37,11 37,40 26,40")
+      .style("fill", "white")
+      .attr(
+        "transform",
+        "translate(-5,-5)"
+      )
+
+    buttonContainer.on("mousedown", function () {
+      out.playing = !out.playing;
+
+      //change icon
+      playBtn.style("visibility", out.playing ? "hidden" : "visible");
+      pauseBtn.style("visibility", out.playing ? "visible" : "hidden");
+
+      //continue animation or end simulation
+      if (out.playing) {
+        animate();
+      }
+    });
+
+    return buttonContainer;
+  }
+
+
+  out.play = function () {
+    animate();
+  }
+  out.pause = function () {
+    out.playing = false;
   }
 
   function addTooltipToDOM() {

@@ -1,5 +1,5 @@
 #dorling-svg{
-  position:relative; top:0; left:0; height:100%; width:100%
+  position:relative; top:0; left:0; max-height:100%; max-width:100%
 }
 
 .dorling-graticule {
@@ -34,7 +34,7 @@
 .thin { stroke-width: 0.5px; }
 .coastal { 
   /* stroke: #1f78b4;  */
-  stroke:grey;
+  stroke:#444444;
 }
 
 
@@ -59,14 +59,11 @@ font-family: 'Open Sans', "Helvetica Neue", Arial,"Noto Sans",sans-serif;
 }
 
 .dorling-plugin{
-  width:192px !important;
+  /* width:192px !important; */
 }
 
-
 .dorling-legend-container {
-  width: 175px;
-  height: 177px;
-  transform: translate(77%,1%);
+  
 }
 .dorling-size-legend {
   width: 175px;
@@ -83,8 +80,6 @@ circle.swatch {
   stroke: black;
 }
 .dorling-legend-container-background {
-  width: 177px;
-  height: 110px;
   fill: white;
   opacity: 0.9;
 }
@@ -150,9 +145,6 @@ circle.swatch {
     opacity: 0;
   }
 }
-
-
-
 
 /* //svg radio buttons  */
 .dorling-radio-button {
