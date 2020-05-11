@@ -826,9 +826,7 @@ export function dorling(options) {
 
     //ajust size of legend container
     out.legendContainerNode = out.legendContainer.node();
-    let boundRect = out.legendContainerNode.getBoundingClientRect();
-    let countriesRect = document.getElementById("dorling-countries").getBoundingClientRect();
-    //out.legendContainer.attr("transform", "translate(0px, 0px )");
+    out.legendContainer.attr("transform", "translate(600, 20)");
   }
   function addSizeLegend() {
     //circle size legend
