@@ -15,7 +15,7 @@ export function dorling(options) {
   //default values
   out.containerId_ = "";
   //styles
-  out.seaColor_ = "#bee0ea";
+  out.seaColor_ = "white";
   out.playButtonFill_ = "#777777";
   out.coastalMargins_ = false;
   out.graticule_ = true;
@@ -567,6 +567,7 @@ export function dorling(options) {
 
   function restartTransition() {
     out.stage = 1;
+    out.tooltip.style("visibility", "hidden");
     //reset styles and restart animation
     //fade circles
     out.circles
@@ -734,13 +735,25 @@ export function dorling(options) {
     }
   }
   function addLegendsToDOM() {
+
+    addColorLegend();
+    addSizeLegend();
+    //adjust legend bacgkround box height
+    let containerNode = document
+      .getElementsByClassName("dorling-legend-container")[0]
+    out.legendBRect = containerNode.getBoundingClientRect();
+    out.legendContainerBackground.style("height", out.legendBRect.height + 25 + "px");
+    out.legendContainerBackground.style("width", out.legendBRect.width + 25 + "px");
+  }
+
+  function addColorLegend() {
     //background container
     out.legendContainer = out.svg
       .append("g")
       .attr("class", "dorling-legend-container dorling-plugin")
       //.attr("transform", "translate(" + out.legend_.x + "," + out.legend_.y + ")")
       .attr("opacity", 0);
-    let containerBackground = out.legendContainer
+    out.legendContainerBackground = out.legendContainer
       .append("rect")
       .attr("class", "dorling-legend-container-background")
       .attr("transform", "translate(0,0)");
@@ -749,8 +762,6 @@ export function dorling(options) {
       .append("g")
       .attr("class", "dorling-color-legend")
       .attr("transform", "translate(20,20)");
-
-    //d3.formatDefaultLocale(out.legend_.locale);
 
     let legend = legendColor()
       //.useClass(true)
@@ -798,16 +809,18 @@ export function dorling(options) {
       legend.shapeRadius(out.legend_.shapeRadius);
 
     out.svg.select(".dorling-color-legend").call(legend);
-
+  }
+  function addSizeLegend() {
     //circle size legend
-    out.sizeLegendContainer = out.svg
+    let colorLegend = out.legendContainer.node();
+    out.sizeLegendContainer = out.legendContainer
       .append("g")
-      .attr("class", "dorling-size-legend dorling-plugin")
-      //.attr("transform", "translate(0," + (out.height_ - 100) + ")")
+      .attr("id", "dorling-size-legend-container")
+      .attr("transform", "translate(0," + colorLegend.clientHeight + ")")
       .attr("opacity", 0);
     let sizeLegendBackground = out.sizeLegendContainer
       .append("rect")
-      .attr("class", "dorling-legend-container-background dorling-plugin")
+      .attr("id", "dorling-size-legend-container-background")
       .attr("transform", "translate(0,0)");
     const legendTitle = out.sizeLegendContainer
       .append("g")
@@ -851,14 +864,8 @@ export function dorling(options) {
         return d / 1000000 + " million"
         //return d.toLocaleString("en").replace(/,/gi, " ");
       });
-
-    //adjust legend bacgkround box height
-    let containerNode = document
-      .getElementsByClassName("dorling-legend-container")[0]
-    let brect = containerNode.getBoundingClientRect();
-    containerBackground.style("height", brect.height + 25 + "px");
-    containerBackground.style("width", brect.width + 25 + "px");
   }
+
   function addPlayButtonToDOM() {
     let buttonContainer = out.svg
       .append("g")
@@ -915,6 +922,14 @@ export function dorling(options) {
 
     return buttonContainer;
   }
+
+  out.play = function () {
+    animate();
+  }
+  out.pause = function () {
+    out.playing = false;
+  }
+
   function addNutsSelectorToDOM() {
     let radioWidth = 30;
     let radioHeight = 30;
