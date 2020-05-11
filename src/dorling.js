@@ -764,7 +764,7 @@ export function dorling(options) {
       .append("g")
       .attr("id", "dorling-legend-container")
       //svg width - legendContainer width
-      .attr("transform", "translate(0,0)")
+      .style("height", (out.height_ - 10) + "px")
       .attr("opacity", 0);
 
     out.legendContainerBackground = out.legendContainer
@@ -824,9 +824,9 @@ export function dorling(options) {
 
     out.svg.select(".dorling-color-legend").call(legend);
 
-    //ajust size of legend container
+    //ajust position of legend container
     out.legendContainerNode = out.legendContainer.node();
-    out.legendContainer.attr("transform", "translate(600, 20)");
+    out.legendContainer.attr("transform", "translate(650, 20)");
   }
   function addSizeLegend() {
     //circle size legend
