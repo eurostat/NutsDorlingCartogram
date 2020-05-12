@@ -1264,7 +1264,8 @@ export function dorling(options) {
       .append("rect")
       .attr("width", 25)
       .attr("height", 25)
-      //.attr("rx", 4)
+      .attr("rx", 40)
+      .attr("ry", 40)
       .style("fill", out.playButtonFill_);
     playBtn
       .append("path")
@@ -1272,20 +1273,21 @@ export function dorling(options) {
       .style("fill", "white")
       .attr(
         "transform",
-        "scale(0.5)"
+        "scale(0.5)translate(1,0)"
       )
 
     pauseBtn
       .append("rect")
       .attr("width", 25)
       .attr("height", 25)
-      //.attr("rx", 4)
+      .attr("rx", 40)
+      .attr("ry", 40)
       .style("fill", out.playButtonFill_);
     pauseBtn
       .append("path")
       .attr("d", "M12,11 L23,11 23,40 12,40 M26,11 L37,11 37,40 26,40")
       .style("fill", "white")
-      .attr("transform", "scale(0.5)")
+      .attr("transform", "scale(0.5)translate(1,0)")
 
     buttonContainer.on("mousedown", function () {
       out.playing = !out.playing;
