@@ -17,19 +17,20 @@
         NutsDorlingCartogram.dorling()
             .containerId("containerDiv")
             .nutsLevel(2)
-            .colors(["#3A6ABD", "#789BD8", "#D1D9F1", "#EBC2DE", "#E18FC8", "#A74177"])
-            .thresholdValues([20000, 50000, 80000, 100000, 200000, 1000000])
+            // .colors(["#3A6ABD", "#789BD8", "#D1D9F1", "#EBC2DE", "#E18FC8", "#A74177"])
+            .colors(["#2d50a0", "#6487c3", "#aab9e1", "#f0cd91", "#e6a532", "#d76e2d"])
+            .thresholdValues([10000, 20000, 30200, 40000, 50000, 1000000])
             .showNutsSelector(true)
             .zoom(false)
             .sizeDatasetCode("nama_10r_3gdp")
             .sizeDatasetFilters("precision=1&unit=MIO_EUR&time=2018")
             .colorDatasetCode("nama_10r_3gdp")
             .colorDatasetFilters("precision=1&unit=EUR_HAB&time=2018")
-            .circleExaggerationFactor(5)
+            .circleExaggerationFactor(5.6)
             .colorLegend({
                 //https://d3-legend.susielu.com/#color
                 titleWidth: 190,
-                title: "EUR_HAB 2018",
+                title: "Gross domestic product (EUR per inhabitant)",
                 orient: "vertical",
                 shapeRadius: 10,
                 shapePadding: 5,
@@ -42,10 +43,12 @@
             })
             .sizeLegend({
                 title: "Total GDP 2018 (million euro)",
-                titleYOffset: -5,
+                titleYOffset: 10,
                 titleXOffset: 23,
                 textFunction: function (d) { return d.toLocaleString("en").replace(/,/gi, " "); },
-                values: [700000, 300000, 100000]
+                values: [1000000, 500000, 100000],
+                translateBodyX: 50,
+                translateBodyY: 110
             })
             .tooltip({
                 colorLabel: "Gross domestic product (EUR per inhabitant)",
@@ -56,7 +59,7 @@
             .graticule(false)
             .animate(true)
             .loop(true)
-            .pauseButton(false)
+            .pauseButton(true)
             .showBorders(true)
             //d3-geo stuff
             .translateX(-452)

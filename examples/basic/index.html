@@ -27,7 +27,7 @@
       .circleExaggerationFactor(1.1)
       .positionStrength(0.1)
       .colorLegend({
-        titleWidth: 180,
+        titleWidth: 200,
         title: "Population change 2018 (per 1 000 inhabitants)",
         orient: "vertical",
         shapeRadius: 10,
@@ -40,21 +40,24 @@
       })
       .sizeLegend({
         title: "Total population",
-        titleYOffset: -5,
+        titleYOffset: 10,
         titleXOffset: 23,
         textFunction: function (d) { return d / 1000000 + " million" },
         values: [20e6, 10e6, 1e6]
+      })
+      .tooltip({
+        colorLabel: "Population change per 1 000 inhabitants",
+        sizeLabel: "Total population",
+        shareLabel: "Share of national population",
       })
       .exclude(["MK", "ME", "TR", "AL", "RS"])
       .seaColor("white")
       .graticule(false)
       .animate(true)
       .loop(true)
-      .pauseButton(false)
+      .pauseButton(true)
       .showBorders(true)
-      .highlightColor("purple")
-      .tooltipColorLabel("Population change per 1 000 inhabitants")
-      .tooltipSizeLabel("Total population")
+      .highlightColor("lightblue")
       //d3-geo projection stuff
       .translateX(-452)
       .translateY(1126)

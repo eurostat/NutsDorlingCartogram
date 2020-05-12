@@ -1,5 +1,5 @@
 #dorling-svg{
-  position:relative; top:0; left:0; max-height:100%; max-width:100%
+  position:relative; top:0; left:0; max-height:100%; max-width:1110px
 }
 
 .dorling-graticule {
@@ -40,7 +40,6 @@
   stroke:#444444;
 }
 
-
 .dorling-container {
 position:relative;
 font-family: 'Open Sans', "Helvetica Neue", Arial,"Noto Sans",sans-serif;
@@ -60,13 +59,11 @@ font-family: 'Open Sans', "Helvetica Neue", Arial,"Noto Sans",sans-serif;
 .dorling-boundary{
   fill:white;
 }
-
-.dorling-plugin{
-  /* width:192px !important; */
+.dorling-legend-title{
+  font-weight:bold;
 }
-
-#dorling-legend-container {
-
+.legendTitle{
+  font-weight:bold;
 }
 .dorling-size-legend {
   width: 175px;
@@ -81,6 +78,7 @@ font-family: 'Open Sans', "Helvetica Neue", Arial,"Noto Sans",sans-serif;
 }
 circle.swatch {
   stroke: black;
+  cursor: pointer;
 }
 .dorling-legend-container-background {
   fill: white;
@@ -92,7 +90,7 @@ circle.swatch {
   box-sizing: border-box;
   width: 0;
   height: 74px;
-  border-color: transparent transparent transparent #202020;
+  border-color: transparent transparent transparent #212529;
   transition: 100ms all ease;
   cursor: pointer;
   border-style: solid;

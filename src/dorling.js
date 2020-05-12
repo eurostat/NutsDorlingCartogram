@@ -16,7 +16,7 @@ export function dorling(options) {
   out.containerId_ = "";
   //styles
   out.seaColor_ = "white";
-  out.playButtonFill_ = "#777777";
+  out.playButtonFill_ = "#212529";
   out.coastalMargins_ = false;
   out.graticule_ = true;
   out.highlightColor_ = "cyan";
@@ -60,7 +60,9 @@ export function dorling(options) {
     titleXOffset: 23,
     textFunction: function (d) { return d },
     values: null,
-    translateY: 215
+    translateY: 215,
+    translateBodyX: 50,
+    translateBodyY: 90
   };
 
   //color legend
@@ -87,9 +89,7 @@ export function dorling(options) {
     labelDelimiter: " to ",
     labelUnit: " ",
     labelWrap: 140,
-    labelDecNb: 2,
-    x: 0,
-    y: 0
+    eu27: null
   };
 
 
@@ -409,7 +409,7 @@ export function dorling(options) {
         .append("circle")
         .attr("cx", (f) => out.projection(f.geometry.coordinates)[0])
         .attr("cy", (f) => out.projection(f.geometry.coordinates)[1])
-        .attr("r", (f) => 0.000055 * Math.sqrt(f.properties.ar))
+        // .attr("r", (f) => 0.000055 * Math.sqrt(f.properties.ar))
         .attr("fill", "#ffffff00")
         .attr("stroke", "#40404000");
 
@@ -822,7 +822,26 @@ export function dorling(options) {
       .labelFormat(out.colorLegend_.labelFormat)
       .scale(out.colorScale)
       .labelDelimiter(out.colorLegend_.labelDelimiter)
-      .labelWrap(out.colorLegend_.labelWrap);
+      .labelWrap(out.colorLegend_.labelWrap)
+      .on("cellover", function (color) {
+        if (out.stage == 2) {
+          out.circles.attr("fill", (f) => {
+            //if circle color isnt that of the hovered cell
+            if (colorFunction(+out.colorIndicator[f.properties.id]) !== color) {
+              //
+              return "none"
+            } else {
+              return color
+            }
+          })
+        }
+      })
+      .on("cellout", function (d) {
+        if (out.stage == 2) {
+          out.circles.attr("fill", (f) => colorFunction(+out.colorIndicator[f.properties.id]))
+        }
+      });
+
     if (out.colorLegend_.cells) {
       legend.cells(out.colorLegend_.cells);
     }
@@ -890,12 +909,14 @@ export function dorling(options) {
       .append("text")
       .attr("y", 5)
       .attr("x", 0)
-      .attr("dy", "1.3em")
-      .text(out.sizeLegend_.title);
+      .attr("dy", "0em")
+      .text(out.sizeLegend_.title).attr("class", "dorling-legend-title").call(d3_textWrapping, out.colorLegend_.titleWidth);
+
+    //circles
     const legC = out.sizeLegendContainer
       .append("g")
       .attr("fill", "black")
-      .attr("transform", "translate(40, 85)")
+      .attr("transform", "translate(" + out.sizeLegend_.translateBodyX + "," + out.sizeLegend_.translateBodyY + ")") //TODO: make dynamic
       .attr("text-anchor", "right")
       .selectAll("g")
       // .data([20e6, 10e6, 1e6])
@@ -907,23 +928,51 @@ export function dorling(options) {
       .attr("stroke", "black")
       .attr("cy", (d) => -toRadius(d))
       .attr("r", toRadius);
+
+    //labels
     legC
       .append("text")
       //.attr("y", (d) => 9 - 2 * toRadius(d))
-      .attr("y", (d) => {
-        if (d == 20e6) {
-          return -1 - 2 * toRadius(d) - 10 - 4; //add padding
+      .attr("y", (d, i) => {
+        if (i == 0) {
+          return -1 - 2 * toRadius(d) - 7 - 4; //add padding
         } else {
-          return -1 - 2 * toRadius(d) - 10;
+          return -1 - 2 * toRadius(d) - 7;
         }
       })
-      .attr("x", 30)
-      .attr("dy", "1.3em")
+      .attr("x", 40)
+      .attr("dy", "1.2em")
       .text((d) => {
         return out.sizeLegend_.textFunction(d);
         //return d.toLocaleString("en").replace(/,/gi, " ");
       });
   }
+
+  var d3_textWrapping = function d3_textWrapping(text, width) {
+    text.each(function () {
+      var text = (0, d3.select)(this),
+        words = text.text().split(/\s+/).reverse(),
+        word,
+        line = [],
+        lineNumber = 0,
+        lineHeight = 1.2,
+        //ems
+        y = text.attr("y"),
+        dy = parseFloat(text.attr("dy")) || 0,
+        tspan = text.text(null).append("tspan").attr("x", 0).attr("dy", dy + "em");
+
+      while (word = words.pop()) {
+        line.push(word);
+        tspan.text(line.join(" "));
+        if (tspan.node().getComputedTextLength() > width && line.length > 1) {
+          line.pop();
+          tspan.text(line.join(" "));
+          line = [word];
+          tspan = text.append("tspan").attr("x", 0).attr("dy", lineHeight + dy + "em").text(word);
+        }
+      }
+    });
+  };
 
   function addNutsSelectorToDOM() {
     let radioWidth = 30;
@@ -937,7 +986,7 @@ export function dorling(options) {
     let backgroundHeight = 160;
     let radioDotOpacity = 0.3;
 
-    out.nutsSelectorTranslateY = 330;
+    out.nutsSelectorTranslateY = 340;
     //main container
     let sl = document.getElementById("dorling-size-legend-container")
     let slbr = sl.getBoundingClientRect();
@@ -957,7 +1006,7 @@ export function dorling(options) {
 
     //title
     out.radioContainer.append("text")
-      .text("Geographic Level")
+      .text("Geographic Level").attr("class", "dorling-legend-title")
       .attr("transform", "translate(" + (marginLeft - 5) + ",20)");
 
     //RADIO 0
@@ -1206,15 +1255,15 @@ export function dorling(options) {
       .attr("class", "dorling-play-button")
       .attr(
         "transform",
-        "translate(" + ((out.width_ / 2) - 22) + "," + (out.height_ - 45) + ")"
+        "translate(" + ((out.width_) - 30) + "," + (out.height_ - 30) + ")"
       );
     let playBtn = buttonContainer.append("g").style("visibility", "hidden");
     let pauseBtn = buttonContainer.append("g").style("visibility", "visible");
 
     playBtn
       .append("rect")
-      .attr("width", 39)
-      .attr("height", 40)
+      .attr("width", 25)
+      .attr("height", 25)
       //.attr("rx", 4)
       .style("fill", out.playButtonFill_);
     playBtn
@@ -1223,23 +1272,20 @@ export function dorling(options) {
       .style("fill", "white")
       .attr(
         "transform",
-        "translate(-5,-5)"
+        "scale(0.5)"
       )
 
     pauseBtn
       .append("rect")
-      .attr("width", 39)
-      .attr("height", 40)
+      .attr("width", 25)
+      .attr("height", 25)
       //.attr("rx", 4)
       .style("fill", out.playButtonFill_);
     pauseBtn
       .append("path")
       .attr("d", "M12,11 L23,11 23,40 12,40 M26,11 L37,11 37,40 26,40")
       .style("fill", "white")
-      .attr(
-        "transform",
-        "translate(-5,-5)"
-      )
+      .attr("transform", "scale(0.5)")
 
     buttonContainer.on("mousedown", function () {
       out.playing = !out.playing;
