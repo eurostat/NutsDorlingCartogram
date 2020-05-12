@@ -21,6 +21,9 @@
 .dorling-no-data {
   stroke: none !important;
 }
+.dorling-graticule{
+  stroke:lightgray;
+}
 
 .cntbn {
   fill: none;
@@ -52,7 +55,7 @@ font-family: 'Open Sans', "Helvetica Neue", Arial,"Noto Sans",sans-serif;
   padding: 8px;
   background-color: white;
   border-radius: 6px;
-  opacity: 0.8;
+  opacity: 0.9;
 }
 .dorling-boundary{
   fill:white;

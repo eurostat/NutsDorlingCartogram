@@ -32,12 +32,12 @@ export function dorling(options) {
   out.scale_ = null;
   out.rotateX_ = -13;
   out.rotateY_ = -61;
-  out.translateX_ = -470; //340;
-  out.translateY_ = 1015; //216;
+  out.translateX_ = null; //340;
+  out.translateY_ = null; //216;
   out.fitSizePadding_ = 0;
   //viewbox
-  out.width_ = 900;
-  out.height_ = 700;
+  out.width_ = 1000;
+  out.height_ = 1000;
   //d3 scale
   out.colorScheme_ = "interpolateRdYlBu";
   out.colors_ = null; //["#000",etc]
@@ -51,13 +51,20 @@ export function dorling(options) {
   out.showBorders_ = false;
 
   //size legend
-  out.sizeLegendTitle_ = "Total population";
-  out.sizeLegendTitleYOffset_ = 0;
-  out.sizeLegendTitleXOffset_ = 23;
 
+
+  //size legend (circle radiuses)
+  out.sizeLegend_ = {
+    title: "Total population",
+    titleYOffset: 0,
+    titleXOffset: 23,
+    textFunction: function (d) { return d },
+    values: null,
+    translateY: 215
+  };
 
   //color legend
-  out.legend_ = {
+  out.colorLegend_ = {
     //https://d3-legend.susielu.com/#color
     titleWidth: 170,
     title: "Population change (‰)",
@@ -85,11 +92,15 @@ export function dorling(options) {
     y: 0
   };
 
+
   //tooltip html
-  out.tooltipColorLabel_ = "Colour value: ";
-  out.tooltipSizeLabel_ = "Size value: ";
-  out.tooltipColorUnit_ = "";
-  out.tooltipSizeUnit_ = "";
+  out.tooltip_ = {
+    colorLabel: "Color value:",
+    colorUnit: "",
+    sizeLabel: "Size value:",
+    sizeUnit: "",
+    shareLabel: "Share value:"
+  }
 
   //data params
   out.nutsLevel_ = 2;
@@ -115,14 +126,28 @@ export function dorling(options) {
     })();
 
   //override some accesors
-  out.legend = function (v) {
+  out.colorLegend = function (v) {
     for (let key in v) {
-      out.legend_[key] = v[key];
+      out.colorLegend_[key] = v[key];
     }
     return out;
   };
 
-  //build function
+  out.sizeLegend = function (v) {
+    for (let key in v) {
+      out.sizeLegend_[key] = v[key];
+    }
+    return out;
+  };
+
+  out.tooltip = function (v) {
+    for (let key in v) {
+      out.tooltip_[key] = v[key];
+    }
+    return out;
+  };
+
+  //main build function
   out.build = function () {
 
     out.container_ = d3.select("#" + out.containerId_);
@@ -214,6 +239,18 @@ export function dorling(options) {
       out.sizeIndicator = indexStat(sizeData);
       out.colorIndicator = indexStat(colorData);
       out.totalsIndex = getTotals(out.sizeIndicator); //total of sizeIndicator for each country
+
+      // exclude values from eurostat data indices
+      if (out.exclude_) {
+        let newSizeIndicator = {};
+        for (let key in out.sizeIndicator) {
+          if (out.exclude_.indexOf(key.substring(0, 2)) == -1 && key !== "EU28" && key !== "EU27_2020") {
+            newSizeIndicator[key] = out.sizeIndicator[key];
+          }
+        }
+        out.sizeIndicator = newSizeIndicator;
+      }
+
       out.countryNamesIndex_ = getCountryNamesIndex();
 
       out.height_ = out.width_ * (out.n2j.bbox[3] - out.n2j.bbox[1]) / (out.n2j.bbox[2] - out.n2j.bbox[0])
@@ -227,15 +264,15 @@ export function dorling(options) {
       out.container_.node().appendChild(out.svg.node());
       out.container_.attr("class", "dorling-container");
       // initialize tooltip
-      if (!out.tooltip) {
-        out.tooltip = addTooltipToDOM();
+      if (!out.tooltipElement) {
+        out.tooltipElement = addTooltipToDOM();
       }
 
       // d3-geo
       out.projection = d3Geo
         .geoIdentity()
         .reflectY(true)
-        .fitExtent([[0, 0], [out.width_ + out.fitSizePadding_, out.height_ + out.fitSizePadding_]], topojson.feature(out.n2j, out.n2j.objects.cntbn))
+        .fitExtent([[0, 0], [out.width_ + out.fitSizePadding_, out.height_ + out.fitSizePadding_]], topojson.feature(out.n2j, out.n2j.objects.nutsbn))
       //out.path = d3.geoPath().projection(out.projection);
       out.path = d3Geo.geoPath().projection(out.projection);
 
@@ -247,18 +284,14 @@ export function dorling(options) {
       }
 
       //d3 scale
-      out.extent = d3.extent(Object.values(out.colorIndicator));
+      out.colorExtent = d3.extent(Object.values(out.colorIndicator));
+      out.sizeExtent = d3.extent(Object.values(out.sizeIndicator));
       //color scale
       out.colorScale = defineColorScale();
 
       if (out.graticule_) {
-        out.graticuleProjection = d3Geo
-          .geoIdentity()
-          .reflectY(true)
-          .fitSize([out.width_, out.height_], topojson.feature(out.n2j, out.n2j.objects.gra))
-        out.graticulePath = d3Geo.geoPath().projection(out.graticuleProjection);
         out.graticule = out.svg.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.gra).features)
-          .enter().append("path").attr("d", out.graticulePath).attr("class", "dorling-graticule");
+          .enter().append("path").attr("d", out.path).attr("class", "dorling-graticule");
       }
 
       //coastal margin
@@ -342,7 +375,7 @@ export function dorling(options) {
           .attr("class", function (bn) { return "cntbn" + (bn.properties.co === "T" ? " coastal" : ""); });
       }
       //nuts
-      out.nutsBorders = out.svg.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.nutsbn).features)
+      out.nutsBorders = out.svg.append("g").attr("id", "dorling-nuts-borders").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.nutsbn).features)
         .enter().append("path").filter((f) => {
           // if (f.properties.eu == "T" || f.properties.efta == "T") {
           return f;
@@ -406,25 +439,25 @@ export function dorling(options) {
     out.circles.on("mouseover", function (f) {
       if (out.stage == 2) {
         d3.select(this).attr("fill", out.highlightColor_);
-        out.tooltip.html(`<strong>${f.properties.na}</strong>
+        out.tooltipElement.html(`<strong>${f.properties.na}</strong>
                     (${f.properties.id}) <i>${out.countryNamesIndex_[f.properties.id[0] + f.properties.id[1]]}</i><br>
-                    ${out.tooltipSizeLabel_}: ${formatNumber(out.sizeIndicator[f.properties.id])} ${out.tooltipSizeUnit_}<br>
-                      Share of national population: ${(
+                    ${out.tooltip_.sizeLabel}: ${formatNumber(out.sizeIndicator[f.properties.id])} ${out.tooltip_.sizeUnit}<br>
+                    ${out.tooltip_.shareLabel}: ${(
             (out.sizeIndicator[f.properties.id] /
               out.totalsIndex[f.properties.id.substring(0, 2)]) *
             100
           ).toFixed(0)} % <br>
-        ${out.tooltipColorLabel_}: <strong>${
+        ${out.tooltip_.colorLabel}: <strong>${
           formatNumber(parseInt(out.colorIndicator[f.properties.id]))
-          } ${out.tooltipColorUnit_}</strong><br>
+          } ${out.tooltip_.colorUnit}</strong><br>
                 `);
         let matrix = this.getScreenCTM().translate(
           +this.getAttribute("cx"),
           +this.getAttribute("cy")
         );
-        out.tooltip.style("visibility", "visible");
+        out.tooltipElement.style("visibility", "visible");
         //position + offsets
-        let node = out.tooltip.node();
+        let node = out.tooltipElement.node();
         let tooltipWidth = node.offsetWidth;
         let tooltipHeight = node.offsetHeight;
         let left = window.pageXOffset + matrix.e + 20;
@@ -435,12 +468,12 @@ export function dorling(options) {
         if (top < 0) {
           top = top + (tooltipHeight + 40);
         }
-        out.tooltip.style("left", left + "px").style("top", top + "px");
+        out.tooltipElement.style("left", left + "px").style("top", top + "px");
       }
     });
     out.circles.on("mouseout", function () {
       if (out.stage == 2) {
-        out.tooltip.style("visibility", "hidden");
+        out.tooltipElement.style("visibility", "hidden");
         d3.select(this).attr("fill", (f) =>
           colorFunction(+out.colorIndicator[f.properties.id])
         );
@@ -579,7 +612,7 @@ export function dorling(options) {
 
   function restartTransition() {
     out.stage = 1;
-    out.tooltip.style("visibility", "hidden");
+    out.tooltipElement.style("visibility", "hidden");
     //reset styles and restart animation
     //fade circles
     out.circles
@@ -640,26 +673,26 @@ export function dorling(options) {
     //tooltip
     out.circles.on("mouseover", function (f) {
       d3.select(this).attr("fill", out.highlightColor_);
-      out.tooltip.html(`<strong>${f.properties.na}</strong>
+      out.tooltipElement.html(`<strong>${f.properties.na}</strong>
                   (${f.properties.id}) <i>${out.countryNamesIndex_[f.properties.id[0] + f.properties.id[1]]}</i><br>
-                  ${out.tooltipSizeLabel_}: ${formatNumber(out.sizeIndicator[f.properties.id])}
-           ${out.tooltipSizeUnit_}<br>
+                  ${out.tooltip_.sizeLabel}: ${formatNumber(out.sizeIndicator[f.properties.id])}
+           ${out.tooltip_.sizeUnit}<br>
                     Share of national population: ${(
           (out.sizeIndicator[f.properties.id] /
             out.totalsIndex[f.properties.id.substring(0, 2)]) *
           100
         ).toFixed(0)} % <br>
-      ${out.tooltipColorLabel_}: <strong>${
+      ${out.tooltip_.colorLabel}: <strong>${
         out.colorIndicator[f.properties.id]
-        } ${out.tooltipColorUnit_}</strong><br>
+        } ${out.tooltip_.colorUnit}</strong><br>
               `);
       let matrix = this.getScreenCTM().translate(
         +this.getAttribute("cx"),
         +this.getAttribute("cy")
       );
-      out.tooltip.style("visibility", "visible");
+      out.tooltipElement.style("visibility", "visible");
       //position + offsets
-      let node = out.tooltip.node();
+      let node = out.tooltipElement.node();
       let tooltipWidth = node.offsetWidth;
       let tooltipHeight = node.offsetHeight;
       let left = window.pageXOffset + matrix.e + 20;
@@ -670,13 +703,13 @@ export function dorling(options) {
       if (top < 0) {
         top = top + (tooltipHeight + 40);
       }
-      out.tooltip.style("left", left + "px").style("top", top + "px");
+      out.tooltipElement.style("left", left + "px").style("top", top + "px");
       // tooltip
       //   .style("top", d3.event.pageY - 110 + "px")
       //   .style("left", d3.event.pageX - 120 + "px");
     });
     out.circles.on("mouseout", function () {
-      out.tooltip.style("visibility", "hidden");
+      out.tooltipElement.style("visibility", "hidden");
       d3.select(this).attr("fill", (f) =>
         colorFunction(+out.colorIndicator[f.properties.id])
       );
@@ -747,15 +780,15 @@ export function dorling(options) {
     }
   }
   function addLegendsToDOM() {
-    console.log(out.projection.scale());
     addColorLegend();
     addSizeLegend();
 
 
-    //adjust legend bacgkround box height
-    out.legendBRect = out.legendContainerNode.getBoundingClientRect();
-    out.legendContainerBackground.style("height", out.legendBRect.height + 25 + "px");
-    out.legendContainerBackground.style("width", out.legendBRect.width + 25 + "px");
+    //adjust legend bacgkround box height dynamically
+    // out.legendBRect = out.legendContainerNode.getBoundingClientRect();
+    // out.legendContainerBackground.style("height", out.legendBRect.height + 25 + "px");
+    // out.legendContainerBackground.style("width", out.legendBRect.width + 25 + "px");
+    out.legendContainerBackground.style("height", "500").style("width", "500");
   }
 
   function addColorLegend() {
@@ -764,13 +797,13 @@ export function dorling(options) {
       .append("g")
       .attr("id", "dorling-legend-container")
       //svg width - legendContainer width
-      .style("height", (out.height_ - 10) + "px")
       .attr("opacity", 0);
 
     out.legendContainerBackground = out.legendContainer
       .append("rect")
       .attr("class", "dorling-legend-container-background")
-      .attr("transform", "translate(0,0)");
+      .attr("transform", "translate(0,0)")
+
     //legend <g>
     out.legendContainer
       .append("g")
@@ -779,63 +812,69 @@ export function dorling(options) {
 
     let legend = legendColor()
       //.useClass(true)
-      .title(out.legend_.title)
-      .titleWidth(out.legend_.titleWidth)
-      .orient(out.legend_.orient)
-      .shape(out.legend_.shape)
-      .shapePadding(out.legend_.shapePadding)
-      .labelAlign(out.legend_.labelAlign)
-      .labelOffset(out.legend_.labelOffset)
-      .labelFormat(out.legend_.labelFormat)
+      .title(out.colorLegend_.title)
+      .titleWidth(out.colorLegend_.titleWidth)
+      .orient(out.colorLegend_.orient)
+      .shape(out.colorLegend_.shape)
+      .shapePadding(out.colorLegend_.shapePadding)
+      .labelAlign(out.colorLegend_.labelAlign)
+      .labelOffset(out.colorLegend_.labelOffset)
+      .labelFormat(out.colorLegend_.labelFormat)
       .scale(out.colorScale)
-      .labelDelimiter(out.legend_.labelDelimiter)
-      .labelWrap(out.legend_.labelWrap);
-    if (out.legend_.cells) {
-      legend.cells(out.legend_.cells);
+      .labelDelimiter(out.colorLegend_.labelDelimiter)
+      .labelWrap(out.colorLegend_.labelWrap);
+    if (out.colorLegend_.cells) {
+      legend.cells(out.colorLegend_.cells);
     }
     if (out.colors_) {
-      if (out.legend_.labels) {
-        legend.labels(out.legend_.labels)
+      if (out.colorLegend_.labels) {
+        legend.labels(out.colorLegend_.labels)
       } else {
         legend.labels(function (d) {
           if (d.i === 0)
             return (
               "< " +
               d.generatedLabels[d.i].split(d.labelDelimiter)[1] +
-              out.legend_.labelUnit
+              out.colorLegend_.labelUnit
             );
           else if (d.i === d.genLength - 1)
             return (
               "≥ " +
               d.generatedLabels[d.i].split(d.labelDelimiter)[0] +
-              out.legend_.labelUnit
+              out.colorLegend_.labelUnit
             );
-          else return d.generatedLabels[d.i] + out.legend_.labelUnit;
+          else return d.generatedLabels[d.i] + out.colorLegend_.labelUnit;
         });
       }
     } else {
-      if (out.legend_.labels) {
-        legend.labels(out.legend_.labels)
+      if (out.colorLegend_.labels) {
+        legend.labels(out.colorLegend_.labels)
       }
     }
 
-    if (out.legend_.shape == "circle")
-      legend.shapeRadius(out.legend_.shapeRadius);
+    if (out.colorLegend_.shape == "circle")
+      legend.shapeRadius(out.colorLegend_.shapeRadius);
 
     out.svg.select(".dorling-color-legend").call(legend);
 
     //ajust position of legend container
     out.legendContainerNode = out.legendContainer.node();
-    out.legendContainer.attr("transform", "translate(650, 20)");
+    out.legendContainer.attr("transform", "translate(" + ((out.width_ - out.colorLegend_.titleWidth) - 35) + ", 0)");
   }
   function addSizeLegend() {
     //circle size legend
-    let brect = out.legendContainerNode.getBoundingClientRect();
-    out.sizeLegendTranslateY = brect.height;
+    // let brect = out.legendContainerNode.getBoundingClientRect();
+    // out.sizeLegendTranslateY = brect.height;
+
+    //assign default circle radiuses if none specified by user
+    if (!out.sizeLegend_.values) {
+      out.out.sizeLegend_.values = [Math.floor(out.sizeExtent[1]), Math.floor(out.sizeExtent[1] / 2), Math.floor(out.sizeExtent[1] / 10)]
+    }
+
     out.sizeLegendContainer = out.legendContainer
       .append("g")
       .attr("id", "dorling-size-legend-container")
-      .attr("transform", "translate(0," + out.sizeLegendTranslateY + ")")
+      .attr("transform", "translate(0," + out.sizeLegend_.translateY + ")")
       .attr("opacity", 0);
     let sizeLegendBackground = out.sizeLegendContainer
       .append("rect")
@@ -845,21 +884,22 @@ export function dorling(options) {
       .append("g")
       .attr("fill", "black")
       .attr("class", "dorling-size-legend-title")
-      .attr("transform", "translate(" + out.sizeLegendTitleXOffset_ + "," + out.sizeLegendTitleYOffset_ + ")")
+      .attr("transform", "translate(" + out.sizeLegend_.titleXOffset + "," + out.sizeLegend_.titleYOffset + ")")
       .attr("text-anchor", "right");
     legendTitle
       .append("text")
       .attr("y", 5)
       .attr("x", 0)
       .attr("dy", "1.3em")
-      .text(out.sizeLegendTitle_);
+      .text(out.sizeLegend_.title);
     const legC = out.sizeLegendContainer
       .append("g")
       .attr("fill", "black")
       .attr("transform", "translate(40, 85)")
       .attr("text-anchor", "right")
       .selectAll("g")
-      .data([20e6, 10e6, 1e6])
+      // .data([20e6, 10e6, 1e6])
+      .data(out.sizeLegend_.values)
       .join("g");
     legC
       .append("circle")
@@ -880,7 +920,7 @@ export function dorling(options) {
       .attr("x", 30)
       .attr("dy", "1.3em")
       .text((d) => {
-        return d / 1000000 + " million"
+        return out.sizeLegend_.textFunction(d);
         //return d.toLocaleString("en").replace(/,/gi, " ");
       });
   }
@@ -897,7 +937,7 @@ export function dorling(options) {
     let backgroundHeight = 160;
     let radioDotOpacity = 0.3;
 
-
+    out.nutsSelectorTranslateY = 330;
     //main container
     let sl = document.getElementById("dorling-size-legend-container")
     let slbr = sl.getBoundingClientRect();
@@ -906,7 +946,7 @@ export function dorling(options) {
       .attr("id", "dorling-nuts-selector")
       //.attr("class", "dorling-nuts-selector-container dorling-plugin")
       .attr("opacity", 0)
-      .attr("transform", "translate(0, " + (out.sizeLegendTranslateY + slbr.height + 15) + ")")
+      .attr("transform", "translate(0, " + out.nutsSelectorTranslateY + ")")
 
     //background
     out.radioContainer
@@ -1250,14 +1290,14 @@ export function dorling(options) {
       if (out.thresholdValues_) {
         return d3
           .scaleDiverging()
-          .domain([out.extent[0], 0, out.extent[1]])
+          .domain([out.colorExtent[0], 0, out.colorExtent[1]])
           .interpolator(d3[out.colorScheme_]);
         //.range();
       } else {
         //default
         return d3
           .scaleDivergingSymlog((t) => d3[out.colorScheme_](1 - t))
-          .domain([out.extent[0], out.extent[1] / 2, out.extent[1]])
+          .domain([out.colorExtent[0], out.colorExtent[1] / 2, out.colorExtent[1]])
           .nice();
       }
     }

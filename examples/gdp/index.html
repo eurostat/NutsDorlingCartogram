@@ -21,16 +21,16 @@
             .thresholdValues([20000, 50000, 80000, 100000, 200000, 1000000])
             .showNutsSelector(true)
             .zoom(false)
-            .sizeDatasetCode("demo_r_pjangrp3")
-            .sizeDatasetFilters("sex=T&age=TOTAL&unit=NR&time=2019")
-            .colorDatasetCode("nama_10r_2gdp")
-            .colorDatasetFilters("precision=1&unit=MIO_EUR&time=2018")
-            .legend({
+            .sizeDatasetCode("nama_10r_3gdp")
+            .sizeDatasetFilters("precision=1&unit=MIO_EUR&time=2018")
+            .colorDatasetCode("nama_10r_3gdp")
+            .colorDatasetFilters("precision=1&unit=EUR_HAB&time=2018")
+            .circleExaggerationFactor(5)
+            .colorLegend({
                 //https://d3-legend.susielu.com/#color
-                titleWidth: 170,
-                title: "GDP (million euro) 2018",
+                titleWidth: 190,
+                title: "EUR_HAB 2018",
                 orient: "vertical",
-                shape: "rect",
                 shapeRadius: 10,
                 shapePadding: 5,
                 labelAlign: "middle",
@@ -40,17 +40,28 @@
                 shape: "circle",
                 //cells: 10,
             })
+            .sizeLegend({
+                title: "Total GDP 2018 (million euro)",
+                titleYOffset: -5,
+                titleXOffset: 23,
+                textFunction: function (d) { return d.toLocaleString("en").replace(/,/gi, " "); },
+                values: [700000, 300000, 100000]
+            })
+            .tooltip({
+                colorLabel: "Gross domestic product (EUR per inhabitant)",
+                sizeLabel: "Gross domestic product (million EUR)",
+                shareLabel: "Share of national gross domestic product",
+            })
             .exclude(["MK", "ME", "TR", "AL", "RS", "CH", "IS"])
-            .coastalMargins(true)
             .graticule(false)
             .animate(true)
             .loop(true)
-            .pauseButton(true)
+            .pauseButton(false)
             .showBorders(true)
-            .sizeLegendTitle("Total population 2019")
-            .sizeLegendTitleYOffset(-5)
-            .tooltipColorLabel("GDP (million euro)")
-            .tooltipSizeLabel("Total population")
+            //d3-geo stuff
+            .translateX(-452)
+            .translateY(1126)
+            .scale(0.0002065379208173783)
             .build();
     </script>
 </body>
