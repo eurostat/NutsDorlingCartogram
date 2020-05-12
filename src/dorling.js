@@ -829,7 +829,7 @@ export function dorling(options) {
             //if circle color isnt that of the hovered cell
             if (colorFunction(+out.colorIndicator[f.properties.id]) !== color) {
               //
-              return "none"
+              return "white"
             } else {
               return color
             }
