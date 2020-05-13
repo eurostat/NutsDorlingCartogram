@@ -29,11 +29,9 @@ export function dorling(options) {
   out.simulationDuration_ = 8000; //duration of d3 force simulation in miliseconds
 
   //d3-geo
-  out.scale_ = null;
-  out.rotateX_ = -13;
-  out.rotateY_ = -61;
-  out.translateX_ = null; //340;
-  out.translateY_ = null; //216;
+  out.translateX_ = -500; //-390;
+  out.translateY_ = 1126; //1126;
+  out.scale_ = 0.0002065379208173783;
   out.fitSizePadding_ = 0;
   //viewbox
   out.width_ = 1000;
@@ -61,8 +59,8 @@ export function dorling(options) {
     textFunction: function (d) { return d },
     values: null,
     translateY: 215,
-    translateBodyX: 50,
-    translateBodyY: 90
+    bodyXOffset: 50,
+    bodyYOffset: 90
   };
 
   //color legend
@@ -589,13 +587,11 @@ export function dorling(options) {
 
     out.simulation.on("end", function () {
       out.forceInProgress = false;
-      // if (!out.loop_) {
-      //   out.simulation.stop();
-      //   restartTransition();
-      // }
       out.simulation.stop();
-      if (out.playing) {
-        restartTransition();
+      if (out.loop_) {
+        if (out.playing) {
+          restartTransition();
+        }
       }
       //restart after 8 seconds
     });
@@ -916,7 +912,7 @@ export function dorling(options) {
     const legC = out.sizeLegendContainer
       .append("g")
       .attr("fill", "black")
-      .attr("transform", "translate(" + out.sizeLegend_.translateBodyX + "," + out.sizeLegend_.translateBodyY + ")") //TODO: make dynamic
+      .attr("transform", "translate(" + out.sizeLegend_.bodyXOffset + "," + out.sizeLegend_.bodyYOffset + ")") //TODO: make dynamic
       .attr("text-anchor", "right")
       .selectAll("g")
       // .data([20e6, 10e6, 1e6])
