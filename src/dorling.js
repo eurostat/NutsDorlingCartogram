@@ -48,9 +48,6 @@ export function dorling(options) {
   out.pauseButton_ = false;
   out.showBorders_ = false;
 
-  //size legend
-
-
   //size legend (circle radiuses)
   out.sizeLegend_ = {
     title: "Total population",
@@ -99,6 +96,14 @@ export function dorling(options) {
     sizeUnit: "",
     shareLabel: "Share value:"
   }
+
+  //copyright text
+  out.bottomText_ = "Administrative boundaries: \u00A9EuroGeographics \u00A9UN-FAO \u00A9INSTAT \u00A9Turkstat"; //"(C)EuroGeographics (C)UN-FAO (C)Turkstat";
+  out.bottomTextFontSize_ = 12;
+  out.bottomTextFill_ = "black";
+  out.bottomTextFontFamily_ = "'Open Sans', 'Helvetica Neue', Arial,'Noto Sans',sans-serif";
+  out.bottomTextPadding_ = 10;
+  out.bottomTextTooltipMessage_ = "The designations employed and the presentation of material on this map do not imply the expression of any opinion whatsoever on the part of the European Union concerning the legal status of any country, territory, city or area or of its authorities, or concerning the delimitation of its frontiers or boundaries. Kosovo*: This designation is without prejudice to positions on status, and is in line with UNSCR 1244/1999 and the ICJ Opinion on the Kosovo declaration of independence. Palestine*: This designation shall not be construed as recognition of a State of Palestine and is without prejudice to the individual positions of the Member States on this issue.";
 
   //data params
   out.nutsLevel_ = 2;
@@ -419,6 +424,10 @@ export function dorling(options) {
         addNutsSelectorToDOM();
       }
 
+      if (out.bottomText_) {
+        addDisclaimerToDOM();
+      }
+
       if (out.animate_) {
         if (out.pauseButton_) {
           out.playButton = addPlayButtonToDOM();
@@ -432,6 +441,46 @@ export function dorling(options) {
     });
     return out;
   };
+
+  function addDisclaimerToDOM() {
+    out.svg.append("text").attr("font-size", out.bottomTextFontSize_).attr("id", "bottomtext").attr("x", out.bottomTextPadding_).attr("y", out.height_ - out.bottomTextPadding_)
+      .text(out.bottomText_)
+      .style("font-family", out.bottomTextFontFamily_)
+      .style("font-size", out.bottomTextFontSize_)
+      .style("fill", out.bottomTextFill_)
+      .on("mouseover", function () {
+        out.tooltipElement.style("visibility", "visible");
+        out.tooltipElement.style("font-size", "12px")
+        let svgNode = out.svg.node();
+        let svgWidth = svgNode.clientWidth;
+        out.tooltipElement.style("max-width", svgWidth + "px")
+        out.tooltipElement.html(`${out.bottomTextTooltipMessage_}`)
+        //tooltip position + offsets
+        let matrix = this.getScreenCTM().translate(
+          +this.getAttribute("x"),
+          +this.getAttribute("y")
+        );
+        let node = out.tooltipElement.node();
+        let tooltipWidth = node.offsetWidth;
+        let tooltipHeight = node.offsetHeight;
+        let left = window.pageXOffset + matrix.e + 20;
+        let top = window.pageYOffset + matrix.f - 100;
+        if (left > out.width_ - tooltipWidth) {
+          left = left - (tooltipWidth + 40);
+        }
+        if (left < 0) {
+          left = 1;
+        }
+        if (top < 0) {
+          top = top + (tooltipHeight);
+        }
+        out.tooltipElement.style("left", left + "px").style("top", top + "px");
+      })
+      .on("mouseout", function () {
+        out.tooltipElement.style("visibility", "hidden");
+        out.tooltipElement.style("font-size", "14px")
+      })
+  }
 
   function addMouseEvents() {
     out.circles.on("mouseover", function (f) {
@@ -449,12 +498,14 @@ export function dorling(options) {
           formatNumber(parseInt(out.colorIndicator[f.properties.id]))
           } ${out.tooltip_.colorUnit}</strong><br>
                 `);
+
+        out.tooltipElement.style("visibility", "visible");
+
+        //tooltip position + offsets
         let matrix = this.getScreenCTM().translate(
           +this.getAttribute("cx"),
           +this.getAttribute("cy")
         );
-        out.tooltipElement.style("visibility", "visible");
-        //position + offsets
         let node = out.tooltipElement.node();
         let tooltipWidth = node.offsetWidth;
         let tooltipHeight = node.offsetHeight;
@@ -462,6 +513,9 @@ export function dorling(options) {
         let top = window.pageYOffset + matrix.f - 100;
         if (left > out.width_ - tooltipWidth) {
           left = left - (tooltipWidth + 40);
+        }
+        if (left < 0) {
+          left = 1;
         }
         if (top < 0) {
           top = top + (tooltipHeight + 40);
