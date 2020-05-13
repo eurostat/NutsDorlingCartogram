@@ -80,6 +80,9 @@ circle.swatch {
   stroke: black;
   cursor: pointer;
 }
+text.label{
+  cursor: pointer;
+}
 .dorling-legend-container-background {
   fill: white;
 }
