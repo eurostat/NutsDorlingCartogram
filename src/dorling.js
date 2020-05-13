@@ -439,7 +439,7 @@ export function dorling(options) {
         d3.select(this).attr("fill", out.highlightColor_);
         out.tooltipElement.html(`<strong>${f.properties.na}</strong>
                     (${f.properties.id}) <i>${out.countryNamesIndex_[f.properties.id[0] + f.properties.id[1]]}</i><br>
-                    ${out.tooltip_.sizeLabel}: ${formatNumber(out.sizeIndicator[f.properties.id])} ${out.tooltip_.sizeUnit}<br>
+                    ${out.tooltip_.sizeLabel}: ${formatNumber(Math.round(out.sizeIndicator[f.properties.id]))} ${out.tooltip_.sizeUnit}<br>
                     ${out.tooltip_.shareLabel}: ${(
             (out.sizeIndicator[f.properties.id] /
               out.totalsIndex[f.properties.id.substring(0, 2)]) *
@@ -1303,6 +1303,7 @@ export function dorling(options) {
 
 
   out.play = function () {
+    out.playing = true;
     animate();
   }
   out.pause = function () {
