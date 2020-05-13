@@ -1002,7 +1002,7 @@ export function dorling(options) {
 
     //title
     out.radioContainer.append("text")
-      .text("Geographic Level").attr("class", "dorling-legend-title")
+      .text("Geographic level").attr("class", "dorling-legend-title")
       .attr("transform", "translate(" + (marginLeft - 5) + ",20)");
 
     //RADIO 0
