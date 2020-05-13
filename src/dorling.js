@@ -191,23 +191,46 @@ export function dorling(options) {
     }
     //data promises
     let promises = [];
-    promises.push(
-      d3.json(
-        `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/3035/nutspt_${out.nutsLevel_}.json`
-      ), //centroids
-      d3.json(
-        `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/3035/20M/${out.nutsLevel_}.json`
-      ), //NUTS
-      d3.json(
-        `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/3035/20M/0.json`
-      ), //countries
-      d3.json(
-        `https://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/${out.sizeDatasetCode_}?geoLevel=${nutsParam}&${out.sizeDatasetFilters_}`
-      ), //sizeData
-      d3.json(
-        `https://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/${out.colorDatasetCode_}?geoLevel=${nutsParam}&${out.colorDatasetFilters_}`
-      ), //colorData
-    );
+    //add exeption for GDP at NUTS 3 level (no data for 2018)
+    if (out.nutsLevel_ == 3 && out.colorDatasetCode_ == "nama_10r_3gdp" && out.colorDatasetFilters_ == "precision=1&unit=EUR_HAB&time=2018") {
+      promises.push(
+        d3.json(
+          `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/3035/nutspt_${out.nutsLevel_}.json`
+        ), //centroids
+        d3.json(
+          `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/3035/20M/${out.nutsLevel_}.json`
+        ), //NUTS
+        d3.json(
+          `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/3035/20M/0.json`
+        ), //countries
+        d3.json(
+          `https://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/${out.sizeDatasetCode_}?geoLevel=${nutsParam}&${out.sizeDatasetFilters_}`
+        ), //sizeData
+        d3.json(
+          `https://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/${out.colorDatasetCode_}?geoLevel=${nutsParam}&precision=1&unit=EUR_HAB&time=2018`
+        ), //colorData
+      );
+    } else {
+      promises.push(
+        d3.json(
+          `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/3035/nutspt_${out.nutsLevel_}.json`
+        ), //centroids
+        d3.json(
+          `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/3035/20M/${out.nutsLevel_}.json`
+        ), //NUTS
+        d3.json(
+          `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/3035/20M/0.json`
+        ), //countries
+        d3.json(
+          `https://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/${out.sizeDatasetCode_}?geoLevel=${nutsParam}&${out.sizeDatasetFilters_}`
+        ), //sizeData
+        d3.json(
+          `https://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/${out.colorDatasetCode_}?geoLevel=${nutsParam}&${out.colorDatasetFilters_}`
+        ), //colorData
+      );
+    }
+
+
 
     Promise.all(promises).then((res) => {
       hideLoadingSpinner();
@@ -485,18 +508,20 @@ export function dorling(options) {
   function addMouseEvents() {
     out.circles.on("mouseover", function (f) {
       if (out.stage == 2) {
-        d3.select(this).attr("fill", out.highlightColor_);
+        // d3.select(this).attr("fill", out.highlightColor_);
+        d3.select(this).attr("stroke-width", "3px");
+
         out.tooltipElement.html(`<strong>${f.properties.na}</strong>
                     (${f.properties.id}) <i>${out.countryNamesIndex_[f.properties.id[0] + f.properties.id[1]]}</i><br>
+                    ${out.tooltip_.colorLabel}: <strong>${
+          formatNumber(parseInt(out.colorIndicator[f.properties.id]))
+          } ${out.tooltip_.colorUnit}</strong><br>
                     ${out.tooltip_.sizeLabel}: ${formatNumber(Math.round(out.sizeIndicator[f.properties.id]))} ${out.tooltip_.sizeUnit}<br>
                     ${out.tooltip_.shareLabel}: ${(
             (out.sizeIndicator[f.properties.id] /
               out.totalsIndex[f.properties.id.substring(0, 2)]) *
             100
           ).toFixed(0)} % <br>
-        ${out.tooltip_.colorLabel}: <strong>${
-          formatNumber(parseInt(out.colorIndicator[f.properties.id]))
-          } ${out.tooltip_.colorUnit}</strong><br>
                 `);
 
         out.tooltipElement.style("visibility", "visible");
@@ -526,9 +551,10 @@ export function dorling(options) {
     out.circles.on("mouseout", function () {
       if (out.stage == 2) {
         out.tooltipElement.style("visibility", "hidden");
-        d3.select(this).attr("fill", (f) =>
-          colorFunction(+out.colorIndicator[f.properties.id])
-        );
+        d3.select(this).attr("stroke-width", "1px");
+        // d3.select(this).attr("fill", (f) =>
+        //   colorFunction(+out.colorIndicator[f.properties.id])
+        // );
       }
     });
   }
