@@ -191,8 +191,8 @@ export function dorling(options) {
     }
     //data promises
     let promises = [];
-    //add exeption for GDP at NUTS 3 level (no data for 2018)
-    if (out.nutsLevel_ == 3 && out.colorDatasetCode_ == "nama_10r_3gdp" && out.colorDatasetFilters_ == "precision=1&unit=EUR_HAB&time=2018") {
+    //add exeption for GDP at NUTS 3 level (no data for 2018 so overrides to 2016 data)
+    if (out.nutsLevel_ == 3 && out.sizeDatasetCode_ == "nama_10r_3gdp" && out.sizeDatasetFilters_ == "unit=MIO_EUR&time=2018") {
       promises.push(
         d3.json(
           `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/3035/nutspt_${out.nutsLevel_}.json`
@@ -204,10 +204,10 @@ export function dorling(options) {
           `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/3035/20M/0.json`
         ), //countries
         d3.json(
-          `https://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/${out.sizeDatasetCode_}?geoLevel=${nutsParam}&${out.sizeDatasetFilters_}`
+          `https://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/${out.sizeDatasetCode_}?geoLevel=${nutsParam}&unit=MIO_EUR&time=2016`
         ), //sizeData
         d3.json(
-          `https://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/${out.colorDatasetCode_}?geoLevel=${nutsParam}&precision=1&unit=EUR_HAB&time=2018`
+          `https://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/${out.colorDatasetCode_}?geoLevel=${nutsParam}&unit=MIO_EUR&time=2016`
         ), //colorData
       );
     } else {
@@ -432,6 +432,11 @@ export function dorling(options) {
         .selectAll("circle")
         .data(out.centroids.features)
         .enter()
+        .filter((f) => {
+          if (out.sizeIndicator[f.properties.id] && out.colorIndicator[f.properties.id]) {
+            return f;
+          }
+        })
         .append("circle")
         .attr("cx", (f) => out.projection(f.geometry.coordinates)[0])
         .attr("cy", (f) => out.projection(f.geometry.coordinates)[1])
