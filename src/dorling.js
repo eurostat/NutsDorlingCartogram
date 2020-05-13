@@ -846,19 +846,25 @@ export function dorling(options) {
         legend.labels(out.colorLegend_.labels)
       } else {
         legend.labels(function (d) {
-          if (d.i === 0)
-            return (
-              "< " +
-              d.generatedLabels[d.i].split(d.labelDelimiter)[1] +
-              out.colorLegend_.labelUnit
-            );
-          else if (d.i === d.genLength - 1)
-            return (
-              "≥ " +
-              d.generatedLabels[d.i].split(d.labelDelimiter)[0] +
-              out.colorLegend_.labelUnit
-            );
-          else return d.generatedLabels[d.i] + out.colorLegend_.labelUnit;
+          //colorLegend.locale() doesnt work with d3v5 so this is a work around for implementing spaces as a thousand separator
+          var r = /\d+/g; //regExp for getting numbers from a string
+          let label;
+          //first label
+          if (d.i === 0) {
+            label = d.generatedLabels[d.i].split(d.labelDelimiter)[1] + out.colorLegend_.labelUnit;
+            var m = label.match(r);
+            return "< " + formatNumber(parseInt(m[0]));
+            //last label
+          } else if (d.i === d.genLength - 1) {
+            label = d.generatedLabels[d.i].split(d.labelDelimiter)[0] + out.colorLegend_.labelUnit;
+            var m = label.match(r);
+            return "≥ " + formatNumber(parseInt(m[0]));
+            //intermediate labels
+          } else {
+            label = d.generatedLabels[d.i] + out.colorLegend_.labelUnit;
+            var m = label.match(r);
+            return formatNumber(parseInt(m[0])) + d.labelDelimiter + formatNumber(parseInt(m[1]));
+          }
         });
       }
     } else {
