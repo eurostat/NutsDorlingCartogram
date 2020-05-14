@@ -207,7 +207,7 @@ export function dorling(options) {
           `https://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/${out.sizeDatasetCode_}?geoLevel=${nutsParam}&unit=MIO_EUR&time=2016`
         ), //sizeData
         d3.json(
-          `https://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/${out.colorDatasetCode_}?geoLevel=${nutsParam}&unit=MIO_EUR&time=2016`
+          `https://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/${out.colorDatasetCode_}?geoLevel=${nutsParam}&unit=EUR_HAB&time=2016`
         ), //colorData
       );
     } else {
