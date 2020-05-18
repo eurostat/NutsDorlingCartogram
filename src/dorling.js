@@ -50,7 +50,7 @@ export function dorling(options) {
     title: "Size Legend",
     titleYOffset: 0,
     titleXOffset: 23,
-    textFunction: function (d) { return d },
+    textFunction: function (d) { return d.toLocaleString() },
     values: null,
     translateY: 215,
     bodyXOffset: 50,
@@ -61,7 +61,7 @@ export function dorling(options) {
   out.colorLegend_ = {
     //https://d3-legend.susielu.com/#color
     titleWidth: 170,
-    title: "Population change (‰)",
+    title: "Colour Legend",
     orient: "vertical",
     cells: null,
     shape: "rect",
@@ -201,10 +201,10 @@ export function dorling(options) {
           `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/3035/20M/0.json`
         ), //countries
         d3.json(
-          `https://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/${out.sizeDatasetCode_}?geoLevel=${nutsParam}&unit=MIO_EUR&time=2016`
+          `https://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/${out.sizeDatasetCode_}?geoLevel=${nutsParam}&unit=MIO_EUR&time=2017`
         ), //sizeData
         d3.json(
-          `https://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/${out.colorDatasetCode_}?geoLevel=${nutsParam}&unit=EUR_HAB&time=2016`
+          `https://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/${out.colorDatasetCode_}?geoLevel=${nutsParam}&unit=EUR_HAB&time=2017`
         ), //colorData
       );
     } else {
@@ -264,15 +264,21 @@ export function dorling(options) {
       out.totalsIndex = getTotals(out.sizeIndicator); //total of sizeIndicator for each country
 
       // exclude values from eurostat data indices
-      if (out.exclude_) {
-        let newSizeIndicator = {};
-        for (let key in out.sizeIndicator) {
+
+      let newSizeIndicator = {};
+      for (let key in out.sizeIndicator) {
+        if (out.exclude_) {
           if (out.exclude_.indexOf(key.substring(0, 2)) == -1 && key !== "EU28" && key !== "EU27_2020") {
             newSizeIndicator[key] = out.sizeIndicator[key];
           }
+        } else {
+          //exlude eu values to not skew size legend values
+          if (key.indexOf("EU") == -1) {
+            newSizeIndicator[key] = out.sizeIndicator[key];
+          }
         }
-        out.sizeIndicator = newSizeIndicator;
       }
+      out.sizeIndicator = newSizeIndicator;
 
       out.countryNamesIndex_ = getCountryNamesIndex();
 
@@ -896,7 +902,7 @@ export function dorling(options) {
 
     //assign default circle radiuses if none specified by user
     if (!out.sizeLegend_.values) {
-      out.out.sizeLegend_.values = [Math.floor(out.sizeExtent[1]), Math.floor(out.sizeExtent[1] / 2), Math.floor(out.sizeExtent[1] / 10)]
+      out.sizeLegend_.values = [Math.floor(toRadius(out.sizeExtent[1])), Math.floor(out.sizeExtent[1] / 2), Math.floor(out.sizeExtent[1] / 10)]
     }
 
     out.sizeLegendContainer = out.legendContainer

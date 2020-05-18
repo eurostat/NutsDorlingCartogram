@@ -25,31 +25,6 @@
             .colorDatasetFilters("indic_de=GROWRT&time=2018")
             .circleExaggerationFactor(1.9)
             .positionStrength(0.5)
-            .colorLegend({
-                titleWidth: 200,
-                title: "Population change 2018-2019 (per 1 000 inhabitants)",
-                orient: "vertical",
-                shapeRadius: 10,
-                shapePadding: 5,
-                labelAlign: "middle",
-                labelUnit: " ",
-                labelOffset: 10,
-                shape: "circle",
-                labelFormat: d3.format(".0f")
-            })
-            .sizeLegend({
-                title: "Total population",
-                titleYOffset: 3,
-                titleXOffset: 23,
-                bodyYOffset: 110,
-                textFunction: function (d) { return d / 1000000 + " million" },
-                values: [20e6, 10e6, 1e6]
-            })
-            .tooltip({
-                colorLabel: "Population change per 1 000 inhabitants",
-                sizeLabel: "Total population",
-                shareLabel: "Share of national population",
-            })
             .coastalMargins(true)
             .graticule(false)
             .loop(false)

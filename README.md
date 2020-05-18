@@ -101,7 +101,7 @@ dorling.**colorLegend** | Object which stores the configuration parameters for t
 dorling.**sizeLegend** | Object which stores the configuration parameters for the circle-size legend | object | false |  
 &nbsp;&nbsp; sizeLegend.title | Legend title | string | false | "Size Legend"  
 &nbsp;&nbsp; sizeLegend.values | Array of values used in the legend | array | false | null    
-&nbsp;&nbsp; sizeLegend.textFunction | Function used to manipulate legend labels | function | false |  function (label) { return label }    
+&nbsp;&nbsp; sizeLegend.textFunction | Function used to manipulate legend labels | function | false |  function (value) { return value.toLocaleString() }    
 &nbsp;&nbsp; sizeLegend.titleYOffset | Y Offset in pixels applied to the legend's title | string | false | 0
 &nbsp;&nbsp; sizeLegend.titleXOffset | X Offset in pixels applied to the legend's title | string | false | 23  
 &nbsp;&nbsp; sizeLegend.translateY | Y value to be applied to the translate transform of the size legend within the parent "legends" container | number | false | 215  
