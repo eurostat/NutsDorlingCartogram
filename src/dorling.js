@@ -42,7 +42,6 @@ export function dorling(options) {
   out.thresholdValues_ = null; //[1,100,1000]
   out.thresholds_ = 7;
   //interactivity
-  out.zoom_ = true;
   out.animate_ = true;
   out.loop_ = true;
   out.pauseButton_ = false;
@@ -315,20 +314,23 @@ export function dorling(options) {
       //color scale
       out.colorScale = defineColorScale();
 
+      //container for all map stuff
+      out.map = out.svg.append("g").attr("transform", "translate(0,0)");
+
       if (out.graticule_) {
-        out.graticule = out.svg.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.gra).features)
+        out.graticule = out.map.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.gra).features)
           .enter().append("path").attr("d", out.path).attr("class", "dorling-graticule");
       }
 
       //coastal margin
       if (out.coastalMargins_) {
         //define filter for coastal margin
-        // out.svg.append("filter").attr("id", "coastal_blur").attr("x", "-200%").attr("y", "-200%").attr("width", "400%").attr("height", "400%")
+        // out.map.append("filter").attr("id", "coastal_blur").attr("x", "-200%").attr("y", "-200%").attr("width", "400%").attr("height", "400%")
         //   .append("feGaussianBlur").attr("in", "SourceGraphic").attr("stdDeviation", "14")
         //   ;		//draw coastal margin
 
         // //draw coastal margin
-        // var cg = out.svg.append("g").attr("id", "g_coast_margin")
+        // var cg = out.map.append("g").attr("id", "g_coast_margin")
         //   .style("fill", "none")
         //   .style("stroke-width", "13")
         //   .style("stroke", "white")
@@ -337,13 +339,13 @@ export function dorling(options) {
         //   .style("stroke-linecap", "round");
 
         // //country coastal margins
-        // out.svg.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.cntbn).features).enter()
+        // out.map.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.cntbn).features).enter()
         //   .append("path").attr("d", out.path)
         //   .style("fill", "none").style("stroke-width", "10").style("filter", "url(#coastal_blur)").style("stroke-linejoin", "round").style("stroke-linecap", "round")
         //   .style("stroke", function (bn) { if (bn.properties.co === "T") return "white"; return "none"; })
         //   ;
         // //nuts coastal margins
-        // out.svg.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.nutsbn).features).enter()
+        // out.map.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.nutsbn).features).enter()
         //   .append("path").attr("d", out.path)
         //   .style("fill", "none").style("stroke-width", "10").style("filter", "url(#coastal_blur)").style("stroke-linejoin", "round").style("stroke-linecap", "round")
         //   .style("stroke", function (bn) { if (bn.properties.co === "T") return "white"; return "none"; })
@@ -372,7 +374,7 @@ export function dorling(options) {
 
       if (out.showBorders_) {
         //draw regions
-        out.countries = out.svg.append("g").attr("id", "dorling-countries").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.cntrg).features)
+        out.countries = out.map.append("g").attr("id", "dorling-countries").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.cntrg).features)
           .enter().append("path").filter((f) => {
             //exclude GL
             if (f.properties.id !== "GL") {
@@ -380,7 +382,7 @@ export function dorling(options) {
             }
           }).attr("d", out.path).attr("class", "cntrg");
 
-        out.nuts = out.svg.append("g").attr("id", "dorling-nuts").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.nutsrg).features)
+        out.nuts = out.map.append("g").attr("id", "dorling-nuts").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.nutsrg).features)
           .enter().append("path").attr("d", out.path).attr("class", function (bn) {
             if (out.exclude_.indexOf(bn.properties.id.substring(0, 2)) == -1) {
               return "nutsrg"
@@ -391,7 +393,7 @@ export function dorling(options) {
 
         //draw boundaries
         //countries
-        out.countryBorders = out.svg.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.cntbn).features)
+        out.countryBorders = out.map.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.cntbn).features)
           .enter().append("path").filter((f) => {
             //exclude GL
             if (f.properties.id !== "GL") {
@@ -401,7 +403,7 @@ export function dorling(options) {
           .attr("class", function (bn) { return "cntbn" + (bn.properties.co === "T" ? " coastal" : ""); });
       }
       //nuts
-      out.nutsBorders = out.svg.append("g").attr("id", "dorling-nuts-borders").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.nutsbn).features)
+      out.nutsBorders = out.map.append("g").attr("id", "dorling-nuts-borders").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.nutsbn).features)
         .enter().append("path").filter((f) => {
           // if (f.properties.eu == "T" || f.properties.efta == "T") {
           return f;
@@ -419,7 +421,7 @@ export function dorling(options) {
           // }
         });
 
-      // out.kosovo = out.svg.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.cntbn).features)
+      // out.kosovo = out.map.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.cntbn).features)
       //   .enter().append("path").filter(function (f) {
       //     return f.properties.id == 999999
       //   }).attr("d", out.path)
@@ -427,7 +429,7 @@ export function dorling(options) {
 
 
       //define region centroids
-      out.circles = out.svg
+      out.circles = out.map
         .append("g")
         .selectAll("circle")
         .data(out.centroids.features)
@@ -456,6 +458,8 @@ export function dorling(options) {
         addDisclaimerToDOM();
       }
 
+      addZoomButtonsToDOM();
+
       if (out.animate_) {
         if (out.pauseButton_) {
           out.playButton = addPlayButtonToDOM();
@@ -469,6 +473,27 @@ export function dorling(options) {
     });
     return out;
   };
+
+  function addZoomButtonsToDOM() {
+    let buttonContainer = document.createElement("div");
+    buttonContainer.classList.add("dorling-leaflet-control-zoom")
+    let zoomIn = document.createElement("a");
+    zoomIn.classList.add("dorling-leaflet-control-zoom-in")
+    zoomIn.innerHTML = "+";
+    let zoomOut = document.createElement("a");
+    zoomOut.classList.add("dorling-leaflet-control-zoom-out")
+    zoomOut.innerHTML = "-";
+    buttonContainer.appendChild(zoomIn)
+    buttonContainer.appendChild(zoomOut)
+    out.container_.node().appendChild(buttonContainer);
+
+    zoomIn.addEventListener("click", function (e) {
+      out.svg.transition().call(out.zoom.scaleBy, 1.5)
+    });
+    zoomOut.addEventListener("click", function (e) {
+      out.svg.transition().call(out.zoom.scaleBy, 0.5)
+    });
+  }
 
   function addDisclaimerToDOM() {
     out.svg.append("text").attr("font-size", out.bottomTextFontSize_).attr("id", "bottomtext").attr("x", out.bottomTextPadding_).attr("y", out.height_ - out.bottomTextPadding_)
@@ -841,24 +866,23 @@ export function dorling(options) {
   }
   function addZoom() {
     //add d3 zoom
-    if (out.zoom_) {
-      out.svg.call(
-        d3
-          .zoom()
-          .extent([
-            [0, 0],
-            [out.width_, out.height_],
-          ])
-          .translateExtent([
-            [0, 0],
-            [out.width_, out.height_],
-          ])
-          .scaleExtent([1, 8])
-          .on("zoom", () => {
-            zoomed(out.circles, out.coastL);
-          })
-      );
-    }
+    out.zoom = d3
+      .zoom()
+      .extent([
+        [0, 0],
+        [out.width_, out.height_],
+      ])
+      .translateExtent([
+        [0, 0],
+        [out.width_, out.height_],
+      ])
+      .scaleExtent([1, 8])
+      .on("zoom", () => {
+        zoomed();
+      })
+    out.svg.call(
+      out.zoom
+    ).on("wheel.zoom", null);
   }
   function addLegendsToDOM() {
     addColorLegend();
@@ -1434,11 +1458,11 @@ export function dorling(options) {
   }
 
   function zoomed() {
-    out.circles.attr("transform", d3.event.transform);
-    out.countries.attr("transform", d3.event.transform);
-    out.countryBorders.attr("transform", d3.event.transform);
-    out.nuts.attr("transform", d3.event.transform);
-    out.nutsBorders.attr("transform", d3.event.transform);
+    out.map.attr("transform", d3.event.transform);
+    // out.countries.attr("transform", d3.event.transform);
+    // out.countryBorders.attr("transform", d3.event.transform);
+    // out.nuts.attr("transform", d3.event.transform);
+    // out.nutsBorders.attr("transform", d3.event.transform);
     //out.kosovo.attr("transform", d3.event.transform);
   }
 

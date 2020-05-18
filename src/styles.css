@@ -162,3 +162,39 @@ text.label{
 .dorling-radio-dot{
   fill:black
 }
+
+.dorling-leaflet-control-zoom{
+  position: absolute;
+  background-color: white;
+  top:2%;
+  left:2%;
+  border:1px solid rgba(0,0,0,0.2);
+  display:block;
+  border-radius: 4px;
+  font:bold 18px 'Lucida Console', Monaco, monospace;
+}
+.dorling-leaflet-control-zoom-in{
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  border-top-left-radius: 2px;
+  border-top-right-radius: 2px;
+  border-bottom: 1px solid #ccc;
+  display:block;
+}
+.dorling-leaflet-control-zoom-in:hover{
+  background-color: grey;
+  cursor: pointer;
+}
+.dorling-leaflet-control-zoom-out{
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  border-bottom-left-radius: 2px;
+  border-bottom-right-radius: 2px;
+  display:block;
+}
+.dorling-leaflet-control-zoom-out:hover{
+  background-color: grey;
+  cursor: pointer;
+}
