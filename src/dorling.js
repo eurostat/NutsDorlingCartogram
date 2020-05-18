@@ -902,7 +902,7 @@ export function dorling(options) {
 
     //assign default circle radiuses if none specified by user
     if (!out.sizeLegend_.values) {
-      out.sizeLegend_.values = [Math.floor(toRadius(out.sizeExtent[1])), Math.floor(out.sizeExtent[1] / 2), Math.floor(out.sizeExtent[1] / 10)]
+      out.sizeLegend_.values = [Math.floor(out.sizeExtent[1]), Math.floor(out.sizeExtent[1] / 2), Math.floor(out.sizeExtent[1] / 10)]
     }
 
     out.sizeLegendContainer = out.legendContainer
