@@ -26,7 +26,6 @@ export function dorling(options) {
   out.collisionPadding_ = 0.1;
   out.positionStrength_ = 0.2;
   out.collisionStrength_ = 0.6;
-  out.simulationDuration_ = 8000; //duration of d3 force simulation in miliseconds
 
   //d3-geo
   out.translateX_ = -500; //-390;
@@ -40,7 +39,6 @@ export function dorling(options) {
   out.colorScheme_ = "interpolateRdYlBu";
   out.colors_ = null; //["#000",etc]
   out.thresholdValues_ = null; //[1,100,1000]
-  out.thresholds_ = 7;
   //interactivity
   out.animate_ = true;
   out.loop_ = true;
@@ -49,7 +47,7 @@ export function dorling(options) {
 
   //size legend (circle radiuses)
   out.sizeLegend_ = {
-    title: "Total population",
+    title: "Size Legend",
     titleYOffset: 0,
     titleXOffset: 23,
     textFunction: function (d) { return d },
@@ -460,16 +458,13 @@ export function dorling(options) {
 
       addZoomButtonsToDOM();
 
-      if (out.animate_) {
-        if (out.pauseButton_) {
-          out.playButton = addPlayButtonToDOM();
-        }
-        out.playing = true;
-        out.stage = 1; //current transition number
-        animate();
-      } else {
-        showDorlingWithoutAnimation();
+      if (out.pauseButton_) {
+        out.playButton = addPlayButtonToDOM();
       }
+      out.playing = true;
+      out.stage = 1; //current transition number
+      animate();
+
     });
     return out;
   };
@@ -767,103 +762,6 @@ export function dorling(options) {
     animate();
   }
 
-
-  function showDorlingWithoutAnimation() {
-    //hide nuts
-    out.nuts.attr("stroke", "#40404000");
-    //show circles
-    out.circles
-      .attr("r", (f) => toRadius(+out.sizeIndicator[f.properties.id]))
-      .attr("fill", (f) => colorFunction(+out.colorIndicator[f.properties.id]))
-      .attr("stroke", "black");
-    //tooltip
-    out.circles.on("mouseover", function (f) {
-      d3.select(this).attr("fill", out.highlightColor_);
-      out.tooltipElement.html(`<strong>${f.properties.na}</strong>
-                  (${f.properties.id}) <i>${out.countryNamesIndex_[f.properties.id[0] + f.properties.id[1]]}</i><br>
-                  ${out.tooltip_.sizeLabel}: ${formatNumber(out.sizeIndicator[f.properties.id])}
-           ${out.tooltip_.sizeUnit}<br>
-                    Share of national population: ${(
-          (out.sizeIndicator[f.properties.id] /
-            out.totalsIndex[f.properties.id.substring(0, 2)]) *
-          100
-        ).toFixed(0)} % <br>
-      ${out.tooltip_.colorLabel}: <strong>${
-        out.colorIndicator[f.properties.id]
-        } ${out.tooltip_.colorUnit}</strong><br>
-              `);
-      let matrix = this.getScreenCTM().translate(
-        +this.getAttribute("cx"),
-        +this.getAttribute("cy")
-      );
-      out.tooltipElement.style("visibility", "visible");
-      //position + offsets
-      let node = out.tooltipElement.node();
-      let tooltipWidth = node.offsetWidth;
-      let tooltipHeight = node.offsetHeight;
-      let left = window.pageXOffset + matrix.e + 20;
-      let top = window.pageYOffset + matrix.f - 100;
-      if (left > out.width_ - tooltipWidth) {
-        left = left - (tooltipWidth + 40);
-      }
-      if (top < 0) {
-        top = top + (tooltipHeight + 40);
-      }
-      out.tooltipElement.style("left", left + "px").style("top", top + "px");
-      // tooltip
-      //   .style("top", d3.event.pageY - 110 + "px")
-      //   .style("left", d3.event.pageX - 120 + "px");
-    });
-    out.circles.on("mouseout", function () {
-      out.tooltipElement.style("visibility", "hidden");
-      d3.select(this).attr("fill", (f) =>
-        colorFunction(+out.colorIndicator[f.properties.id])
-      );
-    });
-
-    //show legends
-    out.legendContainer.transition().duration(1000).attr("opacity", 0.9);
-    out.sizeLegendContainer.transition().duration(1000).attr("opacity", 0.9);
-    out.radioContainer.transition().duration(1000).attr("opacity", 0.9);
-    //dorling deformation
-    out.simulation = d3
-      .forceSimulation(out.centroids.features)
-      .force(
-        "x",
-        d3
-          .forceX()
-          .x((f) => out.projection(f.geometry.coordinates)[0])
-          .strength(out.positionStrength_)
-      )
-      .force(
-        "y",
-        d3
-          .forceY()
-          .y((f) => out.projection(f.geometry.coordinates)[1])
-          .strength(out.positionStrength_)
-      )
-      .force(
-        "collide",
-        d3
-          .forceCollide()
-          .radius((f) => toRadius(+out.sizeIndicator[f.properties.id]))
-          .strength(out.collisionStrength_)
-      );
-
-    //set initial position of the circles
-    for (const f of out.centroids.features) {
-      f.x = out.projection(f.geometry.coordinates)[0];
-      f.y = out.projection(f.geometry.coordinates)[1];
-    }
-
-    out.simulation.on("tick", () => {
-      out.circles.attr("cx", (f) => f.x).attr("cy", (f) => f.y);
-    });
-
-    out.simulation.on("end", function () {
-      out.simulation.stop();
-    });
-  }
   function addZoom() {
     //add d3 zoom
     out.zoom = d3
