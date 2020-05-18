@@ -183,7 +183,7 @@ text.label{
   display:block;
 }
 .dorling-leaflet-control-zoom-in:hover{
-  background-color: grey;
+  background-color: #E5E5E5;
   cursor: pointer;
 }
 .dorling-leaflet-control-zoom-out{
@@ -195,6 +195,6 @@ text.label{
   display:block;
 }
 .dorling-leaflet-control-zoom-out:hover{
-  background-color: grey;
+  background-color: #E5E5E5;
   cursor: pointer;
 }
