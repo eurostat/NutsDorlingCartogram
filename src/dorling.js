@@ -932,7 +932,7 @@ export function dorling(options) {
       } else {
         legend.labels(function (d) {
           //colorLegend.locale() doesnt work with d3v5 so this is a work around for implementing spaces as a thousand separator
-          var r = /\d+/g; //regExp for getting numbers from a string
+          var r = /\-?\d+/g; //regExp for getting numbers from a string
           let label;
           //first label
           if (d.i === 0) {
@@ -1072,6 +1072,7 @@ export function dorling(options) {
     let radioCxy = 5;
     let backgroundHeight = 160;
     let radioDotOpacity = 0.3;
+    let outlineSelectedColor = "#022B58";
 
     out.nutsSelectorTranslateY = 340;
     //main container
@@ -1106,7 +1107,7 @@ export function dorling(options) {
       .attr("viewBox", "0 0 " + radioWidth + " " + radioHeight + "")
       .attr("transform", "translate(" + marginLeft + "," + marginTop + ")");
 
-    radio0.append("circle")
+    let outline0 = radio0.append("circle")
       .attr("class", "dorling-radio-outline")
       .attr("cx", "" + radioCxy + "")
       .attr("cy", "" + radioCxy + "")
@@ -1136,7 +1137,7 @@ export function dorling(options) {
       .attr("viewBox", "0 0 " + radioWidth + " " + radioHeight + "")
       .attr("transform", "translate(" + marginLeft + "," + (radioHeight + padding + marginTop) + ")");
 
-    radio1.append("circle")
+    let outline1 = radio1.append("circle")
       .attr("class", "dorling-radio-outline")
       .attr("cx", "" + radioCxy + "")
       .attr("cy", "" + radioCxy + "")
@@ -1166,7 +1167,7 @@ export function dorling(options) {
       .attr("viewBox", "0 0 " + radioWidth + " " + radioHeight + "")
       .attr("transform", "translate(" + marginLeft + "," + (radioHeight * 2 + padding * 2 + marginTop) + ")")
 
-    radio2.append("circle")
+    let outline2 = radio2.append("circle")
       .attr("class", "dorling-radio-outline")
       .attr("cx", "" + radioCxy + "")
       .attr("cy", "" + radioCxy + "")
@@ -1196,7 +1197,7 @@ export function dorling(options) {
       .attr("viewBox", "0 0 " + radioWidth + " " + radioHeight + "")
       .attr("transform", "translate(" + marginLeft + "," + (radioHeight * 3 + padding * 3 + marginTop) + ")")
 
-    radio3.append("circle")
+    let outline3 = radio3.append("circle")
       .attr("class", "dorling-radio-outline")
       .attr("cx", "" + radioCxy + "")
       .attr("cy", "" + radioCxy + "")
@@ -1219,40 +1220,28 @@ export function dorling(options) {
     //current nutsLevel
     if (out.nutsLevel_ == 0) {
       dot0.attr("opacity", "1");
+      outline0.attr("stroke", outlineSelectedColor);
     } else if (out.nutsLevel_ == 1) {
       dot1.attr("opacity", "1");
+      outline1.attr("stroke", outlineSelectedColor);
     } else if (out.nutsLevel_ == 2) {
       dot2.attr("opacity", "1");
+      outline2.attr("stroke", outlineSelectedColor);
     } else if (out.nutsLevel_ == 3) {
       dot3.attr("opacity", "1");
+      outline3.attr("stroke", outlineSelectedColor);
     }
 
     radio0.on("click", function (e) {
-      dot0.attr("opacity", "1");
-      dot1.attr("opacity", radioDotOpacity);
-      dot2.attr("opacity", radioDotOpacity);
-      dot3.attr("opacity", radioDotOpacity);
       nutsRadioEventHandler(0)
     });
     radio1.on("click", function (e) {
-      dot0.attr("opacity", radioDotOpacity);
-      dot1.attr("opacity", "1");
-      dot2.attr("opacity", radioDotOpacity);
-      dot3.attr("opacity", radioDotOpacity);
       nutsRadioEventHandler(1)
     });
     radio2.on("click", function (e) {
-      dot0.attr("opacity", radioDotOpacity);
-      dot1.attr("opacity", radioDotOpacity);
-      dot2.attr("opacity", "1");
-      dot3.attr("opacity", radioDotOpacity);
       nutsRadioEventHandler(2)
     });
     radio3.on("click", function (e) {
-      dot0.attr("opacity", radioDotOpacity);
-      dot1.attr("opacity", radioDotOpacity);
-      dot2.attr("opacity", radioDotOpacity);
-      dot3.attr("opacity", "1");
       nutsRadioEventHandler(3)
     });
 
