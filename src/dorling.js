@@ -400,9 +400,9 @@ export function dorling(options) {
         out.countryBorders = out.map.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.cntbn).features)
           .enter().append("path").filter((f) => {
             //exclude GL
-            if (f.properties.id !== "GL") {
-              return f;
-            }
+            // if (f.properties.id !== "GL") {
+            return f;
+            // }
           }).attr("d", out.path)
           .attr("class", function (bn) { return "cntbn" + (bn.properties.co === "T" ? " coastal" : ""); });
       }
