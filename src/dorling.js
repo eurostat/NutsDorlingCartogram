@@ -381,9 +381,9 @@ export function dorling(options) {
         out.countries = out.map.append("g").attr("id", "dorling-countries").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.cntrg).features)
           .enter().append("path").filter((f) => {
             //exclude GL
-            if (f.properties.id !== "GL") {
-              return f;
-            }
+            // if (f.properties.id !== "GL") {
+            return f;
+            // }
           }).attr("d", out.path).attr("class", "cntrg");
 
         out.nuts = out.map.append("g").attr("id", "dorling-nuts").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.nutsrg).features)
