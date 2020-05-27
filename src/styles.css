@@ -11,10 +11,6 @@
 .cntrg {
   fill: #E5E5E5;
 }
-.kosovo {
-   fill: none; 
-  /* stroke-dasharray: 7; */
-}
 .nutsrg {
   fill: white;
 }
@@ -33,7 +29,6 @@
   fill: none;
   stroke-width: 1px;
 }
-.white { stroke: white; }
 .thin { stroke-width: 0.5px; }
 .coastal { 
   /* stroke: #1f78b4;  */

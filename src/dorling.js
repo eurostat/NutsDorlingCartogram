@@ -814,7 +814,7 @@ export function dorling(options) {
     // out.legendBRect = out.legendContainerNode.getBoundingClientRect();
     // out.legendContainerBackground.style("height", out.legendBRect.height + 25 + "px");
     // out.legendContainerBackground.style("width", out.legendBRect.width + 25 + "px");
-    out.legendContainerBackground.style("height", "500").style("width", "500");
+    out.legendContainerBackground.style("height", "500").style("width", out.colorLegend_.titleWidth + 30);
   }
 
   function addColorLegend() {
@@ -909,8 +909,9 @@ export function dorling(options) {
     out.svg.select(".dorling-color-legend").call(legend);
 
     //ajust position of legend container
+    let svgWidth = out.svg.node().clientWidth;
     out.legendContainerNode = out.legendContainer.node();
-    out.legendContainer.attr("transform", "translate(" + ((out.width_ - out.colorLegend_.titleWidth) - 35) + ", 0)");
+    out.legendContainer.attr("transform", "translate(" + ((out.width_ - out.colorLegend_.titleWidth)) + ", 0)");
   }
   function addSizeLegend() {
     //circle size legend
