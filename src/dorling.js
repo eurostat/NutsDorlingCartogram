@@ -24,8 +24,8 @@ export function dorling(options) {
   //d3 force
   out.circleExaggerationFactor_ = 1.2;
   out.collisionPadding_ = 0.1;
-  out.positionStrength_ = 0.2;
-  out.collisionStrength_ = 0.6;
+  out.positionStrength_ = 0.1;
+  out.collisionStrength_ = 0.7;
 
   //d3-geo
   out.translateX_ = -500; //-390;
@@ -91,7 +91,8 @@ export function dorling(options) {
     colorUnit: "",
     sizeLabel: "Size value:",
     sizeUnit: "",
-    shareLabel: "Share value:"
+    shareLabel: "Share value:",
+    sizeValueTextFunction: null
   }
 
   //copyright text
@@ -542,18 +543,34 @@ export function dorling(options) {
         // d3.select(this).attr("fill", out.highlightColor_);
         d3.select(this).attr("stroke-width", "3px");
 
-        out.tooltipElement.html(`<strong>${f.properties.na}</strong>
-                    (${f.properties.id}) <i>${out.countryNamesIndex_[f.properties.id[0] + f.properties.id[1]]}</i><br>
-                    ${out.tooltip_.colorLabel}: <strong>${
-          formatNumber(parseInt(out.colorIndicator[f.properties.id]))
-          } ${out.tooltip_.colorUnit}</strong><br>
-                    ${out.tooltip_.sizeLabel}: ${formatNumber(Math.round(out.sizeIndicator[f.properties.id]))} ${out.tooltip_.sizeUnit}<br>
-                    ${out.tooltip_.shareLabel}: ${(
-            (out.sizeIndicator[f.properties.id] /
-              out.totalsIndex[f.properties.id.substring(0, 2)]) *
-            100
-          ).toFixed(0)} % <br>
-                `);
+        if (out.tooltip_.sizeValueTextFunction) {
+          out.tooltipElement.html(`<strong>${f.properties.na}</strong>
+          (${f.properties.id}) <i>${out.countryNamesIndex_[f.properties.id[0] + f.properties.id[1]]}</i><br>
+          ${out.tooltip_.colorLabel}: <strong>${
+            formatNumber(parseInt(out.colorIndicator[f.properties.id]))
+            } ${out.tooltip_.colorUnit}</strong><br>
+          ${out.tooltip_.sizeLabel}: ${out.tooltip_.sizeValueTextFunction((out.sizeIndicator[f.properties.id]))} ${out.tooltip_.sizeUnit}<br>
+          ${out.tooltip_.shareLabel}: ${(
+              (out.sizeIndicator[f.properties.id] /
+                out.totalsIndex[f.properties.id.substring(0, 2)]) *
+              100
+            ).toFixed(0)} % <br>
+      `);
+        } else {
+          out.tooltipElement.html(`<strong>${f.properties.na}</strong>
+          (${f.properties.id}) <i>${out.countryNamesIndex_[f.properties.id[0] + f.properties.id[1]]}</i><br>
+          ${out.tooltip_.colorLabel}: <strong>${
+            formatNumber(parseInt(out.colorIndicator[f.properties.id]))
+            } ${out.tooltip_.colorUnit}</strong><br>
+          ${out.tooltip_.sizeLabel}: ${formatNumber(Math.round(out.sizeIndicator[f.properties.id]))} ${out.tooltip_.sizeUnit}<br>
+          ${out.tooltip_.shareLabel}: ${(
+              (out.sizeIndicator[f.properties.id] /
+                out.totalsIndex[f.properties.id.substring(0, 2)]) *
+              100
+            ).toFixed(0)} % <br>
+      `);
+        }
+
 
         out.tooltipElement.style("visibility", "visible");
 
@@ -667,21 +684,21 @@ export function dorling(options) {
         d3
           .forceX()
           .x((f) => out.projection(f.geometry.coordinates)[0])
-        //.strength(out.positionStrength_)
+          .strength(out.positionStrength_)
       )
       .force(
         "y",
         d3
           .forceY()
           .y((f) => out.projection(f.geometry.coordinates)[1])
-        //.strength(out.positionStrength_)
+          .strength(out.positionStrength_)
       )
       .force(
         "collide",
         d3
           .forceCollide()
           .radius((f) => toRadius(+out.sizeIndicator[f.properties.id]))
-        //.strength(out.collisionStrength_)
+          .strength(out.collisionStrength_)
       );
 
     //set initial position of the circles
