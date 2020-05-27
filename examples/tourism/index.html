@@ -29,7 +29,7 @@
             .colorLegend({
                 //https://d3-legend.susielu.com/#color
                 titleWidth: 250,
-                title: "Dependency on foreign tourists (% share of foreign tourists in total nights spent)",
+                title: "Dependency on foreign tourists (% share of foreign tourists in total nights spent, 2018)",
                 orient: "vertical",
                 shapeRadius: 10,
                 shapePadding: 5,
@@ -42,12 +42,12 @@
             })
             .sizeLegend({
                 title: "Total number of nights spent (million)",
-                titleYOffset: 35,
+                titleYOffset: 25,
                 titleXOffset: 23,
                 textFunction: function (d) { return (d / 1000000).toLocaleString("en").replace(/,/gi, " "); },
                 values: [50000000, 20000000, 1000000],
                 bodyXOffset: 50,
-                bodyYOffset: 100
+                bodyYOffset: 110
             })
             .tooltip({
                 colorLabel: "Foreign tourism dependency (% share of total nights spent by non-residents)",
