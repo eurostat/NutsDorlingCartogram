@@ -49,10 +49,10 @@ export function dorling(options) {
   out.sizeLegend_ = {
     title: "Size Legend",
     titleYOffset: 0,
-    titleXOffset: 23,
+    titleXOffset: 20,
     textFunction: function (d) { return d.toLocaleString() },
     values: null,
-    translateY: 215,
+    translateY: 240,
     bodyXOffset: 50,
     bodyYOffset: 90
   };
@@ -291,6 +291,7 @@ export function dorling(options) {
         .attr("viewBox", [0, 0, out.width_, out.height_])
         .attr("id", "dorling-svg")
         .style("background-color", out.seaColor_)
+        .style("width", "100%")
       out.container_.node().appendChild(out.svg.node());
       out.container_.attr("class", "dorling-container");
       // initialize tooltip
@@ -807,6 +808,7 @@ export function dorling(options) {
   }
   function addLegendsToDOM() {
     addColorLegend();
+    addColorLegendExplanation();
     addSizeLegend();
 
 
@@ -814,7 +816,35 @@ export function dorling(options) {
     // out.legendBRect = out.legendContainerNode.getBoundingClientRect();
     // out.legendContainerBackground.style("height", out.legendBRect.height + 25 + "px");
     // out.legendContainerBackground.style("width", out.legendBRect.width + 25 + "px");
-    out.legendContainerBackground.style("height", "500").style("width", out.colorLegend_.titleWidth + 30);
+    //ff
+    if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
+      // Do Firefox-related activities
+      out.legendContainerBackground.attr("height", "500").attr("width", (out.colorLegend_.titleWidth + 30));
+    } else {
+      out.legendContainerBackground.style("height", "500").style("width", (out.colorLegend_.titleWidth + 30));
+
+    }
+  }
+
+  function addColorLegendExplanation() {
+    let explanation = out.legendContainer
+      .append("g")
+      .attr("fill", "black")
+      .attr("class", "dorling-color-legend-explanation")
+      .attr("text-anchor", "right");
+    //ff positioning fix
+    if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
+      // Do Firefox-related activities
+      explanation.attr("transform", "translate(22," + (out.sizeLegend_.translateY - 35) + ")")
+    } else {
+      explanation.attr("transform", "translate(22," + (out.sizeLegend_.translateY - 35) + ")")
+    }
+    explanation
+      .append("text")
+      .attr("y", 5)
+      .attr("x", 0)
+      .attr("dy", "0em")
+      .text("Hover over the different classes to highlight them on the map").call(d3_textWrapping, out.colorLegend_.titleWidth);
   }
 
   function addColorLegend() {
@@ -909,15 +939,13 @@ export function dorling(options) {
     out.svg.select(".dorling-color-legend").call(legend);
 
     //ajust position of legend container
-    let svgWidth = out.svg.node().clientWidth;
-    out.legendContainerNode = out.legendContainer.node();
-    out.legendContainer.attr("transform", "translate(" + ((out.width_ - out.colorLegend_.titleWidth)) + ", 0)");
+    // let svgWidth = out.svg.node().clientWidth;
+    // out.legendContainerNode = out.legendContainer.node();
+    //TODO use node width instead of viewport width
+    out.legendContainer.attr("transform", "translate(" + ((out.width_ - (out.colorLegend_.titleWidth + 20))) + ", 0)");
   }
-  function addSizeLegend() {
-    //circle size legend
-    // let brect = out.legendContainerNode.getBoundingClientRect();
-    // out.sizeLegendTranslateY = brect.height;
 
+  function addSizeLegend() {
     //assign default circle radiuses if none specified by user
     if (!out.sizeLegend_.values) {
       out.sizeLegend_.values = [Math.floor(out.sizeExtent[1]), Math.floor(out.sizeExtent[1] / 2), Math.floor(out.sizeExtent[1] / 10)]
@@ -926,8 +954,16 @@ export function dorling(options) {
     out.sizeLegendContainer = out.legendContainer
       .append("g")
       .attr("id", "dorling-size-legend-container")
-      .attr("transform", "translate(0," + out.sizeLegend_.translateY + ")")
       .attr("opacity", 0);
+
+    //ff positioning fix
+    if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
+      // Do Firefox-related activities
+      out.sizeLegendContainer.attr("transform", "translate(0," + (out.sizeLegend_.translateY + 2) + ")")
+    } else {
+      out.sizeLegendContainer.attr("transform", "translate(0," + out.sizeLegend_.translateY + ")")
+    }
+
     let sizeLegendBackground = out.sizeLegendContainer
       .append("rect")
       .attr("id", "dorling-size-legend-container-background")
@@ -1161,7 +1197,7 @@ export function dorling(options) {
 
     let label3 = radio3.append("text")
       .text("NUTS 3")
-      .attr("transform", "translate(25,10)");
+      .attr("transform", "translate(20,10)");
 
     //current nutsLevel
     if (out.nutsLevel_ == 0) {

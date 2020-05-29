@@ -26,7 +26,7 @@
       .circleExaggerationFactor(1.1)
       .positionStrength(0.1)
       .colorLegend({
-        titleWidth: 210,
+        titleWidth: 220,
         title: "Population change 2018 - 2019 (per 1 000 inhabitants)",
         orient: "vertical",
         shapeRadius: 10,
@@ -39,10 +39,12 @@
       })
       .sizeLegend({
         title: "Total population",
-        titleYOffset: 10,
+        titleYOffset: 15,
         titleXOffset: 23,
         textFunction: function (d) { return d / 1000000 + " million" },
-        values: [20e6, 10e6, 1e6]
+        values: [20e6, 10e6, 1e6],
+        bodyXOffset: 50,
+        bodyYOffset: 85
       })
       .tooltip({
         colorLabel: "Population change per 1 000 inhabitants",

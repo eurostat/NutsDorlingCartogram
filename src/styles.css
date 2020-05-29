@@ -60,6 +60,11 @@ font-family: 'Open Sans', "Helvetica Neue", Arial,"Noto Sans",sans-serif;
 .legendTitle{
   font-weight:bold;
 }
+.dorling-color-legend-explanation {
+  font-style: italic;
+  font-size: 12px;
+  font-weight: 100;
+}
 .dorling-size-legend {
   width: 175px;
   height: 100px;
