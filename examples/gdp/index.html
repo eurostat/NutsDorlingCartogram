@@ -38,7 +38,7 @@
                 labelUnit: " ",
                 labelOffset: 10,
                 shape: "circle",
-                //cells: 10,
+                explanationYOffset: -30
             })
             .sizeLegend({
                 title: "Gross domestic product (million EUR)",
@@ -47,7 +47,8 @@
                 textFunction: function (d) { return d.toLocaleString("en").replace(/,/gi, " "); },
                 values: [1000000, 500000, 100000],
                 bodyXOffset: 50,
-                bodyYOffset: 110
+                bodyYOffset: 107,
+                translateY: 232
             })
             .tooltip({
                 colorLabel: "Gross domestic product (EUR per inhabitant)",

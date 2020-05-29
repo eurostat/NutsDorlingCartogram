@@ -76,6 +76,10 @@ font-family: 'Open Sans', "Helvetica Neue", Arial,"Noto Sans",sans-serif;
   padding:10px;
   transform:translate(77%,46.5%);
 }
+.dorling-attribution{
+  font-size:10px;
+  font-family:'Open Sans', sans-serif;
+}
 circle.swatch {
   stroke: black;
   cursor: pointer;

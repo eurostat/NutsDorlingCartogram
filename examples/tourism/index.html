@@ -38,7 +38,7 @@
                 labelUnit: " ",
                 labelOffset: 10,
                 shape: "circle",
-                //cells: 10,
+                explanationYOffset: -15
             })
             .sizeLegend({
                 title: "Total number of nights spent (million)",
@@ -47,12 +47,17 @@
                 textFunction: function (d) { return (d / 1000000).toLocaleString("en").replace(/,/gi, " "); },
                 values: [50000000, 20000000, 1000000],
                 bodyXOffset: 50,
-                bodyYOffset: 110
+                bodyYOffset: 100,
+                translateY: 235
             })
             .tooltip({
                 colorLabel: "Foreign tourism dependency (% share of total nights spent by non-residents)",
                 sizeLabel: "Total number of nights spent (million)",
-                sizeValueTextFunction: function (d) { return (d / 1000000).toFixed(1).toLocaleString("en").replace(/,/gi, " "); },
+                sizeValueTextFunction: function (d) {
+                    let m = (d / 1000000);
+                    let n = Math.round(m * 10) / 10;
+                    return n.toLocaleString("en").replace(/,/gi, " ");
+                },
                 shareLabel: "Share of total nights spent in national total (%)",
             })
             .exclude(["MK", "ME", "TR", "AL", "RS"])

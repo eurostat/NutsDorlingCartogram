@@ -35,7 +35,8 @@
         labelUnit: " ",
         labelOffset: 10,
         shape: "circle",
-        labelFormat: d3.format(".0f")
+        labelFormat: d3.format(".0f"),
+        explanationYOffset: -35
       })
       .sizeLegend({
         title: "Total population",
@@ -44,7 +45,8 @@
         textFunction: function (d) { return d / 1000000 + " million" },
         values: [20e6, 10e6, 1e6],
         bodyXOffset: 50,
-        bodyYOffset: 85
+        bodyYOffset: 85,
+        translateY: 240
       })
       .tooltip({
         colorLabel: "Population change per 1 000 inhabitants",

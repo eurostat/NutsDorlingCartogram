@@ -81,9 +81,9 @@ export function dorling(options) {
     labelDelimiter: " to ",
     labelUnit: " ",
     labelWrap: 140,
-    eu27: null
+    eu27: null,
+    explanationYOffset: -15
   };
-
 
   //tooltip html
   out.tooltip_ = {
@@ -548,27 +548,23 @@ export function dorling(options) {
           out.tooltipElement.html(`<strong>${f.properties.na}</strong>
           (${f.properties.id}) <i>${out.countryNamesIndex_[f.properties.id[0] + f.properties.id[1]]}</i><br>
           ${out.tooltip_.colorLabel}: <strong>${
-            formatNumber(parseInt(out.colorIndicator[f.properties.id]))
+            formatNumber(roundToOneDecimal(out.colorIndicator[f.properties.id]))
             } ${out.tooltip_.colorUnit}</strong><br>
           ${out.tooltip_.sizeLabel}: ${out.tooltip_.sizeValueTextFunction((out.sizeIndicator[f.properties.id]))} ${out.tooltip_.sizeUnit}<br>
-          ${out.tooltip_.shareLabel}: ${(
-              (out.sizeIndicator[f.properties.id] /
-                out.totalsIndex[f.properties.id.substring(0, 2)]) *
-              100
-            ).toFixed(0)} % <br>
+          ${out.tooltip_.shareLabel}: ${roundToOneDecimal((out.sizeIndicator[f.properties.id] /
+              out.totalsIndex[f.properties.id.substring(0, 2)]) *
+              100)} % <br>
       `);
         } else {
           out.tooltipElement.html(`<strong>${f.properties.na}</strong>
           (${f.properties.id}) <i>${out.countryNamesIndex_[f.properties.id[0] + f.properties.id[1]]}</i><br>
           ${out.tooltip_.colorLabel}: <strong>${
-            formatNumber(parseInt(out.colorIndicator[f.properties.id]))
+            formatNumber(roundToOneDecimal(out.colorIndicator[f.properties.id]))
             } ${out.tooltip_.colorUnit}</strong><br>
-          ${out.tooltip_.sizeLabel}: ${formatNumber(Math.round(out.sizeIndicator[f.properties.id]))} ${out.tooltip_.sizeUnit}<br>
-          ${out.tooltip_.shareLabel}: ${(
-              (out.sizeIndicator[f.properties.id] /
-                out.totalsIndex[f.properties.id.substring(0, 2)]) *
-              100
-            ).toFixed(0)} % <br>
+          ${out.tooltip_.sizeLabel}: ${formatNumber(roundToOneDecimal(out.sizeIndicator[f.properties.id]))} ${out.tooltip_.sizeUnit}<br>
+          ${out.tooltip_.shareLabel}: ${roundToOneDecimal((out.sizeIndicator[f.properties.id] /
+              out.totalsIndex[f.properties.id.substring(0, 2)]) *
+              100)} % <br>
       `);
         }
 
@@ -606,6 +602,10 @@ export function dorling(options) {
         // );
       }
     });
+  }
+
+  function roundToOneDecimal(n) {
+    return Math.round(n * 10) / 10
   }
 
 
@@ -831,14 +831,9 @@ export function dorling(options) {
       .append("g")
       .attr("fill", "black")
       .attr("class", "dorling-color-legend-explanation")
-      .attr("text-anchor", "right");
-    //ff positioning fix
-    if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
-      // Do Firefox-related activities
-      explanation.attr("transform", "translate(22," + (out.sizeLegend_.translateY - 35) + ")")
-    } else {
-      explanation.attr("transform", "translate(22," + (out.sizeLegend_.translateY - 35) + ")")
-    }
+      .attr("text-anchor", "right")
+      .attr("transform", "translate(22," + (out.sizeLegend_.translateY + out.colorLegend_.explanationYOffset) + ")")
+
     explanation
       .append("text")
       .attr("y", 5)
@@ -1077,7 +1072,7 @@ export function dorling(options) {
     //title
     out.radioContainer.append("text")
       .text("Geographic level").attr("class", "dorling-legend-title")
-      .attr("transform", "translate(" + (marginLeft - 5) + ",20)");
+      .attr("transform", "translate(" + (marginLeft - 5) + ",28)");
 
     //RADIO 0
     let radio0 = out.radioContainer.append("g")
@@ -1197,7 +1192,7 @@ export function dorling(options) {
 
     let label3 = radio3.append("text")
       .text("NUTS 3")
-      .attr("transform", "translate(20,10)");
+      .attr("transform", "translate(25,10)");
 
     //current nutsLevel
     if (out.nutsLevel_ == 0) {
