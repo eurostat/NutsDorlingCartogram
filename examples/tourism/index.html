@@ -38,17 +38,24 @@
                 labelUnit: " ",
                 labelOffset: 10,
                 shape: "circle",
-                explanationYOffset: -15
+                explanationYOffset: -12
             })
             .sizeLegend({
-                title: "Total number of nights spent (million)",
-                titleYOffset: 25,
+                title: "Total number of nights spent",
+                titleYOffset: 30,
                 titleXOffset: 23,
-                textFunction: function (d) { return (d / 1000000).toLocaleString("en").replace(/,/gi, " "); },
+                textFunction: function (d) {
+                    let n = d / 1000000;
+                    if (n == 1) {
+                        return n + "   million";
+                    } else {
+                        return n + " million";
+                    }
+                },
                 values: [50000000, 20000000, 1000000],
                 bodyXOffset: 50,
-                bodyYOffset: 100,
-                translateY: 235
+                bodyYOffset: 95,
+                translateY: 237
             })
             .tooltip({
                 colorLabel: "Foreign tourism dependency (% share of total nights spent by non-residents)",

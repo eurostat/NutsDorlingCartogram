@@ -82,7 +82,9 @@ export function dorling(options) {
     labelUnit: " ",
     labelWrap: 140,
     eu27: null,
-    explanationYOffset: -15
+    explanationYOffset: -15,
+    cellsTranslateX: 3,
+    cellsTranslateY: 2
   };
 
   //tooltip html
@@ -839,7 +841,7 @@ export function dorling(options) {
       .attr("y", 5)
       .attr("x", 0)
       .attr("dy", "0em")
-      .text("Hover over the different classes to highlight them on the map").call(d3_textWrapping, out.colorLegend_.titleWidth);
+      .text("Hover over the different legend classes to highlight them on the map").call(d3_textWrapping, out.colorLegend_.titleWidth);
   }
 
   function addColorLegend() {
@@ -931,13 +933,39 @@ export function dorling(options) {
     if (out.colorLegend_.shape == "circle")
       legend.shapeRadius(out.colorLegend_.shapeRadius);
 
+    //init svg-color-legend
     out.svg.select(".dorling-color-legend").call(legend);
+
+    //apply indentation to legend cells
+    let legendCells = d3.select(".legendCells")
+    let transform = legendCells.attr("transform");
+    let translation = getTranslation(transform);
+    legendCells.attr("transform", "translate(" + (translation[0] + out.colorLegend_.cellsTranslateX) + "," + (translation[1] + out.colorLegend_.cellsTranslateY) + ")")
+
 
     //ajust position of legend container
     // let svgWidth = out.svg.node().clientWidth;
     // out.legendContainerNode = out.legendContainer.node();
     //TODO use node width instead of viewport width
     out.legendContainer.attr("transform", "translate(" + ((out.width_ - (out.colorLegend_.titleWidth + 20))) + ", 0)");
+  }
+
+  function getTranslation(transform) {
+    // Create a dummy g for calculation purposes only. This will never
+    // be appended to the DOM and will be discarded once this function 
+    // returns.
+    var g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+
+    // Set the transform attribute to the provided string value.
+    g.setAttributeNS(null, "transform", transform);
+
+    // consolidate the SVGTransformList containing all transformations
+    // to a single SVGTransform of type SVG_TRANSFORM_MATRIX and get
+    // its SVGMatrix. 
+    var matrix = g.transform.baseVal.consolidate().matrix;
+
+    // As per definition values e and f are the ones for the translation.
+    return [matrix.e, matrix.f];
   }
 
   function addSizeLegend() {
@@ -1006,6 +1034,7 @@ export function dorling(options) {
       })
       .attr("x", 40)
       .attr("dy", "1.2em")
+      .attr("xml:space", "preserve")
       .text((d) => {
         return out.sizeLegend_.textFunction(d);
         //return d.toLocaleString("en").replace(/,/gi, " ");

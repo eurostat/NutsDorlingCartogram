@@ -42,7 +42,14 @@
         title: "Total population",
         titleYOffset: 15,
         titleXOffset: 23,
-        textFunction: function (d) { return d / 1000000 + " million" },
+        textFunction: function (d) {
+          let n = d / 1000000;
+          if (n == 1) {
+            return n + "   million";
+          } else {
+            return n + " million";
+          }
+        },
         values: [20e6, 10e6, 1e6],
         bodyXOffset: 50,
         bodyYOffset: 85,
