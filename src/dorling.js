@@ -87,18 +87,19 @@ export function dorling(options) {
     cellsTranslateY: 2
   };
 
+  out.showInsets_ = true;
   out.insets_ = {
-    overseasHeight: 50,
-    overseasWidth: 50,
-    column2OffsetLeft: 107,
-    translateX: 25,
-    translateY: 200,
+    overseasHeight: 70,
+    overseasWidth: 70,
+    column2OffsetLeft: 150,
+    translateX: 15,
+    translateY: 150,
     captionY: -30,
     captionX: -30,
     circleYOffset: 25,
     circleXOffset: 25,
-    radius: 50,
-    spacing: 105
+    radius: 70,
+    spacing: 145
   }
 
   //tooltip html
@@ -419,12 +420,15 @@ export function dorling(options) {
         .attr("stroke", "#40404000");
 
       //addOverseasRegions();
-      addInsets();
-
+      if (out.showInsets_) {
+        addInsets();
+      } else {
+        addMouseEvents();
+      }
 
       addZoom();
       addLegendsToDOM();
-      addMouseEvents();
+
       if (out.showNutsSelector_ && !out.nutsSelector) {
         addNutsSelectorToDOM();
       }
@@ -511,17 +515,17 @@ export function dorling(options) {
     let translateY = out.insets_.translateY;
     let translateX = out.insets_.translateX;
     insetsJson.forEach(function (inset, i) {
+      //define a projection for each inset - needs improving
+      let proj = d3
+        .geoIdentity()
+        .reflectY(true)
+        .fitExtent(
+          [[0, 0], [out.insets_.overseasWidth, out.insets_.overseasHeight]],
+          inset.featureCollection);
       inset.x = translateX;
       inset.y = translateY;
-      inset.path = d3.geoPath().projection(
-        d3
-          .geoIdentity()
-          .reflectY(true)
-          .fitExtent(
-            [[0, 0], [out.insets_.overseasWidth, out.insets_.overseasHeight]],
-            inset.featureCollection
-          )
-      );
+      inset.projection = proj;
+      inset.path = d3.geoPath().projection(proj);
       translateY = translateY + out.insets_.spacing;
       //split into 2 columns
       if (i == 3) {
@@ -534,10 +538,14 @@ export function dorling(options) {
   }
 
   function addInsets() {
-
+    out.insetsSvg = d3.create("svg");
+    out.insetsSvg
+      .attr("viewBox", [0, 0, 272, 685])
+      .attr("class", "dorling-insets")
+    out.container_.node().appendChild(out.insetsSvg.node());
 
     d3.json(
-      `../../assets/topojson/NUTS${out.nutsLevel_}.json`
+      `../../assets/topojson/overseas/NUTS${out.nutsLevel_}.json`
     ).then((overseasTopo) => {
 
       let objectName = "NUTS" + out.nutsLevel_;
@@ -546,7 +554,7 @@ export function dorling(options) {
 
 
       //define blur
-      var defs = out.svg.append('defs');
+      var defs = out.insetsSvg.append('defs');
       defs
         .append('filter')
         .attr('id', 'blur')
@@ -565,7 +573,7 @@ export function dorling(options) {
 
       //append each overseas topojson feature
       insets.forEach(function (inset, i) {
-        var g = out.svg
+        var g = out.insetsSvg
           .selectAll('g.insetmap')
           .data(insets)
           .enter()
@@ -585,7 +593,7 @@ export function dorling(options) {
           .classed('background', true)
           .attr('r', out.insets_.radius);
 
-        let insetGeom = out.svg
+        let insetGeom = out.insetsSvg
           .append("g")
           .attr('transform', 'translate(' + [inset.x, inset.y] + ')')
           .selectAll("path")
@@ -593,7 +601,7 @@ export function dorling(options) {
           .enter()
           .append("path")
           .attr("fill", "white")
-          .attr("stroke", "grey")
+          .attr("stroke", "black")
           .attr("d", inset.path);
 
         g.append('circle')
@@ -618,8 +626,27 @@ export function dorling(options) {
       });
 
 
+      //add circles
+      out.insetCircles = out.insetsSvg
+        .append("g")
+        .selectAll("circle")
+        .data(insets)
+        .enter()
+        .filter((f) => {
+          let id = f.featureCollection.features[0].properties.id;
+          if (out.sizeIndicator[id] && out.colorIndicator[id]) {
+            return f;
+          }
+        })
+        .append("circle")
+        .attr("cx", (d) => { return (d.x + out.insets_.circleXOffset) })
+        .attr("cy", (d) => { return (d.y + out.insets_.circleYOffset) })
+        .attr("r", (f) => toRadius(+out.sizeIndicator[f.featureCollection.features[0].properties.id]))
+        .attr("fill", (f) => colorFunction(+out.colorIndicator[f.featureCollection.features[0].properties.id]))
+        .attr("stroke", "black");
 
 
+      addMouseEvents();
     })
   }
 
@@ -843,6 +870,75 @@ export function dorling(options) {
         // );
       }
     });
+
+    //INSETS
+    if (out.showInsets_) {
+      out.insetCircles.on("mouseover", function (f) {
+        let id = f.featureCollection.features[0].properties.id;
+        let name = f.name;
+        if (out.stage == 2) {
+          // d3.select(this).attr("fill", out.highlightColor_);
+          d3.select(this).attr("stroke-width", "3px");
+
+          if (out.tooltip_.sizeValueTextFunction) {
+            out.tooltipElement.html(`<strong>${name}</strong>
+          (${f.properties.id}) <i>${out.countryNamesIndex_[id[0] + id[1]]}</i><br>
+          ${out.tooltip_.colorLabel}: <strong>${
+              formatNumber(roundToOneDecimal(out.colorIndicator[id]))
+              } ${out.tooltip_.colorUnit}</strong><br>
+          ${out.tooltip_.sizeLabel}: ${out.tooltip_.sizeValueTextFunction((out.sizeIndicator[id]))} ${out.tooltip_.sizeUnit}<br>
+          ${out.tooltip_.shareLabel}: ${roundToOneDecimal((out.sizeIndicator[id] /
+                out.totalsIndex[id.substring(0, 2)]) *
+                100)} % <br>
+      `);
+          } else {
+            out.tooltipElement.html(`<strong>${name}</strong>
+          (${id}) <i>${out.countryNamesIndex_[id[0] + id[1]]}</i><br>
+          ${out.tooltip_.colorLabel}: <strong>${
+              formatNumber(roundToOneDecimal(out.colorIndicator[id]))
+              } ${out.tooltip_.colorUnit}</strong><br>
+          ${out.tooltip_.sizeLabel}: ${formatNumber(roundToOneDecimal(out.sizeIndicator[id]))} ${out.tooltip_.sizeUnit}<br>
+          ${out.tooltip_.shareLabel}: ${roundToOneDecimal((out.sizeIndicator[id] /
+                out.totalsIndex[id.substring(0, 2)]) *
+                100)} % <br>
+      `);
+          }
+
+
+          out.tooltipElement.style("visibility", "visible");
+
+          //tooltip position + offsets
+          let matrix = this.getScreenCTM().translate(
+            +this.getAttribute("cx"),
+            +this.getAttribute("cy")
+          );
+          let node = out.tooltipElement.node();
+          let tooltipWidth = node.offsetWidth;
+          let tooltipHeight = node.offsetHeight;
+          let left = window.pageXOffset + matrix.e + 20;
+          let top = window.pageYOffset + matrix.f - 100;
+          if (left > out.width_ - tooltipWidth) {
+            left = left - (tooltipWidth + 40);
+          }
+          if (left < 0) {
+            left = 1;
+          }
+          if (top < 0) {
+            top = top + (tooltipHeight + 40);
+          }
+          out.tooltipElement.style("left", left + "px").style("top", top + "px");
+        }
+      });
+      out.insetCircles.on("mouseout", function () {
+        if (out.stage == 2) {
+          out.tooltipElement.style("visibility", "hidden");
+          d3.select(this).attr("stroke-width", "1px");
+          // d3.select(this).attr("fill", (f) =>
+          //   colorFunction(+out.colorIndicator[f.properties.id])
+          // );
+        }
+      });
+    }
   }
 
   function roundToOneDecimal(n) {

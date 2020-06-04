@@ -2,6 +2,15 @@
   position:relative; top:0; left:0; max-height:100%;
 }
 
+.dorling-insets{
+  position: absolute;
+    top: 5px;
+    left: 25px;
+    width: 21%;
+    height: 69%;
+    /* transform: translate(10px, 10px); */
+}
+
 .dorling-graticule {
   fill: none;
   stroke-width: 2px;
