@@ -144,7 +144,7 @@ text.label{
 }
 .insetmap circle.outline {
   fill: none;
-  stroke: #999;
+  stroke: #000;
 }
 
 /* loading spinner  */

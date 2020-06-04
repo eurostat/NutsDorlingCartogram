@@ -89,13 +89,14 @@ export function dorling(options) {
 
   out.showInsets_ = true;
   out.insets_ = {
+    titleWidth: 80,
     overseasHeight: 70,
     overseasWidth: 70,
     column2OffsetLeft: 150,
     translateX: 15,
     translateY: 150,
-    captionY: -30,
-    captionX: -30,
+    captionY: -40,
+    captionX: -35,
     circleYOffset: 25,
     circleXOffset: 25,
     radius: 70,
@@ -174,6 +175,11 @@ export function dorling(options) {
 
   //main build function
   out.build = function () {
+
+    if (window.screen.width < 700) {
+      //mobile stuff
+      out.showInsets_ = false;
+    }
 
     out.container_ = d3.select("#" + out.containerId_);
     addLoadingSpinnerToDOM();
@@ -622,7 +628,8 @@ export function dorling(options) {
           .attr("class", "overseas-caption")
           .attr("font-size", "10")
           .attr("stroke-width", 0.2)
-          .attr("transform", "translate(" + out.insets_.captionX + "," + out.insets_.captionY + ")");
+          .attr("transform", "translate(" + out.insets_.captionX + "," + out.insets_.captionY + ")")
+          .call(d3_textWrapping, out.insets_.titleWidth);
       });
 
 
