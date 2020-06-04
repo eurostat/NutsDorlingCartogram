@@ -218,9 +218,9 @@ export function dorling(options) {
 
     let nutsParam;
     if (out.nutsLevel_ == 0) {
-      nutsParam = "country"
-    } else if  {
-      nutsParam = "nuts" + out.nutsLevel_
+      nutsParam = "country";
+    } else {
+      nutsParam = "nuts" + out.nutsLevel_;
     }
     //data promises
     let promises = [];
