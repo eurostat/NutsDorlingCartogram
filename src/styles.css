@@ -77,8 +77,14 @@ font-family: 'Open Sans', "Helvetica Neue", Arial,"Noto Sans",sans-serif;
   transform:translate(77%,46.5%);
 }
 .dorling-attribution{
-  font-size:10px;
+  font-size:11px;
   font-family:'Open Sans', sans-serif;
+}
+.dorling-attribution a{
+  fill:#0078A8;
+}
+.dorling-attribution a:hover{
+  text-decoration: underline;
 }
 circle.swatch {
   stroke: black;
@@ -112,6 +118,24 @@ text.label{
 .dorling-visible {
   opacity: 1;
   visibility: visible;
+}
+.dorling-overseas-caption{
+  stroke-width:0.2;
+}
+
+/* INSETS */
+.insetmap circle.background {
+  fill: white;
+}
+.insetmap circle.blur {
+  filter: url(#blur);
+  fill: none;
+  stroke: white;
+  stroke-width: 10;
+}
+.insetmap circle.outline {
+  fill: none;
+  stroke: #999;
 }
 
 /* loading spinner  */

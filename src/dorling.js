@@ -82,10 +82,24 @@ export function dorling(options) {
     labelUnit: " ",
     labelWrap: 140,
     eu27: null,
-    explanationYOffset: -15,
+    explanationYOffset: -55,
     cellsTranslateX: 3,
     cellsTranslateY: 2
   };
+
+  out.insets_ = {
+    overseasHeight: 50,
+    overseasWidth: 50,
+    column2OffsetLeft: 107,
+    translateX: 25,
+    translateY: 200,
+    captionY: -30,
+    captionX: -30,
+    circleYOffset: 25,
+    circleXOffset: 25,
+    radius: 50,
+    spacing: 105
+  }
 
   //tooltip html
   out.tooltip_ = {
@@ -98,7 +112,7 @@ export function dorling(options) {
   }
 
   //copyright text
-  out.bottomText_ = "Administrative boundaries: \u00A9EuroGeographics \u00A9UN-FAO \u00A9INSTAT \u00A9Turkstat"; //"(C)EuroGeographics (C)UN-FAO (C)Turkstat";
+  out.bottomText_ = false;
   out.bottomTextFontSize_ = 12;
   out.bottomTextFill_ = "black";
   out.bottomTextFontFamily_ = "'Open Sans', 'Helvetica Neue', Arial,'Noto Sans',sans-serif";
@@ -146,6 +160,13 @@ export function dorling(options) {
   out.tooltip = function (v) {
     for (let key in v) {
       out.tooltip_[key] = v[key];
+    }
+    return out;
+  };
+
+  out.insets = function (v) {
+    for (let key in v) {
+      out.insets_[key] = v[key];
     }
     return out;
   };
@@ -258,10 +279,6 @@ export function dorling(options) {
       let sizeData = res[3];
       let colorData = res[4];
 
-      // let nuts = topojson.feature(n2, n2.objects.nutsbn).features;
-      // let country = topojson.feature(countries, countries.objects.nutsbn).features;
-      // let coastlines = topojson.feature(n2, n2.objects.nutsbn).features;
-
       out.sizeIndicator = indexStat(sizeData);
       out.colorIndicator = indexStat(colorData);
       out.totalsIndex = getTotals(out.sizeIndicator); //total of sizeIndicator for each country
@@ -294,6 +311,7 @@ export function dorling(options) {
         .attr("id", "dorling-svg")
         .style("background-color", out.seaColor_)
         .style("width", "100%")
+        .style("height", "100%")
       out.container_.node().appendChild(out.svg.node());
       out.container_.attr("class", "dorling-container");
       // initialize tooltip
@@ -306,7 +324,6 @@ export function dorling(options) {
         .geoIdentity()
         .reflectY(true)
         .fitExtent([[0, 0], [out.width_ + out.fitSizePadding_, out.height_ + out.fitSizePadding_]], topojson.feature(out.n2j, out.n2j.objects.nutsbn))
-      //out.path = d3.geoPath().projection(out.projection);
       out.path = d3Geo.geoPath().projection(out.projection);
 
       if (out.translateX_ && out.translateY_) {
@@ -323,7 +340,7 @@ export function dorling(options) {
       out.colorScale = defineColorScale();
 
       //container for all map stuff
-      out.map = out.svg.append("g").attr("transform", "translate(0,0)");
+      out.map = out.svg.append("g").attr("transform", "translate(0,0)").attr("class", "dorling-map-container");
 
       if (out.graticule_) {
         out.graticule = out.map.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.gra).features)
@@ -332,52 +349,7 @@ export function dorling(options) {
 
       //coastal margin
       if (out.coastalMargins_) {
-        //define filter for coastal margin
-        // out.map.append("filter").attr("id", "coastal_blur").attr("x", "-200%").attr("y", "-200%").attr("width", "400%").attr("height", "400%")
-        //   .append("feGaussianBlur").attr("in", "SourceGraphic").attr("stdDeviation", "14")
-        //   ;		//draw coastal margin
 
-        // //draw coastal margin
-        // var cg = out.map.append("g").attr("id", "g_coast_margin")
-        //   .style("fill", "none")
-        //   .style("stroke-width", "13")
-        //   .style("stroke", "white")
-        //   .style("filter", "url(#coastal_blur)")
-        //   .style("stroke-linejoin", "round")
-        //   .style("stroke-linecap", "round");
-
-        // //country coastal margins
-        // out.map.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.cntbn).features).enter()
-        //   .append("path").attr("d", out.path)
-        //   .style("fill", "none").style("stroke-width", "10").style("filter", "url(#coastal_blur)").style("stroke-linejoin", "round").style("stroke-linecap", "round")
-        //   .style("stroke", function (bn) { if (bn.properties.co === "T") return "white"; return "none"; })
-        //   ;
-        // //nuts coastal margins
-        // out.map.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.nutsbn).features).enter()
-        //   .append("path").attr("d", out.path)
-        //   .style("fill", "none").style("stroke-width", "10").style("filter", "url(#coastal_blur)").style("stroke-linejoin", "round").style("stroke-linecap", "round")
-        //   .style("stroke", function (bn) { if (bn.properties.co === "T") return "white"; return "none"; })
-        //   ;
-
-        //multiple margins
-        // out.marginNb = 3;
-        // out.margins = []
-        // for (let m = out.marginNb; m >= 1; m--) {
-        //   out.margins.push(out.svg
-        //     .append("g")
-        //     .selectAll("path")
-        //     .data(topojson.feature(out.n2j, out.n2j.objects.nutsbn).features)
-        //     .enter()
-        //     .append("path")
-        //     .attr("d", out.path)
-        //     //.attr("class", "dorling-cmarg")
-        //     .attr("fill", "none")
-        //     .attr("stroke-linecap", "round")
-        //     .attr("stroke-linejoin", "round")
-        //     .attr("stroke-width", m * 10 + "px")
-        //     .attr("stroke", d3.interpolateBlues(1 - Math.sqrt(m / out.marginNb)))
-        //   );
-        // }
       }
 
       if (out.showBorders_) {
@@ -429,13 +401,6 @@ export function dorling(options) {
           // }
         });
 
-      // out.kosovo = out.map.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.cntbn).features)
-      //   .enter().append("path").filter(function (f) {
-      //     return f.properties.id == 999999
-      //   }).attr("d", out.path)
-      //   .attr("stroke", "lightgrey").attr("fill", "none")
-
-
       //define region centroids
       out.circles = out.map
         .append("g")
@@ -450,18 +415,21 @@ export function dorling(options) {
         .append("circle")
         .attr("cx", (f) => out.projection(f.geometry.coordinates)[0])
         .attr("cy", (f) => out.projection(f.geometry.coordinates)[1])
-        // .attr("r", (f) => 0.000055 * Math.sqrt(f.properties.ar))
         .attr("fill", "#ffffff00")
         .attr("stroke", "#40404000");
+
+      //addOverseasRegions();
+      addInsets();
+
 
       addZoom();
       addLegendsToDOM();
       addMouseEvents();
       if (out.showNutsSelector_ && !out.nutsSelector) {
-        //out.nutsSelector = true;
         addNutsSelectorToDOM();
       }
 
+      addAttributionToDOM();
       if (out.bottomText_) {
         addDisclaimerToDOM();
       }
@@ -478,6 +446,249 @@ export function dorling(options) {
     });
     return out;
   };
+
+  function defineInsets(geojson) {
+    let insetsJson = [
+      {
+        name: "Guadeloupe (FR)",
+        featureCollection: {
+          type: "FeatureCollection",
+          features: [geojson.features[0]]
+        }
+      },
+      {
+        name: "Martinique (FR)",
+        featureCollection: {
+          type: "FeatureCollection",
+          features: [geojson.features[1]]
+        }
+      },
+      {
+        name: "Guyane (FR)",
+        featureCollection: {
+          type: "FeatureCollection",
+          features: [geojson.features[2]]
+        }
+      },
+      {
+        name: "Réunion (FR)",
+        featureCollection: {
+          type: "FeatureCollection",
+          features: [geojson.features[3]]
+        }
+      },
+      {
+        name: "Mayotte (FR)",
+        featureCollection: {
+          type: "FeatureCollection",
+          features: [geojson.features[4]]
+        }
+      },
+      {
+        name: "Canary Islands (ES)",
+        featureCollection: {
+          type: "FeatureCollection",
+          features: [geojson.features[6]]
+        }
+      },
+      {
+        name: "Acores (PT)",
+        featureCollection: {
+          type: "FeatureCollection",
+          features: [geojson.features[7]]
+        }
+      },
+      {
+        name: "Madeira (PT)",
+        featureCollection: {
+          type: "FeatureCollection",
+          features: [geojson.features[8]]
+        }
+      }
+    ]
+
+    //add properties to insets...
+    let translateY = out.insets_.translateY;
+    let translateX = out.insets_.translateX;
+    insetsJson.forEach(function (inset, i) {
+      inset.x = translateX;
+      inset.y = translateY;
+      inset.path = d3.geoPath().projection(
+        d3
+          .geoIdentity()
+          .reflectY(true)
+          .fitExtent(
+            [[0, 0], [out.insets_.overseasWidth, out.insets_.overseasHeight]],
+            inset.featureCollection
+          )
+      );
+      translateY = translateY + out.insets_.spacing;
+      //split into 2 columns
+      if (i == 3) {
+        translateY = out.insets_.translateY;
+        translateX = out.insets_.translateX + out.insets_.column2OffsetLeft;
+      }
+    });
+
+    return insetsJson;
+  }
+
+  function addInsets() {
+
+
+    d3.json(
+      `../../assets/topojson/NUTS${out.nutsLevel_}.json`
+    ).then((overseasTopo) => {
+
+      let objectName = "NUTS" + out.nutsLevel_;
+      var geojson = topojson.feature(overseasTopo, overseasTopo.objects[objectName]);
+      let insets = defineInsets(geojson);
+
+
+      //define blur
+      var defs = out.svg.append('defs');
+      defs
+        .append('filter')
+        .attr('id', 'blur')
+        .append('feGaussianBlur')
+        .attr('stdDeviation', 4);
+      defs
+        .selectAll('clipPath')
+        .data(insets)
+        .enter()
+        .append('clipPath')
+        .attr('id', function (d) {
+          return 'clip-inset-' + d.name;
+        })
+        .append('circle')
+        .attr('r', out.insets_.radius);
+
+      //append each overseas topojson feature
+      insets.forEach(function (inset, i) {
+        var g = out.svg
+          .selectAll('g.insetmap')
+          .data(insets)
+          .enter()
+          .append('g')
+          .classed('insetmap', true)
+          .attr('transform', function (d) {
+            return 'translate(' + [(d.x + out.insets_.circleXOffset), (d.y + out.insets_.circleYOffset)] + ')';
+          })
+          .attr('id', function (d) {
+            return 'inset-' + d.name;
+          })
+          .attr('clip-path', function (d) {
+            return 'url(#clip-inset-' + d.name + ')';
+          });
+
+        g.append('circle')
+          .classed('background', true)
+          .attr('r', out.insets_.radius);
+
+        let insetGeom = out.svg
+          .append("g")
+          .attr('transform', 'translate(' + [inset.x, inset.y] + ')')
+          .selectAll("path")
+          .data(inset.featureCollection.features)
+          .enter()
+          .append("path")
+          .attr("fill", "white")
+          .attr("stroke", "grey")
+          .attr("d", inset.path);
+
+        g.append('circle')
+          .classed('blur', true)
+          .attr('r', out.insets_.radius);
+
+        let circleBorder = g
+          .append('circle')
+          .classed('outline', true)
+          .attr('r', out.insets_.radius);
+
+        let caption = g
+          .append("text")
+          .data(insets)
+          .text(d => {
+            return d.name;
+          })
+          .attr("class", "overseas-caption")
+          .attr("font-size", "10")
+          .attr("stroke-width", 0.2)
+          .attr("transform", "translate(" + out.insets_.captionX + "," + out.insets_.captionY + ")");
+      });
+
+
+
+
+    })
+  }
+
+  function addOverseasRegions() {
+    //build container
+    out.overseasContainer = out.map.append("g").attr("class", "dorling-overseas-container").attr("transform", "translate(20,100)")
+    //for switching between nuts
+    let objectName = "NUTS" + out.nutsLevel_;
+    //get overseas topojson
+    d3.json(
+      `../../assets/topojson/NUTS${out.nutsLevel_}.json`
+    ).then((overseasTopo) => {
+      //to geojson
+      let overseasGeojson = topojson.feature(overseasTopo, overseasTopo.objects[objectName]);
+      //define overseas projection
+      let overseasWidth = 120;
+      let overseasHeight = 100;
+      let overseasProjection = d3Geo
+        .geoIdentity()
+        .reflectY(true)
+        .fitExtent([[0, 0], [overseasWidth, overseasHeight]], overseasGeojson)
+      let overseasPath = d3Geo.geoPath().projection(overseasProjection);
+
+
+      let minimaps = [
+        { name: "Canarias (ES", center: [28.459033, -15.779399], feature: overseasGeojson.features[0] },
+        { name: "Guadeloupe (FR)", feature: overseasGeojson.features[1] },
+        { name: "Martinique (FR)", feature: overseasGeojson.features[2] },
+        { name: "Guyane (FR)", feature: overseasGeojson.features[3] },
+        { name: "Réunion (FR)", feature: overseasGeojson.features[4] },
+        { name: "Mayotte (FR)", feature: overseasGeojson.features[5] },
+        { name: "Açores (PT)", feature: overseasGeojson.features[6] },
+        { name: "Madeira (PT)", feature: overseasGeojson.features[7] }];
+
+      //for positioning each region within the main container
+      let translateX = 0;
+      let translateY = 0;
+      for (var m = 0; m < minimaps.length; m++) {
+        let minimap = minimaps[m];
+
+        //draw region & append to container
+        let minimapContainer = out.overseasContainer.append("g").attr("stroke", "black").attr("width", overseasWidth).attr("height", overseasHeight).attr("transform", "translate(" + translateX + "," + translateY + ")")
+        minimapContainer.append("g").attr("class", "dorling-overseas-region").selectAll("path").data(overseasGeojson.features)
+          .enter().append("path").attr("d", overseasPath)
+        //translateX = translateX + 200
+
+
+
+        //add container borders
+        var bbox = minimapContainer.node().getBBox();
+        let padding = 20;
+        minimapContainer.append("rect")
+          .attr("width", bbox.width + padding)
+          .attr("height", bbox.height + padding)
+          .attr("x", bbox.x - (padding / 2))
+          .attr("y", bbox.y - (padding / 2))
+          .style("fill", "transparent")
+          .style("stroke", "grey");
+
+        //region caption
+        let caption = minimapContainer.append("text").text(minimap.name).attr("class", "dorling-overseas-caption").attr("font-size", "10").attr("transform", "translate(2," + (bbox.height + padding) + ")")
+
+        translateY = translateY + (bbox.height + padding)
+      }
+
+
+    })
+
+  }
 
   function addZoomButtonsToDOM() {
     let buttonContainer = document.createElement("div");
@@ -499,6 +710,34 @@ export function dorling(options) {
       out.svg.transition().call(out.zoom.scaleBy, 0.5)
     });
   }
+
+  function addAttributionToDOM() {
+    let cont = out.svg.append("g").attr("class", "dorling-attribution").attr("transform", "translate(" + (out.width_ - 460) + "," + (out.height_ - 4) + ")");
+    let t = cont.append("text").html('Boundaries: © <a href="https://eurogeographics.org/" target="_blank">EuroGeographics</a> © <a href="https://www.fao.org/" target="_blank">UN-FAO</a>  © <a href="https://www.turkstat.gov.tr/" target="_blank">Turkstat</a>, Cartography: <a href="https://ec.europa.eu/eurostat/en/web/gisco" target="_blank">Eurostat - GISCO, 2017</a>')
+
+    //add background fill
+    var ctx = cont.node(),
+      textElem = t.node(),
+      SVGRect = textElem.getBBox();
+
+    var rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    rect.setAttribute("x", SVGRect.x);
+    rect.setAttribute("y", SVGRect.y);
+    rect.setAttribute("width", SVGRect.width + 2);
+    rect.setAttribute("height", SVGRect.height + 2);
+    rect.setAttribute("fill", "white");
+    ctx.insertBefore(rect, textElem);
+
+    function getBB(selection) {
+      selection.each(function (d) { d.bbox = this.getBBox(); })
+    }
+
+    // let container = document.createElement("div");
+    // container.classList.add("dorling-attribution")
+    // container.innerHTML = 'Boundaries: © <a href="https://eurogeographics.org/" target="_blank">EuroGeographics</a> © <a href="https://www.fao.org/" target="_blank">UN-FAO</a>  © <a href="https://www.turkstat.gov.tr/" target="_blank">Turkstat</a>'
+    // out.container_.node().appendChild(container)
+  }
+
 
   function addDisclaimerToDOM() {
     out.svg.append("text").attr("font-size", out.bottomTextFontSize_).attr("id", "bottomtext").attr("x", out.bottomTextPadding_).attr("y", out.height_ - out.bottomTextPadding_)
@@ -642,11 +881,8 @@ export function dorling(options) {
     //hide nuts
     if (out.showBorders_) {
       out.nutsBorders.transition().duration(1000).attr("stroke", "grey");
-      //out.kosovo.transition().duration(1000).attr("stroke", "#eaeaea");
     } else {
       out.nutsBorders.transition().duration(1000).attr("stroke", "#1f1f1f00");
-      //out.nuts.transition().duration(1000).attr("stroke", "#1f1f1f00").attr("fill", "none");
-      //out.countries.transition().duration(1000).attr("stroke", "#1f1f1f00").attr("fill", "none");
       if (out.coastalMargins_) {
         if (out.margins) {
           out.margins.forEach((margin => {
@@ -726,14 +962,6 @@ export function dorling(options) {
       }
       //restart after 8 seconds
     });
-
-    // setTimeout(function () {
-    //   out.simulation.stop();
-    //   if (out.playing) {
-    //     restartTransition();
-    //   }
-    // }, out.simulationDuration_)
-    //invalidation.then(() => simulation.stop());
   }
 
 
@@ -775,15 +1003,7 @@ export function dorling(options) {
       }
     } else {
       out.nutsBorders.transition().duration(1000).attr("stroke", out.nutsBorderColor_);
-      //out.kosovo.transition().duration(1000).attr("stroke", "#D3D3D3");
     }
-
-
-    //reset circle locations & color
-    // out.circles
-    //   .attr("cx", (f) => out.projection(f.geometry.coordinates)[0])
-    //   .attr("cy", (f) => out.projection(f.geometry.coordinates)[1])
-    //   .attr("r", (f) => 0.000055 * Math.sqrt(f.properties.ar));
 
     animate();
   }
@@ -813,11 +1033,6 @@ export function dorling(options) {
     addColorLegendExplanation();
     addSizeLegend();
 
-
-    //adjust legend bacgkround box height dynamically
-    // out.legendBRect = out.legendContainerNode.getBoundingClientRect();
-    // out.legendContainerBackground.style("height", out.legendBRect.height + 25 + "px");
-    // out.legendContainerBackground.style("width", out.legendBRect.width + 25 + "px");
     //ff
     if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
       // Do Firefox-related activities
@@ -849,7 +1064,6 @@ export function dorling(options) {
     out.legendContainer = out.svg
       .append("g")
       .attr("id", "dorling-legend-container")
-      //svg width - legendContainer width
       .attr("opacity", 0);
 
     out.legendContainerBackground = out.legendContainer
@@ -864,7 +1078,6 @@ export function dorling(options) {
       .attr("transform", "translate(20,20)");
 
     let legend = legendColor()
-      //.useClass(true)
       .title(out.colorLegend_.title)
       .titleWidth(out.colorLegend_.titleWidth)
       .orient(out.colorLegend_.orient)
