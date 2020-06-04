@@ -134,7 +134,7 @@ text.label{
 
 /* INSETS */
 .insetmap circle.background {
-  fill: white;
+  fill: aliceblue;
 }
 .insetmap circle.blur {
   filter: url(#blur);
