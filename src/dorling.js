@@ -211,10 +211,15 @@ export function dorling(options) {
 
 
   out.main = function () {
+    if (out.nutsLevel_ !== 2) {
+      out.showInsets_ = false;
+    }
+
+
     let nutsParam;
     if (out.nutsLevel_ == 0) {
       nutsParam = "country"
-    } else {
+    } else if  {
       nutsParam = "nuts" + out.nutsLevel_
     }
     //data promises
