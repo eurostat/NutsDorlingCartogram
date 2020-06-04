@@ -889,7 +889,7 @@ export function dorling(options) {
 
           if (out.tooltip_.sizeValueTextFunction) {
             out.tooltipElement.html(`<strong>${name}</strong>
-          (${f.properties.id}) <i>${out.countryNamesIndex_[id[0] + id[1]]}</i><br>
+          (${id}) <i>${out.countryNamesIndex_[id[0] + id[1]]}</i><br>
           ${out.tooltip_.colorLabel}: <strong>${
               formatNumber(roundToOneDecimal(out.colorIndicator[id]))
               } ${out.tooltip_.colorUnit}</strong><br>
