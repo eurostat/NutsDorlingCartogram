@@ -466,10 +466,10 @@ export function dorling(options) {
   function defineInsets(geojson) {
     let insetsJson = [
       {
-        name: "Guadeloupe (FR)",
+        name: "Canarias (ES)",
         featureCollection: {
           type: "FeatureCollection",
-          features: [geojson.features[0]]
+          features: [geojson.features[5]]
         }
       },
       {
@@ -480,13 +480,6 @@ export function dorling(options) {
         }
       },
       {
-        name: "Guyane (FR)",
-        featureCollection: {
-          type: "FeatureCollection",
-          features: [geojson.features[2]]
-        }
-      },
-      {
         name: "Réunion (FR)",
         featureCollection: {
           type: "FeatureCollection",
@@ -494,24 +487,31 @@ export function dorling(options) {
         }
       },
       {
-        name: "Mayotte (FR)",
-        featureCollection: {
-          type: "FeatureCollection",
-          features: [geojson.features[4]]
-        }
-      },
-      {
-        name: "Canary Islands (ES)",
-        featureCollection: {
-          type: "FeatureCollection",
-          features: [geojson.features[5]]
-        }
-      },
-      {
         name: "Acores (PT)",
         featureCollection: {
           type: "FeatureCollection",
           features: [geojson.features[6]]
+        }
+      },
+      {
+        name: "Guadeloupe (FR)",
+        featureCollection: {
+          type: "FeatureCollection",
+          features: [geojson.features[0]]
+        }
+      },
+      {
+        name: "Guyane (FR)",
+        featureCollection: {
+          type: "FeatureCollection",
+          features: [geojson.features[2]]
+        }
+      },
+      {
+        name: "Mayotte (FR)",
+        featureCollection: {
+          type: "FeatureCollection",
+          features: [geojson.features[4]]
         }
       },
       {
