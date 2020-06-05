@@ -1,14 +1,38 @@
 #dorling-svg{
   position:relative; top:0; left:0; max-height:100%;
 }
+.dorling-legend {
+  position: absolute;
+  top: 150px;
+  left: 25px;
+  width: 250px;
+}
 
+/* INSETS */
 .dorling-insets{
   position: absolute;
     top: 5px;
-    left: 25px;
+    right: 25px;
     width: 21%;
     height: 69%;
     /* transform: translate(10px, 10px); */
+}
+.dorling-overseas-caption{
+  stroke-width:0.2;
+}
+
+.insetmap rect.background {
+  fill: aliceblue;
+}
+.insetmap rect.blur {
+  filter: url(#blur);
+  fill: none;
+  stroke: white;
+  stroke-width: 10;
+}
+.insetmap rect.outline {
+  fill: none;
+  stroke: #000;
 }
 
 .dorling-graticule {
@@ -128,24 +152,7 @@ text.label{
   opacity: 1;
   visibility: visible;
 }
-.dorling-overseas-caption{
-  stroke-width:0.2;
-}
 
-/* INSETS */
-.insetmap circle.background {
-  fill: aliceblue;
-}
-.insetmap circle.blur {
-  filter: url(#blur);
-  fill: none;
-  stroke: white;
-  stroke-width: 10;
-}
-.insetmap circle.outline {
-  fill: none;
-  stroke: #000;
-}
 
 /* loading spinner  */
 .lds-ripple.show {

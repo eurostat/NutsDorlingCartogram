@@ -89,18 +89,19 @@ export function dorling(options) {
 
   out.showInsets_ = true;
   out.insets_ = {
-    titleWidth: 80,
+    titleWidth: 90,
     overseasHeight: 70,
     overseasWidth: 70,
-    column2OffsetLeft: 150,
+    column2OffsetLeft: 110,
     translateX: 15,
     translateY: 150,
-    captionY: -40,
-    captionX: -35,
-    circleYOffset: 25,
-    circleXOffset: 25,
+    captionY: 53,
+    captionX: -30,
+    yOffset: 25,
+    xOffset: 25,
     radius: 70,
-    spacing: 145
+    spacing: 110,
+    padding: 25
   }
 
   //tooltip html
@@ -503,21 +504,21 @@ export function dorling(options) {
         name: "Canary Islands (ES)",
         featureCollection: {
           type: "FeatureCollection",
-          features: [geojson.features[6]]
+          features: [geojson.features[5]]
         }
       },
       {
         name: "Acores (PT)",
         featureCollection: {
           type: "FeatureCollection",
-          features: [geojson.features[7]]
+          features: [geojson.features[6]]
         }
       },
       {
         name: "Madeira (PT)",
         featureCollection: {
           type: "FeatureCollection",
-          features: [geojson.features[8]]
+          features: [geojson.features[7]]
         }
       }
     ]
@@ -579,8 +580,11 @@ export function dorling(options) {
         .attr('id', function (d) {
           return 'clip-inset-' + d.name;
         })
-        .append('circle')
-        .attr('r', out.insets_.radius);
+        .append("rect")
+        .attr('height', out.insets_.overseasHeight + out.insets_.padding)
+        .attr('width', out.insets_.overseasWidth + out.insets_.padding);
+      // .append('circle')
+      // .attr('r', out.insets_.radius);
 
       //append each overseas topojson feature
       insets.forEach(function (inset, i) {
@@ -591,7 +595,7 @@ export function dorling(options) {
           .append('g')
           .classed('insetmap', true)
           .attr('transform', function (d) {
-            return 'translate(' + [(d.x + out.insets_.circleXOffset), (d.y + out.insets_.circleYOffset)] + ')';
+            return 'translate(' + [(d.x + out.insets_.xOffset), (d.y + out.insets_.yOffset)] + ')';
           })
           .attr('id', function (d) {
             return 'inset-' + d.name;
@@ -600,9 +604,14 @@ export function dorling(options) {
             return 'url(#clip-inset-' + d.name + ')';
           });
 
-        g.append('circle')
+        // g.append('circle')
+        //   .classed('background', true)
+        //   .attr('r', out.insets_.radius);
+        g.append('rect')
           .classed('background', true)
-          .attr('r', out.insets_.radius);
+          .attr('height', out.insets_.overseasHeight + out.insets_.padding)
+          .attr('width', out.insets_.overseasWidth + out.insets_.padding)
+          .attr('transform', "translate(-" + (out.insets_.overseasWidth / 2) + ",-" + (out.insets_.overseasHeight / 2) + ")")
 
         let insetGeom = out.insetsSvg
           .append("g")
@@ -615,14 +624,25 @@ export function dorling(options) {
           .attr("stroke", "black")
           .attr("d", inset.path);
 
-        g.append('circle')
+        // g.append('circle')
+        //   .classed('blur', true)
+        //   .attr('r', out.insets_.radius);
+        g.append('rect')
           .classed('blur', true)
-          .attr('r', out.insets_.radius);
+          .attr('height', out.insets_.overseasHeight + out.insets_.padding)
+          .attr('width', out.insets_.overseasWidth + out.insets_.padding)
+          .attr('transform', "translate(-" + (out.insets_.overseasWidth / 2) + ",-" + (out.insets_.overseasHeight / 2) + ")")
 
-        let circleBorder = g
-          .append('circle')
+        // let circleBorder = g
+        //   .append('circle')
+        //   .classed('outline', true)
+        //   .attr('r', out.insets_.radius);
+        g
+          .append('rect')
           .classed('outline', true)
-          .attr('r', out.insets_.radius);
+          .attr('height', out.insets_.overseasHeight + out.insets_.padding)
+          .attr('width', out.insets_.overseasWidth + out.insets_.padding)
+          .attr('transform', "translate(-" + (out.insets_.overseasWidth / 2) + ",-" + (out.insets_.overseasHeight / 2) + ")")
 
         let caption = g
           .append("text")
@@ -651,8 +671,8 @@ export function dorling(options) {
           }
         })
         .append("circle")
-        .attr("cx", (d) => { return (d.x + out.insets_.circleXOffset) })
-        .attr("cy", (d) => { return (d.y + out.insets_.circleYOffset) })
+        .attr("cx", (d) => { return (d.x + out.insets_.xOffset) })
+        .attr("cy", (d) => { return (d.y + out.insets_.yOffset) })
         .attr("r", (f) => toRadius(+out.sizeIndicator[f.featureCollection.features[0].properties.id]))
         .attr("fill", (f) => colorFunction(+out.colorIndicator[f.featureCollection.features[0].properties.id]))
         .attr("stroke", "black");
@@ -1168,8 +1188,16 @@ export function dorling(options) {
   }
 
   function addColorLegend() {
+    out.legendSvg = d3.create("svg");
+    out.legendSvg
+      .attr("viewBox", [0, 0, 272, 685])
+      .attr("class", "dorling-legend")
+
+    //append legend to main container
+    out.container_.node().appendChild(out.legendSvg.node());
+
     //background container
-    out.legendContainer = out.svg
+    out.legendContainer = out.legendSvg
       .append("g")
       .attr("id", "dorling-legend-container")
       .attr("opacity", 0);
@@ -1255,7 +1283,7 @@ export function dorling(options) {
       legend.shapeRadius(out.colorLegend_.shapeRadius);
 
     //init svg-color-legend
-    out.svg.select(".dorling-color-legend").call(legend);
+    out.legendSvg.select(".dorling-color-legend").call(legend);
 
     //apply indentation to legend cells
     let legendCells = d3.select(".legendCells")
@@ -1268,7 +1296,7 @@ export function dorling(options) {
     // let svgWidth = out.svg.node().clientWidth;
     // out.legendContainerNode = out.legendContainer.node();
     //TODO use node width instead of viewport width
-    out.legendContainer.attr("transform", "translate(" + ((out.width_ - (out.colorLegend_.titleWidth + 20))) + ", 0)");
+    // out.legendContainer.attr("transform", "translate(25, 150)");
   }
 
   function getTranslation(transform) {
