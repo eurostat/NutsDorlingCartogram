@@ -286,6 +286,17 @@ export function dorling(options) {
         out.centroids.features = newFeatures;
       }
 
+      //remove madeira and azores when showing insets
+      if (out.showInsets_) {
+        let newFeatures = [];
+        out.centroids.features.forEach((f) => {
+          if (f.properties.id !== "PT20" && f.properties.id !== "PT30" && f.properties.id !== "PT3" && f.properties.id !== "PT2" && f.properties.id !== "PT200" && f.properties.id !== "PT300") {
+            newFeatures.push(f);
+          }
+        });
+        out.centroids.features = newFeatures;
+      }
+
       out.n2j = res[1];
       out.nuts0 = res[2];
 
