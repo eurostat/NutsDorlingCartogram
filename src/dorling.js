@@ -89,19 +89,19 @@ export function dorling(options) {
 
   out.showInsets_ = true;
   out.insets_ = {
-    titleWidth: 90,
-    overseasHeight: 70,
-    overseasWidth: 70,
-    column2OffsetLeft: 110,
+    titleWidth: 120,
+    overseasHeight: 72,
+    overseasWidth: 72,
     translateX: 15,
-    translateY: 150,
-    captionY: 53,
+    translateY: 15,
+    captionY: 65,
     captionX: -30,
+    captionFontSize: 13,
     yOffset: 25,
     xOffset: 25,
     radius: 70,
-    spacing: 110,
-    padding: 25
+    spacing: 120,
+    padding: 38
   }
 
   //tooltip html
@@ -542,7 +542,7 @@ export function dorling(options) {
       //split into 2 columns
       if (i == 3) {
         translateY = out.insets_.translateY;
-        translateX = out.insets_.translateX + out.insets_.column2OffsetLeft;
+        translateX = out.insets_.translateX + out.insets_.spacing;
       }
     });
 
@@ -648,10 +648,10 @@ export function dorling(options) {
           .append("text")
           .data(insets)
           .text(d => {
-            return d.name;
+            return d.featureCollection.features[0].properties.name;
           })
           .attr("class", "overseas-caption")
-          .attr("font-size", "10")
+          .attr("font-size", out.insets_.captionFontSize)
           .attr("stroke-width", 0.2)
           .attr("transform", "translate(" + out.insets_.captionX + "," + out.insets_.captionY + ")")
           .call(d3_textWrapping, out.insets_.titleWidth);
@@ -680,73 +680,6 @@ export function dorling(options) {
 
       addMouseEvents();
     })
-  }
-
-  function addOverseasRegions() {
-    //build container
-    out.overseasContainer = out.map.append("g").attr("class", "dorling-overseas-container").attr("transform", "translate(20,100)")
-    //for switching between nuts
-    let objectName = "NUTS" + out.nutsLevel_;
-    //get overseas topojson
-    d3.json(
-      `../../assets/topojson/NUTS${out.nutsLevel_}.json`
-    ).then((overseasTopo) => {
-      //to geojson
-      let overseasGeojson = topojson.feature(overseasTopo, overseasTopo.objects[objectName]);
-      //define overseas projection
-      let overseasWidth = 120;
-      let overseasHeight = 100;
-      let overseasProjection = d3Geo
-        .geoIdentity()
-        .reflectY(true)
-        .fitExtent([[0, 0], [overseasWidth, overseasHeight]], overseasGeojson)
-      let overseasPath = d3Geo.geoPath().projection(overseasProjection);
-
-
-      let minimaps = [
-        { name: "Canarias (ES", center: [28.459033, -15.779399], feature: overseasGeojson.features[0] },
-        { name: "Guadeloupe (FR)", feature: overseasGeojson.features[1] },
-        { name: "Martinique (FR)", feature: overseasGeojson.features[2] },
-        { name: "Guyane (FR)", feature: overseasGeojson.features[3] },
-        { name: "Réunion (FR)", feature: overseasGeojson.features[4] },
-        { name: "Mayotte (FR)", feature: overseasGeojson.features[5] },
-        { name: "Açores (PT)", feature: overseasGeojson.features[6] },
-        { name: "Madeira (PT)", feature: overseasGeojson.features[7] }];
-
-      //for positioning each region within the main container
-      let translateX = 0;
-      let translateY = 0;
-      for (var m = 0; m < minimaps.length; m++) {
-        let minimap = minimaps[m];
-
-        //draw region & append to container
-        let minimapContainer = out.overseasContainer.append("g").attr("stroke", "black").attr("width", overseasWidth).attr("height", overseasHeight).attr("transform", "translate(" + translateX + "," + translateY + ")")
-        minimapContainer.append("g").attr("class", "dorling-overseas-region").selectAll("path").data(overseasGeojson.features)
-          .enter().append("path").attr("d", overseasPath)
-        //translateX = translateX + 200
-
-
-
-        //add container borders
-        var bbox = minimapContainer.node().getBBox();
-        let padding = 20;
-        minimapContainer.append("rect")
-          .attr("width", bbox.width + padding)
-          .attr("height", bbox.height + padding)
-          .attr("x", bbox.x - (padding / 2))
-          .attr("y", bbox.y - (padding / 2))
-          .style("fill", "transparent")
-          .style("stroke", "grey");
-
-        //region caption
-        let caption = minimapContainer.append("text").text(minimap.name).attr("class", "dorling-overseas-caption").attr("font-size", "10").attr("transform", "translate(2," + (bbox.height + padding) + ")")
-
-        translateY = translateY + (bbox.height + padding)
-      }
-
-
-    })
-
   }
 
   function addZoomButtonsToDOM() {
@@ -907,7 +840,7 @@ export function dorling(options) {
     if (out.showInsets_) {
       out.insetCircles.on("mouseover", function (f) {
         let id = f.featureCollection.features[0].properties.id;
-        let name = f.name;
+        let name = f.featureCollection.features[0].properties.name;
         if (out.stage == 2) {
           // d3.select(this).attr("fill", out.highlightColor_);
           d3.select(this).attr("stroke-width", "3px");

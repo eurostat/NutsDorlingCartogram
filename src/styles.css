@@ -3,16 +3,17 @@
 }
 .dorling-legend {
   position: absolute;
-  top: 150px;
-  left: 25px;
-  width: 250px;
+  top: 19%;
+  left: 1%;
+  width: 21%;
+  height: 69%;
 }
 
 /* INSETS */
 .dorling-insets{
   position: absolute;
-    top: 5px;
-    right: 25px;
+    top: 5%;
+    right: 5%;
     width: 21%;
     height: 69%;
     /* transform: translate(10px, 10px); */
@@ -69,6 +70,8 @@
 }
 
 .dorling-container {
+  max-width:100%;
+  max-height:100%;
 position:relative;
 font-family: 'Open Sans', "Helvetica Neue", Arial,"Noto Sans",sans-serif;
 }
