@@ -3,8 +3,8 @@
 }
 .dorling-legend {
   position: absolute;
-  top: 15%;
-  left: 1%;
+  top: 1%;
+  left: 2%;
   width: 21%;
   height: 84%;
 }
@@ -12,7 +12,7 @@
 /* INSETS */
 .dorling-insets{
   position: absolute;
-    top: 2%;
+    top: 1%;
     right: 5%;
     width: 21%;
     height: 69%;
