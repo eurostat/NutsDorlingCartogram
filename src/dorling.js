@@ -89,7 +89,7 @@ export function dorling(options) {
     cellsTranslateY: 2
   };
 
-  out.nutsSelectorTranslateY = 360;
+  out.nutsSelectorTranslateY_ = 360;
 
   out.showInsets_ = true;
   out.insets_ = {
@@ -121,7 +121,7 @@ export function dorling(options) {
   //additional text and links
   out.showAttribution_ = true;
   out.attributionText_ = 'Boundaries: © <a href="https://eurogeographics.org/" target="_blank">EuroGeographics</a> © <a href="https://www.fao.org/" target="_blank">UN-FAO</a>  © <a href="https://www.turkstat.gov.tr/" target="_blank">Turkstat</a>, Cartography: <a href="https://ec.europa.eu/eurostat/en/web/gisco" target="_blank">Eurostat - GISCO, 2017</a>';
-  out.showSources_ = false;
+  out.showSources_ = true;
   out.showFootnotes_ = false;
   out.footnotesText_ = "";
 
@@ -180,10 +180,7 @@ export function dorling(options) {
   //main build function
   out.build = function () {
 
-    if (window.screen.width < 700) {
-      //mobile stuff
-      out.showInsets_ = false;
-    }
+
 
     out.container_ = d3.select("#" + out.containerId_);
     addLoadingSpinnerToDOM();
@@ -215,10 +212,15 @@ export function dorling(options) {
 
 
   out.main = function () {
-    if (out.nutsLevel_ !== 2) {
+    if (window.screen.width < 700) {
+      //mobile stuff
       out.showInsets_ = false;
     }
 
+    //TODO: allow insets for different NUTS
+    if (out.nutsLevel_ !== 2) {
+      out.showInsets_ = false;
+    }
 
     let nutsParam;
     if (out.nutsLevel_ == 0) {
@@ -725,7 +727,7 @@ export function dorling(options) {
   }
 
   function addAttributionToDOM() {
-    let cont = out.svg.append("g").attr("class", "dorling-attribution").attr("transform", "translate(" + (out.width_ - 460) + "," + (out.height_ - 4) + ")");
+    let cont = out.svg.append("g").attr("class", "dorling-attribution").attr("transform", "translate(690," + (out.height_ - 4) + ")");
     let t = cont.append("text").html(out.attributionText_)
 
     //add background fill
@@ -1135,6 +1137,13 @@ export function dorling(options) {
       .attr("viewBox", [0, 0, 272, 685])
       .attr("class", "dorling-legend")
 
+    if (window.screen.width < 700) {
+      //mobile stuff
+      let node = out.legendSvg.node()
+      node.style.left = "0px";
+      node.style.top = "50px";
+    }
+
     //append legend to main container
     out.container_.node().appendChild(out.legendSvg.node());
 
@@ -1385,7 +1394,7 @@ export function dorling(options) {
       .attr("id", "dorling-nuts-selector")
       //.attr("class", "dorling-nuts-selector-container dorling-plugin")
       .attr("opacity", 0)
-      .attr("transform", "translate(0, " + out.nutsSelectorTranslateY + ")")
+      .attr("transform", "translate(0, " + out.nutsSelectorTranslateY_ + ")")
 
     //background
     out.radioContainer
