@@ -52,7 +52,7 @@ export function dorling(options) {
     titleXOffset: 20,
     textFunction: function (d) { return d.toLocaleString() },
     values: null,
-    translateY: 240,
+    translateY: 0,
     bodyXOffset: 50,
     bodyYOffset: 90
   };
@@ -82,10 +82,14 @@ export function dorling(options) {
     labelUnit: " ",
     labelWrap: 140,
     eu27: null,
-    explanationYOffset: -55,
+    translateX: 20,
+    translateY: 135,
+    explanationYOffset: 330,
     cellsTranslateX: 3,
     cellsTranslateY: 2
   };
+
+  out.nutsSelectorTranslateY = 360;
 
   out.showInsets_ = true;
   out.insets_ = {
@@ -114,13 +118,12 @@ export function dorling(options) {
     sizeValueTextFunction: null
   }
 
-  //copyright text
-  out.bottomText_ = false;
-  out.bottomTextFontSize_ = 12;
-  out.bottomTextFill_ = "black";
-  out.bottomTextFontFamily_ = "'Open Sans', 'Helvetica Neue', Arial,'Noto Sans',sans-serif";
-  out.bottomTextPadding_ = 10;
-  out.bottomTextTooltipMessage_ = "The designations employed and the presentation of material on this map do not imply the expression of any opinion whatsoever on the part of the European Union concerning the legal status of any country, territory, city or area or of its authorities, or concerning the delimitation of its frontiers or boundaries. Kosovo*: This designation is without prejudice to positions on status, and is in line with UNSCR 1244/1999 and the ICJ Opinion on the Kosovo declaration of independence. Palestine*: This designation shall not be construed as recognition of a State of Palestine and is without prejudice to the individual positions of the Member States on this issue.";
+  //additional text and links
+  out.showAttribution_ = true;
+  out.attributionText_ = 'Boundaries: © <a href="https://eurogeographics.org/" target="_blank">EuroGeographics</a> © <a href="https://www.fao.org/" target="_blank">UN-FAO</a>  © <a href="https://www.turkstat.gov.tr/" target="_blank">Turkstat</a>, Cartography: <a href="https://ec.europa.eu/eurostat/en/web/gisco" target="_blank">Eurostat - GISCO, 2017</a>';
+  out.showSources_ = false;
+  out.showFootnotes_ = false;
+  out.footnotesText_ = "";
 
   //data params
   out.nutsLevel_ = 2;
@@ -335,7 +338,7 @@ export function dorling(options) {
         .attr("id", "dorling-svg")
         .style("background-color", out.seaColor_)
         .style("width", "100%")
-        .style("height", "100%")
+        .style("height", "92%")
       out.container_.node().appendChild(out.svg.node());
       out.container_.attr("class", "dorling-container");
       // initialize tooltip
@@ -456,10 +459,17 @@ export function dorling(options) {
         addNutsSelectorToDOM();
       }
 
-      addAttributionToDOM();
-      if (out.bottomText_) {
-        addDisclaimerToDOM();
+      if (out.showAttribution_) {
+        addAttributionToDOM();
       }
+
+      if (out.showFootnotes_) {
+        addFootnotesToDOM();
+      }
+      if (out.showSources_) {
+        addSourcesToDOM();
+      }
+
 
       addZoomButtonsToDOM();
 
@@ -716,7 +726,7 @@ export function dorling(options) {
 
   function addAttributionToDOM() {
     let cont = out.svg.append("g").attr("class", "dorling-attribution").attr("transform", "translate(" + (out.width_ - 460) + "," + (out.height_ - 4) + ")");
-    let t = cont.append("text").html('Boundaries: © <a href="https://eurogeographics.org/" target="_blank">EuroGeographics</a> © <a href="https://www.fao.org/" target="_blank">UN-FAO</a>  © <a href="https://www.turkstat.gov.tr/" target="_blank">Turkstat</a>, Cartography: <a href="https://ec.europa.eu/eurostat/en/web/gisco" target="_blank">Eurostat - GISCO, 2017</a>')
+    let t = cont.append("text").html(out.attributionText_)
 
     //add background fill
     var ctx = cont.node(),
@@ -742,44 +752,32 @@ export function dorling(options) {
   }
 
 
-  function addDisclaimerToDOM() {
-    out.svg.append("text").attr("font-size", out.bottomTextFontSize_).attr("id", "bottomtext").attr("x", out.bottomTextPadding_).attr("y", out.height_ - out.bottomTextPadding_)
-      .text(out.bottomText_)
-      .style("font-family", out.bottomTextFontFamily_)
-      .style("font-size", out.bottomTextFontSize_)
-      .style("fill", out.bottomTextFill_)
-      .on("mouseover", function () {
-        out.tooltipElement.style("visibility", "visible");
-        out.tooltipElement.style("font-size", "12px")
-        let svgNode = out.svg.node();
-        let svgWidth = svgNode.clientWidth;
-        out.tooltipElement.style("max-width", svgWidth + "px")
-        out.tooltipElement.html(`${out.bottomTextTooltipMessage_}`)
-        //tooltip position + offsets
-        let matrix = this.getScreenCTM().translate(
-          +this.getAttribute("x"),
-          +this.getAttribute("y")
-        );
-        let node = out.tooltipElement.node();
-        let tooltipWidth = node.offsetWidth;
-        let tooltipHeight = node.offsetHeight;
-        let left = window.pageXOffset + matrix.e + 20;
-        let top = window.pageYOffset + matrix.f - 100;
-        if (left > out.width_ - tooltipWidth) {
-          left = left - (tooltipWidth + 40);
-        }
-        if (left < 0) {
-          left = 1;
-        }
-        if (top < 0) {
-          top = top + (tooltipHeight);
-        }
-        out.tooltipElement.style("left", left + "px").style("top", top + "px");
-      })
-      .on("mouseout", function () {
-        out.tooltipElement.style("visibility", "hidden");
-        out.tooltipElement.style("font-size", "14px")
-      })
+  function addSourcesToDOM() {
+    let colorURL = "https://appsso.eurostat.ec.europa.eu/nui/show.do?dataset=" + out.colorDatasetCode_
+    let sizeURL = "https://appsso.eurostat.ec.europa.eu/nui/show.do?dataset=" + out.sizeDatasetCode_
+
+    let sources = document.createElement("div");
+    sources.classList.add("dorling-sources-container");
+
+    let colorSource = document.createElement("div")
+    colorSource.innerHTML = "Source (colour): Eurostat - <a href='" + colorURL + "'>access to dataset</a>"
+
+    let sizeSource = document.createElement("div")
+    sizeSource.innerHTML = "Source (size): Eurostat - <a href='" + sizeURL + "'>access to dataset</a>"
+
+    sources.appendChild(colorSource);
+    sources.appendChild(sizeSource);
+
+    out.container_.node().appendChild(sources)
+  }
+
+  function addFootnotesToDOM() {
+    let footnotes = document.createElement("div");
+    footnotes.classList.add("dorling-footnotes-container");
+
+    footnotes.innerHTML = out.footnotesText_;
+
+    out.container_.node().appendChild(footnotes)
   }
 
   function addMouseEvents() {
@@ -1152,10 +1150,17 @@ export function dorling(options) {
       .attr("transform", "translate(0,0)")
 
     //legend <g>
-    out.legendContainer
+    out.colorLegendContainer = out.legendContainer
       .append("g")
       .attr("class", "dorling-color-legend")
-      .attr("transform", "translate(20,20)");
+
+    //ff positioning fix
+    if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
+      // Do Firefox-related activities
+      out.colorLegendContainer.attr("transform", "translate(" + out.colorLegend_.translateX + "," + (out.colorLegend_.translateY + 2) + ")")
+    } else {
+      out.colorLegendContainer.attr("transform", "translate(" + out.colorLegend_.translateX + "," + out.colorLegend_.translateY + ")")
+    }
 
     let legend = legendColor()
       .title(out.colorLegend_.title)
@@ -1373,10 +1378,8 @@ export function dorling(options) {
     let radioDotOpacity = 0.3;
     let outlineSelectedColor = "#022B58";
 
-    out.nutsSelectorTranslateY = 340;
+
     //main container
-    let sl = document.getElementById("dorling-size-legend-container")
-    let slbr = sl.getBoundingClientRect();
     out.radioContainer = out.legendContainer
       .append("g")
       .attr("id", "dorling-nuts-selector")
@@ -1393,7 +1396,7 @@ export function dorling(options) {
 
     //title
     out.radioContainer.append("text")
-      .text("Geographic level").attr("class", "dorling-legend-title")
+      .text("Choose Geographic level").attr("class", "dorling-legend-title")
       .attr("transform", "translate(" + (marginLeft - 5) + ",28)");
 
     //RADIO 0

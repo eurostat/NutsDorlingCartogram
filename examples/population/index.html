@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Population Density Dorling cartogram</title>
+  <title>Population Density Dorling Cartogram</title>
 </head>
 
 <body style="margin:0">
@@ -36,7 +36,6 @@
         labelOffset: 10,
         shape: "circle",
         labelFormat: d3.format(".0f"),
-        explanationYOffset: -35
       })
       .sizeLegend({
         title: "Total population",
@@ -53,13 +52,15 @@
         values: [20e6, 10e6, 1e6],
         bodyXOffset: 50,
         bodyYOffset: 85,
-        translateY: 240
       })
       .tooltip({
         colorLabel: "Population change per 1 000 inhabitants",
         sizeLabel: "Total population",
         shareLabel: "Share of national population",
       })
+      .showSources(true)
+      .showFootnotes(true)
+      .footnotesText("Data on population change refer to the changes between 1 January 2018 and 1 January 2019")
       .exclude(["MK", "ME", "TR", "AL", "RS"])
       .seaColor("white")
       .graticule(false)

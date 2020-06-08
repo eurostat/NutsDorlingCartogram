@@ -33,7 +33,7 @@
 }
 .insetmap rect.outline {
   fill: none;
-  stroke: #000;
+  stroke: grey;
 }
 
 .dorling-graticule {
