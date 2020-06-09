@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Agriculture Dorling Cartogram</title>
+</head>
+
+<body style="margin:0">
+    <div id="containerDiv" style="position:absolute;height:100%;width:100%;text-align:center;">
+
+    </div>
+    <script src="https://d3js.org/d3-format.v1.min.js"></script>
+    <script src="../../build/dorling.js"></script>
+    <script>
+        NutsDorlingCartogram.dorling()
+            .containerId("containerDiv")
+            .nutsLevel(2)
+            // .colors(["#3A6ABD", "#789BD8", "#D1D9F1", "#EBC2DE", "#E18FC8", "#A74177"])
+            .colors(["#2d50a0", "#6487c3", "#aab9e1", "#f0cd91", "#e6a532", "#d76e2d"])
+            //.thresholdValues([2.5, 5, 7.5, 10, 12.5, 5000])
+            .showNutsSelector(true)
+            .sizeDatasetCode("apro_cpshr")
+            .sizeDatasetFilters("precision=1&crops=C1110&strucpro=PR_HU_EU&time=2018")
+            .colorDatasetCode("apro_cpshr")
+            .colorDatasetFilters("precision=1&crops=C1110&strucpro=PR_HU_EU&time=2018")
+            .colorIsPercentage(true)
+            .colorPercentageCalcDatasetCode("apro_cpshr")
+            .colorPercentageCalcDatasetFilters("precision=1&crops=C0000&strucpro=PR_HU_EU&time=2018")
+            .circleExaggerationFactor(100.6)
+            .colorLegend({
+                //https://d3-legend.susielu.com/#color
+                titleWidth: 225,
+                title: "Share in total cereals production (%), 2018",
+                orient: "vertical",
+                shapeRadius: 10,
+                shapePadding: 5,
+                labelAlign: "middle",
+                labelFormat: d3.format(".1f"),
+                labelUnit: " ",
+                labelOffset: 10,
+                shape: "circle",
+                translateY: 145,
+                explanationYOffset: 340,
+            })
+            .sizeLegend({
+                title: "Harvested production (1 000 tonnes)",
+                titleYOffset: 10,
+                titleXOffset: 23,
+                textFunction: function (d) { return d.toLocaleString("en").replace(/,/gi, " "); },
+                values: [5000, 2500, 1000],
+                bodyXOffset: 55,
+                bodyYOffset: 113
+            })
+            .tooltip({
+                colorLabel: "Share of total cereals production (%)",
+                sizeLabel: "Harvested production (1 000 tonnes)",
+                shareLabel: "Share of national harvested production (%)",
+            })
+            .exclude(["MK", "ME", "TR", "AL", "RS"])
+            .graticule(false)
+            .loop(false)
+            .pauseButton(false)
+            .showBorders(true)
+            //d3-geo stuff
+            .translateX(-390)
+            .translateY(1126)
+            .scale(0.0002065379208173783)
+            .showNutsSelector(false)
+            .build();
+    </script>
+</body>
+
+</html>

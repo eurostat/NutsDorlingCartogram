@@ -1,21 +1,24 @@
 #dorling-svg{
-  position:relative; top:0; left:0; max-height:100%;
+  position:relative; top:0; left:0; max-height:90%;
 }
 .dorling-legend {
   position: absolute;
-  top: 1%;
-  left: 3%;
+  top: 2%;
+  left: 5%;
   width: 21%;
-  height: 84%;
+  height: 58%;
+}
+.dorling-bottom-text-container{
+  height:7%;
 }
 
 /* INSETS */
 .dorling-insets{
   position: absolute;
-    top: 1%;
+    top: 2%;
     right: 5%;
     width: 21%;
-    height: 69%;
+    height: 58%;
     /* transform: translate(10px, 10px); */
 }
 .dorling-overseas-caption{
