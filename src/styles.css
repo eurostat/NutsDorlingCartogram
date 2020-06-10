@@ -4,13 +4,7 @@
   left:0; 
   /* max-height:92%; */
 }
-.dorling-legend {
-  position: absolute;
-  top: 2%;
-  left: 5%;
-  width: 21%;
-  /* height: 58%; */
-}
+
 .dorling-bottom-text-container{
   /* height:7%; */
   font-size:14px;
@@ -29,10 +23,17 @@
     text-decoration: underline;
 }
 
+.dorling-legend {
+  position: absolute;
+  top: 10%;
+  left: 5%;
+  width: 21%;
+  /* height: 58%; */
+}
 /* INSETS */
 .dorling-insets{
   position: absolute;
-    top: 2%;
+    top: 10%;
     right: 5%;
     width: 21%;
     height: 58%;
@@ -183,8 +184,8 @@ text.label{
   position: absolute;
   width: 80px;
   height: 80px;
-  top: 45%;
-  left: 42.5%;
+  top: 49%;
+  left: 46.5%;
 }
 .lds-ripple.hide {
   display:none;
