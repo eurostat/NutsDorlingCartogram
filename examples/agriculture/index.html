@@ -49,7 +49,10 @@
     <div id="containerDiv" style="position:absolute;height:99%;width:100%;text-align:center;"></div>
     <script>
         let cropConfig = {
-            C1110: { "circleExaggerationFactor": 100 },
+            C1110: {
+                "circleExaggerationFactor": 100,
+                "sizeLegend": { values: [5000, 2500, 1000] }
+            },
             C1200: {
                 "circleExaggerationFactor": 350,
                 "sizeLegend": { values: [500, 250, 100] }
