@@ -5,16 +5,80 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Agriculture Dorling Cartogram</title>
+    <!-- bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <!-- d3 -->
+    <script src="https://d3js.org/d3-format.v1.min.js"></script>
+    <script src="../../build/dorling.js"></script>
+    <!-- overrides when using a select -->
+    <style>
+        #dorling-cereal-select-container {
+            width: 21%;
+            position: absolute;
+            left: 6.5%;
+            top: 55%;
+            z-index: 9;
+        }
+    </style>
 </head>
 
 <body style="margin:0">
-    <div id="containerDiv" style="position:absolute;height:100%;width:100%;text-align:center;">
 
+    <!-- crop selector -->
+    <div class="input-group mb-3" id="dorling-cereal-select-container">
+        <div class="input-group-prepend">
+            <label class="input-group-text" for="dorling-cereal-select">Type of cereal..</label>
+        </div>
+        <select class="custom-select" id="dorling-cereal-select" onchange="cerealSelected()">
+            <option value="C1110" selected>Common wheat and spelt</option>
+            <option value="C1200">Rye and winter cereal mixtures (maslin)</option>
+            <option value="C1120">Durum wheat</option>
+            <option value="C1300">Barley</option>
+            <option value="C1410">Oats</option>
+            <option value="C1500">Grain maize and corn-cob mix</option>
+            <option value="C1600">Triticale</option>
+            <option value="C2000">Rice</option>
+        </select>
     </div>
-    <script src="https://d3js.org/d3-format.v1.min.js"></script>
-    <script src="../../build/dorling.js"></script>
+
+    <!-- dorling container -->
+    <div id="containerDiv" style="position:absolute;height:99%;width:100%;text-align:center;"></div>
     <script>
-        NutsDorlingCartogram.dorling()
+        let cropConfig = {
+            C1110: { "circleExaggerationFactor": 100 },
+            C1200: {
+                "circleExaggerationFactor": 300,
+                "sizeLegend": { values: [500, 250, 100] }
+            },
+            C1120: {
+                "circleExaggerationFactor": 200,
+                "sizeLegend": { values: [1000, 500, 100] }
+            },
+            C1300: {
+                "circleExaggerationFactor": 200,
+                "sizeLegend": { values: [1000, 500, 100] }
+            },
+            C1410: {
+                "circleExaggerationFactor": 200,
+                "sizeLegend": { values: [1000, 500, 100] }
+            },
+            C1500: {
+                "circleExaggerationFactor": 100,
+                "sizeLegend": { values: [3000, 1500, 500] }
+            },
+            C1600: {
+                "circleExaggerationFactor": 200,
+                "sizeLegend": { values: [1000, 500, 100] }
+            },
+            C2000: {
+                "circleExaggerationFactor": 200,
+                "sizeLegend": { values: [1000, 500, 100] }
+            }
+        }
+        let dorling = NutsDorlingCartogram.dorling()
             .containerId("containerDiv")
             .nutsLevel(2)
             // .colors(["#3A6ABD", "#789BD8", "#D1D9F1", "#EBC2DE", "#E18FC8", "#A74177"])
@@ -51,7 +115,7 @@
                 textFunction: function (d) { return d.toLocaleString("en").replace(/,/gi, " "); },
                 values: [5000, 2500, 1000],
                 bodyXOffset: 55,
-                bodyYOffset: 113
+                bodyYOffset: 118
             })
             .tooltip({
                 colorLabel: "Share of total cereals production (%)",
@@ -69,6 +133,21 @@
             .scale(0.0002065379208173783)
             .showNutsSelector(false)
             .build();
+
+
+        function cerealSelected() {
+            let id = document.getElementById("dorling-cereal-select").value;
+            dorling.sizeDatasetFilters("precision=1&crops=" + id + "&strucpro=PR_HU_EU&time=2018")
+                .colorDatasetFilters("precision=1&crops=" + id + "&strucpro=PR_HU_EU&time=2018")
+                .circleExaggerationFactor(cropConfig[id].circleExaggerationFactor)
+            if (cropConfig[id].sizeLegend) {
+                dorling.sizeLegend({
+                    values: cropConfig[id].sizeLegend.values
+                })
+            }
+
+            dorling.rebuild()
+        }
     </script>
 </body>
 

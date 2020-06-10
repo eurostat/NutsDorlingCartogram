@@ -1,12 +1,9 @@
 import * as d3 from "d3";
 import * as d3Array from "d3-array";
-
 import * as d3Geo from "d3-geo";
-
 import * as topojson from "topojson";
 import { legendColor } from "d3-svg-legend";
 import "./styles.css";
-import { interpolateBlues } from "d3";
 
 export function dorling(options) {
   //the output object
@@ -206,6 +203,7 @@ export function dorling(options) {
 
     out.container_ = d3.select("#" + out.containerId_);
     clearSvg();
+    clearBottomText();
     showLoadingSpinner();
     out.main();
     return out;
@@ -214,6 +212,9 @@ export function dorling(options) {
     //empty svg
     out.container_.selectAll("g").remove();
     out.container_.selectAll("svg").remove();
+  }
+  function clearBottomText() {
+    out.container_.selectAll(".dorling-bottom-text-container").remove();
   }
 
 
@@ -274,8 +275,6 @@ export function dorling(options) {
         ), //colorData
       );
     }
-
-
 
     Promise.all(promises).then((res) => {
       hideLoadingSpinner();
@@ -486,7 +485,7 @@ export function dorling(options) {
           addAttributionToDOM();
         }
 
-
+        //additional texts
         out.bottomTextContainer = document.createElement("div")
         out.bottomTextContainer.classList.add("dorling-bottom-text-container")
         out.container_.node().appendChild(out.bottomTextContainer)
