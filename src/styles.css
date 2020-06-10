@@ -13,12 +13,12 @@
 }
 .dorling-bottom-text-container{
   /* height:7%; */
-}
-.dorling-sources-container{
+  font-size:14px;
   color: #212529;
   font-weight:400;
-  font-size:14px;
   font-family: 'Open Sans', "Helvetica Neue",Arial,"Noto Sans",sans-serif;
+}
+.dorling-sources-container{
 }
 .dorling-sources-container a{
   color: #007bff;
