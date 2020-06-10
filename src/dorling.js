@@ -122,7 +122,7 @@ export function dorling(options) {
 
   //additional text and links
   out.showAttribution_ = true;
-  out.attributionText_ = 'Boundaries: © <a href="https://eurogeographics.org/" target="_blank">EuroGeographics</a> © <a href="https://www.fao.org/" target="_blank">UN-FAO</a>  © <a href="https://www.turkstat.gov.tr/" target="_blank">Turkstat</a>, Cartography: <a href="https://ec.europa.eu/eurostat/en/web/gisco" target="_blank">Eurostat - GISCO, 2017</a>';
+  out.attributionText_ = 'Boundaries: © <a href="https://eurogeographics.org/" target="_blank" class="externallink">EuroGeographics</a> © <a href="https://www.fao.org/" target="_blank">UN-FAO</a>  © <a href="https://www.turkstat.gov.tr/" target="_blank">Turkstat</a>, Cartography: <a href="https://ec.europa.eu/eurostat/en/web/gisco" target="_blank">Eurostat - GISCO, 2017</a>';
   out.showSources_ = true;
   out.showFootnotes_ = false;
   out.footnotesText_ = "";
@@ -355,7 +355,12 @@ export function dorling(options) {
           .attr("id", "dorling-svg")
           .style("background-color", out.seaColor_)
           .style("width", "100%")
-          .style("height", "90%")
+        if (!out.showFootnotes_) {
+          out.svg.style("height", "95%")
+        } else {
+          out.svg.style("height", "92%")
+        }
+
         out.container_.node().appendChild(out.svg.node());
         out.container_.attr("class", "dorling-container");
         // initialize tooltip
@@ -1157,7 +1162,7 @@ export function dorling(options) {
   function addColorLegend() {
     out.legendSvg = d3.create("svg");
     out.legendSvg
-      .attr("viewBox", [0, 0, 272, 605])
+      .attr("viewBox", [0, 0, 310, 505])
       .attr("class", "dorling-legend")
 
     if (window.screen.width < 700) {
@@ -1857,7 +1862,6 @@ function indexStat(data, type, out, resolve, reject) {
       nutsParam = "nuts" + out.nutsLevel_;
     }
     d3.json(`${out.eurostatRESTBaseURL}${out.colorPercentageCalcDatasetCode_}?geoLevel=${nutsParam}&${out.colorPercentageCalcDatasetFilters_}`).then((totals) => {
-      console.log(totals)
       const totalsArr = Object.entries(
         totals.dimension.geo.category.index
       ).map(([k, v]) => ({ id: k, tot: +totals.value[v] || null }));

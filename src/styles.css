@@ -1,15 +1,32 @@
 #dorling-svg{
-  position:relative; top:0; left:0; max-height:90%;
+  position:relative; 
+  top:0; 
+  left:0; 
+  /* max-height:92%; */
 }
 .dorling-legend {
   position: absolute;
   top: 2%;
   left: 5%;
   width: 21%;
-  height: 58%;
+  /* height: 58%; */
 }
 .dorling-bottom-text-container{
-  height:7%;
+  /* height:7%; */
+}
+.dorling-sources-container{
+  color: #212529;
+  font-weight:400;
+  font-size:14px;
+  font-family: 'Open Sans', "Helvetica Neue",Arial,"Noto Sans",sans-serif;
+}
+.dorling-sources-container a{
+  color: #007bff;
+    text-decoration: none;
+    background-color: transparent;
+}
+.dorling-sources-container a:hover{
+    text-decoration: underline;
 }
 
 /* INSETS */
