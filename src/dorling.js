@@ -114,6 +114,7 @@ export function dorling(options) {
     sizeLabel: "Size value:",
     sizeUnit: "",
     shareLabel: "Share value:",
+    shareUnit: "%",
     sizeValueTextFunction: null
   }
 
@@ -822,7 +823,7 @@ export function dorling(options) {
           ${out.tooltip_.sizeLabel}: ${out.tooltip_.sizeValueTextFunction((out.sizeIndicator[f.properties.id]))} ${out.tooltip_.sizeUnit}<br>
           ${out.tooltip_.shareLabel}: ${roundToOneDecimal((out.sizeIndicator[f.properties.id] /
               out.totalsIndex[f.properties.id.substring(0, 2)]) *
-              100)} % <br>
+              100)} ${out.tooltip_.shareUnit} <br>
       `);
         } else {
           out.tooltipElement.html(`<strong>${f.properties.na}</strong>
@@ -833,7 +834,7 @@ export function dorling(options) {
           ${out.tooltip_.sizeLabel}: ${formatNumber(roundToOneDecimal(out.sizeIndicator[f.properties.id]))} ${out.tooltip_.sizeUnit}<br>
           ${out.tooltip_.shareLabel}: ${roundToOneDecimal((out.sizeIndicator[f.properties.id] /
               out.totalsIndex[f.properties.id.substring(0, 2)]) *
-              100)} % <br>
+              100)} ${out.tooltip_.shareUnit} <br>
       `);
         }
 
@@ -890,7 +891,7 @@ export function dorling(options) {
           ${out.tooltip_.sizeLabel}: ${out.tooltip_.sizeValueTextFunction((out.sizeIndicator[id]))} ${out.tooltip_.sizeUnit}<br>
           ${out.tooltip_.shareLabel}: ${roundToOneDecimal((out.sizeIndicator[id] /
                 out.totalsIndex[id.substring(0, 2)]) *
-                100)} % <br>
+                100)} ${out.tooltip_.shareUnit} <br>
       `);
           } else {
             out.tooltipElement.html(`<strong>${name}</strong>
@@ -901,7 +902,7 @@ export function dorling(options) {
           ${out.tooltip_.sizeLabel}: ${formatNumber(roundToOneDecimal(out.sizeIndicator[id]))} ${out.tooltip_.sizeUnit}<br>
           ${out.tooltip_.shareLabel}: ${roundToOneDecimal((out.sizeIndicator[id] /
                 out.totalsIndex[id.substring(0, 2)]) *
-                100)} % <br>
+                100)} ${out.tooltip_.shareUnit} <br>
       `);
           }
 
