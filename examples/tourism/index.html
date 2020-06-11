@@ -26,7 +26,7 @@
             .sizeDatasetFilters("c_resid=TOTAL&unit=NR&precision=1&time=2018")
             .colorDatasetCode("tour_occ_nin2")
             .colorDatasetFilters("c_resid=FOR&unit=PC_TOT&precision=1&time=2018")
-            .circleExaggerationFactor(0.6)
+            .maxCircleRadius(120)
             .colorLegend({
                 //https://d3-legend.susielu.com/#color
                 titleWidth: 250,
@@ -59,14 +59,16 @@
                 bodyYOffset: 95
             })
             .tooltip({
-                colorLabel: "Foreign tourism dependency (% share of total nights spent by non-residents)",
-                sizeLabel: "Total number of nights spent (million)",
+                colorLabel: "Foreign tourism dependency (share of total nights spent by non-residents)",
+                colorUnit: "%",
+                sizeLabel: "Total number of nights spent",
+                sizeUnit: "million",
                 sizeValueTextFunction: function (d) {
                     let m = (d / 1000000);
                     let n = Math.round(m * 10) / 10;
                     return n.toLocaleString("en").replace(/,/gi, " ");
                 },
-                shareLabel: "Share of total nights spent in national total (%)",
+                shareLabel: "Share of total nights spent in national total",
             })
             .showFootnotes(true)
             .footnotesText("Data not available for Ireland, Slovenia and the French regions: Bourgogne, Haute-Normandie, Picardie, Champagne-Ardenne, Limousin as well as at country level")

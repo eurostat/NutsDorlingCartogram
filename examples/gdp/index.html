@@ -26,7 +26,7 @@
             .sizeDatasetFilters("unit=MIO_EUR&time=2018")
             .colorDatasetCode("nama_10r_3gdp")
             .colorDatasetFilters("unit=EUR_HAB&time=2018")
-            .circleExaggerationFactor(5.6)
+            .maxCircleRadius(25)
             .colorLegend({
                 //https://d3-legend.susielu.com/#color
                 titleWidth: 225,
@@ -50,8 +50,10 @@
                 bodyYOffset: 107
             })
             .tooltip({
-                colorLabel: "Gross domestic product (EUR per inhabitant)",
-                sizeLabel: "Gross domestic product (million EUR)",
+                colorLabel: "Gross domestic product",
+                colorUnit: "EUR per inhabitant",
+                sizeLabel: "Gross domestic product",
+                sizeUnit: "million EUR",
                 shareLabel: "Share of national gross domestic product",
             })
             .exclude(["MK", "ME", "TR", "AL", "RS"])

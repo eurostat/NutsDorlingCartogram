@@ -19,10 +19,14 @@ export function dorling(options) {
   out.highlightColor_ = "cyan";
   out.nutsBorderColor_ = "grey";
   //d3 force
-  out.circleExaggerationFactor_ = 1.2;
+  out.circleExaggerationFactor_ = 1.2; //deprecated
   out.collisionPadding_ = 0.1;
   out.positionStrength_ = 0.1;
   out.collisionStrength_ = 0.7;
+
+  //circle radius
+  out.minCircleRadius_ = 1.5;
+  out.maxCircleRadius_ = 20
 
   //d3-geo
   out.translateX_ = -500; //-390;
@@ -51,7 +55,10 @@ export function dorling(options) {
     values: null,
     translateY: 0,
     bodyXOffset: 50,
-    bodyYOffset: 90
+    bodyYOffset: 90,
+    labelsTranslateX: 40,
+    textOffsetY: -12,
+    labelsOffsetY: 2
   };
 
   //color legend
@@ -100,7 +107,7 @@ export function dorling(options) {
     // captionY: 65,
     // captionX: -30,
     captionY: 95,
-    captionX: 10,
+    captionX: 5,
     captionFontSize: 13,
     yOffset: 25,
     xOffset: 25,
@@ -392,6 +399,7 @@ export function dorling(options) {
         out.sizeExtent = d3.extent(Object.values(out.sizeIndicator));
         //color scale
         out.colorScale = defineColorScale();
+        out.sizeScale = defineSizeScale();
 
         //container for all map stuff
         out.map = out.svg.append("g").attr("transform", "translate(0,0)").attr("class", "dorling-map-container");
@@ -778,7 +786,7 @@ export function dorling(options) {
         .append("circle")
         .attr("cx", (d) => { return (d.x + out.insets_.circleXOffset) })
         .attr("cy", (d) => { return (d.y + out.insets_.circleYOffset) })
-        .attr("r", (f) => toRadius(+out.sizeIndicator[f.featureCollection.features[0].properties.id]))
+        .attr("r", (f) => sizeFunction(+out.sizeIndicator[f.featureCollection.features[0].properties.id]))
         .attr("fill", (f) => colorFunction(+out.colorIndicator[f.featureCollection.features[0].properties.id]))
         .attr("stroke", "black");
 
@@ -1029,7 +1037,7 @@ export function dorling(options) {
     out.circles
       .transition()
       .duration(1000)
-      .attr("r", (f) => toRadius(+out.sizeIndicator[f.properties.id]))
+      .attr("r", (f) => sizeFunction(+out.sizeIndicator[f.properties.id]))
       .attr("fill", (f) => colorFunction(+out.colorIndicator[f.properties.id]))
       .attr("stroke", "black");
     //hide nuts
@@ -1092,7 +1100,7 @@ export function dorling(options) {
         "collide",
         d3
           .forceCollide()
-          .radius((f) => toRadius(+out.sizeIndicator[f.properties.id]))
+          .radius((f) => sizeFunction(+out.sizeIndicator[f.properties.id]))
           .strength(out.collisionStrength_)
       );
 
@@ -1425,27 +1433,54 @@ export function dorling(options) {
       .append("circle")
       .attr("fill", "none")
       .attr("stroke", "black")
-      .attr("cy", (d) => -toRadius(d))
-      .attr("r", toRadius);
+      .attr("cy", (d) => -sizeFunction(d))
+      .attr("r", sizeFunction);
 
     //labels
     legC
       .append("text")
-      //.attr("y", (d) => 9 - 2 * toRadius(d))
+      //.attr("y", (d) => 9 - 2 * sizeFunction(d))
       .attr("y", (d, i) => {
+        let y
         if (i == 0) {
-          return -1 - 2 * toRadius(d) - 7 - 4; //add padding
+          y = -1 - 2 * sizeFunction(d) + out.sizeLegend_.textOffsetY; //add padding for first item
         } else {
-          return -1 - 2 * toRadius(d) - 7;
+          y = -1 - 2 * sizeFunction(d) + out.sizeLegend_.textOffsetY;
         }
+        return y + out.sizeLegend_.labelsOffsetY
       })
-      .attr("x", 40)
+      .attr("x", out.sizeLegend_.labelsTranslateX)
       .attr("dy", "1.2em")
       .attr("xml:space", "preserve")
       .text((d) => {
         return out.sizeLegend_.textFunction(d);
         //return d.toLocaleString("en").replace(/,/gi, " ");
-      });
+      })
+    //line pointing to top of corresponding circle:
+    legC.append("line")
+      .style("stroke-dasharray", 2)
+      .style("stroke", "grey")
+      .attr("x1", 0)
+      .attr("y1", (d, i) => {
+        let y;
+        if (i == 0) {
+          y = -1 - 2 * sizeFunction(d); //add padding
+        } else {
+          y = -1 - 2 * sizeFunction(d);
+        }
+        return y + out.sizeLegend_.labelsOffsetY;
+      })
+      .attr("xml:space", "preserve")
+      .attr("x2", out.sizeLegend_.labelsTranslateX - 3)
+      .attr("y2", (d, i) => {
+        let y;
+        if (i == 0) {
+          y = -1 - 2 * sizeFunction(d); //add padding
+        } else {
+          y = -1 - 2 * sizeFunction(d);
+        }
+        return y + out.sizeLegend_.labelsOffsetY;
+      })
   }
 
   var d3_textWrapping = function d3_textWrapping(text, width) {
@@ -1865,8 +1900,22 @@ export function dorling(options) {
     }
   }
 
+  function defineSizeScale() {
+    let scale = d3.scaleSqrt()
+      .range([out.minCircleRadius_, out.maxCircleRadius_]).domain(out.sizeExtent);
+
+    return scale;
+  }
+
   function colorFunction(v) {
     return out.colorScale(v);
+  }
+
+  function sizeFunction(v) {
+    // let r = out.circleExaggerationFactor_ * 0.005 * Math.sqrt(val);
+    let r = out.sizeScale(v);
+    // let rad = r * out.circleExaggerationFactor_
+    return r;
   }
 
   function zoomed() {
@@ -1876,10 +1925,6 @@ export function dorling(options) {
     // out.nuts.attr("transform", d3.event.transform);
     // out.nutsBorders.attr("transform", d3.event.transform);
     //out.kosovo.attr("transform", d3.event.transform);
-  }
-
-  function toRadius(val) {
-    return out.circleExaggerationFactor_ * 0.005 * Math.sqrt(val);
   }
 
   function addLoadingSpinnerToDOM() {
