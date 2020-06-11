@@ -97,12 +97,16 @@ export function dorling(options) {
     overseasWidth: 72,
     translateX: 15,
     translateY: 15,
-    captionY: 65,
-    captionX: -30,
+    // captionY: 65,
+    // captionX: -30,
+    captionY: 95,
+    captionX: 10,
     captionFontSize: 13,
     yOffset: 25,
     xOffset: 25,
     radius: 70,
+    circleYOffset: 75,
+    circleXOffset: 75,
     spacing: 120,
     padding: 38
   }
@@ -373,6 +377,7 @@ export function dorling(options) {
           .geoIdentity()
           .reflectY(true)
           .fitExtent([[0, 0], [out.width_ + out.fitSizePadding_, out.height_ + out.fitSizePadding_]], topojson.feature(out.n2j, out.n2j.objects.nutsbn))
+
         out.path = d3Geo.geoPath().projection(out.projection);
 
         if (out.translateX_ && out.translateY_) {
@@ -513,29 +518,34 @@ export function dorling(options) {
   };
 
   function defineInsets(geojson) {
+    out.insetsGeojson = geojson;
     let insetsJson = [
       {
+        id: "ES70",
         name: "Canarias (ES)",
         featureCollection: {
           type: "FeatureCollection",
-          features: [geojson.features[5]]
+          features: [geojson.features[0]]
         }
       },
       {
+        id: "FRY2",
         name: "Martinique (FR)",
         featureCollection: {
           type: "FeatureCollection",
-          features: [geojson.features[1]]
+          features: [geojson.features[2]]
         }
       },
       {
+        id: "FRY4",
         name: "Réunion (FR)",
         featureCollection: {
           type: "FeatureCollection",
-          features: [geojson.features[3]]
+          features: [geojson.features[4]]
         }
       },
       {
+        id: "PT20",
         name: "Acores (PT)",
         featureCollection: {
           type: "FeatureCollection",
@@ -543,27 +553,31 @@ export function dorling(options) {
         }
       },
       {
+        id: "FRY1",
         name: "Guadeloupe (FR)",
         featureCollection: {
           type: "FeatureCollection",
-          features: [geojson.features[0]]
+          features: [geojson.features[1]]
         }
       },
       {
+        id: "FRY3",
         name: "Guyane (FR)",
         featureCollection: {
           type: "FeatureCollection",
-          features: [geojson.features[2]]
+          features: [geojson.features[3], geojson.features[8]]
         }
       },
       {
+        id: "FRY5",
         name: "Mayotte (FR)",
         featureCollection: {
           type: "FeatureCollection",
-          features: [geojson.features[4]]
+          features: [geojson.features[5]]
         }
       },
       {
+        id: "PT30",
         name: "Madeira (PT)",
         featureCollection: {
           type: "FeatureCollection",
@@ -577,12 +591,28 @@ export function dorling(options) {
     let translateX = out.insets_.translateX;
     insetsJson.forEach(function (inset, i) {
       //define a projection for each inset - needs improving
-      let proj = d3
-        .geoIdentity()
-        .reflectY(true)
-        .fitExtent(
-          [[0, 0], [out.insets_.overseasWidth, out.insets_.overseasHeight]],
-          inset.featureCollection);
+      let proj
+      if (inset.id == "FRY3") {
+        //zoom in on guyane, not the border feature
+        let fc = {
+          type: "FeatureCollection",
+          features: [geojson.features[3]]
+        }
+        proj = d3
+          .geoIdentity()
+          .reflectY(true)
+          .fitExtent(
+            [[10, 10], [out.insets_.overseasWidth, out.insets_.overseasHeight]],
+            fc)
+        // .clipExtent([[-55.26, 6.05], [-50.88, 1.93]]);
+      } else {
+        proj = d3
+          .geoIdentity()
+          .reflectY(true)
+          .fitExtent(
+            [[10, 10], [out.insets_.overseasWidth, out.insets_.overseasHeight]],
+            inset.featureCollection);
+      }
       inset.x = translateX;
       inset.y = translateY;
       inset.projection = proj;
@@ -627,83 +657,102 @@ export function dorling(options) {
         .enter()
         .append('clipPath')
         .attr('id', function (d) {
-          return 'clip-inset-' + d.name;
+          return 'clip-inset-' + d.id;
         })
         .append("rect")
+        .attr('x', 0)
+        .attr('y', 0)
         .attr('height', out.insets_.overseasHeight + out.insets_.padding)
         .attr('width', out.insets_.overseasWidth + out.insets_.padding);
+      // .attr('height', out.insets_.overseasHeight + out.insets_.padding)
+      // .attr('width', out.insets_.overseasWidth + out.insets_.padding);
       // .append('circle')
       // .attr('r', out.insets_.radius);
 
+      //inset parent G element
+      var g = out.insetsSvg
+        .selectAll('g.insetmap')
+        .data(insets)
+        .enter()
+        .append('g')
+        .classed('insetmap', true)
+        .attr('transform', function (d) {
+          return 'translate(' + [(d.x + out.insets_.xOffset), (d.y + out.insets_.yOffset)] + ')';
+        })
+        .attr('id', function (d) {
+          return 'inset-' + d.name;
+        })
+        .attr('clip-path', function (d) {
+          return 'url(#clip-inset-' + d.id + ')'
+        });
+
+      //background rect
+      g.append('rect')
+        .classed('background', true)
+        .attr('height', out.insets_.overseasHeight + out.insets_.padding)
+        .attr('width', out.insets_.overseasWidth + out.insets_.padding)
+      // /.attr('transform', "translate(-" + (out.insets_.overseasWidth / 2) + ",-" + (out.insets_.overseasHeight / 2) + ")")
+
+      //geometries
+      // let features = out.insetsGeojson.features;
+      let index = 0;
+      g.selectAll('path')
+        .data(function (d) { return d.featureCollection.features.map(d.path); })
+        .enter().append('path')
+        .attr("class", function (d, i) { index++; return "inset" + index; })
+        .attr("fill", "white")
+        .attr("stroke", "black")
+        .attr('d', function (d) { return d; });
+
+      //caption
+      let caption = g
+        .append("text")
+        .data(insets)
+        .text(d => {
+          return d.name;
+        })
+        .attr("class", "overseas-caption")
+        .attr("font-size", out.insets_.captionFontSize)
+        .attr("stroke-width", 0.2)
+        .attr("transform", "translate(" + out.insets_.captionX + "," + out.insets_.captionY + ")")
+        .call(d3_textWrapping, out.insets_.titleWidth);
+
+      //border
+      g
+        .append('rect')
+        .classed('outline', true)
+        .attr('height', out.insets_.overseasHeight + out.insets_.padding)
+        .attr('width', out.insets_.overseasWidth + out.insets_.padding)
+      //.attr('transform', "translate(-" + (out.insets_.overseasWidth / 2) + ",-" + (out.insets_.overseasHeight / 2) + ")")
+
       //append each overseas topojson feature
       insets.forEach(function (inset, i) {
-        var g = out.insetsSvg
-          .selectAll('g.insetmap')
-          .data(insets)
-          .enter()
-          .append('g')
-          .classed('insetmap', true)
-          .attr('transform', function (d) {
-            return 'translate(' + [(d.x + out.insets_.xOffset), (d.y + out.insets_.yOffset)] + ')';
-          })
-          .attr('id', function (d) {
-            return 'inset-' + d.name;
-          })
-          .attr('clip-path', function (d) {
-            return 'url(#clip-inset-' + d.name + ')';
-          });
+        // let insetGeom = out.insetsSvg
+        //   .append("g")
+        //   .attr("id", inset.name)
+        //   .selectAll("path")
+        //   .data(inset.featureCollection.features)
+        //   .enter()
+        //   .append("path")
+        //   .attr('transform', 'translate(' + [inset.x, inset.y] + ')')
+        //   .attr('clip-path', 'url(#clip-inset-' + inset.name + ')')
+        //   .attr("fill", "white")
+        //   .attr("stroke", "black")
+        //   .attr("d", inset.path);
 
-        // g.append('circle')
-        //   .classed('background', true)
-        //   .attr('r', out.insets_.radius);
-        g.append('rect')
-          .classed('background', true)
-          .attr('height', out.insets_.overseasHeight + out.insets_.padding)
-          .attr('width', out.insets_.overseasWidth + out.insets_.padding)
-          .attr('transform', "translate(-" + (out.insets_.overseasWidth / 2) + ",-" + (out.insets_.overseasHeight / 2) + ")")
-
-        let insetGeom = out.insetsSvg
-          .append("g")
-          .attr('transform', 'translate(' + [inset.x, inset.y] + ')')
-          .selectAll("path")
-          .data(inset.featureCollection.features)
-          .enter()
-          .append("path")
-          .attr("fill", "white")
-          .attr("stroke", "black")
-          .attr("d", inset.path);
-
-        // g.append('circle')
+        //border
+        // g.append('rect')
         //   .classed('blur', true)
-        //   .attr('r', out.insets_.radius);
-        g.append('rect')
-          .classed('blur', true)
-          .attr('height', out.insets_.overseasHeight + out.insets_.padding)
-          .attr('width', out.insets_.overseasWidth + out.insets_.padding)
-          .attr('transform', "translate(-" + (out.insets_.overseasWidth / 2) + ",-" + (out.insets_.overseasHeight / 2) + ")")
+        //   .attr('height', out.insets_.overseasHeight + out.insets_.padding)
+        //   .attr('width', out.insets_.overseasWidth + out.insets_.padding)
+        //   .attr('transform', "translate(-" + (out.insets_.overseasWidth / 2) + ",-" + (out.insets_.overseasHeight / 2) + ")")
 
-        // let circleBorder = g
-        //   .append('circle')
+        // g
+        //   .append('rect')
         //   .classed('outline', true)
-        //   .attr('r', out.insets_.radius);
-        g
-          .append('rect')
-          .classed('outline', true)
-          .attr('height', out.insets_.overseasHeight + out.insets_.padding)
-          .attr('width', out.insets_.overseasWidth + out.insets_.padding)
-          .attr('transform', "translate(-" + (out.insets_.overseasWidth / 2) + ",-" + (out.insets_.overseasHeight / 2) + ")")
-
-        let caption = g
-          .append("text")
-          .data(insets)
-          .text(d => {
-            return d.featureCollection.features[0].properties.name;
-          })
-          .attr("class", "overseas-caption")
-          .attr("font-size", out.insets_.captionFontSize)
-          .attr("stroke-width", 0.2)
-          .attr("transform", "translate(" + out.insets_.captionX + "," + out.insets_.captionY + ")")
-          .call(d3_textWrapping, out.insets_.titleWidth);
+        //   .attr('height', out.insets_.overseasHeight + out.insets_.padding)
+        //   .attr('width', out.insets_.overseasWidth + out.insets_.padding)
+        //   .attr('transform', "translate(-" + (out.insets_.overseasWidth / 2) + ",-" + (out.insets_.overseasHeight / 2) + ")")
       });
 
 
@@ -720,8 +769,8 @@ export function dorling(options) {
           }
         })
         .append("circle")
-        .attr("cx", (d) => { return (d.x + out.insets_.xOffset) })
-        .attr("cy", (d) => { return (d.y + out.insets_.yOffset) })
+        .attr("cx", (d) => { return (d.x + out.insets_.circleXOffset) })
+        .attr("cy", (d) => { return (d.y + out.insets_.circleYOffset) })
         .attr("r", (f) => toRadius(+out.sizeIndicator[f.featureCollection.features[0].properties.id]))
         .attr("fill", (f) => colorFunction(+out.colorIndicator[f.featureCollection.features[0].properties.id]))
         .attr("stroke", "black");
@@ -877,7 +926,7 @@ export function dorling(options) {
     if (out.showInsets_) {
       out.insetCircles.on("mouseover", function (f) {
         let id = f.featureCollection.features[0].properties.id;
-        let name = f.featureCollection.features[0].properties.name;
+        let name = f.name;
         if (out.stage == 2) {
           // d3.select(this).attr("fill", out.highlightColor_);
           d3.select(this).attr("stroke-width", "3px");

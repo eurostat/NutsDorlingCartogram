@@ -56,6 +56,10 @@
   fill: none;
   stroke: grey;
 }
+/* guyane (FR) external geometry */
+.inset7{
+fill:#E5E5E5;
+}
 
 .dorling-graticule {
   fill: none;
