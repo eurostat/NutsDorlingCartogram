@@ -718,42 +718,49 @@ export function dorling(options) {
         .call(d3_textWrapping, out.insets_.titleWidth);
 
       //border
+      //blur
+      // g.append('rect')
+      //   .classed('blur', true)
+      //   .attr('height', out.insets_.overseasHeight + out.insets_.padding)
+      //   .attr('width', out.insets_.overseasWidth + out.insets_.padding)
+      //.attr('transform', "translate(-" + (out.insets_.overseasWidth / 2) + ",-" + (out.insets_.overseasHeight / 2) + ")")
+      //outline
       g
         .append('rect')
         .classed('outline', true)
-        .attr('height', out.insets_.overseasHeight + out.insets_.padding)
-        .attr('width', out.insets_.overseasWidth + out.insets_.padding)
+        .attr('height', out.insets_.overseasHeight + out.insets_.padding - 1)
+        .attr('width', out.insets_.overseasWidth + out.insets_.padding - 1)
       //.attr('transform', "translate(-" + (out.insets_.overseasWidth / 2) + ",-" + (out.insets_.overseasHeight / 2) + ")")
 
       //append each overseas topojson feature
-      insets.forEach(function (inset, i) {
-        // let insetGeom = out.insetsSvg
-        //   .append("g")
-        //   .attr("id", inset.name)
-        //   .selectAll("path")
-        //   .data(inset.featureCollection.features)
-        //   .enter()
-        //   .append("path")
-        //   .attr('transform', 'translate(' + [inset.x, inset.y] + ')')
-        //   .attr('clip-path', 'url(#clip-inset-' + inset.name + ')')
-        //   .attr("fill", "white")
-        //   .attr("stroke", "black")
-        //   .attr("d", inset.path);
+      // insets.forEach(function (inset, i) {
+      // let insetGeom = out.insetsSvg
+      //   .append("g")
+      //   .attr("id", inset.name)
+      //   .selectAll("path")
+      //   .data(inset.featureCollection.features)
+      //   .enter()
+      //   .append("path")
+      //   .attr('transform', 'translate(' + [inset.x, inset.y] + ')')
+      //   .attr('clip-path', 'url(#clip-inset-' + inset.name + ')')
+      //   .attr("fill", "white")
+      //   .attr("stroke", "black")
+      //   .attr("d", inset.path);
 
-        //border
-        // g.append('rect')
-        //   .classed('blur', true)
-        //   .attr('height', out.insets_.overseasHeight + out.insets_.padding)
-        //   .attr('width', out.insets_.overseasWidth + out.insets_.padding)
-        //   .attr('transform', "translate(-" + (out.insets_.overseasWidth / 2) + ",-" + (out.insets_.overseasHeight / 2) + ")")
+      //border
+      // g.append('rect')
+      //   .classed('blur', true)
+      //   .attr('height', out.insets_.overseasHeight + out.insets_.padding)
+      //   .attr('width', out.insets_.overseasWidth + out.insets_.padding)
+      //   .attr('transform', "translate(-" + (out.insets_.overseasWidth / 2) + ",-" + (out.insets_.overseasHeight / 2) + ")")
 
-        // g
-        //   .append('rect')
-        //   .classed('outline', true)
-        //   .attr('height', out.insets_.overseasHeight + out.insets_.padding)
-        //   .attr('width', out.insets_.overseasWidth + out.insets_.padding)
-        //   .attr('transform', "translate(-" + (out.insets_.overseasWidth / 2) + ",-" + (out.insets_.overseasHeight / 2) + ")")
-      });
+      // g
+      //   .append('rect')
+      //   .classed('outline', true)
+      //   .attr('height', out.insets_.overseasHeight + out.insets_.padding)
+      //   .attr('width', out.insets_.overseasWidth + out.insets_.padding)
+      //   .attr('transform', "translate(-" + (out.insets_.overseasWidth / 2) + ",-" + (out.insets_.overseasHeight / 2) + ")")
+      // });
 
 
       //add circles
