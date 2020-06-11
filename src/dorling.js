@@ -98,7 +98,7 @@ export function dorling(options) {
   };
 
   //selectors
-  out.nutsSelectorTranslateY_ = 360;
+  out.nutsSelectorTranslateY_ = 375;
   out.showNutsSelector_ = true;
 
   out.showInsets_ = true;
