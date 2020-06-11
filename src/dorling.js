@@ -1460,7 +1460,7 @@ export function dorling(options) {
     legC.append("line")
       .style("stroke-dasharray", 2)
       .style("stroke", "grey")
-      .attr("x1", 0)
+      .attr("x1", 2)
       .attr("y1", (d, i) => {
         let y;
         if (i == 0) {
