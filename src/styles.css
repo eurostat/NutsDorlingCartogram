@@ -11,6 +11,13 @@
   }
 }
 
+@media only screen and (max-width: 1500px) {
+  .dorling-insets {
+    top: 15% !important;
+    right: 2% !important;
+  }
+}
+
 #dorling-svg{
   position:relative; 
   top:0; 
@@ -38,9 +45,11 @@
 
 .dorling-legend {
   position: absolute;
-  top: 10%;
-  left: 5%;
-  width: 21%;
+  top: 12%;
+  left: 1%;
+  /* width: 21%; */
+  /* height:590px;
+  width:270px; */
   /* height: 58%; */
 }
 /* INSETS */
@@ -136,7 +145,7 @@ font-family: 'Open Sans', "Helvetica Neue", Arial,"Noto Sans",sans-serif;
 }
 .dorling-color-legend-explanation {
   font-style: italic;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 100;
 }
 .dorling-size-legend {
@@ -169,6 +178,9 @@ circle.swatch:hover {
 }
 text.label{
   cursor: pointer;
+}
+.dorling-legend-container{
+  font-size:17px;
 }
 .dorling-legend-container-background {
   fill: white;

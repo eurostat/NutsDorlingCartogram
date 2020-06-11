@@ -46,6 +46,10 @@ export function dorling(options) {
   out.pauseButton_ = false;
   out.showBorders_ = false;
 
+  //legend container
+  out.legendWidth_ = 270;
+  out.legendHeight_ = 600;
+
   //size legend (circle radiuses)
   out.sizeLegend_ = {
     title: "Size Legend",
@@ -1226,7 +1230,10 @@ export function dorling(options) {
   function addColorLegend() {
     out.legendSvg = d3.create("svg");
     out.legendSvg
-      .attr("viewBox", [0, 0, 310, 555])
+      // .attr("viewBox", [0, 0, 310, 555])
+      .attr("height", out.legendHeight_)
+      .attr("width", out.legendWidth_)
+      .attr("viewBox", [0, 0, out.legendWidth_, out.legendHeight_])
       .attr("class", "dorling-legend")
 
     if (window.screen.width < 700) {
