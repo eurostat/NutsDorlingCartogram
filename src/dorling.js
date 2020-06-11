@@ -25,8 +25,8 @@ export function dorling(options) {
   out.collisionStrength_ = 0.7;
 
   //circle radius
-  out.minCircleRadius_ = 1.5;
-  out.maxCircleRadius_ = 20
+  out.minCircleRadius_ = { 0: 1.5, 1: 1.5, 2: 1.5, 3: 1.5 };
+  out.maxCircleRadius_ = { 0: 20, 1: 20, 2: 20, 3: 20 }
 
   //d3-geo
   out.translateX_ = -500; //-390;
@@ -47,22 +47,22 @@ export function dorling(options) {
   out.showBorders_ = false;
 
   //legend container
-  out.legendWidth_ = 270;
-  out.legendHeight_ = 600;
+  out.legendsContainerWidth_ = 270;
+  out.legendsContainerHeight_ = 600;
 
   //size legend (circle radiuses)
   out.sizeLegend_ = {
     title: "Size Legend",
-    titleYOffset: 0,
-    titleXOffset: 20,
+    titleYOffset: { 0: 0, 1: 0, 2: 0, 3: 0 },
+    titleXOffset: { 0: 20, 1: 20, 2: 20, 3: 20 },
     textFunction: function (d) { return d.toLocaleString() },
-    values: null,
-    translateY: 0,
-    bodyXOffset: 50,
-    bodyYOffset: 90,
-    labelsTranslateX: 40,
-    textOffsetY: -12,
-    labelsOffsetY: 2
+    values: {},
+    translateY: { 0: 0, 1: 0, 2: 0, 3: 0 },
+    bodyXOffset: { 0: 50, 1: 50, 2: 50, 3: 50 },
+    bodyYOffset: { 0: 90, 1: 90, 2: 90, 3: 90 },
+    labelsTranslateX: { 0: 40, 1: 40, 2: 40, 3: 40 },
+    textOffsetY: { 0: -12, 1: -12, 2: -12, 3: -12 },
+    labelsOffsetY: { 0: 2, 1: 2, 2: 2, 3: 2 }
   };
 
   //color legend
@@ -92,13 +92,13 @@ export function dorling(options) {
     eu27: null,
     translateX: 20,
     translateY: 135,
-    explanationYOffset: 330,
+    explanationYOffset: { 0: 330, 1: 330, 2: 330, 3: 330 },
     cellsTranslateX: 3,
     cellsTranslateY: 2
   };
 
   //selectors
-  out.nutsSelectorTranslateY_ = 375;
+  out.nutsSelectorTranslateY_ = { 0: 375, 1: 375, 2: 375, 3: 375 };
   out.showNutsSelector_ = true;
 
   out.showInsets_ = true;
@@ -141,6 +141,7 @@ export function dorling(options) {
   out.footnotesText_ = "";
 
   //data params
+  out.nutsAvailable_ = [0, 1, 2, 3] //available nuts levels
   out.eurostatRESTBaseURL = "https://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/";
   out.nutsLevel_ = 2;
   out.sizeDatasetCode_ = "demo_r_pjangrp3";
@@ -1217,7 +1218,7 @@ export function dorling(options) {
       .attr("fill", "black")
       .attr("class", "dorling-color-legend-explanation")
       .attr("text-anchor", "right")
-      .attr("transform", "translate(22," + (out.sizeLegend_.translateY + out.colorLegend_.explanationYOffset) + ")")
+      .attr("transform", "translate(22," + (out.sizeLegend_.translateY[out.nutsLevel_] + out.colorLegend_.explanationYOffset[out.nutsLevel_]) + ")")
 
     explanation
       .append("text")
@@ -1231,9 +1232,9 @@ export function dorling(options) {
     out.legendSvg = d3.create("svg");
     out.legendSvg
       // .attr("viewBox", [0, 0, 310, 555])
-      .attr("height", out.legendHeight_)
-      .attr("width", out.legendWidth_)
-      .attr("viewBox", [0, 0, out.legendWidth_, out.legendHeight_])
+      .attr("height", out.legendsContainerHeight_)
+      .attr("width", out.legendsContainerWidth_)
+      .attr("viewBox", [0, 0, out.legendsContainerWidth_, out.legendsContainerHeight_])
       .attr("class", "dorling-legend")
 
     if (window.screen.width < 700) {
@@ -1265,9 +1266,9 @@ export function dorling(options) {
     //ff positioning fix
     if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
       // Do Firefox-related activities
-      out.colorLegendContainer.attr("transform", "translate(" + out.colorLegend_.translateX + "," + (out.colorLegend_.translateY + 2) + ")")
+      out.colorLegendContainer.attr("transform", "translate(" + out.colorLegend_.translateX + "," + (out.sizeLegend_.bodyYOffset[out.nutsLevel_] + 40) + ")")
     } else {
-      out.colorLegendContainer.attr("transform", "translate(" + out.colorLegend_.translateX + "," + out.colorLegend_.translateY + ")")
+      out.colorLegendContainer.attr("transform", "translate(" + out.colorLegend_.translateX + "," + (out.sizeLegend_.bodyYOffset[out.nutsLevel_] + 40) + ")")
     }
 
     let legend = legendColor()
@@ -1392,8 +1393,8 @@ export function dorling(options) {
 
   function addSizeLegend() {
     //assign default circle radiuses if none specified by user
-    if (!out.sizeLegend_.values) {
-      out.sizeLegend_.values = [Math.floor(out.sizeExtent[1]), Math.floor(out.sizeExtent[1] / 2), Math.floor(out.sizeExtent[1] / 10)]
+    if (!out.sizeLegend_.values[out.nutsLevel_]) {
+      out.sizeLegend_.values[out.nutsLevel_] = [Math.floor(out.sizeExtent[1]), Math.floor(out.sizeExtent[1] / 2), Math.floor(out.sizeExtent[1] / 10)]
     }
 
     out.sizeLegendContainer = out.legendContainer
@@ -1404,9 +1405,9 @@ export function dorling(options) {
     //ff positioning fix
     if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
       // Do Firefox-related activities
-      out.sizeLegendContainer.attr("transform", "translate(0," + (out.sizeLegend_.translateY + 2) + ")")
+      out.sizeLegendContainer.attr("transform", "translate(0," + (out.sizeLegend_.translateY[out.nutsLevel_] + 2) + ")")
     } else {
-      out.sizeLegendContainer.attr("transform", "translate(0," + out.sizeLegend_.translateY + ")")
+      out.sizeLegendContainer.attr("transform", "translate(0," + out.sizeLegend_.translateY[out.nutsLevel_] + ")")
     }
 
     let sizeLegendBackground = out.sizeLegendContainer
@@ -1417,7 +1418,7 @@ export function dorling(options) {
       .append("g")
       .attr("fill", "black")
       .attr("class", "dorling-size-legend-title")
-      .attr("transform", "translate(" + out.sizeLegend_.titleXOffset + "," + out.sizeLegend_.titleYOffset + ")")
+      .attr("transform", "translate(" + out.sizeLegend_.titleXOffset[out.nutsLevel_] + "," + out.sizeLegend_.titleYOffset[out.nutsLevel_] + ")")
       .attr("text-anchor", "right");
     legendTitle
       .append("text")
@@ -1430,11 +1431,11 @@ export function dorling(options) {
     const legC = out.sizeLegendContainer
       .append("g")
       .attr("fill", "black")
-      .attr("transform", "translate(" + out.sizeLegend_.bodyXOffset + "," + out.sizeLegend_.bodyYOffset + ")") //TODO: make dynamic
+      .attr("transform", "translate(" + out.sizeLegend_.bodyXOffset[out.nutsLevel_] + "," + out.sizeLegend_.bodyYOffset[out.nutsLevel_] + ")") //TODO: make dynamic
       .attr("text-anchor", "right")
       .selectAll("g")
       // .data([20e6, 10e6, 1e6])
-      .data(out.sizeLegend_.values)
+      .data(out.sizeLegend_.values[out.nutsLevel_])
       .join("g");
     legC
       .append("circle")
@@ -1450,13 +1451,13 @@ export function dorling(options) {
       .attr("y", (d, i) => {
         let y
         if (i == 0) {
-          y = -1 - 2 * sizeFunction(d) + out.sizeLegend_.textOffsetY; //add padding for first item
+          y = -1 - 2 * sizeFunction(d) + out.sizeLegend_.textOffsetY[out.nutsLevel_]; //add padding for first item
         } else {
-          y = -1 - 2 * sizeFunction(d) + out.sizeLegend_.textOffsetY;
+          y = -1 - 2 * sizeFunction(d) + out.sizeLegend_.textOffsetY[out.nutsLevel_];
         }
-        return y + out.sizeLegend_.labelsOffsetY
+        return y + out.sizeLegend_.labelsOffsetY[out.nutsLevel_]
       })
-      .attr("x", out.sizeLegend_.labelsTranslateX)
+      .attr("x", out.sizeLegend_.labelsTranslateX[out.nutsLevel_])
       .attr("dy", "1.2em")
       .attr("xml:space", "preserve")
       .text((d) => {
@@ -1475,10 +1476,10 @@ export function dorling(options) {
         } else {
           y = -1 - 2 * sizeFunction(d);
         }
-        return y + out.sizeLegend_.labelsOffsetY;
+        return y + out.sizeLegend_.labelsOffsetY[out.nutsLevel_];
       })
       .attr("xml:space", "preserve")
-      .attr("x2", out.sizeLegend_.labelsTranslateX - 3)
+      .attr("x2", out.sizeLegend_.labelsTranslateX[out.nutsLevel_] - 3)
       .attr("y2", (d, i) => {
         let y;
         if (i == 0) {
@@ -1486,7 +1487,7 @@ export function dorling(options) {
         } else {
           y = -1 - 2 * sizeFunction(d);
         }
-        return y + out.sizeLegend_.labelsOffsetY;
+        return y + out.sizeLegend_.labelsOffsetY[out.nutsLevel_];
       })
   }
 
@@ -1536,7 +1537,7 @@ export function dorling(options) {
       .attr("id", "dorling-nuts-selector")
       //.attr("class", "dorling-nuts-selector-container dorling-plugin")
       .attr("opacity", 0)
-      .attr("transform", "translate(0, " + out.nutsSelectorTranslateY_ + ")")
+      .attr("transform", "translate(0, " + out.nutsSelectorTranslateY_[out.nutsLevel_] + ")")
 
     //background
     out.radioContainer
@@ -1551,124 +1552,132 @@ export function dorling(options) {
       .attr("transform", "translate(" + (marginLeft - 5) + ",28)");
 
     //RADIO 0
-    let radio0 = out.radioContainer.append("g")
-      .attr("fill", "currentColor")
-      .attr("class", "dorling-radio-button")
-      .attr("preserveAspectRatio", "xMidYMid meet")
-      .attr("height", "" + radioHeight + "px")
-      .attr("width", "" + radioWidth + "px")
-      .attr("viewBox", "0 0 " + radioWidth + " " + radioHeight + "")
-      .attr("transform", "translate(" + marginLeft + "," + marginTop + ")");
+    if (out.nutsAvailable_.indexOf(0) != -1) {
+      var radio0 = out.radioContainer.append("g")
+        .attr("fill", "currentColor")
+        .attr("class", "dorling-radio-button")
+        .attr("preserveAspectRatio", "xMidYMid meet")
+        .attr("height", "" + radioHeight + "px")
+        .attr("width", "" + radioWidth + "px")
+        .attr("viewBox", "0 0 " + radioWidth + " " + radioHeight + "")
+        .attr("transform", "translate(" + marginLeft + "," + marginTop + ")");
 
-    let outline0 = radio0.append("circle")
-      .attr("class", "dorling-radio-outline")
-      .attr("cx", "" + radioCxy + "")
-      .attr("cy", "" + radioCxy + "")
-      .attr("r", "" + radioRadius + "")
-      .attr("fill", "none")
-      .attr("stroke", "black")
-      .attr("stroke-width", "3")
+      var outline0 = radio0.append("circle")
+        .attr("class", "dorling-radio-outline")
+        .attr("cx", "" + radioCxy + "")
+        .attr("cy", "" + radioCxy + "")
+        .attr("r", "" + radioRadius + "")
+        .attr("fill", "none")
+        .attr("stroke", "black")
+        .attr("stroke-width", "3")
 
-    let dot0 = radio0.append("circle")
-      .attr("opacity", radioDotOpacity)
-      .attr("cx", "" + radioCxy + "")
-      .attr("cy", "" + radioCxy + "")
-      .attr("r", "" + radioDotRadius + "")
-      .attr("class", "dorling-radio-dot")
+      var dot0 = radio0.append("circle")
+        .attr("opacity", radioDotOpacity)
+        .attr("cx", "" + radioCxy + "")
+        .attr("cy", "" + radioCxy + "")
+        .attr("r", "" + radioDotRadius + "")
+        .attr("class", "dorling-radio-dot")
 
-    let label0 = radio0.append("text")
-      .text("Country")
-      .attr("transform", "translate(25,10)");
+      var label0 = radio0.append("text")
+        .text("Country")
+        .attr("transform", "translate(25,10)");
+    }
 
     //RADIO 1
-    let radio1 = out.radioContainer.append("g")
-      .attr("fill", "currentColor")
-      .attr("class", "dorling-radio-button")
-      .attr("preserveAspectRatio", "xMidYMid meet")
-      .attr("height", "" + radioHeight + "px")
-      .attr("width", "" + radioWidth + "px")
-      .attr("viewBox", "0 0 " + radioWidth + " " + radioHeight + "")
-      .attr("transform", "translate(" + marginLeft + "," + (radioHeight + padding + marginTop) + ")");
+    if (out.nutsAvailable_.indexOf(1) !== -1) {
+      var radio1 = out.radioContainer.append("g")
+        .attr("fill", "currentColor")
+        .attr("class", "dorling-radio-button")
+        .attr("preserveAspectRatio", "xMidYMid meet")
+        .attr("height", "" + radioHeight + "px")
+        .attr("width", "" + radioWidth + "px")
+        .attr("viewBox", "0 0 " + radioWidth + " " + radioHeight + "")
+        .attr("transform", "translate(" + marginLeft + "," + (radioHeight + padding + marginTop) + ")");
 
-    let outline1 = radio1.append("circle")
-      .attr("class", "dorling-radio-outline")
-      .attr("cx", "" + radioCxy + "")
-      .attr("cy", "" + radioCxy + "")
-      .attr("r", "" + radioRadius + "")
-      .attr("fill", "none")
-      .attr("stroke", "black")
-      .attr("stroke-width", "3")
+      var outline1 = radio1.append("circle")
+        .attr("class", "dorling-radio-outline")
+        .attr("cx", "" + radioCxy + "")
+        .attr("cy", "" + radioCxy + "")
+        .attr("r", "" + radioRadius + "")
+        .attr("fill", "none")
+        .attr("stroke", "black")
+        .attr("stroke-width", "3")
 
-    let dot1 = radio1.append("circle")
-      .attr("opacity", radioDotOpacity)
-      .attr("cx", "" + radioCxy + "")
-      .attr("cy", "" + radioCxy + "")
-      .attr("r", "" + radioDotRadius + "")
-      .attr("class", "dorling-radio-dot")
+      var dot1 = radio1.append("circle")
+        .attr("opacity", radioDotOpacity)
+        .attr("cx", "" + radioCxy + "")
+        .attr("cy", "" + radioCxy + "")
+        .attr("r", "" + radioDotRadius + "")
+        .attr("class", "dorling-radio-dot")
 
-    let label1 = radio1.append("text")
-      .text("NUTS 1")
-      .attr("transform", "translate(25,10)");
+      var label1 = radio1.append("text")
+        .text("NUTS 1")
+        .attr("transform", "translate(25,10)");
+    }
 
     //RADIO 2
-    let radio2 = out.radioContainer.append("g")
-      .attr("fill", "currentColor")
-      .attr("class", "dorling-radio-button")
-      .attr("preserveAspectRatio", "xMidYMid meet")
-      .attr("height", "" + radioHeight + "px")
-      .attr("width", "" + radioWidth + "px")
-      .attr("viewBox", "0 0 " + radioWidth + " " + radioHeight + "")
-      .attr("transform", "translate(" + marginLeft + "," + (radioHeight * 2 + padding * 2 + marginTop) + ")")
+    if (out.nutsAvailable_.indexOf(2) !== -1) {
+      var radio2 = out.radioContainer.append("g")
+        .attr("fill", "currentColor")
+        .attr("class", "dorling-radio-button")
+        .attr("preserveAspectRatio", "xMidYMid meet")
+        .attr("height", "" + radioHeight + "px")
+        .attr("width", "" + radioWidth + "px")
+        .attr("viewBox", "0 0 " + radioWidth + " " + radioHeight + "")
+        .attr("transform", "translate(" + marginLeft + "," + (radioHeight * 2 + padding * 2 + marginTop) + ")")
 
-    let outline2 = radio2.append("circle")
-      .attr("class", "dorling-radio-outline")
-      .attr("cx", "" + radioCxy + "")
-      .attr("cy", "" + radioCxy + "")
-      .attr("r", "" + radioRadius + "")
-      .attr("fill", "none")
-      .attr("stroke", "black")
-      .attr("stroke-width", "3")
+      var outline2 = radio2.append("circle")
+        .attr("class", "dorling-radio-outline")
+        .attr("cx", "" + radioCxy + "")
+        .attr("cy", "" + radioCxy + "")
+        .attr("r", "" + radioRadius + "")
+        .attr("fill", "none")
+        .attr("stroke", "black")
+        .attr("stroke-width", "3")
 
-    let dot2 = radio2.append("circle")
-      .attr("opacity", radioDotOpacity)
-      .attr("cx", "" + radioCxy + "")
-      .attr("cy", "" + radioCxy + "")
-      .attr("r", "" + radioDotRadius + "")
-      .attr("class", "dorling-radio-dot")
+      var dot2 = radio2.append("circle")
+        .attr("opacity", radioDotOpacity)
+        .attr("cx", "" + radioCxy + "")
+        .attr("cy", "" + radioCxy + "")
+        .attr("r", "" + radioDotRadius + "")
+        .attr("class", "dorling-radio-dot")
 
-    let label2 = radio2.append("text")
-      .text("NUTS 2")
-      .attr("transform", "translate(25,10)");
+      var label2 = radio2.append("text")
+        .text("NUTS 2")
+        .attr("transform", "translate(25,10)");
+    }
 
     //RADIO 3
-    let radio3 = out.radioContainer.append("g")
-      .attr("fill", "currentColor")
-      .attr("class", "dorling-radio-button")
-      .attr("preserveAspectRatio", "xMidYMid meet")
-      .attr("height", "" + radioHeight + "px")
-      .attr("width", "" + radioWidth + "px")
-      .attr("viewBox", "0 0 " + radioWidth + " " + radioHeight + "")
-      .attr("transform", "translate(" + marginLeft + "," + (radioHeight * 3 + padding * 3 + marginTop) + ")")
+    if (out.nutsAvailable_.indexOf(3) !== -1) {
+      var radio3 = out.radioContainer.append("g")
+        .attr("fill", "currentColor")
+        .attr("class", "dorling-radio-button")
+        .attr("preserveAspectRatio", "xMidYMid meet")
+        .attr("height", "" + radioHeight + "px")
+        .attr("width", "" + radioWidth + "px")
+        .attr("viewBox", "0 0 " + radioWidth + " " + radioHeight + "")
+        .attr("transform", "translate(" + marginLeft + "," + (radioHeight * 3 + padding * 3 + marginTop) + ")")
 
-    let outline3 = radio3.append("circle")
-      .attr("class", "dorling-radio-outline")
-      .attr("cx", "" + radioCxy + "")
-      .attr("cy", "" + radioCxy + "")
-      .attr("r", "" + radioRadius + "")
-      .attr("fill", "none")
-      .attr("stroke", "black")
-      .attr("stroke-width", "3")
+      var outline3 = radio3.append("circle")
+        .attr("class", "dorling-radio-outline")
+        .attr("cx", "" + radioCxy + "")
+        .attr("cy", "" + radioCxy + "")
+        .attr("r", "" + radioRadius + "")
+        .attr("fill", "none")
+        .attr("stroke", "black")
+        .attr("stroke-width", "3")
 
-    let dot3 = radio3.append("circle")
-      .attr("opacity", radioDotOpacity)
-      .attr("cx", "" + radioCxy + "")
-      .attr("cy", "" + radioCxy + "")
-      .attr("r", "" + radioDotRadius + "")
-      .attr("class", "dorling-radio-dot")
+      var dot3 = radio3.append("circle")
+        .attr("opacity", radioDotOpacity)
+        .attr("cx", "" + radioCxy + "")
+        .attr("cy", "" + radioCxy + "")
+        .attr("r", "" + radioDotRadius + "")
+        .attr("class", "dorling-radio-dot")
 
-    let label3 = radio3.append("text")
-      .text("NUTS 3")
-      .attr("transform", "translate(25,10)");
+      var label3 = radio3.append("text")
+        .text("NUTS 3")
+        .attr("transform", "translate(25,10)");
+    }
 
     //current nutsLevel
     if (out.nutsLevel_ == 0) {
@@ -1685,18 +1694,26 @@ export function dorling(options) {
       outline3.attr("stroke", outlineSelectedColor);
     }
 
-    radio0.on("click", function (e) {
-      nutsRadioEventHandler(0)
-    });
-    radio1.on("click", function (e) {
-      nutsRadioEventHandler(1)
-    });
-    radio2.on("click", function (e) {
-      nutsRadioEventHandler(2)
-    });
-    radio3.on("click", function (e) {
-      nutsRadioEventHandler(3)
-    });
+    if (radio0) {
+      radio0.on("click", function (e) {
+        nutsRadioEventHandler(0)
+      });
+    }
+    if (radio1) {
+      radio1.on("click", function (e) {
+        nutsRadioEventHandler(1)
+      });
+    }
+    if (radio2) {
+      radio2.on("click", function (e) {
+        nutsRadioEventHandler(2)
+      });
+    }
+    if (radio3) {
+      radio3.on("click", function (e) {
+        nutsRadioEventHandler(3)
+      });
+    }
 
 
     //HTML
@@ -1909,7 +1926,7 @@ export function dorling(options) {
 
   function defineSizeScale() {
     let scale = d3.scaleSqrt()
-      .range([out.minCircleRadius_, out.maxCircleRadius_]).domain(out.sizeExtent);
+      .range([out.minCircleRadius_[out.nutsLevel_], out.maxCircleRadius_[out.nutsLevel_]]).domain(out.sizeExtent);
 
     return scale;
   }

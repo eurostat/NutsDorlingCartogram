@@ -18,6 +18,7 @@
         NutsDorlingCartogram.dorling()
             .containerId("containerDiv")
             .nutsLevel(2)
+            .nutsAvailable([0, 1, 2])
             // .colors(["#3A6ABD", "#789BD8", "#D1D9F1", "#EBC2DE", "#E18FC8", "#A74177"])
             .colors(["#2d50a0", "#6487c3", "#aab9e1", "#f0cd91", "#e6a532", "#d76e2d"])
             .thresholdValues([20, 40, 50, 60, 80, 1000000])
@@ -26,7 +27,7 @@
             .sizeDatasetFilters("c_resid=TOTAL&unit=NR&precision=1&time=2018")
             .colorDatasetCode("tour_occ_nin2")
             .colorDatasetFilters("c_resid=FOR&unit=PC_TOT&precision=1&time=2018")
-            .maxCircleRadius(120)
+            .maxCircleRadius({ 0: 120, 1: 120, 2: 120, 3: 120 })
             .colorLegend({
                 //https://d3-legend.susielu.com/#color
                 titleWidth: 250,
@@ -39,13 +40,13 @@
                 labelUnit: " ",
                 labelOffset: 10,
                 shape: "circle",
-                explanationYOffset: 340
+                explanationYOffset: { 0: 390, 1: 355, 2: 340, 3: 340 },
             })
-            .nutsSelectorTranslateY(370)
+            .nutsSelectorTranslateY({ 0: 420, 1: 385, 2: 370, 3: 370 })
             .sizeLegend({
                 title: "Total number of nights spent",
-                titleYOffset: 30,
-                titleXOffset: 23,
+                titleYOffset: { 0: 10, 1: 10, 2: 30, 3: 30 },
+                titleXOffset: { 0: 23, 1: 23, 2: 23, 3: 23 },
                 textFunction: function (d) {
                     let n = d / 1000000;
                     if (n == 1) {
@@ -54,9 +55,15 @@
                         return n + " million";
                     }
                 },
-                values: [50000000, 20000000, 1000000],
-                bodyXOffset: 50,
-                bodyYOffset: 95
+                values: {
+                    0: [300000000, 150000000, 1000000],
+                    1: [150000000, 50000000, 1000000],
+                    2: [50000000, 20000000, 1000000],
+                    3: [5000000, 2000000, 100000]
+                },
+                bodyXOffset: { 0: 85, 1: 55, 2: 50, 3: 50 },
+                bodyYOffset: { 0: 145, 1: 110, 2: 95, 3: 95 },
+                labelsTranslateX: { 0: 50, 1: 45, 2: 40, 3: 40 }
             })
             .tooltip({
                 colorLabel: "Foreign tourism dependency (share of total nights spent by non-residents)",
