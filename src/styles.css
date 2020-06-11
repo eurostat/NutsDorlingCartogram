@@ -1,3 +1,16 @@
+@media only screen and (max-width: 800px) {
+  .dorling-insets {
+    top: 15% !important;
+    right: 1% !important;
+  }
+  .dorling-legend {
+    position: absolute!important;
+    top: 27%!important;
+    left: 1%!important;
+    width: 21%!important;
+  }
+}
+
 #dorling-svg{
   position:relative; 
   top:0; 
