@@ -164,6 +164,9 @@ circle.swatch {
   stroke: black;
   cursor: pointer;
 }
+circle.swatch:hover {
+  stroke-width:3;
+}
 text.label{
   cursor: pointer;
 }
