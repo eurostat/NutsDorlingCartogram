@@ -15,11 +15,11 @@ export function dorling(options) {
   out.seaColor_ = "white";
   out.playButtonFill_ = "#212529";
   out.coastalMargins_ = false;
-  out.graticule_ = true;
+  out.graticule_ = false;
   out.highlightColor_ = "cyan";
   out.nutsBorderColor_ = "grey";
   //d3 force
-  out.circleExaggerationFactor_ = 1.2; //deprecated
+  // out.circleExaggerationFactor_ = 1.2; //deprecated
   out.collisionPadding_ = 0.1;
   out.positionStrength_ = 0.1;
   out.collisionStrength_ = 0.7;
@@ -29,7 +29,7 @@ export function dorling(options) {
   out.maxCircleRadius_ = { 0: 20, 1: 20, 2: 20, 3: 20 }
 
   //d3-geo
-  out.translateX_ = -500; //-390;
+  out.translateX_ = -390; //-390;
   out.translateY_ = 1126; //1126;
   out.scale_ = 0.0002065379208173783;
   out.fitSizePadding_ = 0;
@@ -42,9 +42,9 @@ export function dorling(options) {
   out.thresholdValues_ = null; //[1,100,1000]
   //interactivity
   out.animate_ = true;
-  out.loop_ = true;
+  out.loop_ = false;
   out.pauseButton_ = false;
-  out.showBorders_ = false;
+  out.showBorders_ = true;
 
   //legend container
   out.legendsContainerWidth_ = 270;
@@ -53,7 +53,7 @@ export function dorling(options) {
   //size legend (circle radiuses)
   out.sizeLegend_ = {
     title: "Size Legend",
-    titleYOffset: { 0: 0, 1: 0, 2: 0, 3: 0 },
+    titleYOffset: { 0: 10, 1: 10, 2: 10, 3: 10 },
     titleXOffset: { 0: 20, 1: 20, 2: 20, 3: 20 },
     textFunction: function (d) { return d.toLocaleString() },
     values: {},
@@ -142,6 +142,7 @@ export function dorling(options) {
 
   //data params
   out.nutsAvailable_ = [0, 1, 2, 3] //available nuts levels
+  out.mixNuts_ = { 0: null, 1: null, 2: null, 3: null } // e.g. {2:{UK:1, DE:1}} adds UK and DE level 1 nuts to level 2
   out.eurostatRESTBaseURL = "https://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/";
   out.nutsLevel_ = 2;
   out.sizeDatasetCode_ = "demo_r_pjangrp3";
@@ -193,6 +194,13 @@ export function dorling(options) {
   out.insets = function (v) {
     for (let key in v) {
       out.insets_[key] = v[key];
+    }
+    return out;
+  };
+
+  out.mixNuts = function (v) {
+    for (let key in v) {
+      out.mixNuts_[key] = v[key];
     }
     return out;
   };
@@ -254,7 +262,7 @@ export function dorling(options) {
     }
     //data promises
     let promises = [];
-    //add exeption for GDP at NUTS 3 level (no data for 2018 so overrides to 2016 data)
+    //add exeption for GDP at NUTS 3 level (no data for 2018 so overrides to 2017 data)
     if (out.nutsLevel_ == 3 && out.sizeDatasetCode_ == "nama_10r_3gdp" && out.sizeDatasetFilters_ == "unit=MIO_EUR&time=2018") {
       promises.push(
         d3.json(
@@ -267,10 +275,10 @@ export function dorling(options) {
           `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/3035/20M/0.json`
         ), //countries
         d3.json(
-          `${out.eurostatRESTBaseURL}${out.sizeDatasetCode_}?geoLevel=${nutsParam}&unit=MIO_EUR&time=2017`
+          `${out.eurostatRESTBaseURL}${out.sizeDatasetCode_}?geoLevel=${nutsParam}&unit=MIO_EUR&time=2017&filterNonGeo=1`
         ), //sizeData
         d3.json(
-          `${out.eurostatRESTBaseURL}${out.colorDatasetCode_}?geoLevel=${nutsParam}&unit=EUR_HAB&time=2017`
+          `${out.eurostatRESTBaseURL}${out.colorDatasetCode_}?geoLevel=${nutsParam}&unit=EUR_HAB&time=2017&filterNonGeo=1`
         ), //colorData
       );
     } else {
@@ -285,12 +293,39 @@ export function dorling(options) {
           `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/3035/20M/0.json`
         ), //countries
         d3.json(
-          `${out.eurostatRESTBaseURL}${out.sizeDatasetCode_}?geoLevel=${nutsParam}&${out.sizeDatasetFilters_}`
+          `${out.eurostatRESTBaseURL}${out.sizeDatasetCode_}?geoLevel=${nutsParam}&${out.sizeDatasetFilters_}&filterNonGeo=1`
         ), //sizeData
         d3.json(
-          `${out.eurostatRESTBaseURL}${out.colorDatasetCode_}?geoLevel=${nutsParam}&${out.colorDatasetFilters_}`
+          `${out.eurostatRESTBaseURL}${out.colorDatasetCode_}?geoLevel=${nutsParam}&${out.colorDatasetFilters_}&filterNonGeo=1`
         ), //colorData
       );
+    }
+
+    //bag of mixed NUTS
+    // add specified NUTS IDs 9of any NUTS level) to the current nuts level
+    if (out.mixNuts_ && out.mixNuts_[out.nutsLevel_]) {
+      out.mixNutsFilterString = "";
+      //prepare levels that need retrieving
+      out.mixNuts_[out.nutsLevel_].ids.forEach((nutsID) => {
+        out.mixNutsFilterString = out.mixNutsFilterString + "&geo=" + nutsID;
+      })
+
+      let nutsLevel = out.mixNuts_[out.nutsLevel_].level;
+
+      //add promises for retrieving centroids, sizeData and ColorData of the nuts level to be merged with the current nutsLevel_
+      //not currently possible to only request data for certain countries therefore I have to request the whole dataset
+      promises.push(
+        d3.json(
+          `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/3035/nutspt_${nutsLevel}.json`
+        ), //mixLevel centroids
+        d3.json(
+          `${out.eurostatRESTBaseURL}${out.sizeDatasetCode_}?${out.mixNutsFilterString}&${out.sizeDatasetFilters_}`
+        ), //mixLevel sizeData
+        d3.json(
+          `${out.eurostatRESTBaseURL}${out.colorDatasetCode_}?${out.mixNutsFilterString}&${out.colorDatasetFilters_}`
+        ), //mixLevel colorData
+      )
+
     }
 
     Promise.all(promises).then((res) => {
@@ -324,12 +359,46 @@ export function dorling(options) {
         out.centroids.features = newFeatures;
       }
 
+      //if mixing NUTS levels, add specified NUTS regions to the current level's datasets
+      if (out.mixNuts_[out.nutsLevel_]) {
+        let cent = res[5];
+        let sizeData = res[6];
+        let colorData = res[7];
+
+        //get centroids for specified nuts ids
+        cent.features.forEach((c) => {
+          if (out.mixNuts_[out.nutsLevel_].ids.indexOf(c.properties.id) !== -1) {
+            //add centroids of mixedNuts to current level centroids
+            out.centroids.features.push(c);
+          }
+        })
+
+
+        //index color values
+        out.mixNutsColorArr = Object.entries(
+          colorData.dimension.geo.category.index
+        ).map(([key, val]) => ({ id: key, val: +colorData.value[val] || null }));
+        let colorInd = {};
+        for (let i = 0; i < out.mixNutsColorArr.length; i++) colorInd[out.mixNutsColorArr[i].id] = out.mixNutsColorArr[i].val;
+        out.mixNutsColorInd = colorInd;
+
+        //index size values
+        let sizeArr = Object.entries(
+          sizeData.dimension.geo.category.index
+        ).map(([key, val]) => ({ id: key, val: +sizeData.value[val] || null }));
+        let sizeInd = {};
+        for (let i = 0; i < sizeArr.length; i++) sizeInd[sizeArr[i].id] = sizeArr[i].val;
+        out.mixNutsSizeInd = sizeInd;
+
+      }
+
       out.n2j = res[1];
       out.nuts0 = res[2];
 
       let sizeData = res[3];
       let colorData = res[4];
 
+      //indexing requires the use of promises for when using colorPercentageCalculationData
       let sizePromise = new Promise((resolve, reject) => {
         indexStat(sizeData, "size", out, resolve, reject);
       });
@@ -515,7 +584,6 @@ export function dorling(options) {
           addSourcesToDOM();
         }
 
-
         addZoomButtonsToDOM();
 
         if (out.pauseButton_) {
@@ -677,10 +745,6 @@ export function dorling(options) {
         .attr('y', 0)
         .attr('height', out.insets_.overseasHeight + out.insets_.padding)
         .attr('width', out.insets_.overseasWidth + out.insets_.padding);
-      // .attr('height', out.insets_.overseasHeight + out.insets_.padding)
-      // .attr('width', out.insets_.overseasWidth + out.insets_.padding);
-      // .append('circle')
-      // .attr('r', out.insets_.radius);
 
       //inset parent G element
       var g = out.insetsSvg
@@ -760,22 +824,6 @@ export function dorling(options) {
       //   .attr("stroke", "black")
       //   .attr("d", inset.path);
 
-      //border
-      // g.append('rect')
-      //   .classed('blur', true)
-      //   .attr('height', out.insets_.overseasHeight + out.insets_.padding)
-      //   .attr('width', out.insets_.overseasWidth + out.insets_.padding)
-      //   .attr('transform', "translate(-" + (out.insets_.overseasWidth / 2) + ",-" + (out.insets_.overseasHeight / 2) + ")")
-
-      // g
-      //   .append('rect')
-      //   .classed('outline', true)
-      //   .attr('height', out.insets_.overseasHeight + out.insets_.padding)
-      //   .attr('width', out.insets_.overseasWidth + out.insets_.padding)
-      //   .attr('transform', "translate(-" + (out.insets_.overseasWidth / 2) + ",-" + (out.insets_.overseasHeight / 2) + ")")
-      // });
-
-
       //add circles
       out.insetCircles = out.insetsSvg
         .append("g")
@@ -794,7 +842,6 @@ export function dorling(options) {
         .attr("r", (f) => sizeFunction(+out.sizeIndicator[f.featureCollection.features[0].properties.id]))
         .attr("fill", (f) => colorFunction(+out.colorIndicator[f.featureCollection.features[0].properties.id]))
         .attr("stroke", "black");
-
 
       addMouseEvents();
     })
@@ -837,43 +884,27 @@ export function dorling(options) {
     rect.setAttribute("height", SVGRect.height + 2);
     rect.setAttribute("fill", "white");
     ctx.insertBefore(rect, textElem);
-
-    function getBB(selection) {
-      selection.each(function (d) { d.bbox = this.getBBox(); })
-    }
-
-    // let container = document.createElement("div");
-    // container.classList.add("dorling-attribution")
-    // container.innerHTML = 'Boundaries: © <a href="https://eurogeographics.org/" target="_blank">EuroGeographics</a> © <a href="https://www.fao.org/" target="_blank">UN-FAO</a>  © <a href="https://www.turkstat.gov.tr/" target="_blank">Turkstat</a>'
-    // out.container_.node().appendChild(container)
   }
 
 
   function addSourcesToDOM() {
     let colorURL = "https://appsso.eurostat.ec.europa.eu/nui/show.do?dataset=" + out.colorDatasetCode_
     let sizeURL = "https://appsso.eurostat.ec.europa.eu/nui/show.do?dataset=" + out.sizeDatasetCode_
-
     let sources = document.createElement("div");
     sources.classList.add("dorling-sources-container");
-
     let colorSource = document.createElement("div")
     colorSource.innerHTML = "Source (colour): Eurostat - <a target='_blank' href='" + colorURL + "'>access to dataset</a>"
-
     let sizeSource = document.createElement("div")
     sizeSource.innerHTML = "Source (size): Eurostat - <a target='_blank' href='" + sizeURL + "'>access to dataset</a>"
-
     sources.appendChild(colorSource);
     sources.appendChild(sizeSource);
-
     out.bottomTextContainer.appendChild(sources)
   }
 
   function addFootnotesToDOM() {
     let footnotes = document.createElement("div");
     footnotes.classList.add("dorling-footnotes-container");
-
     footnotes.innerHTML = out.footnotesText_;
-
     out.bottomTextContainer.appendChild(footnotes)
   }
 
@@ -906,7 +937,6 @@ export function dorling(options) {
               100)} ${out.tooltip_.shareUnit} <br>
       `);
         }
-
 
         out.tooltipElement.style("visibility", "visible");
 
@@ -974,7 +1004,6 @@ export function dorling(options) {
                 100)} ${out.tooltip_.shareUnit} <br>
       `);
           }
-
 
           out.tooltipElement.style("visibility", "visible");
 
@@ -1364,13 +1393,6 @@ export function dorling(options) {
     let transform = legendCells.attr("transform");
     let translation = getTranslation(transform);
     legendCells.attr("transform", "translate(" + (translation[0] + out.colorLegend_.cellsTranslateX) + "," + (translation[1] + out.colorLegend_.cellsTranslateY) + ")")
-
-
-    //ajust position of legend container
-    // let svgWidth = out.svg.node().clientWidth;
-    // out.legendContainerNode = out.legendContainer.node();
-    //TODO use node width instead of viewport width
-    // out.legendContainer.attr("transform", "translate(25, 150)");
   }
 
   function getTranslation(transform) {
@@ -1543,8 +1565,6 @@ export function dorling(options) {
     out.radioContainer
       .append("rect")
       .attr("class", "dorling-legend-container-background dorling-plugin")
-    //.style("height", backgroundHeight)
-    //.attr("transform", "translate(0,0)");
 
     //title
     out.radioContainer.append("text")
@@ -1714,75 +1734,6 @@ export function dorling(options) {
         nutsRadioEventHandler(3)
       });
     }
-
-
-    //HTML
-    // let container = document.createElement("div");
-    // container.classList.add("dorling-nuts-selector-container");
-    // let title = document.createElement("div");
-    // title.innerHTML = "Geographic level <br>"
-    // title.style.marginBottom = "6px";
-    // container.appendChild(title);
-    // out.container_.node().appendChild(container);
-
-    // //radios
-    // //0
-    // let radio0 = document.createElement("input");
-    // radio0.type = "radio";
-    // radio0.value = 0;
-    // radio0.id = "dorling-nuts-radio0";
-    // radio0.name = "dorling-nuts-radios";
-    // if (out.nutsLevel_ == 0) radio0.checked = "true";
-    // radio0.onclick = nutsRadioEventHandler;
-    // let radio0Label = document.createElement("label");
-    // radio0Label.for = "dorling-nuts-radio0";
-    // radio0Label.innerHTML = "Country"
-    // //1
-    // let radio1 = document.createElement("input");
-    // radio1.type = "radio";
-    // radio1.value = 1;
-    // radio1.id = "dorling-nuts-radio1";
-    // radio1.name = "dorling-nuts-radios";
-    // if (out.nutsLevel_ == 1) radio1.checked = "true";
-    // radio1.onclick = nutsRadioEventHandler;
-    // let radio1Label = document.createElement("label");
-    // radio1Label.for = "dorling-nuts-radio1";
-    // radio1Label.innerHTML = "NUTS 1"
-    // //2
-    // let radio2 = document.createElement("input");
-    // radio2.type = "radio";
-    // radio2.value = 2;
-    // radio2.id = "dorling-nuts-radio2";
-    // radio2.name = "dorling-nuts-radios";
-    // if (out.nutsLevel_ == 2) radio2.checked = "true";
-    // radio2.onclick = nutsRadioEventHandler;
-    // let radio2Label = document.createElement("label");
-    // radio2Label.for = "dorling-nuts-radio2";
-    // radio2Label.innerHTML = "NUTS 2"
-    // //3
-    // let radio3 = document.createElement("input");
-    // radio3.type = "radio";
-    // radio3.value = 3;
-    // radio3.id = "dorling-nuts-radio3";
-    // radio3.name = "dorling-nuts-radios";
-    // if (out.nutsLevel_ == 3) radio3.checked = "true";
-    // radio3.onclick = nutsRadioEventHandler;
-    // let radio3Label = document.createElement("label");
-    // radio3Label.for = "dorling-nuts-radio3";
-    // radio3Label.innerHTML = "NUTS 3"
-
-    // container.appendChild(radio0);
-    // container.appendChild(radio0Label);
-    // container.appendChild(document.createElement('br'))
-    // container.appendChild(radio1);
-    // container.appendChild(radio1Label);
-    // container.appendChild(document.createElement('br'))
-    // container.appendChild(radio2);
-    // container.appendChild(radio2Label);
-    // container.appendChild(document.createElement('br'))
-    // container.appendChild(radio3);
-    // container.appendChild(radio3Label);
-    // container.appendChild(document.createElement('br'))
   }
 
 
@@ -1986,35 +1937,99 @@ function indexStat(data, type, out, resolve, reject) {
     } else {
       nutsParam = "nuts" + out.nutsLevel_;
     }
-    d3.json(`${out.eurostatRESTBaseURL}${out.colorPercentageCalcDatasetCode_}?geoLevel=${nutsParam}&${out.colorPercentageCalcDatasetFilters_}`).then((totals) => {
-      const totalsArr = Object.entries(
-        totals.dimension.geo.category.index
-      ).map(([k, v]) => ({ id: k, tot: +totals.value[v] || null }));
-      //merge arrays
-      const mergeById = (a1, a2) =>
-        a1.map(itm => ({
-          ...a2.find((item) => (item.id === itm.id) && item),
-          ...itm
-        }));
-      let merged = mergeById(arr, totalsArr);
-      //divide each value by the desired total
-      for (let i = 0; i < merged.length; i++) {
-        let value = merged[i].val;
-        let total = merged[i].tot;
-        let percentage = ((value / total) * 100);
-        ind[merged[i].id] = percentage || null;
+
+    //util function
+    const mergeById = (a1, a2) =>
+      a1.map(itm => ({
+        ...a2.find((item) => (item.id === itm.id) && item),
+        ...itm
+      }));
+
+    //if mixNuts and colorPercentageCalculationData, 
+    //then the data used to calculate percentages has to be of the same nuts level as the mixNuts data
+    if (out.mixNuts_[out.nutsLevel_]) {
+      let mixNutsLevel;
+      if (out.mixNuts_[out.nutsLevel_].level == 0) {
+        mixNutsLevel = "country";
+      } else {
+        mixNutsLevel = "nuts" + out.mixNuts_[out.nutsLevel_].level;
       }
-      out.colorIndicator = ind;
-      resolve();
-    })
+      let promises = [];
+      //totals for current nuts level
+      promises.push(d3.json(`${out.eurostatRESTBaseURL}${out.colorPercentageCalcDatasetCode_}?geoLevel=${nutsParam}&${out.colorPercentageCalcDatasetFilters_}`))
+      //totals for mixNuts injected data nuts level
+      promises.push(d3.json(`${out.eurostatRESTBaseURL}${out.colorPercentageCalcDatasetCode_}?geoLevel=${mixNutsLevel}&${out.mixNutsFilterString}&${out.colorPercentageCalcDatasetFilters_}`))
 
+      Promise.all(promises).then((res) => {
+        let totals = res[0];
+        let mixTotals = res[1]
+        //mixNuts
+        const mixTotalsArr = Object.entries(
+          mixTotals.dimension.geo.category.index
+        ).map(([k, v]) => ({ id: k, tot: +mixTotals.value[v] || null }));
+        let mixNutsMerged = mergeById(out.mixNutsColorArr, mixTotalsArr);
+        for (let i = 0; i < mixNutsMerged.length; i++) {
+          let value = mixNutsMerged[i].val;
+          let total = mixNutsMerged[i].tot;
+          let percentage = ((value / total) * 100);
+          ind[mixNutsMerged[i].id] = percentage || null;
+        }
+
+        //normal
+        const totalsArr = Object.entries(
+          totals.dimension.geo.category.index
+        ).map(([k, v]) => ({ id: k, tot: +totals.value[v] || null }));
+        //merge values array with totals array
+        let merged = mergeById(arr, totalsArr);
+        //divide each value by the desired total
+        for (let i = 0; i < merged.length; i++) {
+          let value = merged[i].val;
+          let total = merged[i].tot;
+          let percentage = ((value / total) * 100);
+          ind[merged[i].id] = percentage || null;
+        }
+
+
+        out.colorIndicator = ind;
+        resolve();
+      })
+    } else {
+      //without mixed nuts
+      d3.json(`${out.eurostatRESTBaseURL}${out.colorPercentageCalcDatasetCode_}?geoLevel=${nutsParam}&${out.colorPercentageCalcDatasetFilters_}`).then((totals) => {
+        const totalsArr = Object.entries(
+          totals.dimension.geo.category.index
+        ).map(([k, v]) => ({ id: k, tot: +totals.value[v] || null }));
+        //merge values array with totals array
+        let merged = mergeById(arr, totalsArr);
+        //divide each value by the desired total
+        for (let i = 0; i < merged.length; i++) {
+          let value = merged[i].val;
+          let total = merged[i].tot;
+          let percentage = ((value / total) * 100);
+          ind[merged[i].id] = percentage || null;
+        }
+        out.colorIndicator = ind;
+        resolve();
+      })
+    }
   } else {
-
+    //otherwise, just index the data normally
     for (let i = 0; i < arr.length; i++) ind[arr[i].id] = arr[i].val;
     if (type == "size") {
       out.sizeIndicator = ind;
+
+      if (out.mixNuts_[out.nutsLevel_]) {
+        //add values to be mixed to current indices
+        for (var attr in out.mixNutsSizeInd) { out.sizeIndicator[attr] = out.mixNutsSizeInd[attr]; }
+      }
+
     } else if (type == "color") {
       out.colorIndicator = ind;
+
+      if (out.mixNuts_[out.nutsLevel_]) {
+        //add values to be mixed to current indices
+        for (var attr in out.mixNutsColorInd) { out.colorIndicator[attr] = out.mixNutsColorInd[attr]; }
+      }
     }
 
     resolve()
