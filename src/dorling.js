@@ -21,7 +21,7 @@ export function dorling(options) {
   //d3 force
   // out.circleExaggerationFactor_ = 1.2; //deprecated
   // out.collisionPadding_ = 0.1; //deprectated
-  out.positionStrength_ = 0.1;
+  out.positionStrength_ = 0.4;
   out.collisionStrength_ = 0.7;
 
   //circle radius
@@ -836,9 +836,10 @@ export function dorling(options) {
         .append("circle")
         .attr("cx", (d) => { return (d.x + out.insets_.circleXOffset) })
         .attr("cy", (d) => { return (d.y + out.insets_.circleYOffset) })
-        .attr("r", (f) => sizeFunction(+out.sizeIndicator[f.featureCollection.features[0].properties.id]))
-        .attr("fill", (f) => colorFunction(+out.colorIndicator[f.featureCollection.features[0].properties.id]))
-        .attr("stroke", "black");
+        .attr("fill", "#ffffff00")
+        .attr("stroke", "#40404000");
+
+
 
       addMouseEvents();
     })
@@ -1027,6 +1028,14 @@ export function dorling(options) {
       .attr("r", (f) => sizeFunction(+out.sizeIndicator[f.properties.id]))
       .attr("fill", (f) => colorFunction(+out.colorIndicator[f.properties.id]))
       .attr("stroke", "black");
+    if (out.showInsets_) {
+      out.insetCircles
+        .transition()
+        .duration(1000)
+        .attr("r", (f) => sizeFunction(+out.sizeIndicator[f.featureCollection.features[0].properties.id]))
+        .attr("fill", (f) => colorFunction(+out.colorIndicator[f.featureCollection.features[0].properties.id]))
+        .attr("stroke", "black");
+    }
     //hide nuts
     if (out.showBorders_) {
       out.nutsBorders.transition().duration(1000).attr("stroke", "grey");
