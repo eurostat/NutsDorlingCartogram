@@ -52,7 +52,7 @@ export function dorling(options) {
 
   //size legend (circle radiuses)
   out.sizeLegend_ = {
-    title: "Size Legend",
+    title: "Circle Size",
     titleYOffset: { '0': 10, '1': 10, '2': 10, '3': 10 },
     titleXOffset: { '0': 20, '1': 20, '2': 20, '3': 20 },
     textFunction: function (d) { return d.toLocaleString() },
@@ -69,7 +69,7 @@ export function dorling(options) {
   out.colorLegend_ = {
     //https://d3-legend.susielu.com/#color
     titleWidth: 170,
-    title: "Colour Legend",
+    title: "Circle Colour",
     orient: "vertical",
     cells: null,
     shape: "rect",

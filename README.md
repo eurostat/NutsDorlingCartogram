@@ -77,7 +77,7 @@ dorling.**thresholdValues** | An array of threshold values to use for classifyin
 dorling.**zoom** | Enable d3 zoom functionality using zoom buttons | boolean | false | true
 dorling.**colorLegend** | Object which stores the configuration parameters for the circle-color legend. See [here](https://d3-legend.susielu.com/#color) for more details on the following legend options. | object | false | See [here](https://d3-legend.susielu.com/#color) 
 &nbsp;&nbsp; colorLegend.orient | Accepted values: "vertical" or "horizontal" | string | false | "vertical"
-&nbsp;&nbsp; colorLegend.title | Legend title text | string | false | "Legend"
+&nbsp;&nbsp; colorLegend.title | Legend title text | string | false | "Circle Colour"
 &nbsp;&nbsp; colorLegend.titleWidth | Width of the legend title | number | false | 200
 &nbsp;&nbsp; colorLegend.cells | Number of cells to be shown in the legend | number | false | 5
 &nbsp;&nbsp; colorLegend.shape | Shape of the legend cells ("circle" or "rect") | string | false | "rect"
@@ -87,7 +87,7 @@ dorling.**colorLegend** | Object which stores the configuration parameters for t
 &nbsp;&nbsp; colorLegend.labelOffset | Distance in pixels from legend label to its corresponding cell | number | false | 5
 &nbsp;&nbsp; colorLegend.explanationYOffset | Y-axis translation applied to the hover functionality explanation text | {'nutsLevel':number} | false | { 0: 330, 1: 330, 2: 330, 3: 330 }  
 dorling.**sizeLegend** | Object which stores the configuration parameters for the circle-size legend | object | false |  
-&nbsp;&nbsp; sizeLegend.title | Legend title | string | false | "Size Legend"  
+&nbsp;&nbsp; sizeLegend.title | Legend title | string | false | "Circle Size"  
 &nbsp;&nbsp; sizeLegend.values | Array of values used in the legend | {'nutsLevel':array} | false | [maxValue, maxValue / 2, maxValue / 10] for each NUTS level   
 &nbsp;&nbsp; sizeLegend.textFunction | Function used to manipulate legend labels | function | false |  function (value) { return value.toLocaleString() }    
 &nbsp;&nbsp; sizeLegend.titleYOffset | Y Offset in pixels applied to the legend's title | {'nutsLevel':number} | false |  { '0': 10, '1': 10, '2': 10, '3': 10 }
