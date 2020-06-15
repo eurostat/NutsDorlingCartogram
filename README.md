@@ -48,7 +48,7 @@ Check out [this notebook](https://observablehq.com/@joewdavies/nuts-dorling-cart
 
 # Cartogram Definition
 
-Method parameters
+Accessible methods and their respective parameters
 
 Method | Description | Type | Required | Default Value
 :--------- | :--------- | :--------- | :--------- | :---------
@@ -77,13 +77,13 @@ dorling.**colorLegend** | Object which stores the configuration parameters for t
 &nbsp;&nbsp; colorLegend.explanationYOffset | Y-axis translation applied to the hover functionality explanation text | {'nutsLevel':number} | false | { 0: 330, 1: 330, 2: 330, 3: 330 }  
 dorling.**sizeLegend** | Object which stores the configuration parameters for the circle-size legend | object | false |  
 &nbsp;&nbsp; sizeLegend.title | Legend title | string | false | "Size Legend"  
-&nbsp;&nbsp; sizeLegend.values | Array of values used in the legend | {'nutsLevel':array} | false | {}    
+&nbsp;&nbsp; sizeLegend.values | Array of values used in the legend | {'nutsLevel':array} | false | [maxValue, maxValue / 2, maxValue / 10] for each NUTS level   
 &nbsp;&nbsp; sizeLegend.textFunction | Function used to manipulate legend labels | function | false |  function (value) { return value.toLocaleString() }    
 &nbsp;&nbsp; sizeLegend.titleYOffset | Y Offset in pixels applied to the legend's title | {'nutsLevel':number} | false |  { '0': 10, '1': 10, '2': 10, '3': 10 }
 &nbsp;&nbsp; sizeLegend.titleXOffset | X Offset in pixels applied to the legend's title | {'nutsLevel':number} | false | { '0': 20, '1': 20, '2': 20, '3': 20 }  
-&nbsp;&nbsp; sizeLegend.translateY | Y value to be applied to the translate transform of the size legend within the parent "legends" container | {'nutsLevel':number} | false | { '0': 0, '1': 0, '2': 0, '3': 0 },
-&nbsp;&nbsp; sizeLegend.bodyXOffset | Legend title | {'nutsLevel':number} | false | { '0': 50, '1': 50, '2': 50, '3': 50 }, 
-&nbsp;&nbsp; sizeLegend.bodyYOffset | Legend title | {'nutsLevel':number} | false | { '0': 90, '1': 90, '2': 90, '3': 90 },  
+&nbsp;&nbsp; sizeLegend.translateY | Y value to be applied to the translate transform of the size legend within the parent "legends" container | {'nutsLevel':number} | false | { '0': 0, '1': 0, '2': 0, '3': 0 }  
+&nbsp;&nbsp; sizeLegend.bodyXOffset | Legend title | {'nutsLevel':number} | false | { '0': 50, '1': 50, '2': 50, '3': 50 }   
+&nbsp;&nbsp; sizeLegend.bodyYOffset | Legend title | {'nutsLevel':number} | false | { '0': 90, '1': 90, '2': 90, '3': 90 }    
 &nbsp;&nbsp; sizeLegend.labelsTranslateX | X-axis translation applied to the labels of each size class | {'nutsLevel':number} | false | { '0': 90, '1': 90, '2': 90, '3': 90 }  
 &nbsp;&nbsp; sizeLegend.labelsOffsetY | Y-axis offset applied to labels | {'nutsLevel':number} | false | { '0': 2, '1': 2, '2': 2, '3': 2 }  
 dorling.**tooltip** | Object which stores the configuration parameters for the circle-size legend | object | false |  
