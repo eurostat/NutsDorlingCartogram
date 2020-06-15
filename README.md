@@ -48,7 +48,7 @@ Check out [this notebook](https://observablehq.com/@joewdavies/nuts-dorling-cart
 
 # Cartogram Definition
 
-Accessible methods and their respective parameters
+Accessible methods and their respective parameters. Where possible, values can be defined for each NUTS level; whereby a change in nUTS level using the NUTS
 
 Method | Description | Type | Required | Default Value
 :--------- | :--------- | :--------- | :--------- | :---------
@@ -92,12 +92,16 @@ dorling.**tooltip** | Object which stores the configuration parameters for the c
 &nbsp;&nbsp; tooltip.sizeLabel | Label used to describe the size value of the feature | string | false |  "Size value:"  
 &nbsp;&nbsp; tooltip.sizeUnit | Unit label to be added after the size value | string | false | ""
 &nbsp;&nbsp; tooltip.shareLabel | Label used to describe the percentage share value of the feature | string | false | "Share value:"  
+dorling.**showNutsSelector** | whether or not to show the radio buttons which allow the user to change between NUTS levels | boolean | false | true;
+dorling.**nutsAvailable** | defines which NUTS levels will be shown in the NUTS level selector | array | false | [0,1,2,3];
 dorling.**nutsSelectorTranslateY** | Y-axis translation applied to the NUTS level selector node | {{'nutsLevel':number}} | false | { 0: 375, 1: 375, 2: 375, 3: 375 }    
+dorling.**mixNuts** | permits filling in data gaps using data from different NUTS levels. For example: this adds NUTS region "DE1" of nuts level 1 to the NUTS 2 data: { 2: {level: 1, ids: ["DE1"] } } | { nutsLevel: {mixinNutsLevel: number, ids: [] } } | false | null  
 dorling.**minCircleRadius** | Minimum circle radius allowed when scaling the circles (for each NUTS level) | {{'nutsLevel':number}} | false | { '0': 1.5, '1': 1.5, '2': 1.5, '3': 1.5 }  
-dorling.**maxCircleRadius** | Maximum circle radius allowed when scaling the circles (for each NUTS level) | {{'nutsLevel':number}} | false | { '0': 20, '1': 20, '2': 20, '3': 20 }
-dorling.**positionStrength** | The strength of the forces used to maintain the circle at its original position. | number | false | 0.7
-dorling.**collisionStrength** | The strength of the collisions between circle during the d3 force simulation | number | false | 0.1
-dorling.**scale** | d3-geo projection.scale() value | number | false |  0.0002065379208173783;
-dorling.**translateX** | d3-geo projection.translate() X value | number | false | -390
-dorling.**translateY** | d3-geo projection.translate() Y value | number | false | 1126
+dorling.**maxCircleRadius** | Maximum circle radius allowed when scaling the circles (for each NUTS level) | {{'nutsLevel':number}} | false | { '0': 20, '1': 20, '2': 20, '3': 20 }  
+dorling.**positionStrength** | The strength of the forces used to maintain the circle at its original position. | number | false | 0.7  
+dorling.**collisionStrength** | The strength of the collisions between circle during the d3 force simulation | number | false | 0.1  
+dorling.**scale** | d3-geo projection.scale() value | number | false |  0.0002065379208173783    
+dorling.**translateX** | d3-geo projection.translate() X value | number | false | -390  
+dorling.**translateY** | d3-geo projection.translate() Y value | number | false | 1126  
+dorling.**showSource** | show source datasets for the colour and size data | boolean | false | true  
 
