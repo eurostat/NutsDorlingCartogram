@@ -5,7 +5,13 @@ Dorling cartogram from NUTS regions with Eurostat statistics
 <img src="assets/images/dorlingPreview.png" alt="preview"/>
 <div>
   
-## [Live Demo](https://eurostat.github.io/NutsDorlingCartogram/examples/population/)
+## Examples
+
+[Population without borders](https://eurostat.github.io/NutsDorlingCartogram/examples/dorling/)
+[Population](https://eurostat.github.io/NutsDorlingCartogram/examples/population/)
+[GDP](https://eurostat.github.io/NutsDorlingCartogram/examples/gdp/)
+[Tourism](https://eurostat.github.io/NutsDorlingCartogram/examples/tourism/)
+[Agriculture](https://eurostat.github.io/NutsDorlingCartogram/examples/agriculture/)
 
 ## Installation
 
