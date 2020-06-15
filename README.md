@@ -48,7 +48,7 @@ Check out [this notebook](https://observablehq.com/@joewdavies/nuts-dorling-cart
 
 # Cartogram Definition
 
-Accessible methods and their respective parameters. Where possible, values can be defined for each NUTS level; whereby a change in nUTS level using the NUTS
+Accessible methods and their respective parameters. Where possible, values can be defined for each NUTS level; whereby a change in NUTS level using the NUTS selector will rebuild the visualization using the parameters corresponding to the new NUTS level.
 
 Method | Description | Type | Required | Default Value
 :--------- | :--------- | :--------- | :--------- | :---------
