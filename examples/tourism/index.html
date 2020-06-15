@@ -27,7 +27,7 @@
             .sizeDatasetFilters("c_resid=TOTAL&unit=NR&precision=1&time=2018")
             .colorDatasetCode("tour_occ_nin2")
             .colorDatasetFilters("c_resid=FOR&unit=PC_TOT&precision=1&time=2018")
-            .maxCircleRadius({ 0: 50, 1: 35, 2: 30, 3: 20 })
+            .maxCircleRadius({ 0: 70, 1: 35, 2: 30, 3: 20 })
             .colorLegend({
                 //https://d3-legend.susielu.com/#color
                 titleWidth: 250,
@@ -40,9 +40,9 @@
                 labelUnit: " ",
                 labelOffset: 10,
                 shape: "circle",
-                explanationYOffset: { 0: 390, 1: 355, 2: 340, 3: 340 },
+                explanationYOffset: { 0: 420, 1: 355, 2: 340, 3: 340 },
             })
-            .nutsSelectorTranslateY({ 0: 420, 1: 385, 2: 370, 3: 370 })
+            .nutsSelectorTranslateY({ 0: 450, 1: 385, 2: 370, 3: 370 })
             .sizeLegend({
                 title: "Total number of nights spent",
                 titleYOffset: { 0: 10, 1: 10, 2: 30, 3: 30 },
@@ -62,8 +62,8 @@
                     3: [5000000, 2000000, 100000]
                 },
                 bodyXOffset: { 0: 85, 1: 55, 2: 50, 3: 50 },
-                bodyYOffset: { 0: 145, 1: 110, 2: 95, 3: 95 },
-                labelsTranslateX: { 0: 50, 1: 45, 2: 40, 3: 40 }
+                bodyYOffset: { 0: 165, 1: 110, 2: 95, 3: 95 },
+                labelsTranslateX: { 0: 90, 1: 45, 2: 40, 3: 40 }
             })
             .tooltip({
                 colorLabel: "Foreign tourism dependency (share of total nights spent by non-residents)",
