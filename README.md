@@ -60,7 +60,9 @@ dorling.**sizeDatasetCode** | [Eurostat database](https://ec.europa.eu/eurostat/
 dorling.**sizeDatasetFilters** | URL parameter string to apply to the sizeDataset request  | string | false | "sex=T&age=TOTAL&unit=NR&time=2018"
 dorling.**colorDatasetCode** | Eurostat dataset identifier used to determine circle colors | number | false | 200
 dorling.**colorDatasetFilters** | URL parameter string to apply to the colorDataset request  | string | false | "indic_de=GROWRT&time=2018"
-dorling.**mixNuts** | Permits filling in data gaps using data from different NUTS levels. For example: this adds NUTS region "DE1" of NUTS level 1 to the NUTS 2 data: { 2: {level: 1, ids: ["DE1"] } } | { nutsLevel: {nutsLevelToBeAdded: number, ids: [] } } | false | null  
+dorling.**mixNuts** | Permits filling in data gaps using data from different NUTS levels. For example: this adds NUTS region "DE1" of NUTS level 1 to the NUTS 2 data: { 2: {level: 1, ids: ["DE1"] } } | { nutsLevel: {nutsLevelToBeAdded: number, ids: [] } } | false | null 
+dorling.**exclude** | Exclude countries from the data shown. e.g .exclude(["MK", "ME", "TR", "AL", "RS"])  | [string] | false | null
+
 dorling.**colorIsPercentage** | Whether or not the values used for the colours should be percentages. If true, the percentages are calculated using colorPercentageCalcDatasetCode and colorPercentageCalcDatasetFilters | boolean | false | false
 dorling.**colorPercentageCalcDatasetCode** | Dataset code for the retrieval of the totals that will be used to calculate the percentages of the colour values. See agriculture example (specific cereal production / all cereal production) | string | false | null
 dorling.**colorPercentageCalcDatasetFilters** | URL parameter string to apply to the colorPercentageCalcDataset request | string | false | null
@@ -107,5 +109,6 @@ dorling.**collisionStrength** | The strength of the collisions between circle du
 dorling.**scale** | d3-geo projection.scale() value | number | false |  0.0002065379208173783    
 dorling.**translateX** | d3-geo projection.translate() X value | number | false | -390  
 dorling.**translateY** | d3-geo projection.translate() Y value | number | false | 1126  
-dorling.**showSource** | show source datasets for the colour and size data | boolean | false | true  
+dorling.**showSource** | show links to the source datasets for the colour and size data | boolean | false | true  
+dorling.**footnotesText** | Footnote text shown below the map | string | false | null  
 
