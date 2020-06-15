@@ -100,7 +100,6 @@ dorling.**tooltip** | Object which stores the configuration parameters for the c
 dorling.**showNutsSelector** | whether or not to show the radio buttons which allow the user to change between NUTS levels | boolean | false | true;
 dorling.**nutsAvailable** | Defines which NUTS levels will be shown in the NUTS level selector | array | false | [0,1,2,3];
 dorling.**nutsSelectorTranslateY** | Y-axis translation applied to the NUTS level selector node | {{'nutsLevel':number}} | false | { 0: 375, 1: 375, 2: 375, 3: 375 }    
-
 dorling.**minCircleRadius** | Minimum circle radius allowed when scaling the circles (for each NUTS level) | {{'nutsLevel':number}} | false | { '0': 1.5, '1': 1.5, '2': 1.5, '3': 1.5 }  
 dorling.**maxCircleRadius** | Maximum circle radius allowed when scaling the circles (for each NUTS level) | {{'nutsLevel':number}} | false | { '0': 20, '1': 20, '2': 20, '3': 20 }  
 dorling.**positionStrength** | The strength of the forces used to maintain the circle at its original position. | number | false | 0.7  
