@@ -207,9 +207,6 @@ export function dorling(options) {
 
   //main build function
   out.build = function () {
-
-
-
     out.container_ = d3.select("#" + out.containerId_);
     addLoadingSpinnerToDOM();
     showLoadingSpinner();
@@ -234,7 +231,7 @@ export function dorling(options) {
     return out;
   }
   function clearSvg() {
-    //empty svg
+    //empty container of svgs
     out.container_.selectAll("g").remove();
     out.container_.selectAll("svg").remove();
   }
@@ -911,64 +908,18 @@ export function dorling(options) {
   function addMouseEvents() {
     out.circles.on("mouseover", function (f) {
       if (out.stage == 2) {
-        // d3.select(this).attr("fill", out.highlightColor_);
         d3.select(this).attr("stroke-width", "3px");
-
-        if (out.tooltip_.sizeValueTextFunction) {
-          out.tooltipElement.html(`<strong>${f.properties.na}</strong>
-          (${f.properties.id}) <i>${out.countryNamesIndex_[f.properties.id[0] + f.properties.id[1]]}</i><br>
-          ${out.tooltip_.colorLabel}: <strong>${
-            formatNumber(roundToOneDecimal(out.colorIndicator[f.properties.id]))
-            } ${out.tooltip_.colorUnit}</strong><br>
-          ${out.tooltip_.sizeLabel}: ${out.tooltip_.sizeValueTextFunction((out.sizeIndicator[f.properties.id]))} ${out.tooltip_.sizeUnit}<br>
-          ${out.tooltip_.shareLabel}: ${roundToOneDecimal((out.sizeIndicator[f.properties.id] /
-              out.totalsIndex[f.properties.id.substring(0, 2)]) *
-              100)} ${out.tooltip_.shareUnit} <br>
-      `);
-        } else {
-          out.tooltipElement.html(`<strong>${f.properties.na}</strong>
-          (${f.properties.id}) <i>${out.countryNamesIndex_[f.properties.id[0] + f.properties.id[1]]}</i><br>
-          ${out.tooltip_.colorLabel}: <strong>${
-            formatNumber(roundToOneDecimal(out.colorIndicator[f.properties.id]))
-            } ${out.tooltip_.colorUnit}</strong><br>
-          ${out.tooltip_.sizeLabel}: ${formatNumber(roundToOneDecimal(out.sizeIndicator[f.properties.id]))} ${out.tooltip_.sizeUnit}<br>
-          ${out.tooltip_.shareLabel}: ${roundToOneDecimal((out.sizeIndicator[f.properties.id] /
-              out.totalsIndex[f.properties.id.substring(0, 2)]) *
-              100)} ${out.tooltip_.shareUnit} <br>
-      `);
-        }
-
-        out.tooltipElement.style("visibility", "visible");
-
-        //tooltip position + offsets
-        let matrix = this.getScreenCTM().translate(
-          +this.getAttribute("cx"),
-          +this.getAttribute("cy")
-        );
-        let node = out.tooltipElement.node();
-        let tooltipWidth = node.offsetWidth;
-        let tooltipHeight = node.offsetHeight;
-        let left = window.pageXOffset + matrix.e + 20;
-        let top = window.pageYOffset + matrix.f - 100;
-        if (left > out.width_ - tooltipWidth) {
-          left = left - (tooltipWidth + 40);
-        }
-        if (left < 0) {
-          left = 1;
-        }
-        if (top < 0) {
-          top = top + (tooltipHeight + 40);
-        }
-        out.tooltipElement.style("left", left + "px").style("top", top + "px");
+        //calculate tooltip position + offsets
+        let pos = getTooltipPositionFromNode(this)
+        let name = f.properties.na;
+        let id = f.properties.id;
+        setTooltip(name, id, pos);
       }
     });
     out.circles.on("mouseout", function () {
       if (out.stage == 2) {
         out.tooltipElement.style("visibility", "hidden");
         d3.select(this).attr("stroke-width", "1px");
-        // d3.select(this).attr("fill", (f) =>
-        //   colorFunction(+out.colorIndicator[f.properties.id])
-        // );
       }
     });
 
@@ -978,73 +929,75 @@ export function dorling(options) {
         let id = f.featureCollection.features[0].properties.id;
         let name = f.name;
         if (out.stage == 2) {
-          // d3.select(this).attr("fill", out.highlightColor_);
           d3.select(this).attr("stroke-width", "3px");
-
-          if (out.tooltip_.sizeValueTextFunction) {
-            out.tooltipElement.html(`<strong>${name}</strong>
-          (${id}) <i>${out.countryNamesIndex_[id[0] + id[1]]}</i><br>
-          ${out.tooltip_.colorLabel}: <strong>${
-              formatNumber(roundToOneDecimal(out.colorIndicator[id]))
-              } ${out.tooltip_.colorUnit}</strong><br>
-          ${out.tooltip_.sizeLabel}: ${out.tooltip_.sizeValueTextFunction((out.sizeIndicator[id]))} ${out.tooltip_.sizeUnit}<br>
-          ${out.tooltip_.shareLabel}: ${roundToOneDecimal((out.sizeIndicator[id] /
-                out.totalsIndex[id.substring(0, 2)]) *
-                100)} ${out.tooltip_.shareUnit} <br>
-      `);
-          } else {
-            out.tooltipElement.html(`<strong>${name}</strong>
-          (${id}) <i>${out.countryNamesIndex_[id[0] + id[1]]}</i><br>
-          ${out.tooltip_.colorLabel}: <strong>${
-              formatNumber(roundToOneDecimal(out.colorIndicator[id]))
-              } ${out.tooltip_.colorUnit}</strong><br>
-          ${out.tooltip_.sizeLabel}: ${formatNumber(roundToOneDecimal(out.sizeIndicator[id]))} ${out.tooltip_.sizeUnit}<br>
-          ${out.tooltip_.shareLabel}: ${roundToOneDecimal((out.sizeIndicator[id] /
-                out.totalsIndex[id.substring(0, 2)]) *
-                100)} ${out.tooltip_.shareUnit} <br>
-      `);
-          }
-
           out.tooltipElement.style("visibility", "visible");
-
-          //tooltip position + offsets
-          let matrix = this.getScreenCTM().translate(
-            +this.getAttribute("cx"),
-            +this.getAttribute("cy")
-          );
-          let node = out.tooltipElement.node();
-          let tooltipWidth = node.offsetWidth;
-          let tooltipHeight = node.offsetHeight;
-          let left = window.pageXOffset + matrix.e + 20;
-          let top = window.pageYOffset + matrix.f - 100;
-          if (left > out.width_ - tooltipWidth) {
-            left = left - (tooltipWidth + 40);
-          }
-          if (left < 0) {
-            left = 1;
-          }
-          if (top < 0) {
-            top = top + (tooltipHeight + 40);
-          }
-          out.tooltipElement.style("left", left + "px").style("top", top + "px");
+          let pos = getTooltipPositionFromNode(this);
+          setTooltip(name, id, pos)
         }
       });
       out.insetCircles.on("mouseout", function () {
         if (out.stage == 2) {
           out.tooltipElement.style("visibility", "hidden");
           d3.select(this).attr("stroke-width", "1px");
-          // d3.select(this).attr("fill", (f) =>
-          //   colorFunction(+out.colorIndicator[f.properties.id])
-          // );
         }
       });
     }
   }
 
+  function getTooltipPositionFromNode(el) {
+    let matrix = el.getScreenCTM().translate(
+      +el.getAttribute("cx"), //svg circle
+      +el.getAttribute("cy")
+    );
+    let tooltipNode = out.tooltipElement.node();
+    let tooltipWidth = tooltipNode.offsetWidth;
+    let tooltipHeight = tooltipNode.offsetHeight;
+    let left = window.pageXOffset + matrix.e + 20;
+    let top = window.pageYOffset + matrix.f - 100;
+    let containerNode = out.container_.node();
+    if (left > containerNode.clientWidth - tooltipWidth) {
+      left = left - (tooltipWidth + 40);
+    }
+    if (left < 0) {
+      left = 1;
+    }
+    if (top < 0) {
+      top = top + (tooltipHeight + 40);
+    }
+    return { left: left, top: top }
+  }
+
+  function setTooltip(name, id, pos) {
+    if (out.tooltip_.sizeValueTextFunction) {
+      out.tooltipElement.html(`<strong>${name}</strong>
+      (${id}) <i>${out.countryNamesIndex_[id[0] + id[1]]}</i><br>
+      ${out.tooltip_.colorLabel}: <strong>${
+        formatNumber(roundToOneDecimal(out.colorIndicator[id]))
+        } ${out.tooltip_.colorUnit}</strong><br>
+      ${out.tooltip_.sizeLabel}: ${out.tooltip_.sizeValueTextFunction((out.sizeIndicator[id]))} ${out.tooltip_.sizeUnit}<br>
+      ${out.tooltip_.shareLabel}: ${roundToOneDecimal((out.sizeIndicator[id] /
+          out.totalsIndex[id.substring(0, 2)]) *
+          100)} ${out.tooltip_.shareUnit} <br>
+  `);
+    } else {
+      out.tooltipElement.html(`<strong>${name}</strong>
+      (${id}) <i>${out.countryNamesIndex_[id[0] + id[1]]}</i><br>
+      ${out.tooltip_.colorLabel}: <strong>${
+        formatNumber(roundToOneDecimal(out.colorIndicator[id]))
+        } ${out.tooltip_.colorUnit}</strong><br>
+      ${out.tooltip_.sizeLabel}: ${formatNumber(roundToOneDecimal(out.sizeIndicator[id]))} ${out.tooltip_.sizeUnit}<br>
+      ${out.tooltip_.shareLabel}: ${roundToOneDecimal((out.sizeIndicator[id] /
+          out.totalsIndex[id.substring(0, 2)]) *
+          100)} ${out.tooltip_.shareUnit} <br>
+  `);
+    }
+    out.tooltipElement.style("visibility", "visible");
+    out.tooltipElement.style("left", pos.left + "px").style("top", pos.top + "px");
+  }
+
   function roundToOneDecimal(n) {
     return Math.round(n * 10) / 10
   }
-
 
   function animate() {
     if (out.stage == 1) {
@@ -1096,11 +1049,9 @@ export function dorling(options) {
       out.radioContainer.transition().duration(1000).attr("opacity", 0.9);
     }
 
-
     if (!out.forceInProgress) {
       applyForce();
     }
-
   }
 
   function formatNumber(n) {
@@ -1802,13 +1753,25 @@ export function dorling(options) {
     return buttonContainer;
   }
 
-
+  //accessible functions
   out.play = function () {
     out.playing = true;
     animate();
   }
   out.pause = function () {
     out.playing = false;
+  }
+  out.highlightRegion = function (nutsCode) {
+    out.circles.attr("stroke-width", (f) => {
+      if (f.properties.id == nutsCode) {
+        let name = f.properties.na;
+        setTooltip(name, f.properties.id, left.top)
+        return "3px"
+      } else {
+        return "1px"
+      }
+    });
+    setTooltip()
   }
 
   function addTooltipToDOM() {
@@ -2101,4 +2064,15 @@ function getCountryNamesIndex() {
   }
 }
 
+function getURLParamValue(paramName) {
+  var url = window.location.search.substring(1); //get rid of "?" in querystring
+  var qArray = url.split('&'); //get key-value pairs
+  for (var i = 0; i < qArray.length; i++) {
+    var pArr = qArray[i].split('='); //split key and value
+    if (pArr[0] == paramName) {
+      pArr[1] = decodeURI(pArr[1])
+      return pArr[1]; //return value
+    }
+  }
+}
 
