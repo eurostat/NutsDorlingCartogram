@@ -61,7 +61,7 @@ dorling.**sizeDatasetFilters** | URL parameter string to apply to the sizeDatase
 dorling.**colorDatasetCode** | Eurostat dataset identifier used to determine circle colors | number | false | 200
 dorling.**colorDatasetFilters** | URL parameter string to apply to the colorDataset request  | string | false | "indic_de=GROWRT&time=2018"
 dorling.**mixNuts** | Permits filling in data gaps using data from different NUTS levels. For example: this adds NUTS region "DE1" of NUTS level 1 to the NUTS 2 data: { 2: {level: 1, ids: ["DE1"] } } | { nutsLevel: {nutsLevelToBeAdded: number, ids: [] } } | false | null  
-dorling.**colorIsPercentage** | Whether or not the values used for the colours should be percentages or not. If true, the percentages are calculated using colorPercentageCalcDatasetCode and colorPercentageCalcDatasetFilters | boolean | false | false
+dorling.**colorIsPercentage** | Whether or not the values used for the colours should be percentages. If true, the percentages are calculated using colorPercentageCalcDatasetCode and colorPercentageCalcDatasetFilters | boolean | false | false
 dorling.**colorPercentageCalcDatasetCode** | Dataset code for the retrieval of the totals that will be used to calculate the percentages of the colour values. See agriculture example (specific cereal production / all cereal production) | string | false | null
 dorling.**colorPercentageCalcDatasetFilters** | URL parameter string to apply to the colorPercentageCalcDataset request | string | false | null
 dorling.**colorScheme** | [d3 scale chromatic](https://github.com/d3/d3-scale-chromatic) function name. Only used when a 'colors' array is not specified (see below) | string | false | "interpolateRdYlBu"
