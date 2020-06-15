@@ -2,10 +2,10 @@
 Dorling cartogram from NUTS regions with Eurostat statistics
 
 <div>
-<img src="assets/images/preview.png" alt="preview"/>
+<img src="assets/images/dorlingPreview.png" alt="preview"/>
 <div>
   
-## [Live Demo](https://eurostat.github.io/NutsDorlingCartogram/examples/basic/)
+## [Live Demo](https://eurostat.github.io/NutsDorlingCartogram/examples/population/)
 
 ## Installation
 
