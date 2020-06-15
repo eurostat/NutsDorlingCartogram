@@ -20,13 +20,13 @@ export function dorling(options) {
   out.nutsBorderColor_ = "grey";
   //d3 force
   // out.circleExaggerationFactor_ = 1.2; //deprecated
-  out.collisionPadding_ = 0.1;
+  // out.collisionPadding_ = 0.1; //deprectated
   out.positionStrength_ = 0.1;
   out.collisionStrength_ = 0.7;
 
   //circle radius
-  out.minCircleRadius_ = { 0: 1.5, 1: 1.5, 2: 1.5, 3: 1.5 };
-  out.maxCircleRadius_ = { 0: 20, 1: 20, 2: 20, 3: 20 }
+  out.minCircleRadius_ = { '0': 1.5, '1': 1.5, '2': 1.5, '3': 1.5 };
+  out.maxCircleRadius_ = { '0': 20, '1': 20, '2': 20, '3': 20 }
 
   //d3-geo
   out.translateX_ = -390; //-390;
@@ -53,16 +53,16 @@ export function dorling(options) {
   //size legend (circle radiuses)
   out.sizeLegend_ = {
     title: "Size Legend",
-    titleYOffset: { 0: 10, 1: 10, 2: 10, 3: 10 },
-    titleXOffset: { 0: 20, 1: 20, 2: 20, 3: 20 },
+    titleYOffset: { '0': 10, '1': 10, '2': 10, '3': 10 },
+    titleXOffset: { '0': 20, '1': 20, '2': 20, '3': 20 },
     textFunction: function (d) { return d.toLocaleString() },
     values: {},
-    translateY: { 0: 0, 1: 0, 2: 0, 3: 0 },
-    bodyXOffset: { 0: 50, 1: 50, 2: 50, 3: 50 },
-    bodyYOffset: { 0: 90, 1: 90, 2: 90, 3: 90 },
-    labelsTranslateX: { 0: 40, 1: 40, 2: 40, 3: 40 },
-    textOffsetY: { 0: -12, 1: -12, 2: -12, 3: -12 },
-    labelsOffsetY: { 0: 2, 1: 2, 2: 2, 3: 2 }
+    translateY: { '0': 0, '1': 0, '2': 0, '3': 0 },
+    bodyXOffset: { '0': 50, '1': 50, '2': 50, '3': 50 },
+    bodyYOffset: { '0': 90, '1': 90, '2': 90, '3': 90 },
+    labelsTranslateX: { '0': 40, '1': 40, '2': 40, '3': 40 },
+    textOffsetY: { '0': -12, '1': -12, '2': -12, '3': -12 },
+    labelsOffsetY: { '0': 2, '1': 2, '2': 2, '3': 2 }
   };
 
   //color legend
