@@ -547,6 +547,7 @@ export function dorling(options) {
             }
           })
           .append("circle")
+          .attr("id", (f) => f.properties.id)
           .attr("cx", (f) => out.projection(f.geometry.coordinates)[0])
           .attr("cy", (f) => out.projection(f.geometry.coordinates)[1])
           .attr("fill", "#ffffff00")
@@ -909,6 +910,9 @@ export function dorling(options) {
   function addMouseEvents() {
     out.circles.on("mouseover", function (f) {
       if (out.stage == 2) {
+        if (out.highlightedRegion) {
+          out.unhightlightRegion() //in case highlightRegion() has been used
+        }
         d3.select(this).attr("stroke-width", "3px");
         //calculate tooltip position + offsets
         let pos = getTooltipPositionFromNode(this)
@@ -927,6 +931,9 @@ export function dorling(options) {
     //INSETS
     if (out.showInsets_) {
       out.insetCircles.on("mouseover", function (f) {
+        if (out.highlightedRegion) {
+          out.unhightlightRegion() //in case highlightRegion() has been used
+        }
         let id = f.featureCollection.features[0].properties.id;
         let name = f.name;
         if (out.stage == 2) {
@@ -940,6 +947,7 @@ export function dorling(options) {
         if (out.stage == 2) {
           out.tooltipElement.style("visibility", "hidden");
           d3.select(this).attr("stroke-width", "1px");
+          out.unhightlightRegion() //in case highlightRegion() has been used
         }
       });
     }
@@ -1771,16 +1779,31 @@ export function dorling(options) {
     out.playing = false;
   }
   out.highlightRegion = function (nutsCode) {
+    if (out.circles) {
+      out.circles.attr("stroke-width", (f) => {
+        if (f.properties.id == nutsCode) {
+          let name = f.properties.na;
+          let id = f.properties.id;
+          let circle = d3.select("#" + id);
+          let node = circle.node();
+          let pos = getTooltipPositionFromNode(node)
+          setTooltip(name, id, pos)
+          out.highlightedRegion = nutsCode;
+          return "3px"
+        } else {
+          return "1px"
+        }
+      });
+    }
+  }
+
+  out.unhightlightRegion = function () {
     out.circles.attr("stroke-width", (f) => {
-      if (f.properties.id == nutsCode) {
-        let name = f.properties.na;
-        setTooltip(name, f.properties.id, left.top)
-        return "3px"
-      } else {
+      if (f.properties.id == out.highlightedRegion) {
         return "1px"
       }
-    });
-    setTooltip()
+    })
+    out.highlightedRegion = null;
   }
 
   function addTooltipToDOM() {

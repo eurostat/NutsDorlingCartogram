@@ -15,7 +15,7 @@
     <script src="https://d3js.org/d3-format.v1.min.js"></script>
     <script src="../../build/dorling.js"></script>
     <script>
-        NutsDorlingCartogram.dorling()
+        var dorling = NutsDorlingCartogram.dorling()
             .containerId("containerDiv")
             .nutsLevel(2)
             // .colors(["#3A6ABD", "#789BD8", "#D1D9F1", "#EBC2DE", "#E18FC8", "#A74177"])
@@ -70,6 +70,8 @@
             .showFootnotes(true)
             .footnotesText(" Data at NUTS 3 level is from 2017. Data for France not available at NUTS 3 level")
             .build();
+
+        dorling.highlightRegion("FR10")
     </script>
 </body>
 
