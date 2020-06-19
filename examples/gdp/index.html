@@ -12,7 +12,6 @@
     <div id="containerDiv" style="position:absolute;height:100%;width:100%;text-align:center;">
 
     </div>
-    <script src="https://d3js.org/d3-format.v1.min.js"></script>
     <script src="../../build/dorling.js"></script>
     <script>
         var dorling = NutsDorlingCartogram.dorling()
@@ -36,13 +35,13 @@
                 shapeRadius: 10,
                 shapePadding: 5,
                 labelAlign: "middle",
-                labelFormat: d3.format(".0f"),
+                labelFormat: ".0f",
                 labelUnit: " ",
                 labelOffset: 10,
                 shape: "circle",
-                explanationYOffset: { 0: 420, 1: 345, 2: 340, 3: 340 },
+                explanationYOffset: { 0: 420, 1: 350, 2: 355, 3: 350 },
             })
-            .nutsSelectorTranslateY({ 0: 470, 1: 390, 2: 380, 3: 380 })
+            .nutsSelectorTranslateY({ 0: 470, 1: 395, 2: 400, 3: 400 })
             .sizeLegend({
                 title: "Gross domestic product (million EUR)",
                 titleYOffset: { 0: 10, 1: 10, 2: 10, 3: 10 },
