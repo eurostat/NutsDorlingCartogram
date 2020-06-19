@@ -115,8 +115,8 @@ export function dorling(options) {
     captionFontSize: 10,
     yOffset: 25,
     xOffset: 25,
-    circleYOffset: 45,
-    circleXOffset: 45,
+    circleYOffset: 40,
+    circleXOffset: 40,
     spacing: 90, //between the start of each rect
     padding: 15 //so that the geometries arent touching the rect borders
   }
@@ -1217,7 +1217,7 @@ export function dorling(options) {
 
     //append legend div to main container
     out.legendDiv = document.createElement("div")
-    out.legendDiv.classList.add("legendDiv");
+    out.legendDiv.classList.add("dorling-legend-div");
     if (window.screen.width < 700) {
       out.legendDiv.style.opacity = 0;
       out.legendDiv.style.left = "10%";

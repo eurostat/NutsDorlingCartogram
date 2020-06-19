@@ -4,6 +4,11 @@
     right: 1% !important;
   }
 }
+@media only screen and (max-width: 700px) {
+  .dorling-insets {
+display:none!important;
+  }
+}
 
 @media only screen and (max-height: 800px) {
   .dorling-leaflet-control-zoom{
@@ -12,7 +17,7 @@
     top:unset!important;
     left:unset!important;
   }
-  .legendDiv {
+  .dorling-legend-div {
     position: absolute;
     top: 2%!important;
     left: 1%;
@@ -53,11 +58,11 @@
     text-decoration: underline;
 }
 
-.legendDiv {
+.dorling-legend-div {
   position: absolute;
   top: 10%;
   left: 1%;
-  height:600px;
+  height:700px;
   width:300px;
 }
 .dorling-legend {
@@ -71,10 +76,8 @@
 .dorling-insets{
   position: absolute;
     top: 1%;
-    right: 12%;
-    /* width: 21%; */
-     /* height: 58%;  */
-    /* transform: translate(10px, 10px); */
+    right: 1%;
+
 }
 .dorling-overseas-caption{
   stroke-width:0.2;
