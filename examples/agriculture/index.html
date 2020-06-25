@@ -11,7 +11,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-    <script src="../../build/dorling.min.js"></script>
+    <script src="../../build/dorling.js"></script>
     <!-- overrides when using a select -->
     <style>
         #dorling-cereal-select-container {
@@ -128,9 +128,9 @@
             .sizeDatasetFilters("precision=1&crops=C1110&strucpro=PR_HU_EU&time=2018")
             .colorDatasetCode("apro_cpshr")
             .colorDatasetFilters("precision=1&crops=C1110&strucpro=PR_HU_EU&time=2018")
-            .colorIsPercentage(true)
-            .colorPercentageCalcDatasetCode("apro_cpshr")
-            .colorPercentageCalcDatasetFilters("precision=1&crops=C0000&strucpro=PR_HU_EU&time=2018")
+            .colorCalculation("percentage")
+            .colorCalculationDatasetCode("apro_cpshr")
+            .colorCalculationDatasetFilters("precision=1&crops=C0000&strucpro=PR_HU_EU&time=2018")
             .maxCircleRadius(cropConfig.C1110.maxCircleRadius)
             .colorLegend({
                 //https://d3-legend.susielu.com/#color

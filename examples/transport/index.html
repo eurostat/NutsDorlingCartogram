@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel='shortcut icon' type='image/x-icon' href='../../assets/images/favicon.ico' />
+    <title>Air Transport Dorling Cartogram</title>
+</head>
+
+<body style="margin:0">
+    <div id="containerDiv" style="position:absolute;height:100%;width:100%;text-align:center;">
+
+    </div>
+    <script src="../../build/dorling.js"></script>
+    <script>
+        var dorling = NutsDorlingCartogram.dorling()
+            .containerId("containerDiv")
+            .nutsLevel(2)
+            .nutsAvailable([0, 1, 2, 3])
+            // .colors(["#3A6ABD", "#789BD8", "#D1D9F1", "#EBC2DE", "#E18FC8", "#A74177"])
+            .colors(["#2d50a0", "#aab9e1", "#f0cd91", "#e6a532", "#d76e2d"])
+            .thresholdValues([1, 2, 4, 8, 9999])
+            .showNutsSelector(true)
+            .sizeDatasetCode("tran_r_avpa_nm")
+            .sizeDatasetFilters("tra_meas=PAS_CRD&precision=1&unit=THS_PAS&time=2018")
+            .colorDatasetCode("tran_r_avpa_nm")
+            .colorDatasetFilters("tra_meas=PAS_CRD&precision=1&unit=THS_PAS&time=2018")
+            .colorCalculation("per")
+            .colorCalculationFunction(function (airPassengers, population) {
+                return (airPassengers * 1000) / population;
+            })
+            .colorCalculationDatasetCode("demo_r_d2jan")
+            .colorCalculationDatasetFilters("precision=1&sex=T&unit=NR&time=2019&age=TOTAL")
+            .maxCircleRadius({ 0: 70, 1: 35, 2: 30 })
+            .colorLegend({
+                //https://d3-legend.susielu.com/#color
+                titleWidth: 250,
+                title: "Passengers carried per inhabitant",
+                orient: "vertical",
+                shapeRadius: 10,
+                shapePadding: 5,
+                labelAlign: "middle",
+                labelFormat: ".0f",
+                labelUnit: " ",
+                labelOffset: 10,
+                shape: "circle",
+                explanationYOffset: { 0: 420, 1: 365, 2: 370 },
+            })
+            .nutsSelectorTranslateY({ 0: 450, 1: 395, 2: 400 })
+            .sizeLegend({
+                title: "Air passengers (million)",
+                titleYOffset: { 0: 10, 1: 10, 2: 30 },
+                titleXOffset: { 0: 23, 1: 23, 2: 23 },
+                values: {
+                    0: [100e3, 50e3, 10e3],
+                    1: [100e3, 50e3, 10e3],
+                    2: [100e3, 50e3, 10e3],
+                    3: [100e3, 50e3, 10e3]
+                },
+                bodyXOffset: { 0: 85, 1: 55, 2: 50 },
+                bodyYOffset: { 0: 165, 1: 110, 2: 105 },
+                labelsTranslateX: { 0: 90, 1: 45, 2: 40 },
+                textFunction: function (d) {
+                    let n = ((d * 1000) / 1000000);
+                    if (n == 1) {
+                        return n + "   million";
+                    } else {
+                        return n + " million";
+                    }
+                },
+            })
+            .tooltip({
+                colorLabel: "Passengers carried per inhabitant",
+                colorUnit: "",
+                sizeLabel: "Total air passengers",
+                sizeUnit: "million",
+                sizeValueTextFunction: function (d) {
+                    let m = ((d * 1000) / 1000000);
+                    let n = Math.round(m * 10) / 10;
+                    return n.toLocaleString("en").replace(/,/gi, " ");
+                },
+                shareLabel: "Percentage of national passengers carried",
+            })
+            .showFootnotes(true)
+            .footnotesText("Data not available for Ireland, Slovenia and the French regions: Bourgogne, Haute-Normandie, Picardie, Champagne-Ardenne, Limousin as well as at country level")
+            .exclude(["MK", "ME", "TR", "AL", "RS"])
+            .graticule(false)
+            .loop(false)
+            .pauseButton(false)
+            .showBorders(true)
+            .positionStrength(0.3)
+            .build();
+    </script>
+</body>
+
+</html>

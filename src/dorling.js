@@ -151,8 +151,10 @@ export function dorling(options) {
   out.exclude_ = null; //list of country codes to exclude from the data
   out.EUIds = ["EU", "EU27_2020", "EU28"] //EU ids to omit from size values
   out.colorIsPercentage_ = false;
-  out.colorPercentageCalcDatasetCode_ = "";
-  out.colorPercentageCalcDatasetFilters_ = "";
+  out.colorCalculation_ = "";
+  out.colorCalculationFunction_ = null;
+  out.colorCalculationDatasetCode_ = "";
+  out.colorCalculationDatasetFilters_ = "";
 
   //animation loop
   out.playing = true;
@@ -1975,7 +1977,7 @@ function indexStat(data, type, out, resolve, reject) {
   let ind = {};
 
   //if the color value is a percentage, divide each colorValue by its relevant total from colorPercentageCalculationData
-  if (out.colorIsPercentage_ && type == "color") {
+  if (out.colorCalculation_ && type == "color") {
     let nutsParam;
     if (out.nutsLevel_ == 0) {
       nutsParam = "country";
@@ -2001,9 +2003,9 @@ function indexStat(data, type, out, resolve, reject) {
       }
       let promises = [];
       //totals for current nuts level
-      promises.push(d3.json(`${out.eurostatRESTBaseURL}${out.colorPercentageCalcDatasetCode_}?geoLevel=${nutsParam}&${out.colorPercentageCalcDatasetFilters_}`))
+      promises.push(d3.json(`${out.eurostatRESTBaseURL}${out.colorCalculationDatasetCode_}?geoLevel=${nutsParam}&${out.colorCalculationDatasetFilters_}`))
       //totals for mixNuts injected data nuts level
-      promises.push(d3.json(`${out.eurostatRESTBaseURL}${out.colorPercentageCalcDatasetCode_}?geoLevel=${mixNutsLevel}&${out.mixNutsFilterString}&${out.colorPercentageCalcDatasetFilters_}`))
+      promises.push(d3.json(`${out.eurostatRESTBaseURL}${out.colorCalculationDatasetCode_}?geoLevel=${mixNutsLevel}&${out.mixNutsFilterString}&${out.colorCalculationDatasetFilters_}`))
 
       Promise.all(promises).then((res) => {
         let totals = res[0];
@@ -2016,8 +2018,17 @@ function indexStat(data, type, out, resolve, reject) {
         for (let i = 0; i < mixNutsMerged.length; i++) {
           let value = mixNutsMerged[i].val;
           let total = mixNutsMerged[i].tot;
-          let percentage = ((value / total) * 100);
-          ind[mixNutsMerged[i].id] = percentage || null;
+          let indicator;
+          if (out.colorCalculation_ == "percentage") {
+            indicator = ((value / total) * 100);
+          } else if (out.colorCalculation_ == "per") {
+            if (out.colorCalculationFunction_) {
+              indicator = out.colorCalculationFunction_(value, total)
+            } else {
+              indicator = total / value;
+            }
+          }
+          ind[mixNutsMerged[i].id] = indicator || null;
         }
 
         //normal
@@ -2030,8 +2041,17 @@ function indexStat(data, type, out, resolve, reject) {
         for (let i = 0; i < merged.length; i++) {
           let value = merged[i].val;
           let total = merged[i].tot;
-          let percentage = ((value / total) * 100);
-          ind[merged[i].id] = percentage || null;
+          let indicator;
+          if (out.colorCalculation_ == "percentage") {
+            indicator = ((value / total) * 100);
+          } else if (out.colorCalculation_ == "per") {
+            if (out.colorCalculationFunction_) {
+              indicator = out.colorCalculationFunction_(value, total)
+            } else {
+              indicator = total / value;
+            }
+          }
+          ind[merged[i].id] = indicator || null;
         }
 
 
@@ -2040,7 +2060,7 @@ function indexStat(data, type, out, resolve, reject) {
       })
     } else {
       //without mixed nuts
-      d3.json(`${out.eurostatRESTBaseURL}${out.colorPercentageCalcDatasetCode_}?geoLevel=${nutsParam}&${out.colorPercentageCalcDatasetFilters_}`).then((totals) => {
+      d3.json(`${out.eurostatRESTBaseURL}${out.colorCalculationDatasetCode_}?geoLevel=${nutsParam}&${out.colorCalculationDatasetFilters_}`).then((totals) => {
         const totalsArr = Object.entries(
           totals.dimension.geo.category.index
         ).map(([k, v]) => ({ id: k, tot: +totals.value[v] || null }));
@@ -2050,8 +2070,17 @@ function indexStat(data, type, out, resolve, reject) {
         for (let i = 0; i < merged.length; i++) {
           let value = merged[i].val;
           let total = merged[i].tot;
-          let percentage = ((value / total) * 100);
-          ind[merged[i].id] = percentage || null;
+          let indicator;
+          if (out.colorCalculation_ == "percentage") {
+            indicator = ((value / total) * 100);
+          } else if (out.colorCalculation_ == "per") {
+            if (out.colorCalculationFunction_) {
+              indicator = out.colorCalculationFunction_(value, total)
+            } else {
+              indicator = total / value;
+            }
+          }
+          ind[merged[i].id] = indicator || null;
         }
         out.colorIndicator = ind;
         resolve();
