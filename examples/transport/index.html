@@ -17,7 +17,7 @@
         var dorling = NutsDorlingCartogram.dorling()
             .containerId("containerDiv")
             .nutsLevel(2)
-            .nutsAvailable([0, 1, 2, 3])
+            .nutsAvailable([0, 1, 2])
             // .colors(["#3A6ABD", "#789BD8", "#D1D9F1", "#EBC2DE", "#E18FC8", "#A74177"])
             .colors(["#2d50a0", "#aab9e1", "#f0cd91", "#e6a532", "#d76e2d"])
             .thresholdValues([1, 2, 4, 8, 9999])
@@ -45,9 +45,9 @@
                 labelUnit: " ",
                 labelOffset: 10,
                 shape: "circle",
-                explanationYOffset: { 0: 420, 1: 365, 2: 370 },
+                explanationYOffset: { 0: 320, 1: 320, 2: 320 },
             })
-            .nutsSelectorTranslateY({ 0: 450, 1: 395, 2: 400 })
+            .nutsSelectorTranslateY({ 0: 350, 1: 350, 2: 350 })
             .sizeLegend({
                 title: "Air passengers (million)",
                 titleYOffset: { 0: 10, 1: 10, 2: 30 },
