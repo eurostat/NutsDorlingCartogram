@@ -1,12 +1,12 @@
 /* responsiveness */
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 850px) {
   .dorling-insets {
     top: 1% !important;
     right: 1% !important;
   }
   .dorling-legend-div {
     top: 0px!important;
-    left: 40px!important;
+    left: 30px!important;
   }
 }
 @media only screen and (max-width: 700px) {
@@ -25,7 +25,7 @@
   .overseas-caption {
     font-size:9px !important;
   }
-  .dorling-legend-container-background{
+  .dorling-legend-container-background, .dorling-legend-svg{
     height:500px!important;
     /*  coincides with out.legend.titleWidth */
     width:200px!important;
@@ -35,20 +35,21 @@
   }
 }
 
-
+.dorling-legend-container-background, .dorling-legend-svg{
+  height:600px!important;
+  /*  coincides with out.legend.titleWidth */
+  width:250px!important;
+}
 .dorling-legend-div {
   position: absolute;
-  top: 5px;
+  top: 0px;
+  padding-top:15px;
   left: -10px;
-  height:700px;
-  width:300px;
 }
 .dorling-legend-svg {
   position: absolute;
   left:0; 
   top:0; 
-  width:100%; 
-  height:100%;
 }
 
 .dorling-container {
@@ -64,6 +65,7 @@
   top:0; 
   left:0; 
    max-height:90%; 
+   width:100%;
 }
 
 .dorling-bottom-text-container{
@@ -84,10 +86,10 @@
 }
 
 
-/* INSETS */
+/* insets */
 .dorling-insets{
   position: absolute;
-    top: 5px;
+    top: 20px;
     right: 1px;
 
 }
@@ -119,6 +121,11 @@ fill:#E5E5E5;
   stroke: white;
 }
 
+/* map styles */
+.dorling-cntrg{
+  fill:#E5E5E5;
+  stroke:#444444;
+}
 .cntrg {
   fill: #E5E5E5;
 }
@@ -185,14 +192,21 @@ fill:#E5E5E5;
   transform:translate(77%,46.5%);
 }
 .dorling-attribution{
-  font-size:12px;
+  background:white;
+  opacity:0.8;
+  padding:3px;
+  position: absolute;
+  bottom:10%;
+  right:3px;
+  font-size:10px;
   font-family:'Open Sans', sans-serif;
 }
 .dorling-attribution a{
-  fill:#0078A8;
+  color:#0078A8;
+  text-decoration: none;
 }
 .dorling-attribution a:hover{
-  text-decoration: underline;
+  text-decoration: underline !important;
 }
 circle.swatch {
   stroke: black;
@@ -391,8 +405,8 @@ font-size:15px;
 .dorling-leaflet-control-legend{
   position: absolute;
   background-color: white;
-  top:55px;
-  left:0px;
+  top:5px;
+  left:5px;
   border:1px solid rgba(0,0,0,0.2);
   display:block;
   border-radius: 4px;
@@ -414,7 +428,7 @@ font-size:15px;
 .dorling-leaflet-control-zoom{
   position: absolute;
   background-color: white;
-  bottom:75px;
+  bottom:15%;
   right:25px;
   border:1px solid rgba(0,0,0,0.2);
   display:block;

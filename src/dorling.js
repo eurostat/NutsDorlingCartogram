@@ -19,6 +19,7 @@ export function dorling(options) {
   out.highlightColor_ = "cyan";
   out.nutsBorderColor_ = "grey";
   out.showLegendWidthThreshold_ = 850;
+
   //d3 force
   // out.circleExaggerationFactor_ = 1.2; //deprecated
   // out.collisionPadding_ = 0.1; //deprectated
@@ -46,10 +47,6 @@ export function dorling(options) {
   out.loop_ = false;
   out.pauseButton_ = false;
   out.showBorders_ = true;
-
-  //legend container
-  out.legendsContainerWidth_ = 270;
-  out.legendsContainerHeight_ = 600;
 
   //size legend (circle radiuses)
   out.sizeLegend_ = {
@@ -287,7 +284,8 @@ export function dorling(options) {
           `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/3035/20M/${out.nutsLevel_}.json`
         ), //NUTS
         d3.json(
-          `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/3035/20M/0.json`
+          // `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/3035/20M/0.json`
+          `https://gisco-services.ec.europa.eu/distribution/v2/countries/topojson/CNTR_RG_20M_2020_3035.json`
         ), //countries
         d3.json(
           `${out.eurostatRESTBaseURL}${out.sizeDatasetCode_}?geoLevel=${nutsParam}&${out.sizeDatasetFilters_}&filterNonGeo=1`
@@ -480,18 +478,26 @@ export function dorling(options) {
 
         }
 
+
         if (out.showBorders_) {
-          //draw regions
-          out.countries = out.map.append("g").attr("id", "dorling-countries").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.cntrg).features)
-            .enter().append("path").filter((f) => {
-              //exclude GL
-              // if (f.properties.id !== "GL") {
-              return f;
-              // }
-            }).attr("d", out.path).attr("class", "cntrg");
+
+          out.countries = out.map.append("path")
+            .datum(topojson.mesh(out.nuts0, out.nuts0.objects.CNTR_RG_20M_2020_3035, function (a, b) { return a === b }))
+            .attr("d", out.path)
+            .attr("class", "dorling-cntrg");
+
+          //nuts2json is too clipped
+          // out.countries = out.map.append("g").attr("id", "dorling-countries").selectAll("path").data(topojson.feature(out.nuts0, out.nuts0.objects.CNTR_RG_20M_2020_3035).features)
+          //   .enter().append("path").filter((f) => {
+          //     //exclude GL
+          //     // if (f.properties.id !== "GL") {
+          //     return f;
+          //     // }
+          //   }).attr("d", out.path).attr("class", "cntrg");
 
           out.nuts = out.map.append("g").attr("id", "dorling-nuts").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.nutsrg).features)
             .enter().append("path").attr("d", out.path).attr("class", function (bn) {
+              //exclude non-eu
               if (out.exclude_.indexOf(bn.properties.id.substring(0, 2)) == -1) {
                 return "nutsrg"
               } else {
@@ -500,23 +506,19 @@ export function dorling(options) {
             });
 
           //draw boundaries
-          //countries
-          out.countryBorders = out.map.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.cntbn).features)
-            .enter().append("path").filter((f) => {
-              //exclude GL
-              // if (f.properties.id !== "GL") {
-              return f;
-              // }
-            }).attr("d", out.path)
-            .attr("class", function (bn) { return "cntbn" + (bn.properties.co === "T" ? " coastal" : ""); });
+          //coastlines
+          // out.coastlines = out.map.append("g").selectAll("path").data(topojson.feature(out.nuts0, out.nuts0.objects.CNTR_RG_20M_2020_3035).features)
+          //   .enter().append("path").filter((f) => {
+          //     //exclude GL
+          //     // if (f.properties.id !== "GL") {
+          //     return f;
+          //     // }
+          //   }).attr("d", out.path)
+          //   .attr("class", function (bn) { return "cntbn" + (bn.properties.co === "T" ? " coastal" : ""); });
         }
         //nuts
         out.nutsBorders = out.map.append("g").attr("id", "dorling-nuts-borders").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.nutsbn).features)
-          .enter().append("path").filter((f) => {
-            // if (f.properties.eu == "T" || f.properties.efta == "T") {
-            return f;
-            // }
-          }).attr("d", out.path)
+          .enter().append("path").attr("d", out.path)
           .attr("stroke", out.nutsBorderColor_).attr("fill", "none").attr("class", function (f) {
             let c = "";
             if (f.properties.co === "T") {
@@ -859,11 +861,14 @@ export function dorling(options) {
     let buttonContainer = document.createElement("div");
     buttonContainer.classList.add("dorling-leaflet-control-zoom")
     let zoomIn = document.createElement("a");
+    zoomIn.title = "Zoom in";
     zoomIn.classList.add("dorling-leaflet-control-zoom-in")
     zoomIn.innerHTML = "+";
+
     let zoomOut = document.createElement("a");
     zoomOut.classList.add("dorling-leaflet-control-zoom-out")
     zoomOut.innerHTML = "-";
+    zoomOut.title = "Zoom out";
     buttonContainer.appendChild(zoomIn)
     buttonContainer.appendChild(zoomOut)
     out.container_.node().appendChild(buttonContainer);
@@ -877,21 +882,28 @@ export function dorling(options) {
   }
 
   function addAttributionToDOM() {
-    let cont = out.svg.append("g").attr("class", "dorling-attribution").attr("transform", "translate(650," + (out.height_ - 4) + ")");
-    let t = cont.append("text").html(out.attributionText_)
+    //HTML
+    let div = document.createElement("div");
+    div.innerHTML = out.attributionText_;
+    div.classList.add("dorling-attribution");
+
+    out.container_.node().appendChild(div);
+    //SVG
+    // let cont = out.container_.append("svg").attr("class", "dorling-attribution");
+    // let t = cont.append("text").html(out.attributionText_)
 
     //add background fill
-    var ctx = cont.node(),
-      textElem = t.node(),
-      SVGRect = textElem.getBBox();
+    // var ctx = cont.node(),
+    //   textElem = t.node(),
+    //   SVGRect = textElem.getBBox();
 
-    var rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-    rect.setAttribute("x", SVGRect.x);
-    rect.setAttribute("y", SVGRect.y);
-    rect.setAttribute("width", SVGRect.width + 2);
-    rect.setAttribute("height", SVGRect.height + 2);
-    rect.setAttribute("fill", "white");
-    ctx.insertBefore(rect, textElem);
+    // var rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    // rect.setAttribute("x", SVGRect.x);
+    // rect.setAttribute("y", SVGRect.y);
+    // rect.setAttribute("width", SVGRect.width + 2);
+    // rect.setAttribute("height", SVGRect.height + 2);
+    // rect.setAttribute("fill", "white");
+    // ctx.insertBefore(rect, textElem);
   }
 
 
@@ -1207,10 +1219,10 @@ export function dorling(options) {
     out.legendSvg = d3.create("svg");
     out.legendSvg
       // .attr("viewBox", [0, 0, 310, 555])
-      .attr("height", out.legendsContainerHeight_)
-      .attr("width", out.legendsContainerWidth_)
+      // .attr("height", out.legendsContainerHeight_)
+      // .attr("width", out.legendsContainerWidth_)
       // .attr("viewBox", [0, 0, out.legendsContainerWidth_, out.legendsContainerHeight_])
-      .attr("class", "dorling-legend")
+      .attr("class", "dorling-legend-svg")
 
     //append legend div to main container
     out.legendDiv = document.createElement("div")
@@ -1258,6 +1270,7 @@ export function dorling(options) {
     let legendBtn = document.createElement("a");
     legendBtn.classList.add("dorling-leaflet-control-legendBtn")
     legendBtn.innerHTML = "≡";
+    legendBtn.title = "Toggle legend";
     buttonContainer.appendChild(legendBtn)
     out.container_.node().appendChild(buttonContainer);
     legendBtn.addEventListener("click", function (e) {
