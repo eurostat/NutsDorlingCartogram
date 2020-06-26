@@ -26,7 +26,7 @@
     font-size:9px !important;
   }
   .dorling-legend-container-background, .dorling-legend-svg{
-    height:500px!important;
+    height:630px!important;
     /*  coincides with out.legend.titleWidth */
     width:200px!important;
   }
@@ -36,7 +36,7 @@
 }
 
 .dorling-legend-container-background, .dorling-legend-svg{
-  height:600px!important;
+  height:630px!important;
   /*  coincides with out.legend.titleWidth */
   width:250px!important;
 }
