@@ -266,8 +266,7 @@ export function dorling(options) {
           `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/3035/20M/${out.nutsLevel_}.json`
         ), //NUTS
         d3.json(
-          `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/3035/20M/0.json`
-        ), //countries
+          `https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/countries.json`), //countries
         d3.json(
           `${out.eurostatRESTBaseURL}${out.sizeDatasetCode_}?geoLevel=${nutsParam}&unit=MIO_EUR&time=2017&filterNonGeo=1`
         ), //sizeData
