@@ -36,7 +36,7 @@
             .colorLegend({
                 //https://d3-legend.susielu.com/#color
                 titleWidth: 250,
-                title: "Passengers carried per inhabitant",
+                title: "Passengers per inhabitant",
                 orient: "vertical",
                 shapeRadius: 10,
                 shapePadding: 5,
@@ -71,7 +71,7 @@
                 },
             })
             .tooltip({
-                colorLabel: "Passengers carried per inhabitant",
+                colorLabel: "Air passengers per inhabitant",
                 colorUnit: "",
                 sizeLabel: "Total air passengers",
                 sizeUnit: "million",
@@ -80,7 +80,7 @@
                     let n = Math.round(m * 10) / 10;
                     return n.toLocaleString("en").replace(/,/gi, " ");
                 },
-                shareLabel: "Percentage of national passengers carried",
+                shareLabel: "Percentage of national air passengers",
             })
             .showFootnotes(true)
             .exclude(["MK", "ME", "TR", "AL", "RS"])

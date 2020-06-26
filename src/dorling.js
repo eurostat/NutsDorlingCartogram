@@ -18,6 +18,7 @@ export function dorling(options) {
   out.graticule_ = false;
   out.highlightColor_ = "cyan";
   out.nutsBorderColor_ = "grey";
+  out.showLegendWidthThreshold_ = 850;
   //d3 force
   // out.circleExaggerationFactor_ = 1.2; //deprecated
   // out.collisionPadding_ = 0.1; //deprectated
@@ -242,10 +243,6 @@ export function dorling(options) {
 
 
   out.main = function () {
-    if (window.screen.width < 700) {
-      //mobile stuff
-      // out.showInsets_ = false;
-    }
 
     //TODO: allow insets for different NUTS
     if (out.nutsLevel_ !== 2) {
@@ -441,14 +438,6 @@ export function dorling(options) {
           .style("background-color", out.seaColor_)
         // .style("width", "100%")
 
-        if (window.screen.width < 700) {
-          // if (!out.showFootnotes_) {
-          //   out.svg.style("height", "95%")
-          // } else {
-          //   out.svg.style("height", "92%")
-          // }
-        }
-
         out.container_.node().appendChild(out.svg.node());
         out.container_.attr("class", "dorling-container");
         // initialize tooltip
@@ -559,7 +548,14 @@ export function dorling(options) {
           .attr("fill", "#ffffff00")
           .attr("stroke", "#40404000");
 
-        //addOverseasRegions();
+
+        //responsiveness
+        if (window.innerWidth < 1000) { //coincides with css media rule
+          out.colorLegend_.titleWidth = 170;
+        }
+
+        addLegendsToDOM();
+
         if (out.showInsets_) {
           addInsets();
         } else {
@@ -568,7 +564,6 @@ export function dorling(options) {
 
         addZoom();
 
-        addLegendsToDOM();
 
         if (out.showNutsSelector_ && !out.nutsSelector) {
           addNutsSelectorToDOM();
@@ -720,7 +715,7 @@ export function dorling(options) {
     out.insetsSvg = d3.create("svg");
     out.insetsSvg
       // .attr("viewBox", [0, 0, 272, 605])
-      .attr("width", "230")
+      .attr("width", "200")
       .attr("height", "550")
       .attr("class", "dorling-insets")
     out.container_.node().appendChild(out.insetsSvg.node());
@@ -1220,7 +1215,7 @@ export function dorling(options) {
     //append legend div to main container
     out.legendDiv = document.createElement("div")
     out.legendDiv.classList.add("dorling-legend-div");
-    if (window.screen.width < 700) {
+    if (window.innerWidth < out.showLegendWidthThreshold_) {
       out.legendDiv.style.opacity = 0;
       out.legendDiv.style.left = "10%";
     }
@@ -1251,7 +1246,7 @@ export function dorling(options) {
     }
 
     //if mobile, append leaflet-like button to hide and show the legend
-    if (window.screen.width < 700) {
+    if (window.innerWidth < out.showLegendWidthThreshold_) {
       addLegendMenuButtonToDOM();
     }
   }
@@ -1436,10 +1431,10 @@ export function dorling(options) {
       out.sizeLegendContainer.attr("transform", "translate(0," + out.sizeLegend_.translateY[out.nutsLevel_] + ")")
     }
 
-    let sizeLegendBackground = out.sizeLegendContainer
-      .append("rect")
-      .attr("id", "dorling-size-legend-container-background")
-      .attr("transform", "translate(0,0)");
+    // let sizeLegendBackground = out.sizeLegendContainer
+    //   .append("rect")
+    //   .attr("id", "dorling-size-legend-container-background")
+    //   .attr("transform", "translate(0,0)");
     const legendTitle = out.sizeLegendContainer
       .append("g")
       .attr("fill", "black")
@@ -1567,9 +1562,9 @@ export function dorling(options) {
       .attr("transform", "translate(0, " + out.nutsSelectorTranslateY_[out.nutsLevel_] + ")")
 
     //background
-    out.radioContainer
-      .append("rect")
-      .attr("class", "dorling-legend-container-background dorling-plugin")
+    // out.radioContainer
+    //   .append("rect")
+    //   .attr("class", "dorling-legend-container-background dorling-plugin")
 
     //title
     out.radioContainer.append("text")

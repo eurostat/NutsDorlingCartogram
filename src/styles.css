@@ -1,29 +1,54 @@
+/* responsiveness */
 @media only screen and (max-width: 800px) {
   .dorling-insets {
     top: 1% !important;
     right: 1% !important;
   }
+  .dorling-legend-div {
+    top: 0px!important;
+    left: 40px!important;
+  }
 }
 @media only screen and (max-width: 700px) {
   .dorling-insets {
-display:none!important;
+    display:none!important;
+  }
+}
+@media only screen and (max-width: 1000px) {
+  .legendTitle, .dorling-size-legend-title, .dorling-legend-title{
+    font-size:12px!important;
+  }
+  .dorling-insets {
+    top: 1px !important;
+    right: 1px !important;
+  }
+  .overseas-caption {
+    font-size:9px !important;
+  }
+  .dorling-legend-container-background{
+    height:500px!important;
+    /*  coincides with out.legend.titleWidth */
+    width:200px!important;
+  }
+  .dorling-size-legend-label, .dorling-radio-button, text.label, .dorling-legend-container, .dorling-color-legend-explanation{
+  font-size:11px!important;
   }
 }
 
-@media only screen and (max-height: 800px) {
-  .dorling-leaflet-control-zoom{
-    bottom:2%;
-    right:2% ;
-    top:unset!important;
-    left:unset!important;
-  }
-  .dorling-legend-div {
-    position: absolute;
-    top: 2%!important;
-    left: 1%;
-    height:600px;
-    width:300px;
-  }
+
+.dorling-legend-div {
+  position: absolute;
+  top: 5px;
+  left: -10px;
+  height:700px;
+  width:300px;
+}
+.dorling-legend-svg {
+  position: absolute;
+  left:0; 
+  top:0; 
+  width:100%; 
+  height:100%;
 }
 
 .dorling-container {
@@ -43,7 +68,7 @@ display:none!important;
 
 .dorling-bottom-text-container{
   /* height:7%; */
-  font-size:15px;
+  font-size:12px;
   color: #212529;
   font-weight:400;
   font-family: 'Open Sans', "Helvetica Neue",Arial,"Noto Sans",sans-serif;
@@ -58,25 +83,12 @@ display:none!important;
     text-decoration: underline;
 }
 
-.dorling-legend-div {
-  position: absolute;
-  top: 10%;
-  left: 1%;
-  height:700px;
-  width:300px;
-}
-.dorling-legend {
-  position: absolute;
-  left:0; 
-  top:0; 
-  width:100%; 
-  height:100%;
-}
+
 /* INSETS */
 .dorling-insets{
   position: absolute;
-    top: 1%;
-    right: 1%;
+    top: 5px;
+    right: 1px;
 
 }
 .dorling-overseas-caption{
@@ -379,8 +391,8 @@ font-size:15px;
 .dorling-leaflet-control-legend{
   position: absolute;
   background-color: white;
-  top:12%;
-  left:2%;
+  top:55px;
+  left:0px;
   border:1px solid rgba(0,0,0,0.2);
   display:block;
   border-radius: 4px;
@@ -395,11 +407,15 @@ font-size:15px;
   border-bottom: 1px solid #ccc;
   display:block;
 }
+.dorling-leaflet-control-legendBtn:hover{
+  background-color: #E5E5E5;
+  cursor: pointer;
+}
 .dorling-leaflet-control-zoom{
   position: absolute;
   background-color: white;
-  top:2%;
-  left:2%;
+  bottom:75px;
+  right:25px;
   border:1px solid rgba(0,0,0,0.2);
   display:block;
   border-radius: 4px;
