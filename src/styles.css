@@ -18,10 +18,6 @@
   .legendTitle, .dorling-size-legend-title, .dorling-legend-title{
     font-size:12px!important;
   }
-  .dorling-insets {
-    top: 1px !important;
-    right: 1px !important;
-  }
   .overseas-caption {
     font-size:9px !important;
   }
@@ -43,8 +39,6 @@
 .dorling-legend-div {
   position: absolute;
   top: 0px;
-  padding-top:15px;
-  left: -10px;
 }
 .dorling-legend-svg {
   position: absolute;

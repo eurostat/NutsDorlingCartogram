@@ -51,7 +51,7 @@ export function dorling(options) {
   //size legend (circle radiuses)
   out.sizeLegend_ = {
     title: "Circle Size",
-    titleYOffset: { '0': 10, '1': 10, '2': 10, '3': 10 },
+    titleYOffset: { '0': 20, '1': 20, '2': 20, '3': 20 },
     titleXOffset: { '0': 20, '1': 20, '2': 20, '3': 20 },
     textFunction: function (d) { return d.toLocaleString() },
     values: {},
