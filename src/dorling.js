@@ -481,10 +481,10 @@ export function dorling(options) {
 
         if (out.showBorders_) {
 
-          out.countries = out.map.append("path")
-            .datum(topojson.mesh(out.nuts0, out.nuts0.objects.CNTR_RG_20M_2020_3035, function (a, b) { return a === b }))
-            .attr("d", out.path)
-            .attr("class", "dorling-cntrg");
+          // out.countries = out.map.append("path")
+          //   .datum(topojson.mesh(out.nuts0, out.nuts0.objects.CNTR_RG_20M_2020_3035, function (a, b) { return a === b }))
+          //   .attr("d", out.path)
+          //   .attr("class", "dorling-cntrg");
 
           //nuts2json is too clipped
           // out.countries = out.map.append("g").attr("id", "dorling-countries").selectAll("path").data(topojson.feature(out.nuts0, out.nuts0.objects.CNTR_RG_20M_2020_3035).features)
