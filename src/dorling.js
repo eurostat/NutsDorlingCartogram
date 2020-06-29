@@ -723,7 +723,7 @@ export function dorling(options) {
     out.container_.node().appendChild(out.insetsSvg.node());
 
     d3.json(
-      `../../assets/topojson/overseas/NUTS${out.nutsLevel_}.json`
+      `https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/overseas/NUTS${out.nutsLevel_}.json`
     ).then((overseasTopo) => {
 
       let objectName = "NUTS" + out.nutsLevel_;
