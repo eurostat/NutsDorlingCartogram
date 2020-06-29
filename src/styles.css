@@ -34,7 +34,7 @@
 .dorling-legend-container-background, .dorling-legend-svg{
   height:630px!important;
   /*  coincides with out.legend.titleWidth */
-  width:250px!important;
+  width:270px!important;
 }
 .dorling-legend-div {
   position: absolute;

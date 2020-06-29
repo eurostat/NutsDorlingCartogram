@@ -284,7 +284,7 @@ export function dorling(options) {
         ), //NUTS
         d3.json(
           // `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/3035/20M/0.json`
-          //`https://gisco-services.ec.europa.eu/distribution/v2/countries/topojson/CNTR_RG_20M_2020_3035.json`
+          //`https://gisco-services.ec.europa.eu/distribution/v2/countries/topojson/countries.json`
           `https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/countries.json`
         ), //countries
         d3.json(
@@ -482,12 +482,12 @@ export function dorling(options) {
         if (out.showBorders_) {
 
           out.countries = out.map.append("path")
-            .datum(topojson.mesh(out.nuts0, out.nuts0.objects.CNTR_RG_20M_2020_3035, function (a, b) { return a === b }))
+            .datum(topojson.mesh(out.nuts0, out.nuts0.objects.countries, function (a, b) { return a === b }))
             .attr("d", out.path)
             .attr("class", "dorling-cntrg");
 
           //nuts2json is too clipped
-          // out.countries = out.map.append("g").attr("id", "dorling-countries").selectAll("path").data(topojson.feature(out.nuts0, out.nuts0.objects.CNTR_RG_20M_2020_3035).features)
+          // out.countries = out.map.append("g").attr("id", "dorling-countries").selectAll("path").data(topojson.feature(out.nuts0, out.nuts0.objects.countries).features)
           //   .enter().append("path").filter((f) => {
           //     //exclude GL
           //     // if (f.properties.id !== "GL") {
@@ -507,7 +507,7 @@ export function dorling(options) {
 
           //draw boundaries
           //coastlines
-          // out.coastlines = out.map.append("g").selectAll("path").data(topojson.feature(out.nuts0, out.nuts0.objects.CNTR_RG_20M_2020_3035).features)
+          // out.coastlines = out.map.append("g").selectAll("path").data(topojson.feature(out.nuts0, out.nuts0.objects.countries).features)
           //   .enter().append("path").filter((f) => {
           //     //exclude GL
           //     // if (f.properties.id !== "GL") {
@@ -1289,14 +1289,14 @@ export function dorling(options) {
       .attr("fill", "black")
       .attr("class", "dorling-color-legend-explanation")
       .attr("text-anchor", "right")
-      .attr("transform", "translate(22," + (out.sizeLegend_.translateY[out.nutsLevel_] + out.colorLegend_.explanationYOffset[out.nutsLevel_]) + ")")
+      .attr("transform", "translate(" + out.colorLegend_.translateX + "," + (out.sizeLegend_.translateY[out.nutsLevel_] + out.colorLegend_.explanationYOffset[out.nutsLevel_]) + ")")
 
     explanation
       .append("text")
       .attr("y", 5)
       .attr("x", 0)
       .attr("dy", "0em")
-      .text("Hover over the different legend classes to highlight them on the map").call(d3_textWrapping, out.colorLegend_.titleWidth);
+      .text("Hover over the different legend classes to highlight them on the map").call(d3_textWrapping, (out.colorLegend_.titleWidth - 20));
   }
 
   function addColorLegend() {
