@@ -71,12 +71,15 @@
 }
 
 .dorling-sources-container a{
-  color: #007bff;
+  color: #0d4da1;
     text-decoration: none;
     background-color: transparent;
 }
 .dorling-sources-container a:hover{
     text-decoration: underline;
+}
+.dorling-sources-container i{
+  color: #cccccc;
 }
 
 
