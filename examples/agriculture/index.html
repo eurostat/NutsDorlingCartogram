@@ -15,16 +15,16 @@
     <!-- overrides when using a select -->
     <style>
         #dorling-cereal-select-container {
-            width: 21%;
+            width: 24%;
             position: absolute;
-            left: 6%;
-            top: 2%;
+            left: 15px;
+            top: 15px;
             z-index: 9;
         }
 
         .dorling-legend-div {
-            left: 5% !important;
-            top: 10% !important;
+            left: 5px !important;
+            top: 70px !important;
         }
     </style>
 </head>
@@ -56,28 +56,28 @@
                 "maxCircleRadius": { 2: 30 },
                 "sizeLegend": { values: { 2: [5000, 2500, 1000] }, bodyYOffset: { 2: 118 }, bodyXOffset: { 2: 55 } },
                 "colorLegend": {
-                    explanationYOffset: { 2: 350 }
+                    explanationYOffset: { 2: 370 }
                 }
             },
             C1200: {
                 "maxCircleRadius": { 2: 40 },
                 "sizeLegend": { values: { 2: [450, 250, 100] }, bodyYOffset: { 2: 125 }, bodyXOffset: { 2: 55 }, labelsTranslateX: { 2: 50 } },
                 "colorLegend": {
-                    explanationYOffset: { 2: 350 }
+                    explanationYOffset: { 2: 370 }
                 }
             },
             C1120: {
                 "maxCircleRadius": { 2: 30 },
                 "sizeLegend": { values: { 2: [1000, 500, 100] }, bodyYOffset: { 2: 118 }, bodyXOffset: { 2: 55 } },
                 "colorLegend": {
-                    explanationYOffset: { 2: 350 }
+                    explanationYOffset: { 2: 370 }
                 }
             },
             C1300: {
                 "maxCircleRadius": { 2: 40 },
                 "sizeLegend": { values: { 2: [2000, 1000, 100] }, bodyYOffset: { 2: 118 }, bodyXOffset: { 2: 55 } },
                 "colorLegend": {
-                    explanationYOffset: { 2: 350 }
+                    explanationYOffset: { 2: 370 }
                 }
             },
             C1410: {
@@ -91,14 +91,14 @@
                 "maxCircleRadius": { 2: 30 },
                 "sizeLegend": { values: { 2: [4000, 2000, 500] }, bodyYOffset: { 2: 118 }, bodyXOffset: { 2: 55 } },
                 "colorLegend": {
-                    explanationYOffset: { 2: 350 }
+                    explanationYOffset: { 2: 370 }
                 }
             },
             C1600: {
                 "maxCircleRadius": { 2: 30 },
                 "sizeLegend": { values: { 2: [1000, 500, 100] }, bodyYOffset: { 2: 118 }, bodyXOffset: { 2: 55 } },
                 "colorLegend": {
-                    explanationYOffset: { 2: 350 }
+                    explanationYOffset: { 2: 370 }
                 }
             },
             C2000: {
@@ -107,7 +107,7 @@
                     values: { 2: [1000, 500, 100] }, bodyYOffset: { 2: 118 }, bodyXOffset: { 2: 55 }
                 },
                 "colorLegend": {
-                    explanationYOffset: { 2: 350 }
+                    explanationYOffset: { 2: 370 }
                 }
             }
         }
@@ -145,14 +145,14 @@
                 labelOffset: 10,
                 shape: "circle",
                 translateY: 145,
-                explanationYOffset: { 2: 360 },
+                explanationYOffset: { 2: 370 },
             })
             .sizeLegend({
                 title: "Harvested production (1 000 tonnes)",
                 textFunction: function (d) { return d.toLocaleString("en").replace(/,/gi, " "); },
                 values: { 2: [5000, 2500, 1000] },
                 bodyXOffset: { 2: 55 },
-                bodyYOffset: { 2: 118 },
+                bodyYOffset: { 2: 128 },
             })
             .tooltip({
                 colorLabel: "Share of total regional cereal production",
@@ -180,7 +180,6 @@
             if (cropConfig[id].colorLegend) {
                 dorling.colorLegend(cropConfig[id].colorLegend)
             }
-
             dorling.rebuild()
         }
     </script>
