@@ -1,4 +1,5 @@
 /* responsiveness */
+/* legend changes to toggle mode */
 @media only screen and (max-width: 850px) {
   .dorling-insets {
     top: 1% !important;
@@ -8,42 +9,42 @@
     top: 0px!important;
     left: 30px!important;
   }
+  .dorling-legend-container-background .dorling-legend-svg {
+    height:545px!important;
+    width:189px!important;
+  }
 }
 @media only screen and (max-width: 700px) {
   .dorling-insets {
     display:none!important;
   }
 }
+/* between 850 and 1000 */
 @media only screen and (max-width: 1000px) {
+  .dorling-legend-container-background .dorling-legend-svg {
+    height:551px!important;
+    width:196px!important;
+  }
   .legendTitle, .dorling-size-legend-title, .dorling-legend-title{
     font-size:12px!important;
   }
   .overseas-caption {
     font-size:9px !important;
   }
-  .dorling-legend-container-background, .dorling-legend-svg{
-    height:630px!important;
-    /*  coincides with out.legend.titleWidth */
-    width:200px!important;
-  }
   .dorling-size-legend-label, .dorling-radio-button, text.label, .dorling-legend-container, .dorling-color-legend-explanation{
   font-size:11px!important;
   }
 }
 
-.dorling-legend-container-background, .dorling-legend-svg{
-  height:630px!important;
-  /*  coincides with out.legend.titleWidth */
-  width:270px!important;
-}
 .dorling-legend-div {
   position: absolute;
   top: 0px;
 }
 .dorling-legend-svg {
   position: absolute;
-  left:0; 
+  left:10px; 
   top:0; 
+  overflow: visible;
 }
 
 .dorling-container {

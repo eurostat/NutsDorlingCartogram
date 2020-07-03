@@ -31,8 +31,8 @@ export function dorling(options) {
   out.maxCircleRadius_ = { '0': 20, '1': 20, '2': 20, '3': 20 }
 
   //d3-geo
-  out.translateX_ = -390; //-390;
-  out.translateY_ = 1126; //1126;
+  out.translateX_ = -350; //-390;
+  out.translateY_ = 1120; //1126;
   out.scale_ = 0.0002065379208173783;
   out.fitSizePadding_ = 0;
   //viewbox
@@ -48,11 +48,14 @@ export function dorling(options) {
   out.pauseButton_ = false;
   out.showBorders_ = true;
 
+  out.legendHeight_ = 550;
+  out.legendWidth_ = 200;
+
   //size legend (circle radiuses)
   out.sizeLegend_ = {
     title: "Circle Size",
     titleYOffset: { '0': 20, '1': 20, '2': 20, '3': 20 },
-    titleXOffset: { '0': 20, '1': 20, '2': 20, '3': 20 },
+    titleXOffset: { '0': 0, '1': 0, '2': 0, '3': 0 },
     textFunction: function (d) { return d.toLocaleString() },
     values: {},
     translateY: { '0': 0, '1': 0, '2': 0, '3': 0 },
@@ -88,7 +91,7 @@ export function dorling(options) {
     labelUnit: " ",
     labelWrap: 140,
     eu27: null,
-    translateX: 20,
+    translateX: 0,
     translateY: 135,
     explanationYOffset: { 0: 330, 1: 330, 2: 330, 3: 330 },
     cellsTranslateX: 3,
@@ -567,9 +570,7 @@ export function dorling(options) {
         addZoom();
 
 
-        if (out.showNutsSelector_ && !out.nutsSelector) {
-          addNutsSelectorToDOM();
-        }
+
 
         if (out.showAttribution_ && window.screen.height > 700) {
           addAttributionToDOM();
@@ -718,7 +719,7 @@ export function dorling(options) {
     out.insetsSvg
       // .attr("viewBox", [0, 0, 272, 605])
       .attr("width", "200")
-      .attr("height", "550")
+      .attr("height", out.legendHeight_)
       .attr("class", "dorling-insets")
     out.container_.node().appendChild(out.insetsSvg.node());
 
@@ -1223,6 +1224,8 @@ export function dorling(options) {
       // .attr("width", out.legendsContainerWidth_)
       // .attr("viewBox", [0, 0, out.legendsContainerWidth_, out.legendsContainerHeight_])
       .attr("class", "dorling-legend-svg")
+      .attr("height", out.legendHeight_)
+    // .attr("width", out.legendWidth_)
 
     //append legend div to main container
     out.legendDiv = document.createElement("div")
@@ -1240,22 +1243,29 @@ export function dorling(options) {
       .attr("id", "dorling-legend-container")
       .attr("opacity", 0);
 
-    out.legendContainerBackground = out.legendContainer
-      .append("rect")
-      .attr("class", "dorling-legend-container-background")
-      .attr("transform", "translate(0,0)")
 
     addColorLegend();
     addColorLegendExplanation();
     addSizeLegend();
-
-    //ff
-    if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
-      // Do Firefox-related activities
-      out.legendContainerBackground.attr("height", "550").attr("width", (out.colorLegend_.titleWidth + 30));
-    } else {
-      out.legendContainerBackground.style("height", "550").style("width", (out.colorLegend_.titleWidth + 30));
+    if (out.showNutsSelector_ && !out.nutsSelector) {
+      addNutsSelectorToDOM();
     }
+
+
+    //add background fill rect to legend svg
+    var ctx = out.legendSvg.node(),
+      textElem = out.legendContainer.node(),
+      SVGRect = textElem.getBBox();
+    var rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    rect.setAttribute("x", SVGRect.x - 10);
+    rect.setAttribute("y", SVGRect.y - 10);
+    rect.setAttribute("width", SVGRect.width + 20);
+    //set container width to calculated element node width
+    out.legendSvg.attr("width", SVGRect.width);
+    rect.setAttribute("height", SVGRect.height + 20);
+    rect.setAttribute("fill", "white");
+    rect.setAttribute("opacity", 0.8);
+    ctx.insertBefore(rect, textElem);
 
     //if mobile, append leaflet-like button to hide and show the legend
     if (window.innerWidth < out.showLegendWidthThreshold_) {
@@ -1559,7 +1569,7 @@ export function dorling(options) {
     let radioDotRadius = 6;
     let padding = 0;//vertical padding between radios
     let marginTop = 40;
-    let marginLeft = 30;
+    let marginLeft = 5;
     let radioCxy = 5;
     let backgroundHeight = 160;
     let radioDotOpacity = 0.3;
@@ -1582,7 +1592,7 @@ export function dorling(options) {
     //title
     out.radioContainer.append("text")
       .text("Choose geographic level").attr("class", "dorling-legend-title")
-      .attr("transform", "translate(" + (marginLeft - 5) + ",28)");
+      .attr("transform", "translate(0,28)");
 
     //RADIO 0
     if (out.nutsAvailable_.indexOf(0) != -1) {
