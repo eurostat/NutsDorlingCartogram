@@ -55,7 +55,7 @@
                 "colorCalculationFunction": function (airPassengers, population) {
                     return (airPassengers * 1000) / population;
                 },
-                "thresholdValues": [1, 2, 4, 8, 9999],
+                "thresholdValues": [1, 2, 4, 8, 20, 9999],
                 "maxCircleRadius": { 0: 70, 1: 35, 2: 30 },
                 "sizeLegend": {
                     title: "Air passengers (million)",
@@ -88,7 +88,7 @@
                     labelUnit: " ",
                     labelOffset: 10,
                     shape: "circle",
-                    explanationYOffset: { 0: 350, 1: 330, 2: 330 },
+                    explanationYOffset: { 0: 360, 1: 340, 2: 340 },
                 },
                 "tooltip": {
                     colorLabel: "Air passengers per inhabitant",
@@ -102,7 +102,7 @@
                     },
                     shareLabel: "Share of national air passengers",
                 },
-                "nutsSelectorTranslateY": { 0: 385, 1: 385, 2: 385 }
+                "nutsSelectorTranslateY": { 0: 415, 1: 395, 2: 395 }
             },
             freight: {
                 "maxCircleRadius": { 0: 70, 1: 50, 2: 50 },
@@ -113,7 +113,7 @@
                 "colorCalculationFunction": function (freight, population) {
                     return (freight / population) * 1000000;
                 },
-                "thresholdValues": [1, 5, 10, 50, 99999999],
+                "thresholdValues": [1, 5, 10, 50, 200, 99999999],
                 "sizeLegend": {
                     title: "Freight and mail carried (1 000 tonnes)",
                     values: {
@@ -131,7 +131,7 @@
                 },
                 "colorLegend": {
                     title: "Freight and mail carried per inhabitant (kg)",
-                    explanationYOffset: { 0: 390, 1: 390, 2: 390 },
+                    explanationYOffset: { 0: 410, 1: 410, 2: 410 },
                 },
                 "tooltip": {
                     colorLabel: "Freight and mail carried per inhabitant",
@@ -145,7 +145,7 @@
                         return n.toLocaleString("en").replace(/,/gi, " ");
                     },
                 },
-                "nutsSelectorTranslateY": { 0: 440, 1: 440, 2: 440 }
+                "nutsSelectorTranslateY": { 0: 460, 1: 460, 2: 460 }
             },
         }
         var dorling = NutsDorlingCartogram.dorling()
@@ -153,7 +153,7 @@
             .nutsLevel(2)
             .nutsAvailable([0, 1, 2])
             // .colors(["#3A6ABD", "#789BD8", "#D1D9F1", "#EBC2DE", "#E18FC8", "#A74177"])
-            .colors(["#2d50a0", "#aab9e1", "#f0cd91", "#e6a532", "#d76e2d"])
+            .colors(["#2d50a0", "#6487c3", "#aab9e1", "#f0cd91", "#e6a532", "#d76e2d"])
             .thresholdValues(transportConfig.air.thresholdValues)
             .showNutsSelector(true)
             .sizeDatasetCode(transportConfig.air.sizeDatasetCode)
