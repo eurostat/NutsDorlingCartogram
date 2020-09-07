@@ -4,6 +4,7 @@ import * as d3Geo from "d3-geo";
 import * as topojson from "topojson";
 import { legendColor } from "d3-svg-legend";
 import "./styles.css";
+import '../node_modules/font-awesome/css/font-awesome.min.css';
 
 export function dorling(options) {
   //the output object
@@ -135,7 +136,7 @@ export function dorling(options) {
 
   //additional text and links
   out.showAttribution_ = true;
-  out.attributionText_ = 'Boundaries: © <a href="https://eurogeographics.org/" target="_blank" class="externallink">EuroGeographics</a> © <a href="https://www.fao.org/" target="_blank">UN-FAO</a>  © <a href="https://www.turkstat.gov.tr/" target="_blank">Turkstat</a>, Cartography: <a href="https://ec.europa.eu/eurostat/en/web/gisco" target="_blank">Eurostat - GISCO, 2017</a>';
+  out.attributionText_ = 'Boundaries: © <a href="https://eurogeographics.org/" target="_blank" class="externallink">EuroGeographics</a> © <a href="https://www.fao.org/" target="_blank">UN-FAO</a>  © <a href="http://www.turkstat.gov.tr/" target="_blank">Turkstat</a>, Cartography: <a href="https://ec.europa.eu/eurostat/en/web/gisco" target="_blank">Eurostat - GISCO, 2017</a>';
   out.showSources_ = true;
   out.showFootnotes_ = false;
   out.footnotesText_ = "";
@@ -146,6 +147,8 @@ export function dorling(options) {
   out.eurostatRESTBaseURL = "https://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/";
   out.nutsLevel_ = 2;
   out.sizeDatasetCode_ = "demo_r_pjangrp3";
+  out.sizeDatasetName_ = null;
+  out.colorDatasetName_ = "";
   out.sizeDatasetFilters_ = "sex=T&age=TOTAL&unit=NR&time=2018";
   out.colorDatasetCode_ = "demo_r_gind3";
   out.colorDatasetFilters_ = "indic_de=GROWRT&time=2018";
@@ -914,11 +917,14 @@ export function dorling(options) {
     let sources = document.createElement("div");
     sources.classList.add("dorling-sources-container");
     let colorSource = document.createElement("div")
-    colorSource.innerHTML = "Source (colour): Eurostat - <a target='_blank' href='" + colorURL + "'>access to dataset <i class='fas fa-external-link-alt'></i></a>"
-    let sizeSource = document.createElement("div")
-    sizeSource.innerHTML = "Source (size): Eurostat - <a target='_blank' href='" + sizeURL + "'>access to dataset <i class='fas fa-external-link-alt'></i></a>"
+    if (out.sizeDatasetName_) {
+      colorSource.innerHTML = "Source: Eurostat - access to dataset for <a target='_blank' href='" + colorURL + "'>" + out.colorDatasetName_ + " (" + out.colorDatasetCode_ + ") and " + out.sizeDatasetName_ + " (" + out.sizeDatasetCode_ + ")  <i class='fa fa-external-link'></i></a>"
+
+    } else {
+      colorSource.innerHTML = "Source: Eurostat - access to dataset for <a target='_blank' href='" + colorURL + "'>" + out.colorDatasetName_ + " (" + out.colorDatasetCode_ + ") <i class='fa fa-external-link'></i></a>"
+
+    }
     sources.appendChild(colorSource);
-    sources.appendChild(sizeSource);
     out.bottomTextContainer.appendChild(sources)
   }
 
@@ -1000,27 +1006,50 @@ export function dorling(options) {
 
   function setTooltip(name, id, pos) {
     if (out.tooltip_.sizeValueTextFunction) {
-      out.tooltipElement.html(`<strong>${name}</strong>
-      (${id}) <i>${out.countryNamesIndex_[id[0] + id[1]]}</i><br>
-      ${out.tooltip_.colorLabel}: <strong>${
-        formatNumber(roundToOneDecimal(out.colorIndicator[id]))
-        } ${out.tooltip_.colorUnit}</strong><br>
-      ${out.tooltip_.sizeLabel}: ${out.tooltip_.sizeValueTextFunction((out.sizeIndicator[id]))} ${out.tooltip_.sizeUnit}<br>
-      ${out.tooltip_.shareLabel}: ${roundToOneDecimal((out.sizeIndicator[id] /
-          out.totalsIndex[id.substring(0, 2)]) *
-          100)} ${out.tooltip_.shareUnit} <br>
-  `);
+      if (out.tooltip_.colorUnit == "€ per inhabitant") {
+        out.tooltipElement.html(`<strong>${name}</strong>
+  (${id}) <i>${out.countryNamesIndex_[id[0] + id[1]]}</i><br>
+  ${out.tooltip_.colorLabel}: ${out.tooltip_.colorUnit} <strong>${
+          formatNumber(roundToOneDecimal(out.colorIndicator[id]))
+          }</strong> per inhabitant <br>
+  ${out.tooltip_.sizeLabel}: ${out.tooltip_.sizeUnit} ${out.tooltip_.sizeValueTextFunction((out.sizeIndicator[id]))} million <br>
+  ${out.tooltip_.shareLabel}: ${roundToOneDecimal((out.sizeIndicator[id] /
+            out.totalsIndex[id.substring(0, 2)]) *
+            100)} ${out.tooltip_.shareUnit} <br>`);
+      } else {
+        out.tooltipElement.html(`<strong>${name}</strong>
+  (${id}) <i>${out.countryNamesIndex_[id[0] + id[1]]}</i><br>
+  ${out.tooltip_.colorLabel}: <strong>${
+          formatNumber(roundToOneDecimal(out.colorIndicator[id]))
+          }</strong> ${out.tooltip_.colorUnit}<br>
+  ${out.tooltip_.sizeLabel}: ${out.tooltip_.sizeValueTextFunction((out.sizeIndicator[id]))} ${out.tooltip_.sizeUnit}<br>
+  ${out.tooltip_.shareLabel}: ${roundToOneDecimal((out.sizeIndicator[id] /
+            out.totalsIndex[id.substring(0, 2)]) *
+            100)} ${out.tooltip_.shareUnit} <br>`);
+      }
+
     } else {
-      out.tooltipElement.html(`<strong>${name}</strong>
-      (${id}) <i>${out.countryNamesIndex_[id[0] + id[1]]}</i><br>
-      ${out.tooltip_.colorLabel}: <strong>${
-        formatNumber(roundToOneDecimal(out.colorIndicator[id]))
-        } ${out.tooltip_.colorUnit}</strong><br>
-      ${out.tooltip_.sizeLabel}: ${formatNumber(roundToOneDecimal(out.sizeIndicator[id]))} ${out.tooltip_.sizeUnit}<br>
-      ${out.tooltip_.shareLabel}: ${roundToOneDecimal((out.sizeIndicator[id] /
-          out.totalsIndex[id.substring(0, 2)]) *
-          100)} ${out.tooltip_.shareUnit} <br>
-  `);
+      if (out.tooltip_.colorUnit == "€ per inhabitant") {
+        out.tooltipElement.html(`<strong>${name}</strong>
+        (${id}) <i>${out.countryNamesIndex_[id[0] + id[1]]}</i><br>
+        ${out.tooltip_.colorLabel}: €<strong>${
+          formatNumber(roundToOneDecimal(out.colorIndicator[id]))
+          }</strong> per inhabitant<br>
+        ${out.tooltip_.sizeLabel}: €${formatNumber(roundToOneDecimal(out.sizeIndicator[id]))} million<br>
+        ${out.tooltip_.shareLabel}: ${roundToOneDecimal((out.sizeIndicator[id] /
+            out.totalsIndex[id.substring(0, 2)]) *
+            100)} ${out.tooltip_.shareUnit} <br>`);
+      } else {
+        out.tooltipElement.html(`<strong>${name}</strong>
+        (${id}) <i>${out.countryNamesIndex_[id[0] + id[1]]}</i><br>
+        ${out.tooltip_.colorLabel}: <strong>${
+          formatNumber(roundToOneDecimal(out.colorIndicator[id]))
+          }</strong> ${out.tooltip_.colorUnit}<br>
+        ${out.tooltip_.sizeLabel}: ${formatNumber(roundToOneDecimal(out.sizeIndicator[id]))} ${out.tooltip_.sizeUnit}<br>
+        ${out.tooltip_.shareLabel}: ${roundToOneDecimal((out.sizeIndicator[id] /
+            out.totalsIndex[id.substring(0, 2)]) *
+            100)} ${out.tooltip_.shareUnit} <br>`);
+      }
     }
     out.tooltipElement.style("visibility", "visible");
     out.tooltipElement.style("left", pos.left + "px").style("top", pos.top + "px");

@@ -1,3 +1,5 @@
+
+
 /* responsiveness */
 /* legend changes to toggle mode */
 @media only screen and (max-width: 850px) {
@@ -258,7 +260,7 @@ font-size:15px;
   width: 80px;
   height: 80px;
   top: 49%;
-  left: 46.5%;
+  left: 50.5%;
 }
 .lds-ripple.hide {
   display:none;

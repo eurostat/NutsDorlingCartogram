@@ -6,11 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Agriculture Dorling Cartogram</title>
     <link rel='shortcut icon' type='image/x-icon' href='../../assets/images/favicon.ico' />
-    <!-- bootstrap -->
+
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
     <script src="../../build/dorling.js"></script>
     <!-- overrides when using a select -->
     <style>
@@ -127,6 +129,7 @@
             .sizeDatasetCode("apro_cpshr")
             .sizeDatasetFilters("precision=1&crops=C1110&strucpro=PR_HU_EU&time=2018")
             .colorDatasetCode("apro_cpshr")
+            .colorDatasetName("crop production")
             .colorDatasetFilters("precision=1&crops=C1110&strucpro=PR_HU_EU&time=2018")
             .colorCalculation("percentage")
             .colorCalculationDatasetCode("apro_cpshr")
@@ -163,7 +166,7 @@
                 shareUnit: "%"
             })
             .showFootnotes(true)
-            .footnotesText("NUTS 1 data shown for Germany and the United Kingdom")
+            .footnotesText("NUTS 1 data shown for Germany and the United Kingdom.")
             .exclude(["MK", "ME", "TR", "AL", "RS"])
             .showNutsSelector(false)
             .build();

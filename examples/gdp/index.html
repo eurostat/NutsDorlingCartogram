@@ -29,7 +29,7 @@
             .colorLegend({
                 //https://d3-legend.susielu.com/#color
                 titleWidth: 225,
-                title: "Gross domestic product (EUR per inhabitant)",
+                title: "Gross domestic product (€ per inhabitant)",
                 orient: "vertical",
                 shapeRadius: 10,
                 shapePadding: 5,
@@ -42,7 +42,7 @@
             })
             .nutsSelectorTranslateY({ 0: 470, 1: 395, 2: 420, 3: 400 })
             .sizeLegend({
-                title: "Gross domestic product (million EUR)",
+                title: "Gross domestic product (€ million)",
                 textFunction: function (d) { return d.toLocaleString("en").replace(/,/gi, " "); },
                 values: {
                     0: [3500000, 1000000, 250000],
@@ -56,15 +56,15 @@
             })
             .tooltip({
                 colorLabel: "Gross domestic product",
-                colorUnit: "EUR per inhabitant",
+                colorUnit: "€ per inhabitant",
                 sizeLabel: "Gross domestic product",
-                sizeUnit: "million EUR",
+                sizeUnit: "€ million ",
                 shareLabel: "Share of national gross domestic product",
             })
             .exclude(["MK", "ME", "TR", "AL", "RS"])
             .graticule(false)
             .showFootnotes(true)
-            .footnotesText(" Data at NUTS 3 level is from 2017. Data for France not available at NUTS 3 level")
+            .footnotesText(" Data at NUTS 3 level is from 2017. Data for France not available at NUTS 3 level.")
             .build();
 
         dorling.highlightRegion("FR10")
