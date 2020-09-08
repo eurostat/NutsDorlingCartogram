@@ -490,6 +490,7 @@ export function dorling(options) {
           out.countries = out.map.append("path")
             .datum(topojson.mesh(out.nuts0, out.nuts0.objects.countries, function (a, b) { return a === b }))
             .attr("d", out.path)
+            .attr("vector-effect", "non-scaling-stroke")
             .attr("class", "dorling-cntrg");
 
           //nuts2json is too clipped
@@ -525,6 +526,7 @@ export function dorling(options) {
         //nuts
         out.nutsBorders = out.map.append("g").attr("id", "dorling-nuts-borders").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.nutsbn).features)
           .enter().append("path").attr("d", out.path)
+          .attr("vector-effect", "non-scaling-stroke")
           .attr("stroke", out.nutsBorderColor_).attr("fill", "none").attr("class", function (f) {
             let c = "";
             if (f.properties.co === "T") {
@@ -554,7 +556,8 @@ export function dorling(options) {
           .attr("cx", (f) => out.projection(f.geometry.coordinates)[0])
           .attr("cy", (f) => out.projection(f.geometry.coordinates)[1])
           .attr("fill", "#ffffff00")
-          .attr("stroke", "#40404000");
+          .attr("stroke", "#40404000")
+          .attr("vector-effect", "non-scaling-stroke");
 
 
         //responsiveness
@@ -918,10 +921,10 @@ export function dorling(options) {
     sources.classList.add("dorling-sources-container");
     let colorSource = document.createElement("div")
     if (out.sizeDatasetName_) {
-      colorSource.innerHTML = "Source: Eurostat - access to dataset for <a target='_blank' href='" + colorURL + "'>" + out.colorDatasetName_ + " (" + out.colorDatasetCode_ + ") and " + out.sizeDatasetName_ + " (" + out.sizeDatasetCode_ + ")  <i class='fa fa-external-link'></i></a>"
+      colorSource.innerHTML = "Source: Eurostat - access to dataset for <a target='_blank' href='" + sizeURL + "'>" + out.sizeDatasetName_ + "</a> and <a href='" + colorURL + "'>" + out.colorDatasetName_ + "<i class='fa fa-external-link'></i></a>"
 
     } else {
-      colorSource.innerHTML = "Source: Eurostat - access to dataset for <a target='_blank' href='" + colorURL + "'>" + out.colorDatasetName_ + " (" + out.colorDatasetCode_ + ") <i class='fa fa-external-link'></i></a>"
+      colorSource.innerHTML = "Source: Eurostat - access to dataset for <a target='_blank' href='" + colorURL + "'>" + out.colorDatasetName_ + "<i class='fa fa-external-link'></i></a>"
 
     }
     sources.appendChild(colorSource);
@@ -1365,20 +1368,22 @@ export function dorling(options) {
       .labelWrap(out.colorLegend_.labelWrap)
       .on("cellover", function (color) {
         if (out.stage == 2) {
-          out.circles.attr("fill", (f) => {
-            //if circle color isnt that of the hovered cell
-            if (colorFunction(+out.colorIndicator[f.properties.id]) !== color) {
-              //
-              return "white"
-            } else {
-              return color
-            }
-          })
+          out.circles.transition()
+            .duration(1000).attr("fill", (f) => {
+              //if circle color isnt that of the hovered cell
+              if (colorFunction(+out.colorIndicator[f.properties.id]) !== color) {
+                //
+                return "white"
+              } else {
+                return color
+              }
+            })
         }
       })
       .on("cellout", function (d) {
         if (out.stage == 2) {
-          out.circles.attr("fill", (f) => colorFunction(+out.colorIndicator[f.properties.id]))
+          out.circles.transition()
+            .duration(1000).attr("fill", (f) => colorFunction(+out.colorIndicator[f.properties.id]))
         }
       });
 

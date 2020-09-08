@@ -51,6 +51,7 @@
                 "sizeDatasetCode": "tran_r_avpa_nm",
                 "sizeDatasetFilters": "tra_meas=PAS_CRD&precision=1&unit=THS_PAS&time=2018",
                 "colorDatasetCode": "tran_r_avpa_nm",
+                "colorDatasetName": "air transport of passengers",
                 "colorDatasetFilters": "tra_meas=PAS_CRD&precision=1&unit=THS_PAS&time=2018",
                 "colorCalculationFunction": function (airPassengers, population) {
                     return (airPassengers * 1000) / population;
@@ -71,9 +72,9 @@
                     textFunction: function (d) {
                         let n = ((d * 1000) / 1000000);
                         if (n == 1) {
-                            return n + "   million";
+                            return n;
                         } else {
-                            return n + " million";
+                            return n;
                         }
                     },
                 },
@@ -109,6 +110,7 @@
                 "sizeDatasetCode": "tran_r_avgo_nm",
                 "sizeDatasetFilters": "tra_meas=FRM_LD_NLD&precision=1&unit=THS_T&time=2018",
                 "colorDatasetCode": "tran_r_avgo_nm",
+                "colorDatasetName": "air transport of freight",
                 "colorDatasetFilters": "tra_meas=FRM_LD_NLD&precision=1&unit=THS_T&time=2018",
                 "colorCalculationFunction": function (freight, population) {
                     return (freight / population) * 1000000;
@@ -123,7 +125,8 @@
                         3: [2000, 1000, 500]
                     },
                     textFunction: function (d) {
-                        return d;
+                        return d.toLocaleString("en")
+                            .replace(/,/gi, " ");
                     },
                     bodyXOffset: { 0: 80, 1: 80, 2: 80 },
                     bodyYOffset: { 0: 170, 1: 170, 2: 170 },
@@ -159,6 +162,7 @@
             .sizeDatasetCode(transportConfig.air.sizeDatasetCode)
             .sizeDatasetFilters(transportConfig.air.sizeDatasetFilters)
             .colorDatasetCode(transportConfig.air.colorDatasetCode)
+            .colorDatasetName(transportConfig.air.colorDatasetName)
             .colorDatasetFilters(transportConfig.air.colorDatasetFilters)
             .colorCalculation("per")
             .colorCalculationFunction(transportConfig.air.colorCalculationFunction)
