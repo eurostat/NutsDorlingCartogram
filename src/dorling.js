@@ -106,20 +106,20 @@ export function dorling(options) {
   out.showInsets_ = true;
   out.insets_ = {
     titleWidth: 120,
-    overseasHeight: 70,
-    overseasWidth: 70,
+    overseasHeight: 60,
+    overseasWidth: 60,
     translateX: 0,
     translateY: 0,
     // captionY: 65,
     // captionX: -30,
-    captionY: 78,
+    captionY: 70,
     captionX: 5,
     captionFontSize: 10,
-    yOffset: 25,
-    xOffset: 25,
+    yOffset: 15,
+    xOffset: 15,
     circleYOffset: 40,
     circleXOffset: 40,
-    spacing: 90, //between the start of each rect
+    spacing: 78, //between the start of each rect
     padding: 15 //so that the geometries arent touching the rect borders
   }
 
@@ -569,6 +569,11 @@ export function dorling(options) {
 
         if (out.showInsets_) {
           addInsets();
+          //hide legend and insets on small screens by default
+          if (window.innerWidth < out.showLegendWidthThreshold_) {
+            out.insetsSvg.node().style.display = "none";
+          }
+
         } else {
           addMouseEvents();
         }
@@ -724,7 +729,7 @@ export function dorling(options) {
     out.insetsSvg = d3.create("svg");
     out.insetsSvg
       // .attr("viewBox", [0, 0, 272, 605])
-      .attr("width", "200")
+      .attr("width", "160")
       .attr("height", out.legendHeight_)
       .attr("class", "dorling-insets")
     out.container_.node().appendChild(out.insetsSvg.node());
@@ -782,6 +787,8 @@ export function dorling(options) {
       //background rect
       g.append('rect')
         .classed('background', true)
+        .attr('rx', "5")
+        .attr('ry', "5")
         .attr('height', out.insets_.overseasHeight + out.insets_.padding)
         .attr('width', out.insets_.overseasWidth + out.insets_.padding)
       // /.attr('transform', "translate(-" + (out.insets_.overseasWidth / 2) + ",-" + (out.insets_.overseasHeight / 2) + ")")
@@ -821,6 +828,8 @@ export function dorling(options) {
       g
         .append('rect')
         .classed('outline', true)
+        .attr('rx', "5")
+        .attr('ry', "5")
         .attr('height', out.insets_.overseasHeight + out.insets_.padding - 1)
         .attr('width', out.insets_.overseasWidth + out.insets_.padding - 1)
       //.attr('transform', "translate(-" + (out.insets_.overseasWidth / 2) + ",-" + (out.insets_.overseasHeight / 2) + ")")
@@ -1262,6 +1271,7 @@ export function dorling(options) {
     //append legend div to main container
     out.legendDiv = document.createElement("div")
     out.legendDiv.classList.add("dorling-legend-div");
+    //hide legend and insets on small screens by default
     if (window.innerWidth < out.showLegendWidthThreshold_) {
       out.legendDiv.style.opacity = 0;
       out.legendDiv.style.left = "10%";
@@ -1299,9 +1309,10 @@ export function dorling(options) {
     rect.setAttribute("opacity", 0.8);
     ctx.insertBefore(rect, textElem);
 
-    //if mobile, append leaflet-like button to hide and show the legend
+    //if mobile, append leaflet-like button to hide and show the legend + overseas maps
     if (window.innerWidth < out.showLegendWidthThreshold_) {
       addLegendMenuButtonToDOM();
+      addOverseasButtonToDOM();
     }
   }
 
@@ -1321,6 +1332,26 @@ export function dorling(options) {
         out.legendDiv.style.opacity = 1;
       } else if (!out.showLegend) {
         out.legendDiv.style.opacity = 0;
+      }
+    });
+  }
+
+  out.showOverseas = false;
+  function addOverseasButtonToDOM() {
+    let buttonContainer = document.createElement("div");
+    buttonContainer.classList.add("dorling-leaflet-control-overseas")
+    let overseasBtn = document.createElement("a");
+    overseasBtn.classList.add("dorling-leaflet-control-overseasBtn")
+    overseasBtn.innerHTML = "<i class='fa fa-globe'></i>";
+    overseasBtn.title = "Toggle overseas regions";
+    buttonContainer.appendChild(overseasBtn)
+    out.container_.node().appendChild(buttonContainer);
+    overseasBtn.addEventListener("click", function (e) {
+      out.showOverseas = !out.showOverseas;
+      if (out.showOverseas) {
+        out.insetsSvg.node().style.display = "block";
+      } else if (!out.showOverseas) {
+        out.insetsSvg.node().style.display = "none";
       }
     });
   }

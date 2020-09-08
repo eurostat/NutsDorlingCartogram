@@ -3,10 +3,10 @@
 /* responsiveness */
 /* legend changes to toggle mode */
 @media only screen and (max-width: 850px) {
-  .dorling-insets {
+  /* .dorling-insets {
     top: 1% !important;
     right: 1% !important;
-  }
+  } */
   .dorling-legend-div {
     top: 0px!important;
     left: 30px!important;
@@ -16,11 +16,11 @@
     width:189px!important;
   }
 }
-@media only screen and (max-width: 700px) {
-  .dorling-insets {
+/* @media only screen and (max-width: 700px) {
+  /* .dorling-insets {
     display:none!important;
-  }
-}
+  } 
+} */
 /* between 850 and 1000 */
 @media only screen and (max-width: 1000px) {
   .dorling-legend-container-background .dorling-legend-svg {
@@ -89,8 +89,8 @@
 /* insets */
 .dorling-insets{
   position: absolute;
-    top: 20px;
-    right: 1px;
+    top: 40px;
+    right: 5px;
 
 }
 .dorling-overseas-caption{
@@ -99,6 +99,8 @@
 
 .insetmap rect.background {
   fill: aliceblue;
+  /* stroke-width: 2px;
+  stroke:grey; */
 }
 .insetmap rect.blur {
   filter: url(#blur);
@@ -260,7 +262,7 @@ font-size:15px;
   width: 80px;
   height: 80px;
   top: 49%;
-  left: 50.5%;
+  left: 49%;
 }
 .lds-ripple.hide {
   display:none;
@@ -295,8 +297,8 @@ font-size:15px;
 /* loading spinner */
 .dorling-loader{
   position: fixed;
-  left: 48.3%;
-  top: 48.3%;
+  left: 48%;
+  top: 48%;
   width: 100%;
   height: 100%;
   z-index:9999999;
@@ -422,6 +424,29 @@ font-size:15px;
   display:block;
 }
 .dorling-leaflet-control-legendBtn:hover{
+  background-color: #E5E5E5;
+  cursor: pointer;
+}
+.dorling-leaflet-control-overseas{
+  position: absolute;
+  background-color: white;
+  top:5px;
+  right:5px;
+  border:1px solid rgba(0,0,0,0.2);
+  display:block;
+  border-radius: 4px;
+  font:bold 18px 'Lucida Console', Monaco, monospace;
+}
+.dorling-leaflet-control-overseasBtn{
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  border-top-left-radius: 2px;
+  border-top-right-radius: 2px;
+  border-bottom: 1px solid #ccc;
+  display:block;
+}
+.dorling-leaflet-control-overseasBtn:hover{
   background-color: #E5E5E5;
   cursor: pointer;
 }
