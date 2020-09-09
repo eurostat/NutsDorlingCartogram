@@ -85,7 +85,7 @@ dorling.**colorLegend** | Object which stores the configuration parameters for t
 &nbsp;&nbsp; colorLegend.shapePadding | Padding to be applied to the legend cells for spacing | number | false | 5
 &nbsp;&nbsp; colorLegend.labelAlign | Alignment of the legend cell labels. | string | false | "middle"
 &nbsp;&nbsp; colorLegend.labelOffset | Distance in pixels from legend label to its corresponding cell | number | false | 5
-&nbsp;&nbsp; colorLegend.explanationYOffset | Y-axis translation applied to the hover functionality explanation text | {'nutsLevel':number} | false | { 0: 330, 1: 330, 2: 330, 3: 330 }  
+&nbsp;&nbsp; colorLegend.titleYOffset | Y-axis translation applied to the hover functionality explanation text | {'nutsLevel':number} | false | { 0: 330, 1: 330, 2: 330, 3: 330 }  
 dorling.**sizeLegend** | Object which stores the configuration parameters for the circle-size legend | object | false |  
 &nbsp;&nbsp; sizeLegend.title | Legend title | string | false | "Circle Size"  
 &nbsp;&nbsp; sizeLegend.values | Array of values used in the legend | {'nutsLevel':array} | false | [maxValue, maxValue / 2, maxValue / 10] for each NUTS level   

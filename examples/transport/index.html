@@ -61,7 +61,12 @@
                 "colorDatasetName": "air transport of passengers",
                 "colorDatasetFilters": "tra_meas=PAS_CRD&precision=1&unit=THS_PAS&time=2018",
                 "colorCalculationFunction": function (airPassengers, population) {
-                    return (airPassengers * 1000) / population;
+                    if (airPassengers && population) {
+                        return (airPassengers * 1000) / population;
+                    } else {
+                        return "n/a"
+                    }
+
                 },
                 "thresholdValues": [1, 2, 4, 8, 20, 9999],
                 "maxCircleRadius": { 0: 70, 1: 35, 2: 30 },
@@ -96,7 +101,8 @@
                     labelUnit: " ",
                     labelOffset: 10,
                     shape: "circle",
-                    explanationYOffset: { 0: 360, 1: 340, 2: 340 },
+                    titleYOffset: { 0: 170, 1: 160, 2: 160 },
+                    bodyYOffset: { 0: 30, 1: 30, 2: 30 }
                 },
                 "tooltip": {
                     colorLabel: "Air passengers per inhabitant",
@@ -141,7 +147,8 @@
                 },
                 "colorLegend": {
                     title: "Freight and mail carried per inhabitant (kg)",
-                    explanationYOffset: { 0: 410, 1: 410, 2: 410 },
+                    titleYOffset: { 0: 220, 1: 210, 2: 210 },
+                    bodyYOffset: { 0: 50, 1: 50, 2: 50 },
                 },
                 "tooltip": {
                     colorLabel: "Freight and mail carried per inhabitant",
@@ -174,7 +181,7 @@
             .colorCalculation("per")
             .colorCalculationFunction(transportConfig.air.colorCalculationFunction)
             .colorCalculationDatasetCode("demo_r_d2jan")
-            .colorCalculationDatasetFilters("precision=1&sex=T&unit=NR&time=2019&age=TOTAL")
+            .colorCalculationDatasetFilters("precision=1&sex=T&unit=NR&time=2018&age=TOTAL")
             .maxCircleRadius(transportConfig.air.maxCircleRadius)
             .colorLegend(transportConfig.air.colorLegend)
             .nutsSelectorTranslateY(transportConfig.air.nutsSelectorTranslateY)

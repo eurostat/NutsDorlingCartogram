@@ -72,6 +72,8 @@ export function dorling(options) {
     //https://d3-legend.susielu.com/#color
     titleWidth: 170,
     title: "Circle Colour",
+    titleYOffset: { 0: 170, 1: 160, 2: 160, 3: 160 },
+    bodyYOffset: { 0: 50, 1: 50, 2: 50, 3: 50 },
     orient: "vertical",
     cells: null,
     shape: "rect",
@@ -94,7 +96,6 @@ export function dorling(options) {
     eu27: null,
     translateX: 0,
     translateY: 135,
-    explanationYOffset: { 0: 330, 1: 330, 2: 330, 3: 330 },
     cellsTranslateX: 3,
     cellsTranslateY: 2
   };
@@ -1362,14 +1363,14 @@ export function dorling(options) {
       .attr("fill", "black")
       .attr("class", "dorling-color-legend-explanation")
       .attr("text-anchor", "right")
-      .attr("transform", "translate(" + out.colorLegend_.translateX + "," + (out.sizeLegend_.translateY[out.nutsLevel_] + out.colorLegend_.explanationYOffset[out.nutsLevel_]) + ")")
+      .attr("transform", "translate(" + out.colorLegend_.translateX + "," + (out.sizeLegend_.translateY[out.nutsLevel_] + out.colorLegend_.titleYOffset[out.nutsLevel_]) + ")")
 
     explanation
       .append("text")
       .attr("y", 5)
       .attr("x", 0)
       .attr("dy", "0em")
-      .text("Hover over the different legend classes to highlight them on the map").call(d3_textWrapping, (out.colorLegend_.titleWidth - 20));
+      .text(out.colorLegend_.title).call(d3_textWrapping, (out.colorLegend_.titleWidth - 20));
   }
 
   function addColorLegend() {
@@ -1380,13 +1381,13 @@ export function dorling(options) {
     //ff positioning fix
     if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
       // Do Firefox-related activities
-      out.colorLegendContainer.attr("transform", "translate(" + out.colorLegend_.translateX + "," + (out.sizeLegend_.bodyYOffset[out.nutsLevel_] + 40) + ")")
+      out.colorLegendContainer.attr("transform", "translate(" + out.colorLegend_.translateX + "," + (out.colorLegend_.titleYOffset[out.nutsLevel_] + out.colorLegend_.bodyYOffset[out.nutsLevel_]) + ")")
     } else {
-      out.colorLegendContainer.attr("transform", "translate(" + out.colorLegend_.translateX + "," + (out.sizeLegend_.bodyYOffset[out.nutsLevel_] + 40) + ")")
+      out.colorLegendContainer.attr("transform", "translate(" + out.colorLegend_.translateX + "," + (out.colorLegend_.titleYOffset[out.nutsLevel_] + out.colorLegend_.bodyYOffset[out.nutsLevel_]) + ")")
     }
 
     let legend = legendColor()
-      .title(out.colorLegend_.title)
+      .title("Hover over the different legend classes to highlight them on the map")
       .titleWidth(out.colorLegend_.titleWidth)
       .orient(out.colorLegend_.orient)
       .shape(out.colorLegend_.shape)

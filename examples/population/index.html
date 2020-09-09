@@ -29,7 +29,7 @@
       .positionStrength(0.1)
       .maxCircleRadius({ 0: 65, 1: 25, 2: 25, 3: 20 })
       .colorLegend({
-        titleWidth: 220,
+        titleWidth: 230,
         title: "Population change 2018 - 2019 (per 1 000 inhabitants)",
         orient: "vertical",
         shapeRadius: 10,
@@ -39,7 +39,7 @@
         labelOffset: 10,
         shape: "circle",
         labelFormat: d3.format(".0f"),
-        explanationYOffset: { 0: 415, 1: 350, 2: 345, 3: 340 },
+        titleYOffset: { 0: 220, 1: 150, 2: 150, 3: 130 }, // translate Y for legend title from sizeLegend Y
       })
       .nutsSelectorTranslateY({ 0: 465, 1: 405, 2: 400, 3: 395 })
       .sizeLegend({
