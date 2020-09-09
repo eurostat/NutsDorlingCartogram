@@ -112,9 +112,9 @@ export function dorling(options) {
     translateY: 0,
     // captionY: 65,
     // captionX: -30,
-    captionY: 70,
-    captionX: 5,
-    captionFontSize: 10,
+    captionY: 12,
+    captionX: 3,
+    captionFontSize: 9,
     yOffset: 15,
     xOffset: 15,
     circleYOffset: 40,
@@ -697,7 +697,7 @@ export function dorling(options) {
           .geoIdentity()
           .reflectY(true)
           .fitExtent(
-            [[10, 10], [out.insets_.overseasWidth, out.insets_.overseasHeight]],
+            [[10, 30], [out.insets_.overseasWidth, out.insets_.overseasHeight]],
             fc)
         // .clipExtent([[-55.26, 6.05], [-50.88, 1.93]]);
       } else {
@@ -705,7 +705,7 @@ export function dorling(options) {
           .geoIdentity()
           .reflectY(true)
           .fitExtent(
-            [[10, 10], [out.insets_.overseasWidth, out.insets_.overseasHeight]],
+            [[10, 30], [out.insets_.overseasWidth, out.insets_.overseasHeight]],
             inset.featureCollection);
       }
       //positioning
