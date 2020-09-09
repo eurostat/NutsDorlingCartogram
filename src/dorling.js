@@ -930,10 +930,10 @@ export function dorling(options) {
     sources.classList.add("dorling-sources-container");
     let colorSource = document.createElement("div")
     if (out.sizeDatasetName_) {
-      colorSource.innerHTML = "Source: Eurostat - access to dataset for <a target='_blank' href='" + sizeURL + "'>" + out.sizeDatasetName_ + "</a> and <a href='" + colorURL + "'>" + out.colorDatasetName_ + "<i class='fa fa-external-link'></i></a>"
+      colorSource.innerHTML = "Source: Eurostat - access to dataset for <a target='_blank' href='" + sizeURL + "'>" + out.sizeDatasetName_ + "</a> and <a href='" + colorURL + "'>" + out.colorDatasetName_ + " " + " <i class='fa fa-external-link'></i></a>"
 
     } else {
-      colorSource.innerHTML = "Source: Eurostat - access to dataset for <a target='_blank' href='" + colorURL + "'>" + out.colorDatasetName_ + "<i class='fa fa-external-link'></i></a>"
+      colorSource.innerHTML = "Source: Eurostat - access to dataset for <a target='_blank' href='" + colorURL + "'>" + out.colorDatasetName_ + " " + "<i class='fa fa-external-link'></i></a>"
 
     }
     sources.appendChild(colorSource);
