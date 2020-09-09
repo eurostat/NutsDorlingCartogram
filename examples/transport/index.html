@@ -15,7 +15,7 @@
     <!-- overrides when using a select -->
     <style>
         #dorling-transport-select-container {
-            width: 21%;
+            width: 350px;
             position: absolute;
             left: 15px;
             top: 15px;
@@ -25,6 +25,13 @@
         .dorling-legend-div {
             left: 5px !important;
             top: 70px !important;
+        }
+
+        @media only screen and (max-width: 850px) {
+            #dorling-transport-select-container {
+                left: 45px !important;
+                top: 5px !important;
+            }
         }
     </style>
 </head>

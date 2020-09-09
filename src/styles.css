@@ -1,7 +1,7 @@
 
 
 /* responsiveness */
-/* legend changes to toggle mode */
+/* smaller screens: legend changes to toggle mode */
 @media only screen and (max-width: 850px) {
   .dorling-insets {
     top: 40px !important;
