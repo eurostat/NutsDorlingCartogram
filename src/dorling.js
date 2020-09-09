@@ -117,8 +117,8 @@ export function dorling(options) {
     captionFontSize: 9,
     yOffset: 15,
     xOffset: 15,
-    circleYOffset: 40,
-    circleXOffset: 40,
+    circleYOffset: 45,
+    circleXOffset: 37,
     spacing: 78, //between the start of each rect
     padding: 15 //so that the geometries arent touching the rect borders
   }
@@ -1400,7 +1400,7 @@ export function dorling(options) {
       .on("cellover", function (color) {
         if (out.stage == 2) {
           out.circles.transition()
-            .duration(1000).attr("fill", (f) => {
+            .duration(500).attr("fill", (f) => {
               //if circle color isnt that of the hovered cell
               if (colorFunction(+out.colorIndicator[f.properties.id]) !== color) {
                 //
@@ -1414,7 +1414,7 @@ export function dorling(options) {
       .on("cellout", function (d) {
         if (out.stage == 2) {
           out.circles.transition()
-            .duration(1000).attr("fill", (f) => colorFunction(+out.colorIndicator[f.properties.id]))
+            .duration(500).attr("fill", (f) => colorFunction(+out.colorIndicator[f.properties.id]))
         }
       });
 
