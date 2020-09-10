@@ -61,7 +61,7 @@ export function dorling(options) {
     values: {},
     translateY: { '0': 0, '1': 0, '2': 0, '3': 0 },
     bodyXOffset: { '0': 50, '1': 50, '2': 50, '3': 50 },
-    bodyYOffset: { '0': 90, '1': 90, '2': 90, '3': 90 },
+    bodyYOffset: { '0': 140, '1': 100, '2': 100, '3': 90 },
     labelsTranslateX: { '0': 40, '1': 40, '2': 40, '3': 40 },
     textOffsetY: { '0': -12, '1': -12, '2': -12, '3': -12 },
     labelsOffsetY: { '0': 2, '1': 2, '2': 2, '3': 2 }
@@ -70,7 +70,7 @@ export function dorling(options) {
   //color legend
   out.colorLegend_ = {
     //https://d3-legend.susielu.com/#color
-    titleWidth: 170,
+    titleWidth: 220,
     title: "Circle Colour",
     titleYOffset: { 0: 170, 1: 160, 2: 160, 3: 160 },
     bodyYOffset: { 0: 50, 1: 50, 2: 50, 3: 50 },
@@ -126,11 +126,11 @@ export function dorling(options) {
 
   //tooltip html
   out.tooltip_ = {
-    colorLabel: "Color value:",
+    colorLabel: "Color value",
     colorUnit: "",
-    sizeLabel: "Size value:",
+    sizeLabel: "Size value",
     sizeUnit: "",
-    shareLabel: "Share value:",
+    shareLabel: "Share value",
     shareUnit: "%",
     sizeValueTextFunction: null
   }
