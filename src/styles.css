@@ -219,6 +219,13 @@ circle.swatch {
 circle.swatch:hover {
   stroke-width:3;
 }
+rect.swatch {
+  stroke: black;
+  cursor: pointer;
+}
+rect.swatch:hover {
+  stroke-width:3;
+}
 text.label{
   cursor: pointer;
   font-size:15px;

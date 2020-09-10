@@ -1401,7 +1401,8 @@ export function dorling(options) {
       .on("cellover", function (color) {
         if (out.stage == 2) {
           out.circles.transition()
-            .duration(500).attr("fill", (f) => {
+            .duration(750)
+            .attr("fill", (f) => {
               //if circle color isnt that of the hovered cell
               if (colorFunction(+out.colorIndicator[f.properties.id]) !== color) {
                 //
@@ -1410,12 +1411,29 @@ export function dorling(options) {
                 return color
               }
             })
+          if (out.insetCircles) {
+            out.insetCircles.transition()
+              .duration(750)
+              .attr("fill", (f) => {
+                //if circle color isnt that of the hovered cell
+                if (colorFunction(+out.colorIndicator[f.featureCollection.features[0].properties.id]) !== color) {
+                  //
+                  return "white"
+                } else {
+                  return color
+                }
+              })
+          }
         }
       })
       .on("cellout", function (d) {
         if (out.stage == 2) {
           out.circles.transition()
-            .duration(500).attr("fill", (f) => colorFunction(+out.colorIndicator[f.properties.id]))
+            .duration(750).attr("fill", (f) => colorFunction(+out.colorIndicator[f.properties.id]))
+          if (out.insetCircles) {
+            out.insetCircles.transition()
+              .duration(750).attr("fill", (f) => colorFunction(+out.colorIndicator[f.featureCollection.features[0].properties.id]))
+          }
         }
       });
 
