@@ -1,0 +1,7 @@
+Load relevant NUTS level into QGIS and clip to desired overseas regions.
+
+Export to geojson
+
+Load into mapshaper and export to topojson
+
+dorling.js loads the file in assets/topojson/overseas/NUTSx and creats a new array 'insetsJson' which combines the featureCollection of each region with its corresponding d3.projection, which is fitted to its extent using d3geo.fitExtent()

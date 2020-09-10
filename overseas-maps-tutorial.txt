@@ -1,5 +1,0 @@
-load relevant NUTS level into QGIS and clip to desired area.
-
-Export to geojson
-
-Load into mapshaper and export to topojson

@@ -790,7 +790,7 @@ export function dorling(options) {
           name: "Guayane (FR)",
           featureCollection: {
             type: "FeatureCollection",
-            features: [geojson.features[9]]
+            features: [geojson.features[14], geojson.features[9]]
           }
         }, {
           id: "FRY40",
@@ -844,6 +844,19 @@ export function dorling(options) {
             [[10, 30], [out.insets_.overseasWidth, out.insets_.overseasHeight]],
             fc)
         // .clipExtent([[-55.26, 6.05], [-50.88, 1.93]]);
+      } else if (inset.id == "FRY30") { //guyane nuts 3
+        //zoom in on guyane, not the border feature
+        let fc = {
+          type: "FeatureCollection",
+          features: [geojson.features[9]]
+        }
+        proj = d3
+          .geoIdentity()
+          .reflectY(true)
+          .fitExtent(
+            [[10, 30], [out.insets_.overseasWidth, out.insets_.overseasHeight]],
+            fc)
+
       } else {
         proj = d3
           .geoIdentity()
@@ -894,11 +907,18 @@ export function dorling(options) {
     out.container_.node().appendChild(out.insetsSvg.node());
 
     d3.json(
-      `https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/overseas/NUTS${out.nutsLevel_}.json`
+      // `https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/overseas/NUTS${out.nutsLevel_}.json` //prod
+      `/assets/topojson/overseas/NUTS${out.nutsLevel_}.json` //local 
     ).then((overseasTopo) => {
 
       let objectName = "NUTS" + out.nutsLevel_;
       var geojson = topojson.feature(overseasTopo, overseasTopo.objects[objectName]);
+
+      if (out.nutsLevel_ === 3) { //guyane is in a different object within the topojson for NUTS 3
+        let guyane = topojson.feature(overseasTopo, overseasTopo.objects.guyane);
+        geojson.features.push(guyane.features[0]);
+      }
+
       let insets = defineInsets(geojson);
 
 
@@ -955,13 +975,35 @@ export function dorling(options) {
       //geometries
       // let features = out.insetsGeojson.features;
       let index = 0;
-      g.selectAll('path')
+      let insetPath = g.selectAll('path')
         .data(function (d) { return d.featureCollection.features.map(d.path); })
         .enter().append('path')
         .attr("class", function (d, i) { index++; return "inset" + index; })
         .attr("fill", "white")
         .attr("stroke", "black")
         .attr('d', function (d) { return d; });
+
+      index = 0;
+      //apply unique styling to specific regions
+      if (out.nutsLevel_ === 2) {
+        insetPath.attr("fill", function (d, i) {
+          index++;
+          if (index == 7) { //guyane bordering geometry
+            return "#E5E5E5";
+          } else {
+            return "white";
+          }
+        })
+      } else if (out.nutsLevel_ === 3) {
+        insetPath.attr("fill", function (d, i) {
+          index++;
+          if (index == 10) {
+            return "#E5E5E5";
+          } else {
+            return "white";
+          }
+        })
+      }
 
       //caption
       let caption = g
