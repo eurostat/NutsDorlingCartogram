@@ -3,10 +3,11 @@
 /* responsiveness */
 /* smaller screens: legend changes to toggle mode */
 @media only screen and (max-width: 850px) {
-  .dorling-insets {
+  .dorling-insets{
     top: 40px !important;
     right: 5px !important;
   }
+
   .dorling-legend-div {
     top: 0px!important;
     left: 30px!important;
@@ -16,11 +17,7 @@
     width:189px!important;
   }
 }
-/* @media only screen and (max-width: 700px) {
-  /* .dorling-insets {
-    display:none!important;
-  } 
-} */
+
 /* between 850 and 1000 */
 @media only screen and (max-width: 1000px) {
   .dorling-legend-container-background .dorling-legend-svg {
@@ -89,8 +86,8 @@
 /* insets */
 .dorling-insets{
   position: absolute;
-    top: 20px;
-    right: 5px;
+  top: 10px;
+  right: 5px;
 
 }
 .dorling-overseas-caption{

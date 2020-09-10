@@ -249,7 +249,7 @@ export function dorling(options) {
   out.main = function () {
 
     //TODO: allow insets for different NUTS
-    if (out.nutsLevel_ !== 2) {
+    if (out.nutsLevel_ == 0) {
       out.showInsets_ = false;
     } else {
       out.showInsets_ = true;
@@ -615,72 +615,215 @@ export function dorling(options) {
 
   function defineInsets(geojson) {
     out.insetsGeojson = geojson;
-    let insetsJson = [
-      {
-        id: "ES70",
-        name: "Canarias (ES)",
-        featureCollection: {
-          type: "FeatureCollection",
-          features: [geojson.features[0]]
+    let insetsJson;
+    //restructure json for each NUTS level to suit d3.geo fitExtent function
+    if (out.nutsLevel_ == 1) {
+      insetsJson = [
+        {
+          id: "ES7",
+          name: "Canarias (ES)",
+          featureCollection: {
+            type: "FeatureCollection",
+            features: [geojson.features[2]]
+          }
+        },
+        {
+          id: "FRY",
+          name: "Dépt. d'Outre Mer (FR)",
+          featureCollection: {
+            type: "FeatureCollection",
+            features: [geojson.features[3]]
+          }
+        },
+        {
+          id: "PT2",
+          name: "Açores (PT)",
+          featureCollection: {
+            type: "FeatureCollection",
+            features: [geojson.features[0]]
+          }
+        }, {
+          id: "PT3",
+          name: "Madeira (PT)",
+          featureCollection: {
+            type: "FeatureCollection",
+            features: [geojson.features[1]]
+          }
+        },
+      ]
+    } else if (out.nutsLevel_ == 2) {
+      insetsJson = [
+        {
+          id: "ES70",
+          name: "Canarias (ES)",
+          featureCollection: {
+            type: "FeatureCollection",
+            features: [geojson.features[0]]
+          }
+        },
+        {
+          id: "FRY2",
+          name: "Martinique (FR)",
+          featureCollection: {
+            type: "FeatureCollection",
+            features: [geojson.features[2]]
+          }
+        },
+        {
+          id: "FRY4",
+          name: "Réunion (FR)",
+          featureCollection: {
+            type: "FeatureCollection",
+            features: [geojson.features[4]]
+          }
+        },
+        {
+          id: "PT20",
+          name: "Açores (PT)",
+          featureCollection: {
+            type: "FeatureCollection",
+            features: [geojson.features[6]]
+          }
+        },
+        {
+          id: "FRY1",
+          name: "Guadeloupe (FR)",
+          featureCollection: {
+            type: "FeatureCollection",
+            features: [geojson.features[1]]
+          }
+        },
+        {
+          id: "FRY3",
+          name: "Guyane (FR)",
+          featureCollection: {
+            type: "FeatureCollection",
+            features: [geojson.features[3], geojson.features[8]]
+          }
+        },
+        {
+          id: "FRY5",
+          name: "Mayotte (FR)",
+          featureCollection: {
+            type: "FeatureCollection",
+            features: [geojson.features[5]]
+          }
+        },
+        {
+          id: "PT30",
+          name: "Madeira (PT)",
+          featureCollection: {
+            type: "FeatureCollection",
+            features: [geojson.features[7]]
+          }
         }
-      },
-      {
-        id: "FRY2",
-        name: "Martinique (FR)",
-        featureCollection: {
-          type: "FeatureCollection",
-          features: [geojson.features[2]]
-        }
-      },
-      {
-        id: "FRY4",
-        name: "Réunion (FR)",
-        featureCollection: {
-          type: "FeatureCollection",
-          features: [geojson.features[4]]
-        }
-      },
-      {
-        id: "PT20",
-        name: "Acores (PT)",
-        featureCollection: {
-          type: "FeatureCollection",
-          features: [geojson.features[6]]
-        }
-      },
-      {
-        id: "FRY1",
-        name: "Guadeloupe (FR)",
-        featureCollection: {
-          type: "FeatureCollection",
-          features: [geojson.features[1]]
-        }
-      },
-      {
-        id: "FRY3",
-        name: "Guyane (FR)",
-        featureCollection: {
-          type: "FeatureCollection",
-          features: [geojson.features[3], geojson.features[8]]
-        }
-      },
-      {
-        id: "FRY5",
-        name: "Mayotte (FR)",
-        featureCollection: {
-          type: "FeatureCollection",
-          features: [geojson.features[5]]
-        }
-      },
-      {
-        id: "PT30",
-        name: "Madeira (PT)",
-        featureCollection: {
-          type: "FeatureCollection",
-          features: [geojson.features[7]]
-        }
-      }
-    ]
+      ]
+    } else if (out.nutsLevel_ === 3) {
+      insetsJson = [
+        {
+          id: "ES703",
+          name: "El Hierro (ES)",
+          featureCollection: {
+            type: "FeatureCollection",
+            features: [geojson.features[0]]
+          }
+        },
+        {
+          id: "ES704",
+          name: "Fuertaventura (ES)",
+          featureCollection: {
+            type: "FeatureCollection",
+            features: [geojson.features[1]]
+          }
+        }, {
+          id: "ES705",
+          name: "Gran Canaria (ES)",
+          featureCollection: {
+            type: "FeatureCollection",
+            features: [geojson.features[2]]
+          }
+        }, {
+          id: "ES706",
+          name: "La Gomera (ES)",
+          featureCollection: {
+            type: "FeatureCollection",
+            features: [geojson.features[3]]
+          }
+        }, {
+          id: "ES707",
+          name: "La Palma (ES)",
+          featureCollection: {
+            type: "FeatureCollection",
+            features: [geojson.features[4]]
+          }
+        }, {
+          id: "ES708",
+          name: "Lanzarote (ES)",
+          featureCollection: {
+            type: "FeatureCollection",
+            features: [geojson.features[5]]
+          }
+        },
+        {
+          id: "ES709",
+          name: "Tenerife (ES)",
+          featureCollection: {
+            type: "FeatureCollection",
+            features: [geojson.features[6]]
+          }
+        }, {
+          id: "FRY10",
+          name: "Guadeloupe (FR)",
+          featureCollection: {
+            type: "FeatureCollection",
+            features: [geojson.features[7]]
+          }
+        }, {
+          id: "FRY20",
+          name: "Martinique (FR)",
+          featureCollection: {
+            type: "FeatureCollection",
+            features: [geojson.features[8]]
+          }
+        }, {
+          id: "FRY30",
+          name: "Guayane (FR)",
+          featureCollection: {
+            type: "FeatureCollection",
+            features: [geojson.features[9]]
+          }
+        }, {
+          id: "FRY40",
+          name: "Réunion (FR)",
+          featureCollection: {
+            type: "FeatureCollection",
+            features: [geojson.features[10]]
+          }
+        }, {
+          id: "FRY50",
+          name: "Mayotte (FR)",
+          featureCollection: {
+            type: "FeatureCollection",
+            features: [geojson.features[11]]
+          }
+        }, {
+          id: "PT200",
+          name: "Açores (PT)",
+          featureCollection: {
+            type: "FeatureCollection",
+            features: [geojson.features[12]]
+          }
+        }, {
+          id: "PT300",
+          name: "Madeira (PT)",
+          featureCollection: {
+            type: "FeatureCollection",
+            features: [geojson.features[13]]
+          }
+        },
+      ]
+    }
+
 
     //add properties to insets...
     let translateY = out.insets_.translateY;
@@ -716,11 +859,19 @@ export function dorling(options) {
       inset.path = d3.geoPath().projection(proj);
       //add Y spacing
       translateY = translateY + out.insets_.spacing;
-      //split into 2 columns
-      if (i == 3) {
-        translateY = out.insets_.translateY;
-        translateX = out.insets_.translateX + out.insets_.spacing;
+      //split into 2 columns according to inset index...
+      if (out.nutsLevel_ == 3) {
+        if (i == 6) {
+          translateY = out.insets_.translateY;
+          translateX = out.insets_.translateX + out.insets_.spacing;
+        }
+      } else {
+        if (i == 3) {
+          translateY = out.insets_.translateY;
+          translateX = out.insets_.translateX + out.insets_.spacing;
+        }
       }
+
     });
 
     return insetsJson;
@@ -728,11 +879,18 @@ export function dorling(options) {
 
   function addInsets() {
     out.insetsSvg = d3.create("svg");
+    let nutsClass = "dorling-insets-nuts" + out.nutsLevel_;
+    let width;
+    if (out.nutsLevel_ == 1) {
+      width = "80"
+    } else {
+      width = "160"
+    }
     out.insetsSvg
       // .attr("viewBox", [0, 0, 272, 605])
-      .attr("width", "160")
+      .attr("width", width)
       .attr("height", out.legendHeight_)
-      .attr("class", "dorling-insets")
+      .attr("class", "dorling-insets " + nutsClass)
     out.container_.node().appendChild(out.insetsSvg.node());
 
     d3.json(
