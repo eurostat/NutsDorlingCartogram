@@ -43,16 +43,10 @@
       })
       .nutsSelectorTranslateY({ 0: 465, 1: 405, 2: 400, 3: 395 })
       .sizeLegend({
-        title: "Total population",
+        title: "Total population (million)",
         textFunction: function (d) {
           let n = d / 1000000;
-          if (n == 1) {
-            return n + "   million";
-          } else if (n == 5) {
-            return n + "   million";
-          } else {
-            return n + " million";
-          }
+          return n;
         },
         values: {
           0: [85e6, 40e6, 10e6],
