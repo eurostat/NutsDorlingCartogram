@@ -907,8 +907,8 @@ export function dorling(options) {
     out.container_.node().appendChild(out.insetsSvg.node());
 
     d3.json(
-      // `https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/overseas/NUTS${out.nutsLevel_}.json` //prod
-      `/assets/topojson/overseas/NUTS${out.nutsLevel_}.json` //local 
+      `https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/overseas/NUTS${out.nutsLevel_}.json` //prod
+      // `/assets/topojson/overseas/NUTS${out.nutsLevel_}.json` //local 
     ).then((overseasTopo) => {
 
       let objectName = "NUTS" + out.nutsLevel_;

@@ -2,8 +2,8 @@ Load relevant NUTS level into QGIS and clip to desired overseas regions.
 
 Export to geojson
 
-Load into mapshaper and export to topojson
+Load into mapshaper, add south america polygon (for guyane borders) and export/merge to topojson
 
-dorling.js loads the file in assets/topojson/overseas/NUTSx and creats a new array 'insetsJson' which combines the featureCollection of each region with its corresponding d3.projection, which is fitted to its extent using d3geo.fitExtent()
+dorling.js loads the file from assets/topojson/overseas/NUTSx and creats a new array 'insetsJson' which combines the featureCollection of each region with its corresponding d3.projection, which is fitted to its extent using d3geo.fitExtent()
 
 South america geometry used for french guyane inset map is added at the end of the NUTS 2 & 3 geojson files and has the id "SA".
