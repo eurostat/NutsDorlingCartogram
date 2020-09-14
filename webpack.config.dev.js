@@ -1,4 +1,4 @@
-// webpack.config.js
+// dev
 const path = require("path");
 var LiveReloadPlugin = require("webpack-livereload-plugin");
 module.exports = {
@@ -13,8 +13,14 @@ module.exports = {
   },
 
   module: {
-
     rules: [
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+        }
+      },
       {
         test: /\.css$/i,
         use: ["style-loader", "css-loader"]
@@ -25,6 +31,9 @@ module.exports = {
       }
 
     ],
+  },
+  node: {
+    fs: "empty"
   },
   plugins: [new LiveReloadPlugin()],
   watch: true,
