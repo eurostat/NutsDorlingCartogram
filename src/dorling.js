@@ -44,7 +44,6 @@ export function dorling() {
   out.colors_ = null; //["#000",etc]
   out.thresholdValues_ = null; //[1,100,1000]
   //interactivity
-  out.animate_ = true;
   out.loop_ = false;
   out.pauseButton_ = false;
   out.showBorders_ = true;
@@ -99,6 +98,8 @@ export function dorling() {
   //selectors
   out.nutsSelectorTranslateY_ = { 0: 375, 1: 375, 2: 375, 3: 375 };
   out.showNutsSelector_ = true;
+  out.nutsSelectorSvgHeight_ = 140;
+  out.nutsSelectorSvgWidth_ = 160;
   //overseas inset maps
   out.showInsets_ = true;
   out.insets_ = {
@@ -536,7 +537,7 @@ export function dorling() {
 
         addZoom();
 
-        if (out.showAttribution_ && window.screen.height > 700) {
+        if (out.showAttribution_) {
           addAttributionToDOM();
         }
 
@@ -1413,13 +1414,8 @@ export function dorling() {
   function addLegendsToDOM() {
     out.legendSvg = d3.create("svg");
     out.legendSvg
-      // .attr("viewBox", [0, 0, 310, 555])
-      // .attr("height", out.legendsContainerHeight_)
-      // .attr("width", out.legendsContainerWidth_)
-      // .attr("viewBox", [0, 0, out.legendsContainerWidth_, out.legendsContainerHeight_])
       .attr("class", "dorling-legend-svg")
       .attr("height", out.legendHeight_)
-    // .attr("width", out.legendWidth_)
 
     //append legend div to main container
     out.legendDiv = document.createElement("div")
@@ -1466,6 +1462,7 @@ export function dorling() {
     if (window.innerWidth < out.showLegendWidthThreshold_) {
       addLegendMenuButtonToDOM();
       addOverseasButtonToDOM();
+      addNutsSelectorButtonToDOM();
     }
   }
 
@@ -1505,6 +1502,26 @@ export function dorling() {
         out.insetsSvg.node().style.display = "block";
       } else if (!out.showOverseas) {
         out.insetsSvg.node().style.display = "none";
+      }
+    });
+  }
+
+  out.showNutsLevels = false;
+  function addNutsSelectorButtonToDOM() {
+    let buttonContainer = document.createElement("div");
+    buttonContainer.classList.add("dorling-leaflet-control-nuts-selector")
+    let nutsSelectorBtn = document.createElement("a");
+    nutsSelectorBtn.classList.add("dorling-leaflet-control-nuts-selector-btn")
+    nutsSelectorBtn.innerHTML = "<i class='fa fa-ellipsis-v'></i>";
+    nutsSelectorBtn.title = "Select geographic level";
+    buttonContainer.appendChild(nutsSelectorBtn)
+    out.container_.node().appendChild(buttonContainer);
+    nutsSelectorBtn.addEventListener("click", function (e) {
+      out.showNutsLevels = !out.showNutsLevels;
+      if (out.showNutsLevels) {
+        out.nutsSelectorDiv.style.opacity = 1;
+      } else if (!out.showNutsLevels) {
+        out.nutsSelectorDiv.style.opacity = 0;
       }
     });
   }
@@ -1798,6 +1815,10 @@ export function dorling() {
     });
   };
 
+  /**
+   * Add svg radio buttons for changing NUTS levels
+   *
+   */
   function addNutsSelectorToDOM() {
     let radioWidth = 30;
     let radioHeight = 30;
@@ -1811,14 +1832,34 @@ export function dorling() {
     let radioDotOpacity = 0.3;
     let outlineSelectedColor = "#022B58";
 
+    //add to its own svg container on smaller screens and legendsSvg for larger screens
+    if (window.innerWidth < out.showLegendWidthThreshold_) {
+      out.nutsSelectorSvg = d3.create("svg");
+      out.nutsSelectorSvg
+        .attr("class", "dorling-nuts-selector-svg")
+        .attr("height", out.nutsSelectorSvgHeight_)
+        .attr("width", out.nutsSelectorSvgWidth_)
 
-    //main container
-    out.radioContainer = out.legendContainer
-      .append("g")
-      .attr("id", "dorling-nuts-selector")
-      //.attr("class", "dorling-nuts-selector-container dorling-plugin")
-      .attr("opacity", 0)
-      .attr("transform", "translate(0, " + out.nutsSelectorTranslateY_[out.nutsLevel_] + ")")
+      out.nutsSelectorDiv = document.createElement("div")
+      out.nutsSelectorDiv.classList.add("dorling-nuts-selector-div");
+      //hide nutsSelector and insets on small screens by default
+      out.nutsSelectorDiv.style.opacity = 0;
+      out.nutsSelectorDiv.appendChild(out.nutsSelectorSvg.node());
+      out.container_.node().appendChild(out.nutsSelectorDiv);
+      out.radioContainer = out.nutsSelectorSvg
+        .append("g")
+        .attr("id", "dorling-nuts-selector")
+        .attr("opacity", 0)
+        .attr("transform", "translate(10,10)")
+    } else {
+      out.radioContainer = out.legendContainer
+        .append("g")
+        .attr("id", "dorling-nuts-selector")
+        .attr("opacity", 0)
+        .attr("transform", "translate(0, " + out.nutsSelectorTranslateY_[out.nutsLevel_] + ")")
+    }
+
+
 
     //background
     // out.radioContainer

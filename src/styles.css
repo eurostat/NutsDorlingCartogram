@@ -46,6 +46,15 @@
   overflow: visible;
 }
 
+.dorling-nuts-selector-div {
+  position: absolute;
+  bottom: 85px;
+  left: 15px;
+}
+.dorling-nuts-selector-svg {
+  overflow: visible;
+  background: #ffffffc7;
+}
 .dorling-container {
   max-width:100%;
   max-height:100%;
@@ -187,11 +196,6 @@ fill:#E5E5E5;
   transform: translate(77%,31%);
   pointer-events: none;
 }
-.dorling-nuts-selector-container{
-  background-color:#ffffffc4;
-  padding:10px;
-  transform:translate(77%,46.5%);
-}
 .dorling-attribution{
   background:white;
   opacity:0.8;
@@ -311,8 +315,8 @@ font-size:15px;
 }
 .lds-roller.show {
   display: inline-block;
-  width: 80px;
-  height: 80px;
+  width: 50px;
+  height: 50px;
 }
 .dorling-loader.hide {
   display:none;
@@ -453,6 +457,29 @@ font-size:15px;
   display:block;
 }
 .dorling-leaflet-control-overseasBtn:hover{
+  background-color: #E5E5E5;
+  cursor: pointer;
+}
+.dorling-leaflet-control-nuts-selector{
+  position: absolute;
+  background-color: white;
+  bottom:55px;
+  left:5px;
+  border:1px solid rgba(0,0,0,0.2);
+  display:block;
+  border-radius: 4px;
+  font:bold 18px 'Lucida Console', Monaco, monospace;
+}
+.dorling-leaflet-control-nuts-selector-btn{
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  border-top-left-radius: 2px;
+  border-top-right-radius: 2px;
+  border-bottom: 1px solid #ccc;
+  display:block;
+}
+.dorling-leaflet-control-nuts-selector-btn:hover{
   background-color: #E5E5E5;
   cursor: pointer;
 }
