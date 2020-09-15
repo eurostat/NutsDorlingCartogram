@@ -21,7 +21,6 @@ export function dorling() {
   out.playButtonFill_ = "#212529";
   out.coastalMargins_ = false;
   out.graticule_ = false;
-  out.highlightColor_ = "cyan";
   out.nutsBorderColor_ = "grey";
   out.showLegendWidthThreshold_ = 850;
   //d3 force
