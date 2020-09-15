@@ -23,6 +23,8 @@ export function dorling() {
   out.graticule_ = false;
   out.nutsBorderColor_ = "grey";
   out.showLegendWidthThreshold_ = 850;
+  out.showLegendHeightThreshold_ = 600;
+
   //d3 force
   // out.circleExaggerationFactor_ = 1.2; //deprecated
   // out.collisionPadding_ = 0.1; //deprectated
@@ -528,7 +530,7 @@ export function dorling() {
         if (out.showInsets_) {
           addInsets();
           //hide legend and insets on small screens by default
-          if (window.innerWidth < out.showLegendWidthThreshold_) {
+          if (window.innerWidth < out.showLegendWidthThreshold_ || window.innerHeight < out.showLegendHeightThreshold_) {
             out.insetsSvg.node().style.display = "none";
           }
         } else {
@@ -1421,9 +1423,9 @@ export function dorling() {
     out.legendDiv = document.createElement("div")
     out.legendDiv.classList.add("dorling-legend-div");
     //hide legend and insets on small screens by default
-    if (window.innerWidth < out.showLegendWidthThreshold_) {
+    if (window.innerWidth < out.showLegendWidthThreshold_ || window.innerHeight < out.showLegendHeightThreshold_) {
       out.legendDiv.style.opacity = 0;
-      out.legendDiv.style.left = "10%";
+      out.legendDiv.style.left = "50px";
     }
     out.legendDiv.appendChild(out.legendSvg.node());
     out.container_.node().appendChild(out.legendDiv);
@@ -1459,7 +1461,7 @@ export function dorling() {
     ctx.insertBefore(rect, textElem);
 
     //if mobile, append leaflet-like button to hide and show the legend + overseas maps
-    if (window.innerWidth < out.showLegendWidthThreshold_) {
+    if (window.innerWidth < out.showLegendWidthThreshold_ || window.innerHeight < out.showLegendHeightThreshold_) {
       addLegendMenuButtonToDOM();
       addOverseasButtonToDOM();
       addNutsSelectorButtonToDOM();
@@ -1833,7 +1835,7 @@ export function dorling() {
     let outlineSelectedColor = "#022B58";
 
     //add to its own svg container on smaller screens and legendsSvg for larger screens
-    if (window.innerWidth < out.showLegendWidthThreshold_) {
+    if (window.innerWidth < out.showLegendWidthThreshold_ || window.innerHeight < out.showLegendHeightThreshold_) {
       out.nutsSelectorSvg = d3.create("svg");
       out.nutsSelectorSvg
         .attr("class", "dorling-nuts-selector-svg")

@@ -1,7 +1,7 @@
 
 
 /* responsiveness */
-/* smaller screens: legend changes to toggle mode */
+/* smaller screens: legend changes to toggle mode at 850px width */
 @media only screen and (max-width: 850px) {
   .dorling-insets{
     top: 40px !important;
@@ -15,6 +15,14 @@
   .dorling-legend-container-background .dorling-legend-svg {
     height:545px!important;
     width:189px!important;
+  }
+}
+
+/* smaller screens: legend changes to toggle mode at 600px height */
+@media only screen and (max-height: 600px) {
+  .dorling-insets{
+    top: 40px !important;
+    right: 5px !important;
   }
 }
 
@@ -48,7 +56,7 @@
 
 .dorling-nuts-selector-div {
   position: absolute;
-  bottom: 85px;
+  bottom: 95px;
   left: 15px;
 }
 .dorling-nuts-selector-svg {
@@ -463,7 +471,7 @@ font-size:15px;
 .dorling-leaflet-control-nuts-selector{
   position: absolute;
   background-color: white;
-  bottom:55px;
+  bottom:70px;
   left:5px;
   border:1px solid rgba(0,0,0,0.2);
   display:block;
