@@ -2292,7 +2292,12 @@ function indexStat(data, type, out, resolve, reject) {
       //totals for mixNuts injected data nuts level
       promises.push(d3.json(`${out.eurostatRESTBaseURL}${out.colorCalculationDatasetCode_}?geoLevel=${mixNutsLevel}&${out.mixNutsFilterString}&${out.colorCalculationDatasetFilters_}`))
 
-      Promise.all(promises).then((res) => {
+      Promise.all(promises).catch(function (err) {
+        // log that I have an error, return the entire array;
+        console.log('A promise failed to resolve', err);
+        return promises;
+      }).then((res) => {
+        //full array of resolved promises
         let totals = res[0];
         let mixTotals = res[1]
         //mixNuts
