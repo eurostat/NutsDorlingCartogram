@@ -3,8 +3,8 @@ import * as d3Array from "d3-array";
 import * as d3Geo from "d3-geo";
 import * as topojson from "topojson";
 import { legendColor } from "d3-svg-legend";
-import "./styles.css";
-import '../node_modules/font-awesome/css/font-awesome.min.css';
+
+const createStandaloneString = require('./templates/standalone');
 
 /**
  * Main accessor function
@@ -16,6 +16,7 @@ export function dorling() {
   let out = {};
   //default values
   out.containerId_ = "";
+  out.standalone_ = false;
   //styles
   out.seaColor_ = "white";
   out.playButtonFill_ = "#212529";
@@ -207,10 +208,19 @@ export function dorling() {
     out.container_ = d3.select("#" + out.containerId_);
     addLoadingSpinnerToDOM();
     showLoadingSpinner();
+    if (out.standalone_) {
+      addStandaloneToDOM();
+    }
+
     //get data and animate
     out.main();
     return out;
   };
+
+  function addStandaloneToDOM() {
+    let templateString = createStandaloneString();
+    out.container_.node().insertAdjacentHTML("beforeend", templateString);
+  }
 
   //e.g. when changing nuts level
   // similar to build, without certain DOM elements
@@ -236,6 +246,11 @@ export function dorling() {
 
   //main d3 logic
   out.main = function () {
+    //add nuts selector
+    if (window.innerWidth < out.showLegendWidthThreshold_ || window.innerHeight < out.showLegendHeightThreshold_) {
+      addNutsSelectorToDOM();
+    }
+
     if (out.nutsLevel_ == 0) {
       out.showInsets_ = false;
     } else {
@@ -316,7 +331,7 @@ export function dorling() {
 
     Promise.all(promises).then((res) => {
       hideLoadingSpinner();
-      //stop previous simulation
+      //stop previous d3 simulation
       if (out.simulation) {
         out.simulation.stop()
         out.forceInProgress = false;
@@ -1032,12 +1047,12 @@ export function dorling() {
   function addZoomButtonsToDOM() {
     let buttonContainer = document.createElement("div");
     buttonContainer.classList.add("dorling-leaflet-control-zoom")
-    let zoomIn = document.createElement("a");
+    let zoomIn = document.createElement("div");
     zoomIn.title = "Zoom in";
     zoomIn.classList.add("dorling-leaflet-control-zoom-in")
     zoomIn.innerHTML = "+";
 
-    let zoomOut = document.createElement("a");
+    let zoomOut = document.createElement("div");
     zoomOut.classList.add("dorling-leaflet-control-zoom-out")
     zoomOut.innerHTML = "-";
     zoomOut.title = "Zoom out";
@@ -1149,6 +1164,7 @@ export function dorling() {
     }
   }
 
+  //calculate new tooltip position + offsets
   function getTooltipPositionFromNode(el) {
     let matrix = el.getScreenCTM().translate(
       +el.getAttribute("cx"), //svg circle
@@ -1158,16 +1174,16 @@ export function dorling() {
     let tooltipWidth = tooltipNode.offsetWidth;
     let tooltipHeight = tooltipNode.offsetHeight;
     let left = window.pageXOffset + matrix.e + 20;
-    let top = window.pageYOffset + matrix.f - 100;
+    let top = window.pageYOffset + matrix.f - 105;
     let containerNode = out.container_.node();
     if (left > containerNode.clientWidth - tooltipWidth) {
-      left = left - (tooltipWidth + 40);
+      left = left - (tooltipWidth + 40); //offset
     }
     if (left < 0) {
       left = 1;
     }
     if (top < 0) {
-      top = top + (tooltipHeight + 40);
+      top = top + (tooltipHeight + 40); //offset
     }
     return { left: left, top: top }
   }
@@ -1278,7 +1294,7 @@ export function dorling() {
 
     }
 
-    // show legends
+    // show legends & nuts selector
     out.legendContainer.transition().duration(1000).attr("opacity", 0.9);
     out.sizeLegendContainer.transition().duration(1000).attr("opacity", 0.9);
     if (out.showNutsSelector_) {
@@ -1416,15 +1432,17 @@ export function dorling() {
   function addLegendsToDOM() {
     out.legendSvg = d3.create("svg");
     out.legendSvg
+      // .attr("width", out.legendWidth_) //this is defined in the background size calculations
       .attr("class", "dorling-legend-svg")
       .attr("height", out.legendHeight_)
+
 
     //append legend div to main container
     out.legendDiv = document.createElement("div")
     out.legendDiv.classList.add("dorling-legend-div");
     //hide legend and insets on small screens by default
     if (window.innerWidth < out.showLegendWidthThreshold_ || window.innerHeight < out.showLegendHeightThreshold_) {
-      out.legendDiv.style.opacity = 0;
+      out.legendDiv.style.display = "block";
       out.legendDiv.style.left = "50px";
     }
     out.legendDiv.appendChild(out.legendSvg.node());
@@ -1468,11 +1486,11 @@ export function dorling() {
     }
   }
 
-  out.showLegend = false;
+  out.showLegend = true;
   function addLegendMenuButtonToDOM() {
     let buttonContainer = document.createElement("div");
     buttonContainer.classList.add("dorling-leaflet-control-legend")
-    let legendBtn = document.createElement("a");
+    let legendBtn = document.createElement("div");
     legendBtn.classList.add("dorling-leaflet-control-legendBtn")
     legendBtn.innerHTML = "≡";
     legendBtn.title = "Toggle legend";
@@ -1480,10 +1498,20 @@ export function dorling() {
     out.container_.node().appendChild(buttonContainer);
     legendBtn.addEventListener("click", function (e) {
       out.showLegend = !out.showLegend;
-      if (out.showLegend) {
-        out.legendDiv.style.opacity = 1;
-      } else if (!out.showLegend) {
-        out.legendDiv.style.opacity = 0;
+      // for smaller screens
+      if (window.innerWidth < out.showLegendWidthThreshold_ || window.innerHeight < out.showLegendHeightThreshold_) {
+        if (out.showLegend) {
+          out.legendDiv.style.display = "block";
+
+        } else if (!out.showLegend) {
+          out.legendDiv.style.display = "none";
+        }
+      } else {
+        if (out.showLegend) {
+          out.legendDiv.style.opacity = 1;
+        } else if (!out.showLegend) {
+          out.legendDiv.style.opacity = 0;
+        }
       }
     });
   }
@@ -1492,7 +1520,7 @@ export function dorling() {
   function addOverseasButtonToDOM() {
     let buttonContainer = document.createElement("div");
     buttonContainer.classList.add("dorling-leaflet-control-overseas")
-    let overseasBtn = document.createElement("a");
+    let overseasBtn = document.createElement("div");
     overseasBtn.classList.add("dorling-leaflet-control-overseasBtn")
     overseasBtn.innerHTML = "<i class='fa fa-globe'></i>";
     overseasBtn.title = "Toggle overseas regions";
@@ -1512,7 +1540,7 @@ export function dorling() {
   function addNutsSelectorButtonToDOM() {
     let buttonContainer = document.createElement("div");
     buttonContainer.classList.add("dorling-leaflet-control-nuts-selector")
-    let nutsSelectorBtn = document.createElement("a");
+    let nutsSelectorBtn = document.createElement("div");
     nutsSelectorBtn.classList.add("dorling-leaflet-control-nuts-selector-btn")
     nutsSelectorBtn.innerHTML = "<i class='fa fa-ellipsis-v'></i>";
     nutsSelectorBtn.title = "Select geographic level";
@@ -1521,9 +1549,9 @@ export function dorling() {
     nutsSelectorBtn.addEventListener("click", function (e) {
       out.showNutsLevels = !out.showNutsLevels;
       if (out.showNutsLevels) {
-        out.nutsSelectorDiv.style.opacity = 1;
+        out.nutsSelectorDiv.style.display = "block";
       } else if (!out.showNutsLevels) {
-        out.nutsSelectorDiv.style.opacity = 0;
+        out.nutsSelectorDiv.style.display = "none";
       }
     });
   }
@@ -1845,14 +1873,14 @@ export function dorling() {
       out.nutsSelectorDiv = document.createElement("div")
       out.nutsSelectorDiv.classList.add("dorling-nuts-selector-div");
       //hide nutsSelector and insets on small screens by default
-      out.nutsSelectorDiv.style.opacity = 0;
+      out.nutsSelectorDiv.style.display = "none";
       out.nutsSelectorDiv.appendChild(out.nutsSelectorSvg.node());
       out.container_.node().appendChild(out.nutsSelectorDiv);
       out.radioContainer = out.nutsSelectorSvg
         .append("g")
         .attr("id", "dorling-nuts-selector")
-        .attr("opacity", 0)
-        .attr("transform", "translate(10,10)")
+        .attr("opacity", 1)
+        .attr("transform", "translate(10,0)")
     } else {
       out.radioContainer = out.legendContainer
         .append("g")

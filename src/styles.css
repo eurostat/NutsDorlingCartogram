@@ -24,6 +24,9 @@
     top: 40px !important;
     right: 5px !important;
   }
+  .dorling-tooltip {
+    font-size:11px !important;
+  }
 }
 
 /* between 850 and 1000 */
@@ -46,6 +49,7 @@
 .dorling-legend-div {
   position: absolute;
   top: 0px;
+  left: 35px;
 }
 .dorling-legend-svg {
   position: absolute;
@@ -56,8 +60,8 @@
 
 .dorling-nuts-selector-div {
   position: absolute;
-  bottom: 95px;
-  left: 15px;
+  bottom: 115px;
+  left: 35px;
 }
 .dorling-nuts-selector-svg {
   overflow: visible;
@@ -81,7 +85,7 @@
 
 .dorling-bottom-text-container{
   /* height:7%; */
-  font-size:12px;
+  font-size:11px;
   color: #212529;
   font-weight:400;
   font-family: 'Open Sans', "Helvetica Neue",Arial,"Noto Sans",sans-serif;
@@ -172,7 +176,7 @@ fill:#E5E5E5;
 
 .dorling-tooltip {
   font-family: 'Open Sans', "Helvetica Neue", Arial,"Noto Sans",sans-serif;
-  font-size:15px;
+  font-size:12px;
   box-shadow: 0 3px 15px rgba(0, 0, 0, 0.4);
   position: absolute;
   visibility: hidden;
@@ -181,6 +185,7 @@ fill:#E5E5E5;
   background-color: white;
   border-radius: 6px;
   opacity: 0.9;
+  max-width:70%;
 }
 .dorling-boundary{
   fill:white;
@@ -313,6 +318,12 @@ font-size:15px;
 }
 
 /* loading spinner */
+.loader{
+  position: fixed;
+    top: 50%;
+    left: 50%;
+    z-index: 100;
+}
 .dorling-loader{
   position: fixed;
   left: 46%;
@@ -468,16 +479,28 @@ font-size:15px;
   background-color: #E5E5E5;
   cursor: pointer;
 }
+.dorling-leaflet-control-zoom, .dorling-leaflet-control-nuts-selector {
+  bottom:15%;
+}
 .dorling-leaflet-control-nuts-selector{
   position: absolute;
   background-color: white;
-  bottom:70px;
   left:5px;
   border:1px solid rgba(0,0,0,0.2);
   display:block;
   border-radius: 4px;
   font:bold 18px 'Lucida Console', Monaco, monospace;
 }
+.dorling-leaflet-control-zoom{
+  position: absolute;
+  background-color: white;
+  right:5px;
+  border:1px solid rgba(0,0,0,0.2);
+  display:block;
+  border-radius: 4px;
+  font:bold 18px 'Lucida Console', Monaco, monospace;
+}
+
 .dorling-leaflet-control-nuts-selector-btn{
   width: 30px;
   height: 30px;
@@ -491,16 +514,7 @@ font-size:15px;
   background-color: #E5E5E5;
   cursor: pointer;
 }
-.dorling-leaflet-control-zoom{
-  position: absolute;
-  background-color: white;
-  bottom:15%;
-  right:25px;
-  border:1px solid rgba(0,0,0,0.2);
-  display:block;
-  border-radius: 4px;
-  font:bold 18px 'Lucida Console', Monaco, monospace;
-}
+
 .dorling-leaflet-control-zoom-in{
   width: 30px;
   height: 30px;
