@@ -1,13 +1,8 @@
 module.exports = (myLink, myID) => `
-<div class="loader">
-    <div class="row justify-content-center align-items-center fa-3x">
-        <i class="fas fa-spinner fa-spin"></i>
-    </div>
-</div>
 
 <div id="landscape_overlay"></div>
 
-<div id="global" class="container-fluid invisible">
+<div id="global" class="container-fluid">
     <div id="embed-modal" data-role="dialog" class="modal fade">
         <div class="modal-dialog">
             <!-- Modal content-->

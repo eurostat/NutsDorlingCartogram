@@ -205,21 +205,35 @@ export function dorling() {
 
   //initiates the construction of the visualization
   out.build = function () {
-    out.container_ = d3.select("#" + out.containerId_);
-    addLoadingSpinnerToDOM();
-    showLoadingSpinner();
+    out.containerNode_ = document.getElementById(out.containerId_);
     if (out.standalone_) {
       addStandaloneToDOM();
     }
+    addDorlingContainerToDOM();
+    addLoadingSpinnerToDOM();
+    showLoadingSpinner();
+
 
     //get data and animate
     out.main();
     return out;
   };
 
+  function addDorlingContainerToDOM() {
+    out.dorlingContainer = document.createElement("div");
+    if (out.standalone_) {
+      out.dorlingContainer.classList.add("standalone-dorling")
+      out.containerNode_.classList.add("standalone-container")
+    }
+    out.containerNode_.appendChild(out.dorlingContainer);
+  }
+
   function addStandaloneToDOM() {
+    let container = document.createElement("div");
+    container.classList.add("standalone-nav");
+    out.containerNode_.appendChild(container);
     let templateString = createStandaloneString();
-    out.container_.node().insertAdjacentHTML("beforeend", templateString);
+    container.insertAdjacentHTML("beforeend", templateString);
   }
 
   //e.g. when changing nuts level
@@ -228,7 +242,8 @@ export function dorling() {
     restartTransition();
     out.playing = false;
     out.stage = 1;
-    out.container_ = d3.select("#" + out.containerId_);
+    out.containerNode_ = d3.select("#" + out.containerId_);
+    out.dorlingContainer = document.createElement("div");
     clearSvg();
     clearBottomText();
     showLoadingSpinner();
@@ -237,11 +252,11 @@ export function dorling() {
   }
   function clearSvg() {
     //empty container of svgs
-    out.container_.selectAll("g").remove();
-    out.container_.selectAll("svg").remove();
+    out.dorlingContainer.selectAll("g").remove();
+    out.dorlingContainer.selectAll("svg").remove();
   }
   function clearBottomText() {
-    out.container_.selectAll(".dorling-bottom-text-container").remove();
+    out.dorlingContainer.selectAll(".dorling-bottom-text-container").remove();
   }
 
   //main d3 logic
@@ -442,8 +457,8 @@ export function dorling() {
           .style("background-color", out.seaColor_)
         // .style("width", "100%")
 
-        out.container_.node().appendChild(out.svg.node());
-        out.container_.attr("class", "dorling-container");
+        out.dorlingContainer.appendChild(out.svg.node());
+        out.dorlingContainer.classList.add("dorling-container");
         // initialize tooltip
         if (!out.tooltipElement) {
           out.tooltipElement = addTooltipToDOM();
@@ -543,41 +558,43 @@ export function dorling() {
         addLegendsToDOM();
 
         if (out.showInsets_) {
-          addInsets();
-          //hide legend and insets on small screens by default
-          if (window.innerWidth < out.showLegendWidthThreshold_ || window.innerHeight < out.showLegendHeightThreshold_) {
-            out.insetsSvg.node().style.display = "none";
-          }
+          d3.json(
+            `https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/overseas/NUTS${out.nutsLevel_}.json` //prod
+            // `/assets/topojson/overseas/NUTS${out.nutsLevel_}.json` //local 
+          ).then((overseasTopo) => {
+            addInsets(overseasTopo);
+            //hide legend and insets on small screens by default
+            if (window.innerWidth < out.showLegendWidthThreshold_ || window.innerHeight < out.showLegendHeightThreshold_) {
+              out.insetsSvg.node().style.display = "none";
+            }
+            addMouseEvents();
+            addZoom();
+            out.playing = true;
+            out.stage = 1; //current transition number
+            animate();
+          });
         } else {
           addMouseEvents();
+          addZoom();
         }
-
-        addZoom();
 
         if (out.showAttribution_) {
           addAttributionToDOM();
         }
-
         //additional texts
         out.bottomTextContainer = document.createElement("div")
         out.bottomTextContainer.classList.add("dorling-bottom-text-container")
-        out.container_.node().appendChild(out.bottomTextContainer)
+        out.dorlingContainer.appendChild(out.bottomTextContainer)
         if (out.showFootnotes_) {
           addFootnotesToDOM();
         }
         if (out.showSources_) {
           addSourcesToDOM();
         }
-
         addZoomButtonsToDOM();
-
         if (out.pauseButton_) {
           out.playButton = addPlayButtonToDOM();
         }
-        out.playing = true;
-        out.stage = 1; //current transition number
-        animate();
-
       });
       return out;
     })//Promise.all
@@ -860,7 +877,7 @@ export function dorling() {
     return insetsJson;
   }
 
-  function addInsets() {
+  function addInsets(overseasTopo) {
     out.insetsSvg = d3.create("svg");
     let nutsClass = "dorling-insets-nuts" + out.nutsLevel_;
     let width;
@@ -874,174 +891,147 @@ export function dorling() {
       .attr("width", width)
       .attr("height", out.legendHeight_)
       .attr("class", "dorling-insets " + nutsClass)
-    out.container_.node().appendChild(out.insetsSvg.node());
+    out.dorlingContainer.appendChild(out.insetsSvg.node());
 
-    d3.json(
-      `https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/overseas/NUTS${out.nutsLevel_}.json` //prod
-      // `/assets/topojson/overseas/NUTS${out.nutsLevel_}.json` //local 
-    ).then((overseasTopo) => {
+    // d3.json(
+    //   `https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/overseas/NUTS${out.nutsLevel_}.json` //prod
+    //   // `/assets/topojson/overseas/NUTS${out.nutsLevel_}.json` //local 
+    // ).then((overseasTopo) => {
 
-      let objectName = "NUTS" + out.nutsLevel_;
-      var geojson = topojson.feature(overseasTopo, overseasTopo.objects[objectName]);
+    let objectName = "NUTS" + out.nutsLevel_;
+    var geojson = topojson.feature(overseasTopo, overseasTopo.objects[objectName]);
 
-      if (out.nutsLevel_ === 3) { //guyane is in a different object within the topojson for NUTS 3
-        let guyane = topojson.feature(overseasTopo, overseasTopo.objects.guyane);
-        geojson.features.push(guyane.features[0]);
-      }
+    if (out.nutsLevel_ === 3) { //guyane is in a different object within the topojson for NUTS 3
+      let guyane = topojson.feature(overseasTopo, overseasTopo.objects.guyane);
+      geojson.features.push(guyane.features[0]);
+    }
 
-      let insets = defineInsets(geojson);
-
-
-      //define blur
-      var defs = out.insetsSvg.append('defs');
-      defs
-        .append('filter')
-        .attr('id', 'blur')
-        .append('feGaussianBlur')
-        .attr('stdDeviation', 4);
-      defs
-        .selectAll('clipPath')
-        .data(insets)
-        .enter()
-        .append('clipPath')
-        .attr('id', function (d) {
-          return 'clip-inset-' + d.id;
-        })
-        .append("rect")
-        .attr('x', 0)
-        .attr('y', 0)
-        .attr('height', out.insets_.overseasHeight + out.insets_.padding)
-        .attr('width', out.insets_.overseasWidth + out.insets_.padding);
-
-      //inset parent G element
-      var g = out.insetsSvg
-        .selectAll('g.insetmap')
-        .data(insets)
-        .enter()
-        .append('g')
-        .classed('insetmap', true)
-        .attr('transform', function (d, i) {
-          let x, y
-          x = d.x;
-          y = d.y
-          return 'translate(' + [x, y] + ')';
-        })
-        .attr('id', function (d) {
-          return 'inset-' + d.name;
-        })
-        .attr('clip-path', function (d) {
-          return 'url(#clip-inset-' + d.id + ')'
-        });
-
-      //background rect
-      g.append('rect')
-        .classed('background', true)
-        .attr('rx', "5")
-        .attr('ry', "5")
-        .attr('height', out.insets_.overseasHeight + out.insets_.padding)
-        .attr('width', out.insets_.overseasWidth + out.insets_.padding)
-      // /.attr('transform', "translate(-" + (out.insets_.overseasWidth / 2) + ",-" + (out.insets_.overseasHeight / 2) + ")")
-
-      //geometries
-      // let features = out.insetsGeojson.features;
-      let index = 0;
-      let insetPath = g.selectAll('path')
-        .data(function (d) { return d.featureCollection.features.map(d.path); })
-        .enter().append('path')
-        .attr("class", function (d, i) { index++; return "inset" + index; })
-        .attr("fill", "white")
-        .attr("stroke", "black")
-        .attr('d', function (d) { return d; });
-
-      index = 0;
-      //apply unique styling to specific regions
-      if (out.nutsLevel_ === 2) {
-        insetPath.attr("fill", function (d, i) {
-          index++;
-          if (index == 7) { //guyane bordering geometry
-            return "#E5E5E5";
-          } else {
-            return "white";
-          }
-        })
-      } else if (out.nutsLevel_ === 3) {
-        insetPath.attr("fill", function (d, i) {
-          index++;
-          if (index == 10) {
-            return "#E5E5E5";
-          } else {
-            return "white";
-          }
-        })
-      }
-
-      //caption
-      let caption = g
-        .append("text")
-        .data(insets)
-        .text(d => {
-          return d.name;
-        })
-        .attr("class", "overseas-caption")
-        .attr("font-size", out.insets_.captionFontSize)
-        .attr("stroke-width", 0.2)
-        .attr("transform", "translate(" + out.insets_.captionX + "," + out.insets_.captionY + ")")
-        .call(d3_textWrapping, out.insets_.titleWidth);
-
-      //border
-      //blur
-      // g.append('rect')
-      //   .classed('blur', true)
-      //   .attr('height', out.insets_.overseasHeight + out.insets_.padding)
-      //   .attr('width', out.insets_.overseasWidth + out.insets_.padding)
-      //.attr('transform', "translate(-" + (out.insets_.overseasWidth / 2) + ",-" + (out.insets_.overseasHeight / 2) + ")")
-      //outline
-      g
-        .append('rect')
-        .classed('outline', true)
-        .attr('rx', "5")
-        .attr('ry', "5")
-        .attr('height', out.insets_.overseasHeight + out.insets_.padding - 1)
-        .attr('width', out.insets_.overseasWidth + out.insets_.padding - 1)
-      //.attr('transform', "translate(-" + (out.insets_.overseasWidth / 2) + ",-" + (out.insets_.overseasHeight / 2) + ")")
-
-      //append each overseas topojson feature
-      // insets.forEach(function (inset, i) {
-      // let insetGeom = out.insetsSvg
-      //   .append("g")
-      //   .attr("id", inset.name)
-      //   .selectAll("path")
-      //   .data(inset.featureCollection.features)
-      //   .enter()
-      //   .append("path")
-      //   .attr('transform', 'translate(' + [inset.x, inset.y] + ')')
-      //   .attr('clip-path', 'url(#clip-inset-' + inset.name + ')')
-      //   .attr("fill", "white")
-      //   .attr("stroke", "black")
-      //   .attr("d", inset.path);
-
-      //add circles
-      out.insetCircles = out.insetsSvg
-        .append("g")
-        .selectAll("circle")
-        .data(insets)
-        .enter()
-        .filter((f) => {
-          let id = f.featureCollection.features[0].properties.id;
-          if (out.sizeIndicator[id] && out.colorIndicator[id]) {
-            return f;
-          }
-        })
-        .append("circle")
-        .attr("cx", (d) => { return (d.x + out.insets_.circleXOffset) })
-        .attr("cy", (d) => { return (d.y + out.insets_.circleYOffset) })
-        .attr("fill", "#ffffff00")
-        .attr("stroke", "#40404000");
+    let insets = defineInsets(geojson);
 
 
+    //define blur
+    var defs = out.insetsSvg.append('defs');
+    defs
+      .append('filter')
+      .attr('id', 'blur')
+      .append('feGaussianBlur')
+      .attr('stdDeviation', 4);
+    defs
+      .selectAll('clipPath')
+      .data(insets)
+      .enter()
+      .append('clipPath')
+      .attr('id', function (d) {
+        return 'clip-inset-' + d.id;
+      })
+      .append("rect")
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('height', out.insets_.overseasHeight + out.insets_.padding)
+      .attr('width', out.insets_.overseasWidth + out.insets_.padding);
 
-      addMouseEvents();
-    })
+    //inset parent G element
+    var g = out.insetsSvg
+      .selectAll('g.insetmap')
+      .data(insets)
+      .enter()
+      .append('g')
+      .classed('insetmap', true)
+      .attr('transform', function (d, i) {
+        let x, y
+        x = d.x;
+        y = d.y
+        return 'translate(' + [x, y] + ')';
+      })
+      .attr('id', function (d) {
+        return 'inset-' + d.name;
+      })
+      .attr('clip-path', function (d) {
+        return 'url(#clip-inset-' + d.id + ')'
+      });
+
+    //background rect
+    g.append('rect')
+      .classed('background', true)
+      .attr('rx', "5")
+      .attr('ry', "5")
+      .attr('height', out.insets_.overseasHeight + out.insets_.padding)
+      .attr('width', out.insets_.overseasWidth + out.insets_.padding)
+    // /.attr('transform', "translate(-" + (out.insets_.overseasWidth / 2) + ",-" + (out.insets_.overseasHeight / 2) + ")")
+
+    //geometries
+    // let features = out.insetsGeojson.features;
+    let index = 0;
+    let insetPath = g.selectAll('path')
+      .data(function (d) { return d.featureCollection.features.map(d.path); })
+      .enter().append('path')
+      .attr("class", function (d, i) { index++; return "inset" + index; })
+      .attr("fill", "white")
+      .attr("stroke", "black")
+      .attr('d', function (d) { return d; });
+
+    index = 0;
+    //apply unique styling to specific regions
+    if (out.nutsLevel_ === 2) {
+      insetPath.attr("fill", function (d, i) {
+        index++;
+        if (index == 7) { //guyane bordering geometry
+          return "#E5E5E5";
+        } else {
+          return "white";
+        }
+      })
+    } else if (out.nutsLevel_ === 3) {
+      insetPath.attr("fill", function (d, i) {
+        index++;
+        if (index == 10) {
+          return "#E5E5E5";
+        } else {
+          return "white";
+        }
+      })
+    }
+
+    //caption
+    let caption = g
+      .append("text")
+      .data(insets)
+      .text(d => {
+        return d.name;
+      })
+      .attr("class", "overseas-caption")
+      .attr("font-size", out.insets_.captionFontSize)
+      .attr("stroke-width", 0.2)
+      .attr("transform", "translate(" + out.insets_.captionX + "," + out.insets_.captionY + ")")
+      .call(d3_textWrapping, out.insets_.titleWidth);
+
+    g
+      .append('rect')
+      .classed('outline', true)
+      .attr('rx', "5")
+      .attr('ry', "5")
+      .attr('height', out.insets_.overseasHeight + out.insets_.padding - 1)
+      .attr('width', out.insets_.overseasWidth + out.insets_.padding - 1)
+    //.attr('transform', "translate(-" + (out.insets_.overseasWidth / 2) + ",-" + (out.insets_.overseasHeight / 2) + ")")
+
+    //add circles
+    out.insetCircles = out.insetsSvg
+      .append("g")
+      .selectAll("circle")
+      .data(insets)
+      .enter()
+      .filter((f) => {
+        let id = f.featureCollection.features[0].properties.id;
+        if (out.sizeIndicator[id] && out.colorIndicator[id]) {
+          return f;
+        }
+      })
+      .append("circle")
+      .attr("cx", (d) => { return (d.x + out.insets_.circleXOffset) })
+      .attr("cy", (d) => { return (d.y + out.insets_.circleYOffset) })
+      .attr("fill", "#ffffff00")
+      .attr("stroke", "#40404000");
+
   }
 
   function addZoomButtonsToDOM() {
@@ -1058,7 +1048,7 @@ export function dorling() {
     zoomOut.title = "Zoom out";
     buttonContainer.appendChild(zoomIn)
     buttonContainer.appendChild(zoomOut)
-    out.container_.node().appendChild(buttonContainer);
+    out.dorlingContainer.appendChild(buttonContainer);
 
     zoomIn.addEventListener("click", function (e) {
       out.svg.transition().call(out.zoom.scaleBy, 1.5)
@@ -1074,9 +1064,9 @@ export function dorling() {
     div.innerHTML = out.attributionText_;
     div.classList.add("dorling-attribution");
 
-    out.container_.node().appendChild(div);
+    out.dorlingContainer.appendChild(div);
     //SVG
-    // let cont = out.container_.append("svg").attr("class", "dorling-attribution");
+    // let cont = out.dorlingContainer.append("svg").attr("class", "dorling-attribution");
     // let t = cont.append("text").html(out.attributionText_)
 
     //add background fill
@@ -1101,10 +1091,10 @@ export function dorling() {
     sources.classList.add("dorling-sources-container");
     let colorSource = document.createElement("div")
     if (out.sizeDatasetName_) {
-      colorSource.innerHTML = "Source: Eurostat - access to dataset for <a target='_blank' href='" + sizeURL + "'>" + out.sizeDatasetName_ + "</a> and <a target='_blank' href='" + colorURL + "'>" + out.colorDatasetName_ + " " + " <i class='fa fa-external-link'></i></a>"
+      colorSource.innerHTML = "Source: Eurostat - access to dataset for <a target='_blank' href='" + sizeURL + "'>" + out.sizeDatasetName_ + "</a> and <a target='_blank' href='" + colorURL + "'>" + out.colorDatasetName_ + " " + " <i class='fas fa-external-link-alt'></i></a>"
 
     } else {
-      colorSource.innerHTML = "Source: Eurostat - access to dataset for <a target='_blank' href='" + colorURL + "'>" + out.colorDatasetName_ + " " + "<i class='fa fa-external-link'></i></a>"
+      colorSource.innerHTML = "Source: Eurostat - access to dataset for <a target='_blank' href='" + colorURL + "'>" + out.colorDatasetName_ + " " + "<i class='fas fa-external-link-alt'></i></a>"
 
     }
     sources.appendChild(colorSource);
@@ -1175,7 +1165,7 @@ export function dorling() {
     let tooltipHeight = tooltipNode.offsetHeight;
     let left = window.pageXOffset + matrix.e + 20;
     let top = window.pageYOffset + matrix.f - 105;
-    let containerNode = out.container_.node();
+    let containerNode = out.dorlingContainer;
     if (left > containerNode.clientWidth - tooltipWidth) {
       left = left - (tooltipWidth + 40); //offset
     }
@@ -1446,7 +1436,7 @@ export function dorling() {
       out.legendDiv.style.left = "50px";
     }
     out.legendDiv.appendChild(out.legendSvg.node());
-    out.container_.node().appendChild(out.legendDiv);
+    out.dorlingContainer.appendChild(out.legendDiv);
 
     //background container
     out.legendContainer = out.legendSvg
@@ -1495,7 +1485,7 @@ export function dorling() {
     legendBtn.innerHTML = "≡";
     legendBtn.title = "Toggle legend";
     buttonContainer.appendChild(legendBtn)
-    out.container_.node().appendChild(buttonContainer);
+    out.dorlingContainer.appendChild(buttonContainer);
     legendBtn.addEventListener("click", function (e) {
       out.showLegend = !out.showLegend;
       // for smaller screens
@@ -1525,7 +1515,7 @@ export function dorling() {
     overseasBtn.innerHTML = "<i class='fa fa-globe'></i>";
     overseasBtn.title = "Toggle overseas regions";
     buttonContainer.appendChild(overseasBtn)
-    out.container_.node().appendChild(buttonContainer);
+    out.dorlingContainer.appendChild(buttonContainer);
     overseasBtn.addEventListener("click", function (e) {
       out.showOverseas = !out.showOverseas;
       if (out.showOverseas) {
@@ -1545,7 +1535,7 @@ export function dorling() {
     nutsSelectorBtn.innerHTML = "<i class='fa fa-ellipsis-v'></i>";
     nutsSelectorBtn.title = "Select geographic level";
     buttonContainer.appendChild(nutsSelectorBtn)
-    out.container_.node().appendChild(buttonContainer);
+    out.dorlingContainer.appendChild(buttonContainer);
     nutsSelectorBtn.addEventListener("click", function (e) {
       out.showNutsLevels = !out.showNutsLevels;
       if (out.showNutsLevels) {
@@ -1875,7 +1865,7 @@ export function dorling() {
       //hide nutsSelector and insets on small screens by default
       out.nutsSelectorDiv.style.display = "none";
       out.nutsSelectorDiv.appendChild(out.nutsSelectorSvg.node());
-      out.container_.node().appendChild(out.nutsSelectorDiv);
+      out.dorlingContainer.appendChild(out.nutsSelectorDiv);
       out.radioContainer = out.nutsSelectorSvg
         .append("g")
         .attr("id", "dorling-nuts-selector")
@@ -2303,7 +2293,7 @@ export function dorling() {
     lds.appendChild(son7);
     lds.appendChild(son8);
     out.spinner.appendChild(lds);
-    out.container_.node().appendChild(out.spinner);
+    out.dorlingContainer.appendChild(out.spinner);
   }
   function showLoadingSpinner() {
     out.spinner.classList.remove("hide");
