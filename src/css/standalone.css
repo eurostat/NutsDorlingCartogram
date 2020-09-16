@@ -5,7 +5,8 @@
   }
 .standalone-container {
     height:98vh !important;
-    width:100% !important;
+    margin-left:20px;
+    margin-right:20px;
   }
   .standalone-nav {
     height:8vh !important;
@@ -13,7 +14,9 @@
   }
   .standalone-dorling {
     height:89vh !important;
-    width:100% !important;
+    width:unset !important;
+    margin-left:20px;
+    margin-right:20px;
   }
 
   #logo {

@@ -33,6 +33,9 @@
     "@babel/register": "^7.11.5",
     "babel-loader": "^8.1.0",
     "babel-preset-es2015": "^6.24.1",
+    "glob-all": "^3.2.1",
+    "purify-css": "^1.2.5",
+    "purifycss-webpack": "^0.7.0",
     "url-loader": "^4.1.0",
     "webpack": "^4.44.1",
     "webpack-cli": "^3.3.11",
@@ -41,6 +44,9 @@
   "dependencies": {
     "@babel/polyfill": "^7.11.5",
     "@fortawesome/fontawesome-free": "^5.14.0",
+    "@fortawesome/fontawesome-svg-core": "^1.2.30",
+    "@fortawesome/free-brands-svg-icons": "^5.14.0",
+    "@fortawesome/free-solid-svg-icons": "^5.14.0",
     "bootstrap": "^4.5.2",
     "css-loader": "^3.4.2",
     "d3": "^5.15.0",
@@ -52,6 +58,7 @@
     "jquery": "^3.5.1",
     "popper.js": "^1.16.1",
     "style-loader": "^1.1.3",
-    "topojson": "^3.0.2"
+    "topojson": "^3.0.2",
+    "uglifyjs-webpack-plugin": "^2.2.0"
   }
 }

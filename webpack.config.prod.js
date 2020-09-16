@@ -1,4 +1,8 @@
 const path = require("path");
+var webpack = require('webpack');
+const PurifyCSSPlugin = require('purifycss-webpack')
+const glob = require('glob-all')
+
 module.exports = {
   mode: "production",
   entry: ["./src/index.js"],
@@ -30,6 +34,9 @@ module.exports = {
   },
   watch: false,
   optimization: {
-    usedExports: true
-  }
+    usedExports: true,
+    minimize: true
+  },
+  plugins: [
+  ]
 };
