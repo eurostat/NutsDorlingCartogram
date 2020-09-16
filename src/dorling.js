@@ -261,7 +261,7 @@ export function dorling() {
 
   //main d3 logic
   out.main = function () {
-    //add nuts selector
+    //add nuts selector on smaller screens
     if (window.innerWidth < out.showLegendWidthThreshold_ || window.innerHeight < out.showLegendHeightThreshold_) {
       addNutsSelectorToDOM();
     }
