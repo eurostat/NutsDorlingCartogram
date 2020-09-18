@@ -64,6 +64,7 @@
 
 .dorling-nuts-selector-div {
   position: absolute;
+  display:none;
   bottom: 115px;
   left: 35px;
 }
@@ -184,6 +185,8 @@ fill:#E5E5E5;
 
 .dorling-tooltip {
   visibility: hidden;
+  margin-left:20px;
+  margin-right:20px;
   position: absolute;
   text-align: left;
   font-family: "PT Sans", sans-serif;

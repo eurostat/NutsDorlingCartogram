@@ -578,7 +578,7 @@ export function dorling() {
           addMouseEvents();
           addZoom();
         }
-        out.playing = true;
+        out.playing = true; //for pause/play
         out.stage = 1; //current transition number
         animate();
 
@@ -1436,7 +1436,7 @@ export function dorling() {
     out.legendDiv.classList.add("dorling-legend-div");
     //hide legend and insets on small screens by default
     if (window.innerWidth < out.showLegendWidthThreshold_ || window.innerHeight < out.showLegendHeightThreshold_) {
-      out.legendDiv.style.display = "block";
+      out.legendDiv.style.visibility = "hidden";
       out.legendDiv.style.left = "50px";
     }
     out.legendDiv.appendChild(out.legendSvg.node());
@@ -1475,12 +1475,15 @@ export function dorling() {
     //if mobile, append leaflet-like button to hide and show the legend + overseas maps
     if (window.innerWidth < out.showLegendWidthThreshold_ || window.innerHeight < out.showLegendHeightThreshold_) {
       addLegendMenuButtonToDOM();
-      addOverseasButtonToDOM();
+      if (out.showInsets_) {
+        addOverseasButtonToDOM();
+      }
+
       addNutsSelectorButtonToDOM();
     }
   }
 
-  out.showLegend = true;
+  out.showLegend = false;
   function addLegendMenuButtonToDOM() {
     let buttonContainer = document.createElement("div");
     buttonContainer.classList.add("dorling-leaflet-control-legend")
@@ -1495,10 +1498,10 @@ export function dorling() {
       // for smaller screens
       if (window.innerWidth < out.showLegendWidthThreshold_ || window.innerHeight < out.showLegendHeightThreshold_) {
         if (out.showLegend) {
-          out.legendDiv.style.display = "block";
+          out.legendDiv.style.visibility = "visible";
 
         } else if (!out.showLegend) {
-          out.legendDiv.style.display = "none";
+          out.legendDiv.style.visibility = "hidden";
         }
       } else {
         if (out.showLegend) {
