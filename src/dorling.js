@@ -205,11 +205,11 @@ export function dorling() {
 
   //initiates the construction of the visualization
   out.build = function () {
-    out.containerNode_ = document.getElementById(out.containerId_);
+    out.containerNode_ = d3.select("#" + out.containerId_);
     if (out.standalone_) {
       addStandaloneToDOM();
     } else {
-      out.containerNode_.classList.add("dorling-main-container");
+      out.containerNode_.attr("class", "dorling-main-container");
     }
     addDorlingContainerToDOM();
     addLoadingSpinnerToDOM();
@@ -222,12 +222,14 @@ export function dorling() {
   };
 
   function addDorlingContainerToDOM() {
-    out.dorlingContainer = document.createElement("div");
     if (out.standalone_) {
+      out.containerNode_.append("div").attr("id", "dorling-container");
+      out.dorlingContainer = d3.select("#dorling-container");
       out.dorlingContainer.classList.add("standalone-dorling")
       out.containerNode_.classList.add("standalone-container")
+    } else {
+      out.dorlingContainer = out.containerNode_;
     }
-    out.containerNode_.appendChild(out.dorlingContainer);
   }
 
   function addStandaloneToDOM() {
@@ -245,7 +247,7 @@ export function dorling() {
     out.playing = false;
     out.stage = 1;
     out.containerNode_ = d3.select("#" + out.containerId_);
-    out.dorlingContainer = document.createElement("div");
+
     clearSvg();
     clearBottomText();
     showLoadingSpinner();
@@ -459,8 +461,8 @@ export function dorling() {
           .style("background-color", out.seaColor_)
         // .style("width", "100%")
 
-        out.dorlingContainer.appendChild(out.svg.node());
-        out.dorlingContainer.classList.add("dorling-container");
+        out.dorlingContainer.node().appendChild(out.svg.node());
+        // out.dorlingContainer.attr("class", "dorling-container");
         // initialize tooltip
         if (!out.tooltipElement) {
           out.tooltipElement = addTooltipToDOM();
@@ -586,7 +588,7 @@ export function dorling() {
         //additional texts
         out.bottomTextContainer = document.createElement("div")
         out.bottomTextContainer.classList.add("dorling-bottom-text-container")
-        out.dorlingContainer.appendChild(out.bottomTextContainer)
+        out.dorlingContainer.node().appendChild(out.bottomTextContainer)
         if (out.showFootnotes_) {
           addFootnotesToDOM();
         }
@@ -893,7 +895,7 @@ export function dorling() {
       .attr("width", width)
       .attr("height", out.legendHeight_)
       .attr("class", "dorling-insets " + nutsClass)
-    out.dorlingContainer.appendChild(out.insetsSvg.node());
+    out.dorlingContainer.node().appendChild(out.insetsSvg.node());
 
     // d3.json(
     //   `https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/overseas/NUTS${out.nutsLevel_}.json` //prod
@@ -1050,7 +1052,7 @@ export function dorling() {
     zoomOut.title = "Zoom out";
     buttonContainer.appendChild(zoomIn)
     buttonContainer.appendChild(zoomOut)
-    out.dorlingContainer.appendChild(buttonContainer);
+    out.dorlingContainer.node().appendChild(buttonContainer);
 
     zoomIn.addEventListener("click", function (e) {
       out.svg.transition().call(out.zoom.scaleBy, 1.5)
@@ -1066,7 +1068,7 @@ export function dorling() {
     div.innerHTML = out.attributionText_;
     div.classList.add("dorling-attribution");
 
-    out.dorlingContainer.appendChild(div);
+    out.dorlingContainer.node().appendChild(div);
     //SVG
     // let cont = out.dorlingContainer.append("svg").attr("class", "dorling-attribution");
     // let t = cont.append("text").html(out.attributionText_)
@@ -1167,7 +1169,7 @@ export function dorling() {
     let tooltipHeight = tooltipNode.offsetHeight;
     let left = window.pageXOffset + matrix.e + 20;
     let top = window.pageYOffset + matrix.f - 105;
-    let containerNode = out.dorlingContainer;
+    let containerNode = out.dorlingContainer.node();
     if (left > containerNode.clientWidth - tooltipWidth) {
       left = left - (tooltipWidth + 40); //offset
     }
@@ -1438,7 +1440,7 @@ export function dorling() {
       out.legendDiv.style.left = "50px";
     }
     out.legendDiv.appendChild(out.legendSvg.node());
-    out.dorlingContainer.appendChild(out.legendDiv);
+    out.dorlingContainer.node().appendChild(out.legendDiv);
 
     //background container
     out.legendContainer = out.legendSvg
@@ -1487,7 +1489,7 @@ export function dorling() {
     legendBtn.innerHTML = "≡";
     legendBtn.title = "Toggle legend";
     buttonContainer.appendChild(legendBtn)
-    out.dorlingContainer.appendChild(buttonContainer);
+    out.dorlingContainer.node().appendChild(buttonContainer);
     legendBtn.addEventListener("click", function (e) {
       out.showLegend = !out.showLegend;
       // for smaller screens
@@ -1517,7 +1519,7 @@ export function dorling() {
     overseasBtn.innerHTML = "<i class='fa fa-globe'></i>";
     overseasBtn.title = "Toggle overseas regions";
     buttonContainer.appendChild(overseasBtn)
-    out.dorlingContainer.appendChild(buttonContainer);
+    out.dorlingContainer.node().appendChild(buttonContainer);
     overseasBtn.addEventListener("click", function (e) {
       out.showOverseas = !out.showOverseas;
       if (out.showOverseas) {
@@ -1537,7 +1539,7 @@ export function dorling() {
     nutsSelectorBtn.innerHTML = "<i class='fa fa-ellipsis-v'></i>";
     nutsSelectorBtn.title = "Select geographic level";
     buttonContainer.appendChild(nutsSelectorBtn)
-    out.dorlingContainer.appendChild(buttonContainer);
+    out.dorlingContainer.node().appendChild(buttonContainer);
     nutsSelectorBtn.addEventListener("click", function (e) {
       out.showNutsLevels = !out.showNutsLevels;
       if (out.showNutsLevels) {
@@ -1867,7 +1869,7 @@ export function dorling() {
       //hide nutsSelector and insets on small screens by default
       out.nutsSelectorDiv.style.display = "none";
       out.nutsSelectorDiv.appendChild(out.nutsSelectorSvg.node());
-      out.dorlingContainer.appendChild(out.nutsSelectorDiv);
+      out.dorlingContainer.node().appendChild(out.nutsSelectorDiv);
       out.radioContainer = out.nutsSelectorSvg
         .append("g")
         .attr("id", "dorling-nuts-selector")
@@ -2295,7 +2297,7 @@ export function dorling() {
     lds.appendChild(son7);
     lds.appendChild(son8);
     out.spinner.appendChild(lds);
-    out.dorlingContainer.appendChild(out.spinner);
+    out.dorlingContainer.node().appendChild(out.spinner);
   }
   function showLoadingSpinner() {
     out.spinner.classList.remove("hide");
