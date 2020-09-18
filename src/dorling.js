@@ -208,6 +208,8 @@ export function dorling() {
     out.containerNode_ = document.getElementById(out.containerId_);
     if (out.standalone_) {
       addStandaloneToDOM();
+    } else {
+      out.containerNode_.classList.add("dorling-main-container");
     }
     addDorlingContainerToDOM();
     addLoadingSpinnerToDOM();

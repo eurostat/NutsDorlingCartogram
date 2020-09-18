@@ -42,6 +42,12 @@
   font-size:11px!important;
   }
 }
+.dorling-main-container {
+  position:absolute;
+  height:100%;
+  width:100%;
+  text-align:center;
+}
 
 .dorling-legend-div {
   position: absolute;
