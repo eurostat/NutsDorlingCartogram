@@ -573,14 +573,14 @@ export function dorling() {
             }
             addMouseEvents();
             addZoom();
-            out.playing = true;
-            out.stage = 1; //current transition number
-            animate();
           });
         } else {
           addMouseEvents();
           addZoom();
         }
+        out.playing = true;
+        out.stage = 1; //current transition number
+        animate();
 
         if (out.showAttribution_) {
           addAttributionToDOM();
