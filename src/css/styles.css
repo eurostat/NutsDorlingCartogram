@@ -182,6 +182,7 @@ fill:#E5E5E5;
 
 
 .dorling-tooltip {
+  visibility: hidden;
   position: absolute;
   text-align: left;
   font-family: "PT Sans", sans-serif;
