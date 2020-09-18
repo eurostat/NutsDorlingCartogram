@@ -17,6 +17,9 @@
     width:unset !important;
     margin-left:20px;
     margin-right:20px;
+    text-align:center;
+    overflow:hidden;
+    position:relative;
   }
 
   #logo {

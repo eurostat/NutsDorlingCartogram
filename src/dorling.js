@@ -3,8 +3,9 @@ import * as d3Array from "d3-array";
 import * as d3Geo from "d3-geo";
 import * as topojson from "topojson";
 import { legendColor } from "d3-svg-legend";
+import $ from 'jquery'
 
-const createStandaloneString = require('./templates/standalone');
+const createStandaloneHTMLString = require('./templates/standalone');
 
 /**
  * Main accessor function
@@ -16,7 +17,7 @@ export function dorling() {
   let out = {};
   //default values
   out.containerId_ = "";
-  out.standalone_ = false;
+  out.standalone_ = true;
   //styles
   out.seaColor_ = "white";
   out.playButtonFill_ = "#212529";
@@ -205,9 +206,14 @@ export function dorling() {
 
   //initiates the construction of the visualization
   out.build = function () {
+    if (getURLParamValue("simple")) {
+      out.standalone_ = false;
+    }
     out.containerNode_ = d3.select("#" + out.containerId_);
     if (out.standalone_) {
       addStandaloneToDOM();
+      generateEmbed();
+      generateTwitterLink();
     } else {
       out.containerNode_.attr("class", "dorling-main-container");
     }
@@ -225,8 +231,8 @@ export function dorling() {
     if (out.standalone_) {
       out.containerNode_.append("div").attr("id", "dorling-container");
       out.dorlingContainer = d3.select("#dorling-container");
-      out.dorlingContainer.classList.add("standalone-dorling")
-      out.containerNode_.classList.add("standalone-container")
+      out.dorlingContainer.node().classList.add("standalone-dorling")
+      out.containerNode_.node().classList.add("standalone-container")
     } else {
       out.dorlingContainer = out.containerNode_;
     }
@@ -235,8 +241,8 @@ export function dorling() {
   function addStandaloneToDOM() {
     let container = document.createElement("div");
     container.classList.add("standalone-nav");
-    out.containerNode_.appendChild(container);
-    let templateString = createStandaloneString();
+    out.containerNode_.node().appendChild(container);
+    let templateString = createStandaloneHTMLString();
     container.insertAdjacentHTML("beforeend", templateString);
   }
 
@@ -573,14 +579,18 @@ export function dorling() {
             }
             addMouseEvents();
             addZoom();
+            out.playing = true; //for pause/play
+            out.stage = 1; //current transition number
+            animate();
           });
         } else {
           addMouseEvents();
           addZoom();
+          out.playing = true; //for pause/play
+          out.stage = 1; //current transition number
+          animate();
         }
-        out.playing = true; //for pause/play
-        out.stage = 1; //current transition number
-        animate();
+
 
         if (out.showAttribution_) {
           addAttributionToDOM();
@@ -2547,5 +2557,25 @@ function getURLParamValue(paramName) {
       return pArr[1]; //return value
     }
   }
+}
+
+
+//standalone stuff
+const generateTwitterURL = require('./components/twitter.js').generateURL
+function generateEmbed(url) {
+  $('#embed-content').html(
+    '<pre class="pre-scrollable"><code>&lt;iframe frameborder="0" height="600px" scrolling="no" width="100%" src="' +
+    url +
+    '"&gt;&lt;/iframe&gt;</code></pre>'
+  )
+}
+function generateTwitterLink(url) {
+  var twitterText = "twitter text"
+  var twitterTags = ["#eurostat"]
+  var twitterURL = url
+  $('#tweet').attr(
+    'href',
+    generateTwitterURL(twitterText, twitterURL, twitterTags)
+  )
 }
 
