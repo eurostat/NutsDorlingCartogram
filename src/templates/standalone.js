@@ -125,7 +125,7 @@ module.exports = (myLink, myID) => `
 
         <div class="logo" id="estat-logo">
             <a class="float-right order-2 logo">
-                <img id="logo" src="../../../assets/images/logoEstat.png" class="img-fluid" alt="Logo Eurostat" />
+                <img id="logo" src="../../assets/images/logoEstat.png" class="img-fluid" alt="Logo Eurostat" />
             </a>
         </div>
     </div>
