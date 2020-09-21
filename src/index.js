@@ -1,9 +1,9 @@
 
-import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "./css/standalone.css";
 import "./css/styles.css";
-
+import 'jquery'
+import 'bootstrap';
 import '@fortawesome/fontawesome-free/js/fontawesome'
 import '@fortawesome/fontawesome-free/js/solid'
 // import '@fortawesome/fontawesome-free/js/regular'

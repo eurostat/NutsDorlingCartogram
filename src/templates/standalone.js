@@ -1,4 +1,4 @@
-module.exports = (myLink, myID) => `
+module.exports = (infoText) => `
 
 <div id="landscape_overlay"></div>
 
@@ -52,17 +52,17 @@ module.exports = (myLink, myID) => `
             <!-- Modal content-->
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title" translate="instructions.title"></h4>
+                    <h4 class="modal-title" translate="instructions.title">Instructions</h4>
                     <button type="button" class="close" data-dismiss="modal">
                         <span>&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <p translate="instructions.text"></p>
+                    <p translate="instructions.text">${infoText}</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-warning" data-dismiss="modal"
-                        translate="instructions.closebutton"></button>
+                        translate="instructions.closebutton">Close</button>
                 </div>
             </div>
         </div>

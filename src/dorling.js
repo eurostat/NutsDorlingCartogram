@@ -15,9 +15,12 @@ const createStandaloneHTMLString = require('./templates/standalone');
 export function dorling() {
   //the output object
   let out = {};
+
   //default values
   out.containerId_ = "";
   out.standalone_ = true;
+
+  out.title_ = ""; //viz main title
   //styles
   out.seaColor_ = "white";
   out.playButtonFill_ = "#212529";
@@ -160,6 +163,8 @@ export function dorling() {
   out.colorCalculationDatasetFilters_ = "";
   //animation loop
   out.playing = true;
+  //standalone
+  out.standaloneUrl_ = ""
 
   //definition of generic accessors based on the name of each parameter name
   for (let p in out)
@@ -212,8 +217,8 @@ export function dorling() {
     out.containerNode_ = d3.select("#" + out.containerId_);
     if (out.standalone_) {
       addStandaloneToDOM();
-      generateEmbed();
-      generateTwitterLink();
+      generateEmbed(window.location);
+      generateTwitterLink(window.location);
     } else {
       out.containerNode_.attr("class", "dorling-main-container");
     }
@@ -242,7 +247,8 @@ export function dorling() {
     let container = document.createElement("div");
     container.classList.add("standalone-nav");
     out.containerNode_.node().appendChild(container);
-    let templateString = createStandaloneHTMLString();
+    let infoText = "Each bubble represents a region. Its size represents " + out.tooltip_.sizeLabel + " and its colour represents " + out.tooltip_.colorLabel + ".";
+    let templateString = createStandaloneHTMLString(infoText);
     container.insertAdjacentHTML("beforeend", templateString);
   }
 
@@ -2320,6 +2326,28 @@ export function dorling() {
     out.spinner.classList.remove("show");
     out.spinner.classList.add("hide");
   }
+
+  //standalone stuff
+  const generateTwitterURL = require('./components/twitter.js').generateURL
+  function generateEmbed(url) {
+    $('#embed-content').html(
+      '<pre class="pre-scrollable"><code>&lt;iframe frameborder="0" height="600px" scrolling="no" width="100%" src="' +
+      url +
+      '"&gt;&lt;/iframe&gt;</code></pre>'
+    )
+  }
+  function generateTwitterLink(url) {
+    var twitterText = "Digital Regional Yearbook: " + out.title_;
+    var twitterTags = ["Eurostat", "DigitalRegionalYearbook"]
+    var twitterURL = url
+    $('#tweet').attr(
+      'href',
+      generateTwitterURL(twitterText, twitterURL, twitterTags)
+    )
+  }
+
+
+
   return out;
 }
 
@@ -2560,22 +2588,5 @@ function getURLParamValue(paramName) {
 }
 
 
-//standalone stuff
-const generateTwitterURL = require('./components/twitter.js').generateURL
-function generateEmbed(url) {
-  $('#embed-content').html(
-    '<pre class="pre-scrollable"><code>&lt;iframe frameborder="0" height="600px" scrolling="no" width="100%" src="' +
-    url +
-    '"&gt;&lt;/iframe&gt;</code></pre>'
-  )
-}
-function generateTwitterLink(url) {
-  var twitterText = "twitter text"
-  var twitterTags = ["#eurostat"]
-  var twitterURL = url
-  $('#tweet').attr(
-    'href',
-    generateTwitterURL(twitterText, twitterURL, twitterTags)
-  )
-}
+
 

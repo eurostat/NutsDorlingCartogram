@@ -22,6 +22,10 @@
     position:relative;
   }
 
+  div#navItems {
+      z-index:999;
+  }
+
   #logo {
     width: 6rem
 }

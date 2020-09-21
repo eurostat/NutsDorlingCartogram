@@ -64,6 +64,7 @@
 
 .dorling-nuts-selector-div {
   position: absolute;
+  z-index:999;
   display:none;
   bottom: 115px;
   left: 35px;
