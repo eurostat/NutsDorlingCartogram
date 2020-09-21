@@ -2,6 +2,7 @@ const path = require("path");
 var webpack = require('webpack');
 const PurifyCSSPlugin = require('purifycss-webpack')
 const glob = require('glob-all')
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = {
   mode: "production",
@@ -38,5 +39,6 @@ module.exports = {
     minimize: true
   },
   plugins: [
+    new BundleAnalyzerPlugin()
   ]
 };

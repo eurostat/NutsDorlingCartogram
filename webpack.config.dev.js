@@ -1,6 +1,8 @@
 // dev
 const path = require("path");
-var LiveReloadPlugin = require("webpack-livereload-plugin");
+
+const LiveReloadPlugin = require("webpack-livereload-plugin");
+
 module.exports = {
   mode: "development",
   entry: "./src/index.js",
@@ -19,10 +21,12 @@ module.exports = {
         use: ["style-loader", "css-loader"]
       },
       {
-        test: /\.(jpg|jpeg|png|woff|woff2|eot|ttf|svg)$/,
-        loader: 'url-loader?limit=100000'
-      }
-
+        test: /\.(woff|woff2|eot|ttf|otf)$/,
+        loader: 'file-loader',
+        options: {
+          outputPath: '../fonts',
+        },
+      },
     ],
   },
   node: {
