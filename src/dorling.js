@@ -139,7 +139,7 @@ export function dorling() {
   }
   //additional text and links
   out.showAttribution_ = true;
-  out.attributionText_ = 'Boundaries: © <a href="https://eurogeographics.org/" target="_blank" class="externallink">EuroGeographics</a> © <a href="https://www.fao.org/" target="_blank">UN-FAO</a>  © <a href="http://www.turkstat.gov.tr/" target="_blank">Turkstat</a>, Cartography: <a href="https://ec.europa.eu/eurostat/en/web/gisco" target="_blank">Eurostat - GISCO, 2017</a>';
+  out.attributionText_ = 'Boundaries: © <a href="https://eurogeographics.org/" target="_blank" class="externallink">EuroGeographics</a> © <a href="https://www.fao.org/" target="_blank">UN-FAO</a>  © <a href="http://www.turkstat.gov.tr/" target="_blank">Turkstat</a>, Cartography: <a href="https://ec.europa.eu/eurostat/en/web/gisco" target="_blank">Eurostat - GISCO, 2018</a>';
   out.showSources_ = true;
   out.showFootnotes_ = false;
   out.footnotesText_ = "";
@@ -167,9 +167,10 @@ export function dorling() {
   out.standalone_ = {
     infoText: null,
     twitterText: null,
-    twitterTags: ["Eurostat"],
+    twitterTags: ["Eurostat", "DigitalRegionalYearbook"],
     twitterURL: window.location,
-    embedURL: window.location
+    embedURL: window.location,
+    facebookTitle: null
   }
   out.standaloneUrl_ = ""
 
@@ -232,6 +233,7 @@ export function dorling() {
       addStandaloneToDOM();
       generateEmbed();
       generateTwitterLink();
+      generateFacebook();
     } else {
       out.containerNode_.attr("class", "dorling-main-container");
     }
@@ -2366,6 +2368,28 @@ export function dorling() {
       'href',
       generateTwitterURL(text, out.standalone_.twitterURL, out.standalone_.twitterTags)
     )
+  }
+  function generateFacebook() {
+    $('#facebook-button').click(function () {
+      let u = window.location.href
+      let t;
+      if (out.standalone_.facebookTitle) {
+        t = out.standalone_.facebookTitle;
+      } else {
+        t = out.title_
+      }
+
+      let url =
+        'https://www.facebook.com/sharer/sharer.php?u=' +
+        encodeURIComponent(u) +
+        '&t=' +
+        encodeURIComponent(t)
+      window.open(
+        url + '?redirect=facebook',
+        'sharer',
+        'toolbar=0,status=0,width=626,height=436'
+      )
+    })
   }
 
 

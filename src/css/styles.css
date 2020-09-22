@@ -2,6 +2,10 @@ html, body, div, p {
     font-family: 'Open Sans', "Helvetica Neue",Arial,"Noto Sans",sans-serif;
 }
 
+body{
+  overflow:hidden;
+}
+
 /* smaller screens: legend changes to toggle mode at 850px width */
 @media only screen and (max-width: 850px) {
   .dorling-insets{
