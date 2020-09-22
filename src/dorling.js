@@ -164,6 +164,13 @@ export function dorling() {
   //animation loop
   out.playing = true;
   //standalone
+  out.standalone_ = {
+    infoText: null,
+    twitterText: null,
+    twitterTags: ["Eurostat"],
+    twitterURL: window.location,
+    embedURL: window.location
+  }
   out.standaloneUrl_ = ""
 
   //definition of generic accessors based on the name of each parameter name
@@ -177,7 +184,7 @@ export function dorling() {
       };
     })();
 
-  //override some accesors
+  //override some accesors whereby only the object properties specified by the user are overwritten and where defaults are maintained for the remaining properties
   out.colorLegend = function (v) {
     for (let key in v) {
       out.colorLegend_[key] = v[key];
@@ -208,6 +215,12 @@ export function dorling() {
     }
     return out;
   };
+  out.standalone = function (v) {
+    for (let key in v) {
+      out.standalone_[key] = v[key];
+    }
+    return out;
+  };
 
   //initiates the construction of the visualization
   out.build = function () {
@@ -217,8 +230,8 @@ export function dorling() {
     out.containerNode_ = d3.select("#" + out.containerId_);
     if (out.standalone_) {
       addStandaloneToDOM();
-      generateEmbed(window.location);
-      generateTwitterLink(window.location);
+      generateEmbed();
+      generateTwitterLink();
     } else {
       out.containerNode_.attr("class", "dorling-main-container");
     }
@@ -247,8 +260,14 @@ export function dorling() {
     let container = document.createElement("div");
     container.classList.add("standalone-nav");
     out.containerNode_.node().appendChild(container);
-    let infoText = "Each bubble represents a region. Its size represents " + out.tooltip_.sizeLabel + " and its colour represents " + out.tooltip_.colorLabel + ".";
-    let templateString = createStandaloneHTMLString(infoText);
+    let text;
+    if (out.standalone_.infoText) {
+      text = out.standalone_.infoText;
+    } else {
+      text = "Each bubble represents a region. Its size represents " + out.tooltip_.sizeLabel.toLowerCase() + " and its colour represents " + out.tooltip_.colorLabel.toLowerCase() + ".";
+    }
+
+    let templateString = createStandaloneHTMLString(text);
     container.insertAdjacentHTML("beforeend", templateString);
   }
 
@@ -2329,20 +2348,23 @@ export function dorling() {
 
   //standalone stuff
   const generateTwitterURL = require('./components/twitter.js').generateURL
-  function generateEmbed(url) {
+  function generateEmbed() {
     $('#embed-content').html(
       '<pre class="pre-scrollable"><code>&lt;iframe frameborder="0" height="600px" scrolling="no" width="100%" src="' +
-      url +
+      out.standalone_.embedURL +
       '"&gt;&lt;/iframe&gt;</code></pre>'
     )
   }
-  function generateTwitterLink(url) {
-    var twitterText = "Digital Regional Yearbook: " + out.title_;
-    var twitterTags = ["Eurostat", "DigitalRegionalYearbook"]
-    var twitterURL = url
+  function generateTwitterLink() {
+    let text;
+    if (out.standalone_.twitterText) {
+      text = out.standalone_.twitterText;
+    } else {
+      text = "Digital Regional Yearbook: " + out.title_
+    }
     $('#tweet').attr(
       'href',
-      generateTwitterURL(twitterText, twitterURL, twitterTags)
+      generateTwitterURL(text, out.standalone_.twitterURL, out.standalone_.twitterTags)
     )
   }
 
