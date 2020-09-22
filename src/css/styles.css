@@ -1,3 +1,7 @@
+html, body, div, p {
+    font-family: 'Open Sans', "Helvetica Neue",Arial,"Noto Sans",sans-serif;
+}
+
 /* smaller screens: legend changes to toggle mode at 850px width */
 @media only screen and (max-width: 850px) {
   .dorling-insets{
@@ -95,7 +99,7 @@
 
 .dorling-bottom-text-container{
   /* height:7%; */
-  font-size:12px;
+  font-size:14px;
   color: #212529;
   font-weight:400;
   font-family: 'Open Sans', "Helvetica Neue",Arial,"Noto Sans",sans-serif;
