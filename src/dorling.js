@@ -1,9 +1,17 @@
-import * as d3 from "d3";
-import * as d3Array from "d3-array";
-import * as d3Geo from "d3-geo";
+import * as d3scaleChromatic from "d3-scale-chromatic";
+import * as d3zoom from "d3-zoom";
+import * as d3scale from "d3-scale";
+import * as d3fetch from "d3-fetch";
+import * as d3format from "d3-format";
+import * as d3force from "d3-force";
+import * as d3array from "d3-array";
+import * as d3select from "d3-selection";
+import { event as currentEvent } from 'd3-selection';
+import * as d3geo from "d3-geo";
 import * as topojson from "topojson";
 import { legendColor } from "d3-svg-legend";
 import $ from 'jquery'
+
 
 const createStandaloneHTMLString = require('./templates/standalone');
 
@@ -84,7 +92,7 @@ export function dorling() {
     shapePadding: 5,
     labelAlign: "middle",
     labelOffset: 10,
-    labelFormat: d3.format(".1f"),
+    labelFormat: d3format.format(".1f"),
     locale: {
       "decimal": "\u066b",
       "thousands": " ",
@@ -228,7 +236,7 @@ export function dorling() {
     if (getURLParamValue("simple")) {
       out.standalone_ = false;
     }
-    out.containerNode_ = d3.select("#" + out.containerId_);
+    out.containerNode_ = d3select.select("#" + out.containerId_);
     if (out.standalone_) {
       addStandaloneToDOM();
       generateEmbed();
@@ -250,7 +258,7 @@ export function dorling() {
   function addDorlingContainerToDOM() {
     if (out.standalone_) {
       out.containerNode_.append("div").attr("id", "dorling-container");
-      out.dorlingContainer = d3.select("#dorling-container");
+      out.dorlingContainer = d3select.select("#dorling-container");
       out.dorlingContainer.node().classList.add("standalone-dorling")
       out.containerNode_.node().classList.add("standalone-container")
     } else {
@@ -279,7 +287,7 @@ export function dorling() {
     restartTransition();
     out.playing = false;
     out.stage = 1;
-    out.containerNode_ = d3.select("#" + out.containerId_);
+    out.containerNode_ = d3select.select("#" + out.containerId_);
 
     clearSvg();
     clearBottomText();
@@ -320,38 +328,38 @@ export function dorling() {
     //add exeption for GDP at NUTS 3 level (no data for 2018 so overrides to 2017 data)
     if (out.nutsLevel_ == 3 && out.sizeDatasetCode_ == "nama_10r_3gdp" && out.sizeDatasetFilters_ == "unit=MIO_EUR&time=2018") {
       promises.push(
-        d3.json(
+        d3fetch.json(
           `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/3035/nutspt_${out.nutsLevel_}.json`
         ), //centroids
-        d3.json(
+        d3fetch.json(
           `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/3035/20M/${out.nutsLevel_}.json`
         ), //NUTS
-        d3.json(
+        d3fetch.json(
           `https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/countries.json`), //countries
-        d3.json(
+        d3fetch.json(
           `${out.eurostatRESTBaseURL}${out.sizeDatasetCode_}?geoLevel=${nutsParam}&unit=MIO_EUR&time=2017&filterNonGeo=1`
         ), //sizeData
-        d3.json(
+        d3fetch.json(
           `${out.eurostatRESTBaseURL}${out.colorDatasetCode_}?geoLevel=${nutsParam}&unit=EUR_HAB&time=2017&filterNonGeo=1`
         ), //colorData
       );
     } else {
       promises.push(
-        d3.json(
+        d3fetch.json(
           `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/3035/nutspt_${out.nutsLevel_}.json`
         ), //centroids
-        d3.json(
+        d3fetch.json(
           `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/3035/20M/${out.nutsLevel_}.json`
         ), //NUTS
-        d3.json(
+        d3fetch.json(
           // `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/3035/20M/0.json`
           //`https://gisco-services.ec.europa.eu/distribution/v2/countries/topojson/countries.json`
           `https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/countries.json`
         ), //countries
-        d3.json(
+        d3fetch.json(
           `${out.eurostatRESTBaseURL}${out.sizeDatasetCode_}?geoLevel=${nutsParam}&${out.sizeDatasetFilters_}&filterNonGeo=1`
         ), //sizeData
-        d3.json(
+        d3fetch.json(
           `${out.eurostatRESTBaseURL}${out.colorDatasetCode_}?geoLevel=${nutsParam}&${out.colorDatasetFilters_}&filterNonGeo=1`
         ), //colorData
       );
@@ -369,13 +377,13 @@ export function dorling() {
       //add promises for retrieving centroids, sizeData and ColorData of the nuts level to be merged with the current nutsLevel_
       //not currently possible to only request data for certain countries therefore I have to request the whole dataset
       promises.push(
-        d3.json(
+        d3fetch.json(
           `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/3035/nutspt_${nutsLevel}.json`
         ), //mixLevel centroids
-        d3.json(
+        d3fetch.json(
           `${out.eurostatRESTBaseURL}${out.sizeDatasetCode_}?${out.mixNutsFilterString}&${out.sizeDatasetFilters_}`
         ), //mixLevel sizeData
-        d3.json(
+        d3fetch.json(
           `${out.eurostatRESTBaseURL}${out.colorDatasetCode_}?${out.mixNutsFilterString}&${out.colorDatasetFilters_}`
         ), //mixLevel colorData
       )
@@ -487,7 +495,7 @@ export function dorling() {
         out.height_ = out.width_ * (out.n2j.bbox[3] - out.n2j.bbox[1]) / (out.n2j.bbox[2] - out.n2j.bbox[0])
 
         //set up svg element
-        out.svg = d3.create("svg");
+        out.svg = d3select.create("svg");
         out.svg
           .attr("viewBox", [0, 0, out.width_, out.height_])
           .attr("class", "dorling-svg")
@@ -502,12 +510,12 @@ export function dorling() {
         }
 
         // d3-geo
-        out.projection = d3Geo
+        out.projection = d3geo
           .geoIdentity()
           .reflectY(true)
           .fitExtent([[0, 0], [out.width_ + out.fitSizePadding_, out.height_ + out.fitSizePadding_]], topojson.feature(out.n2j, out.n2j.objects.nutsbn))
 
-        out.path = d3Geo.geoPath().projection(out.projection);
+        out.path = d3geo.geoPath().projection(out.projection);
 
         if (out.translateX_ && out.translateY_) {
           out.projection.translate([out.translateX_, out.translateY_]);
@@ -517,8 +525,8 @@ export function dorling() {
         }
 
         //d3 scale
-        out.colorExtent = d3.extent(Object.values(out.colorIndicator));
-        out.sizeExtent = d3.extent(Object.values(out.sizeIndicator));
+        out.colorExtent = d3array.extent(Object.values(out.colorIndicator));
+        out.sizeExtent = d3array.extent(Object.values(out.sizeIndicator));
         //color scale
         out.colorScale = defineColorScale();
         out.sizeScale = defineSizeScale();
@@ -595,7 +603,7 @@ export function dorling() {
         addLegendsToDOM();
 
         if (out.showInsets_) {
-          d3.json(
+          d3fetch.json(
             `https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/overseas/NUTS${out.nutsLevel_}.json` //prod
             // `/assets/topojson/overseas/NUTS${out.nutsLevel_}.json` //local 
           ).then((overseasTopo) => {
@@ -644,7 +652,7 @@ export function dorling() {
   function defineInsets(geojson) {
     out.insetsGeojson = geojson;
     let insetsJson;
-    //restructure json for each NUTS level to suit d3.geo fitExtent function
+    //restructure json for each NUTS level to suit d3geo fitExtent function
     if (out.nutsLevel_ == 1) {
       insetsJson = [
         {
@@ -865,7 +873,7 @@ export function dorling() {
           type: "FeatureCollection",
           features: [geojson.features[3]]
         }
-        proj = d3
+        proj = d3geo
           .geoIdentity()
           .reflectY(true)
           .fitExtent(
@@ -878,7 +886,7 @@ export function dorling() {
           type: "FeatureCollection",
           features: [geojson.features[9]]
         }
-        proj = d3
+        proj = d3geo
           .geoIdentity()
           .reflectY(true)
           .fitExtent(
@@ -886,7 +894,7 @@ export function dorling() {
             fc)
 
       } else {
-        proj = d3
+        proj = d3geo
           .geoIdentity()
           .reflectY(true)
           .fitExtent(
@@ -897,7 +905,7 @@ export function dorling() {
       inset.x = translateX;
       inset.y = translateY;
       inset.projection = proj;
-      inset.path = d3.geoPath().projection(proj);
+      inset.path = d3geo.geoPath().projection(proj);
       //add Y spacing
       translateY = translateY + out.insets_.spacing;
       //split into 2 columns according to inset index...
@@ -919,7 +927,7 @@ export function dorling() {
   }
 
   function addInsets(overseasTopo) {
-    out.insetsSvg = d3.create("svg");
+    out.insetsSvg = d3select.create("svg");
     let nutsClass = "dorling-insets-nuts" + out.nutsLevel_;
     let width;
     if (out.nutsLevel_ == 1) {
@@ -934,7 +942,7 @@ export function dorling() {
       .attr("class", "dorling-insets " + nutsClass)
     out.dorlingContainer.node().appendChild(out.insetsSvg.node());
 
-    // d3.json(
+    // d3fetch.json(
     //   `https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/overseas/NUTS${out.nutsLevel_}.json` //prod
     //   // `/assets/topojson/overseas/NUTS${out.nutsLevel_}.json` //local 
     // ).then((overseasTopo) => {
@@ -1155,7 +1163,7 @@ export function dorling() {
         if (out.highlightedRegion) {
           out.unhightlightRegion() //in case highlightRegion() has been used
         }
-        d3.select(this).attr("stroke-width", "3px");
+        d3select.select(this).attr("stroke-width", "3px");
         //calculate tooltip position + offsets
         let pos = getTooltipPositionFromNode(this)
         let name = f.properties.na;
@@ -1166,7 +1174,7 @@ export function dorling() {
     out.circles.on("mouseout", function () {
       if (out.stage == 2) {
         out.tooltipElement.style("visibility", "hidden");
-        d3.select(this).attr("stroke-width", "1px");
+        d3select.select(this).attr("stroke-width", "1px");
       }
     });
 
@@ -1179,7 +1187,7 @@ export function dorling() {
         let id = f.featureCollection.features[0].properties.id;
         let name = f.name;
         if (out.stage == 2) {
-          d3.select(this).attr("stroke-width", "3px");
+          d3select.select(this).attr("stroke-width", "3px");
           out.tooltipElement.style("visibility", "visible");
           let pos = getTooltipPositionFromNode(this);
           setTooltip(name, id, pos)
@@ -1188,7 +1196,7 @@ export function dorling() {
       out.insetCircles.on("mouseout", function () {
         if (out.stage == 2) {
           out.tooltipElement.style("visibility", "hidden");
-          d3.select(this).attr("stroke-width", "1px");
+          d3select.select(this).attr("stroke-width", "1px");
           out.unhightlightRegion() //in case highlightRegion() has been used
         }
       });
@@ -1348,25 +1356,25 @@ export function dorling() {
       out.simulation.stop()
       out.forceInProgress = false;
     }
-    out.simulation = d3
+    out.simulation = d3force
       .forceSimulation(out.centroids.features)
       .force(
         "x",
-        d3
+        d3force
           .forceX()
           .x((f) => out.projection(f.geometry.coordinates)[0])
           .strength(out.positionStrength_)
       )
       .force(
         "y",
-        d3
+        d3force
           .forceY()
           .y((f) => out.projection(f.geometry.coordinates)[1])
           .strength(out.positionStrength_)
       )
       .force(
         "collide",
-        d3
+        d3force
           .forceCollide()
           .radius((f) => sizeFunction(+out.sizeIndicator[f.properties.id]))
           .strength(out.collisionStrength_)
@@ -1425,7 +1433,7 @@ export function dorling() {
             margin
               .attr("stroke", "#404040ff")
               .attr("stroke-width", m * 10 + "px")
-              .attr("stroke", d3.interpolateBlues(1 - Math.sqrt(m / out.marginNb)))
+              .attr("stroke", d3scaleChromatic.interpolateBlues(1 - Math.sqrt(m / out.marginNb)))
               .attr("fill", "none")
               .attr("opacity", "0.6")
               .attr("stroke-linecap", "round")
@@ -1442,7 +1450,7 @@ export function dorling() {
 
   function addZoom() {
     //add d3 zoom
-    out.zoom = d3
+    out.zoom = d3zoom
       .zoom()
       .extent([
         [0, 0],
@@ -1461,7 +1469,7 @@ export function dorling() {
     ).on("wheel.zoom", null);
   }
   function addLegendsToDOM() {
-    out.legendSvg = d3.create("svg");
+    out.legendSvg = d3select.create("svg");
     out.legendSvg
       // .attr("width", out.legendWidth_) //this is defined in the background size calculations
       .attr("class", "dorling-legend-svg")
@@ -1627,7 +1635,7 @@ export function dorling() {
       .shapePadding(out.colorLegend_.shapePadding)
       .labelAlign(out.colorLegend_.labelAlign)
       .labelOffset(out.colorLegend_.labelOffset)
-      .labelFormat(d3.format(out.colorLegend_.labelFormat))
+      .labelFormat(d3format.format(out.colorLegend_.labelFormat))
       .scale(out.colorScale)
       .labelDelimiter(out.colorLegend_.labelDelimiter)
       .labelWrap(out.colorLegend_.labelWrap)
@@ -1728,7 +1736,7 @@ export function dorling() {
     out.legendSvg.select(".dorling-color-legend").call(legend);
 
     //apply indentation to legend cells
-    let legendCells = d3.select(".legendCells")
+    let legendCells = d3select.select(".legendCells")
     let transform = legendCells.attr("transform");
     let translation = getTranslation(transform);
     legendCells.attr("transform", "translate(" + (translation[0] + out.colorLegend_.cellsTranslateX) + "," + (translation[1] + out.colorLegend_.cellsTranslateY) + ")")
@@ -1855,7 +1863,7 @@ export function dorling() {
 
   var d3_textWrapping = function d3_textWrapping(text, width) {
     text.each(function () {
-      var text = (0, d3.select)(this),
+      var text = (0, d3select.select)(this),
         words = text.text().split(/\s+/).reverse(),
         word,
         line = [],
@@ -1898,7 +1906,7 @@ export function dorling() {
 
     //add to its own svg container on smaller screens and legendsSvg for larger screens
     if (window.innerWidth < out.showLegendWidthThreshold_ || window.innerHeight < out.showLegendHeightThreshold_) {
-      out.nutsSelectorSvg = d3.create("svg");
+      out.nutsSelectorSvg = d3select.create("svg");
       out.nutsSelectorSvg
         .attr("class", "dorling-nuts-selector-svg")
         .attr("height", out.nutsSelectorSvgHeight_)
@@ -2180,7 +2188,7 @@ export function dorling() {
         if (f.properties.id == nutsCode) {
           let name = f.properties.na;
           let id = f.properties.id;
-          let circle = d3.select("#" + id);
+          let circle = d3select.select("#" + id);
           let node = circle.node();
           let pos = getTooltipPositionFromNode(node)
           setTooltip(name, id, pos)
@@ -2203,7 +2211,7 @@ export function dorling() {
   }
 
   function addTooltipToDOM() {
-    return d3
+    return d3select
       .select("body")
       .append("div")
       .attr("class", "dorling-tooltip")
@@ -2219,7 +2227,7 @@ export function dorling() {
     };
     if (out.colors_) {
       if (out.thresholdValues_) {
-        return d3
+        return d3scale
           .scaleThreshold()
           .domain(out.thresholdValues_)
           .range(out.colors_)
@@ -2243,7 +2251,7 @@ export function dorling() {
         } else {
           domain = split(out.colorExtent[0], out.colorExtent[1], 6);
         }
-        return d3
+        return d3scale
           .scaleThreshold()
           .domain(domain)
           .range(["#2d50a0", "#6487c3", "#aab9e1", "#f0cd91", "#e6a532", "#d76e2d"])
@@ -2251,15 +2259,15 @@ export function dorling() {
       }
     } else {
       if (out.thresholdValues_) {
-        return d3
+        return d3scale
           .scaleDiverging()
           .domain([out.colorExtent[0], 0, out.colorExtent[1]])
-          .interpolator(d3[out.colorScheme_]);
+          .interpolator(d3scaleChromatic[out.colorScheme_]);
         //.range();
       } else {
         //default
-        return d3
-          .scaleDivergingSymlog((t) => d3[out.colorScheme_](1 - t))
+        return d3scale
+          .scaleDivergingSymlog((t) => d3scaleChromatic[out.colorScheme_](1 - t))
           .domain([out.colorExtent[0], out.colorExtent[1] / 2, out.colorExtent[1]])
           .nice();
       }
@@ -2272,7 +2280,7 @@ export function dorling() {
    * @return d3.scale
    */
   function defineSizeScale() {
-    let scale = d3.scaleSqrt()
+    let scale = d3scale.scaleSqrt()
       .range([out.minCircleRadius_[out.nutsLevel_], out.maxCircleRadius_[out.nutsLevel_]]).domain(out.sizeExtent);
     return scale;
   }
@@ -2308,7 +2316,7 @@ export function dorling() {
    *
    */
   function zoomed() {
-    out.map.attr("transform", d3.event.transform);
+    out.map.attr("transform", currentEvent.transform);
   }
 
   /**
@@ -2439,9 +2447,9 @@ function indexStat(data, type, out, resolve, reject) {
       }
       let promises = [];
       //totals for current nuts level
-      promises.push(d3.json(`${out.eurostatRESTBaseURL}${out.colorCalculationDatasetCode_}?geoLevel=${nutsParam}&${out.colorCalculationDatasetFilters_}`))
+      promises.push(d3fetch.json(`${out.eurostatRESTBaseURL}${out.colorCalculationDatasetCode_}?geoLevel=${nutsParam}&${out.colorCalculationDatasetFilters_}`))
       //totals for mixNuts injected data nuts level
-      promises.push(d3.json(`${out.eurostatRESTBaseURL}${out.colorCalculationDatasetCode_}?geoLevel=${mixNutsLevel}&${out.mixNutsFilterString}&${out.colorCalculationDatasetFilters_}`))
+      promises.push(d3fetch.json(`${out.eurostatRESTBaseURL}${out.colorCalculationDatasetCode_}?geoLevel=${mixNutsLevel}&${out.mixNutsFilterString}&${out.colorCalculationDatasetFilters_}`))
 
       Promise.all(promises).catch(function (err) {
         // log that I have an error, return the entire array;
@@ -2501,7 +2509,7 @@ function indexStat(data, type, out, resolve, reject) {
       })
     } else {
       //without mixed nuts
-      d3.json(`${out.eurostatRESTBaseURL}${out.colorCalculationDatasetCode_}?geoLevel=${nutsParam}&${out.colorCalculationDatasetFilters_}`).then((totals) => {
+      d3fetch.json(`${out.eurostatRESTBaseURL}${out.colorCalculationDatasetCode_}?geoLevel=${nutsParam}&${out.colorCalculationDatasetFilters_}`).then((totals) => {
         const totalsArr = Object.entries(
           totals.dimension.geo.category.index
         ).map(([k, v]) => ({ id: k, tot: +totals.value[v] || null }));
@@ -2560,7 +2568,7 @@ function indexStat(data, type, out, resolve, reject) {
 function getTotals(data) {
   //get total for each country
   let arr = Object.entries(data);
-  let dataByCountry = Array.from(d3Array.group(arr, (d) => d[0][0] + d[0][1]));
+  let dataByCountry = Array.from(d3array.group(arr, (d) => d[0][0] + d[0][1]));
   let result = {};
   dataByCountry.forEach((country) => {
     let countryTotal = 0;
