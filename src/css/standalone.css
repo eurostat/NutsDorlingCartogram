@@ -3,6 +3,24 @@
         height:95vh !important;
       }
   }
+  /* mobile */
+@media only screen and (max-width: 600px) {
+    .standalone-container {
+        margin-left:1px!important;
+        margin-right:1px!important;
+      }
+      .standalone-dorling {
+        margin-left:1px!important;
+        margin-right:1px!important;
+      }
+      #global{
+        padding-left:1px!important;
+        padding-right:1px!important;
+      }
+      #navbar-desktop {
+padding:2px!important;
+      }
+}
 .standalone-container {
     height:98vh !important;
     margin-left:20px;

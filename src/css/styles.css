@@ -6,16 +6,48 @@ body{
   overflow:hidden;
 }
 
+/* mobile */
+@media only screen and (max-width: 600px) {
+  .dorling-loader{
+      top: 45%!important;
+      left: 40%!important;
+  }
+  .dorling-leaflet-control-zoom, .dorling-leaflet-control-nuts-selector{
+    top:35%!important;
+    bottom:unset!important;
+  }
+  .dorling-attribution {
+    top:53%!important;
+    bottom:unset!important;
+  }
+  .dorling-nuts-selector-div {
+    top:110px!important;
+  }
+  .dorling-legend-div {
+    left:30px!important;
+    z-index: 99999;
+  }
+}
+/* small mobile */
+@media only screen and (max-width: 400px) {
+  .dorling-attribution {
+    display:none!important;
+  }
+}
+
 /* smaller screens: legend changes to toggle mode at 850px width */
 @media only screen and (max-width: 850px) {
+  .standalone-nav {
+margin-bottom: 5px;
+  }
   .dorling-insets{
     top: 40px !important;
     right: 5px !important;
   }
 
   .dorling-legend-div {
-    top: 0px!important;
-    left: 5px!important;
+    top: 0px !important;
+    left: 5px;
   }
   .dorling-legend-container-background .dorling-legend-svg {
     height:545px!important;
