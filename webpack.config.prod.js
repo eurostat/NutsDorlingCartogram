@@ -25,6 +25,7 @@ module.exports = {
     libraryTarget: "umd",
     path: path.resolve(__dirname, "build")
   },
+  devtool: false,
   module: {
     rules: [
       {
