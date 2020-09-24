@@ -274,7 +274,7 @@ export function dorling() {
     if (out.standalone_.infoText) {
       text = out.standalone_.infoText;
     } else {
-      text = "Each bubble represents a region. Its size represents " + out.tooltip_.sizeLabel.toLowerCase() + " and its colour represents " + out.tooltip_.colorLabel.toLowerCase() + ".";
+      text = "Each bubble represents a region. Its size represents " + out.tooltip_.sizeLabel.toLowerCase() + " and its colour represents " + out.tooltip_.colorLabel.toLowerCase() + ". Hover over a region using your mouse in order to read its values. To highlight all regions of the same colour-class, hover over the colours in the legend. In order to change NUTS level, use the radio buttons under 'choose geographic level' where available.";
     }
 
     let templateString = createStandaloneHTMLString(text);

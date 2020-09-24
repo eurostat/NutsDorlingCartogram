@@ -6,6 +6,7 @@ import "./css/styles.css";
 
 //bootstrap
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { modal } from 'bootstrap';
 
 // font awesome
 import { library, dom } from '@fortawesome/fontawesome-svg-core'

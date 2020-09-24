@@ -58,7 +58,7 @@ module.exports = (infoText) => `
                     </button>
                 </div>
                 <div class="modal-body">
-                    <p translate="instructions.text">${infoText}</p>
+                    <p class="dorling-standalone-instructions-text" translate="instructions.text">${infoText}</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-warning" data-dismiss="modal"
