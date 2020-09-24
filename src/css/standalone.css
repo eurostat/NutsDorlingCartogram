@@ -18,7 +18,7 @@
         padding-right:1px!important;
       }
       #navbar-desktop {
-padding:2px!important;
+        padding:2px!important;
       }
 }
 .standalone-container {
@@ -161,8 +161,8 @@ padding:2px!important;
 .nav-link {
     padding: 0
 }
-.navbar{
-    padding-left:0px;
+.navbar {
+    padding-left:0px!important;
 }
 
 @media (min-width: 576px) {
