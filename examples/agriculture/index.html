@@ -6,14 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Agriculture Dorling Cartogram</title>
     <link rel='shortcut icon' type='image/x-icon' href='../../assets/images/favicon.ico' />
-
+    <!-- for cereal select element -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-    <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 
-    <script src="../../build/dorling.js"></script>
+    <script src="../../build/dorling.min.js"></script>
     <!-- overrides when using a select -->
     <style>
         #dorling-cereal-select-container {
@@ -25,14 +21,44 @@
         }
 
         .dorling-legend-div {
-            left: 5px !important;
+            top: 50px !important;
+        }
+
+        .dorling-standalone-dropdown {
             top: 70px !important;
+            left: 40px !important;
         }
 
         @media only screen and (max-width: 850px) {
+            .dorling-standalone-dropdown {
+                left: 70px !important;
+            }
+
             #dorling-cereal-select-container {
-                left: 45px;
+                left: 70px;
                 top: 5px;
+                width: 200px;
+            }
+        }
+
+        @media only screen and (max-width: 400px) {
+            .dorling-standalone-dropdown {
+                left: 50px !important;
+                top: 70px !important;
+            }
+
+            #dorling-cereal-select-container {
+                left: 70px;
+                top: 5px;
+                width: 180px;
+            }
+        }
+
+        /* height threshold for legend toggle button */
+        @media only screen and (max-height: 600px) {
+            .dorling-standalone-dropdown {
+                left: 70px !important;
+                top: 60px !important;
             }
         }
     </style>
@@ -193,8 +219,7 @@
         let simple = getURLParamValue("simple");
         if (!simple) {
             let dropdown = document.getElementById("dorling-cereal-select-container");
-            dropdown.style.top = "90px";
-            dropdown.style.left = "40px";
+            dropdown.classList.add("dorling-standalone-dropdown")
         }
 
         function cerealSelected() {

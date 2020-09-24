@@ -13,18 +13,17 @@ body{
       left: 40%!important;
   }
   .dorling-leaflet-control-zoom, .dorling-leaflet-control-nuts-selector{
-    top:35%!important;
+    top:45px !important;
     bottom:unset!important;
   }
   .dorling-attribution {
-    top:53%!important;
-    bottom:unset!important;
+  display:none!important;
   }
   .dorling-nuts-selector-div {
-    top:110px!important;
+    top:50px!important;
   }
   .dorling-legend-div {
-    left:30px!important;
+    left:40px!important;
     z-index: 99999;
   }
 }
@@ -33,16 +32,19 @@ body{
   .dorling-attribution {
     display:none!important;
   }
+  .dorling-bottom-text-container{
+    font-size:12px!important;
+  }
 }
 
 /* smaller screens: legend changes to toggle mode at 850px width */
 @media only screen and (max-width: 850px) {
   .standalone-nav {
-margin-bottom: 5px;
+  margin-bottom: 5px;
   }
   .dorling-insets{
-    top: 40px !important;
-    right: 5px !important;
+    top: 5px !important;
+    right: 40px !important;
   }
 
   .dorling-legend-div {
@@ -58,8 +60,8 @@ margin-bottom: 5px;
 /* smaller screens: legend changes to toggle mode at 600px height */
 @media only screen and (max-height: 600px) {
   .dorling-insets{
-    top: 40px !important;
-    right: 5px !important;
+    top: 5px !important;
+    right: 40px !important;
   }
   .dorling-tooltip {
     font-size:11px !important;

@@ -1564,7 +1564,7 @@ export function dorling() {
     buttonContainer.classList.add("dorling-leaflet-control-overseas")
     let overseasBtn = document.createElement("div");
     overseasBtn.classList.add("dorling-leaflet-control-overseasBtn")
-    overseasBtn.innerHTML = "<i class='fa fa-globe'></i>";
+    overseasBtn.innerHTML = "<i class='fa fa-globe-europe'></i>";
     overseasBtn.title = "Toggle overseas regions";
     buttonContainer.appendChild(overseasBtn)
     out.dorlingContainer.node().appendChild(buttonContainer);
