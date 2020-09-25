@@ -1524,7 +1524,10 @@ export function dorling() {
         addOverseasButtonToDOM();
       }
 
-      addNutsSelectorButtonToDOM();
+      if (out.showNutsSelector_) {
+        addNutsSelectorButtonToDOM();
+      }
+
     }
   }
 
