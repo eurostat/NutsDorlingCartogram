@@ -1400,7 +1400,6 @@ export function dorling() {
           restartTransition();
         }
       }
-      //restart after 8 seconds
     });
   }
 
