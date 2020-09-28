@@ -36,7 +36,7 @@ export function dorling() {
   out.graticule_ = false;
   out.nutsBorderColor_ = "grey";
   out.showLegendWidthThreshold_ = 850;
-  out.showLegendHeightThreshold_ = 600;
+  out.showLegendHeightThreshold_ = 700;
 
   //d3 force
   // out.circleExaggerationFactor_ = 1.2; //deprecated
