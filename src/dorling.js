@@ -12,7 +12,6 @@ import * as topojson from "topojson";
 import { legendColor } from "d3-svg-legend";
 import $ from 'jquery'
 
-
 const createStandaloneHTMLString = require('./templates/standalone');
 
 /**

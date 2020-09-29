@@ -8,6 +8,8 @@ import "./css/styles.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { modal } from 'bootstrap';
 
+import '@babel/polyfill';
+
 // font awesome
 import { library, dom } from '@fortawesome/fontawesome-svg-core'
 import { faTwitter, faFacebookF } from '@fortawesome/free-brands-svg-icons'
