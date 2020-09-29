@@ -12,6 +12,9 @@ import * as topojson from "topojson";
 import { legendColor } from "d3-svg-legend";
 import $ from 'jquery'
 
+//topojson files as webpack asset import
+// import Data from './data.json'
+
 const createStandaloneHTMLString = require('./templates/standalone');
 
 /**

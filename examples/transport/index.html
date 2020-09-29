@@ -73,7 +73,7 @@
         <div class="input-group-prepend">
             <label class="input-group-text" for="dorling-transport-select">Type of transport..</label>
         </div>
-        <select class="custom-select" id="dorling-transport-select" onchange="transportSelected()">
+        <select class="custom-select" id="dorling-transport-select" onchange="optionSelected()">
             <option value="air" selected>Air passengers</option>
             <option value="freight">Freight</option>
         </select>
@@ -247,7 +247,7 @@
         }
 
 
-        function transportSelected() {
+        function optionSelected() {
             let id = document.getElementById("dorling-transport-select").value;
             //apply config settings
             for (const p in transportConfig[id]) {

@@ -75,7 +75,7 @@
         <div class="input-group-prepend">
             <label class="input-group-text" for="dorling-cereal-select">Type of cereal..</label>
         </div>
-        <select class="custom-select" id="dorling-cereal-select" onchange="cerealSelected()">
+        <select class="custom-select" id="dorling-cereal-select" onchange="optionSelected()">
             <option value="C1110" selected>Common wheat and spelt</option>
             <option value="C1500">Grain maize and corn-cob mix</option>
             <option value="C1300">Barley</option>
@@ -160,9 +160,7 @@
                     ids: ["DE1", "DE2", "DE3", "DE4", "DE5", "DE6", "DE7", "DE8", "DE9", "DEA", "DEB", "DEC", "DED", "DEE", "DEF", "DEG", "UKC", "UKD", "UKE", "UKF", "UKG", "UKH", "UKI", "UKJ", "UKK", "UKL", "UKM", "UKN"]
                 }
             }) //add specified NUTS codes to level 2
-            // .colors(["#3A6ABD", "#789BD8", "#D1D9F1", "#EBC2DE", "#E18FC8", "#A74177"])
             .colors(["#2d50a0", "#6487c3", "#aab9e1", "#f0cd91", "#e6a532", "#d76e2d"])
-            //.thresholdValues([2.5, 5, 7.5, 10, 12.5, 5000])
             .sizeDatasetCode("apro_cpshr")
             .sizeDatasetFilters("precision=1&crops=C1110&strucpro=PR_HU_EU&time=2018")
             .colorDatasetCode("apro_cpshr")
@@ -226,7 +224,7 @@
             dropdown.classList.add("dorling-standalone-dropdown")
         }
 
-        function cerealSelected() {
+        function optionSelected() {
             let id = document.getElementById("dorling-cereal-select").value;
             dorling.sizeDatasetFilters("precision=1&crops=" + id + "&strucpro=PR_HU_EU&time=2018")
                 .colorDatasetFilters("precision=1&crops=" + id + "&strucpro=PR_HU_EU&time=2018")
