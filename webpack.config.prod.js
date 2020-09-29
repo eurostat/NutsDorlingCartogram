@@ -20,7 +20,7 @@ module.exports = {
   entry: ["./src/index.js"],
   output: {
     filename: "dorling.min.js",
-    publicPath: "build",
+    publicPath: "build/",
     library: "NutsDorlingCartogram",
     libraryTarget: "umd",
     path: path.resolve(__dirname, "build")

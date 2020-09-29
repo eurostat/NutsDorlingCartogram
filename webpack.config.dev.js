@@ -8,7 +8,7 @@ module.exports = {
   entry: "./src/index.js",
   output: {
     filename: "dorling.js",
-    publicPath: "build",
+    publicPath: "build/",
     library: "NutsDorlingCartogram",
     libraryTarget: "umd",
     path: path.resolve(__dirname, "build")
