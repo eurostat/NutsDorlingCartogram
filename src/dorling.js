@@ -12,7 +12,6 @@ import * as topojson from "topojson";
 import { legendColor } from "d3-svg-legend";
 import $ from 'jquery'
 
-
 const createStandaloneHTMLString = require('./templates/standalone');
 
 /**
@@ -329,13 +328,13 @@ export function dorling() {
     if (out.nutsLevel_ == 3 && out.sizeDatasetCode_ == "nama_10r_3gdp" && out.sizeDatasetFilters_ == "unit=MIO_EUR&time=2018") {
       promises.push(
         d3fetch.json(
-          `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/3035/nutspt_${out.nutsLevel_}.json`
+          `/assets/topojson/nuts2json/nutspt_${out.nutsLevel_}.json`
         ), //centroids
         d3fetch.json(
-          `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/3035/20M/${out.nutsLevel_}.json`
+          `/assets/topojson/nuts2json/20M/${out.nutsLevel_}.json`
         ), //NUTS
         d3fetch.json(
-          `https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/countries.json`), //countries
+          `/assets/topojson/countries.json`), //countries
         d3fetch.json(
           `${out.eurostatRESTBaseURL}${out.sizeDatasetCode_}?geoLevel=${nutsParam}&unit=MIO_EUR&time=2017&filterNonGeo=1`
         ), //sizeData
@@ -346,15 +345,13 @@ export function dorling() {
     } else {
       promises.push(
         d3fetch.json(
-          `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/3035/nutspt_${out.nutsLevel_}.json`
+          `/assets/topojson/nuts2json/nutspt_${out.nutsLevel_}.json`
         ), //centroids
         d3fetch.json(
-          `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/3035/20M/${out.nutsLevel_}.json`
+          `/assets/topojson/nuts2json/20M/${out.nutsLevel_}.json`
         ), //NUTS
         d3fetch.json(
-          // `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/3035/20M/0.json`
-          //`https://gisco-services.ec.europa.eu/distribution/v2/countries/topojson/countries.json`
-          `https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/countries.json`
+          `/assets/topojson/countries.json`
         ), //countries
         d3fetch.json(
           `${out.eurostatRESTBaseURL}${out.sizeDatasetCode_}?geoLevel=${nutsParam}&${out.sizeDatasetFilters_}&filterNonGeo=1`
@@ -378,7 +375,7 @@ export function dorling() {
       //not currently possible to only request data for certain countries therefore I have to request the whole dataset
       promises.push(
         d3fetch.json(
-          `https://raw.githubusercontent.com/eurostat/Nuts2json/master/2016/3035/nutspt_${nutsLevel}.json`
+          `/assets/topojson/nuts2json/nutspt_${nutsLevel}.json`
         ), //mixLevel centroids
         d3fetch.json(
           `${out.eurostatRESTBaseURL}${out.sizeDatasetCode_}?${out.mixNutsFilterString}&${out.sizeDatasetFilters_}`
@@ -604,7 +601,7 @@ export function dorling() {
 
         if (out.showInsets_) {
           d3fetch.json(
-            `https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/overseas/NUTS${out.nutsLevel_}.json` //prod
+            `/assets/topojson/overseas/NUTS${out.nutsLevel_}.json` //prod
             // `/assets/topojson/overseas/NUTS${out.nutsLevel_}.json` //local 
           ).then((overseasTopo) => {
             addInsets(overseasTopo);
@@ -943,7 +940,7 @@ export function dorling() {
     out.dorlingContainer.node().appendChild(out.insetsSvg.node());
 
     // d3fetch.json(
-    //   `https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/overseas/NUTS${out.nutsLevel_}.json` //prod
+    //   `/assets/topojson/overseas/NUTS${out.nutsLevel_}.json` //prod
     //   // `/assets/topojson/overseas/NUTS${out.nutsLevel_}.json` //local 
     // ).then((overseasTopo) => {
 
