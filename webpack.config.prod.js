@@ -33,6 +33,11 @@ module.exports = {
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
+          options: {
+            babelrc: false,
+            cacheDirectory: true,
+            sourceMaps: false
+          }
         }
       },
       {
