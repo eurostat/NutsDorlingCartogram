@@ -112,8 +112,8 @@ export function dorling() {
   //selectors
   out.nutsSelectorTranslateY_ = { 0: 375, 1: 375, 2: 375, 3: 375 };
   out.showNutsSelector_ = true;
-  out.nutsSelectorSvgHeight_ = 140;
-  out.nutsSelectorSvgWidth_ = 160;
+  out.nutsSelectorSvgHeight_ = 180;
+  out.nutsSelectorSvgWidth_ = 260;
   //overseas inset maps
   out.showInsets_ = true;
   out.insets_ = {
