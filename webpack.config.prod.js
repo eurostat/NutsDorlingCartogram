@@ -1,15 +1,15 @@
 const path = require("path");
-var webpack = require('webpack');
+// var webpack = require('webpack');
 //css
-var OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-const PurgeCSSPlugin = require('purgecss-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+// var OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+// const PurgeCSSPlugin = require('purgecss-webpack-plugin');
+// const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 //js
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+// const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 //analyse build
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 // const PATHS = {
 //   src: path.join(__dirname, 'src')
@@ -33,6 +33,11 @@ module.exports = {
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
+          options: {
+            babelrc: false,
+            cacheDirectory: true,
+            sourceMaps: false
+          }
         }
       },
       {

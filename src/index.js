@@ -1,4 +1,10 @@
 
+import 'core-js/es/symbol/key-for'
+import 'core-js/features/set'
+import 'core-js/stable/array/includes'
+import 'core-js/stable/object/assign'
+
+import 'regenerator-runtime/runtime'
 
 // NutsDorlingCartogram
 import "./css/standalone.css";
@@ -7,8 +13,6 @@ import "./css/styles.css";
 //bootstrap
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { modal } from 'bootstrap';
-
-import '@babel/polyfill';
 
 // font awesome
 import { library, dom } from '@fortawesome/fontawesome-svg-core'
