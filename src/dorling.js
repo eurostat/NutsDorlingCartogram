@@ -34,8 +34,8 @@ export function dorling() {
   out.coastalMargins_ = false;
   out.graticule_ = false;
   out.nutsBorderColor_ = "grey";
-  out.showLegendWidthThreshold_ = 850;
-  out.showLegendHeightThreshold_ = 700; //height (px) at which the legend is loaded in "collapsable" mode
+  out.toggleLegendWidthThreshold_ = 850;
+  out.toggleLegendHeightThreshold_ = 700; //height (px) at which the legend is loaded in "collapsable" mode
 
   //d3 force
   // out.circleExaggerationFactor_ = 1.2; //deprecated
@@ -306,7 +306,7 @@ export function dorling() {
   //main d3 logic
   out.main = function () {
     //add nuts selector on smaller screens
-    if (window.innerWidth < out.showLegendWidthThreshold_ || window.innerHeight < out.showLegendHeightThreshold_) {
+    if (window.innerWidth < out.toggleLegendWidthThreshold_ || window.innerHeight < out.toggleLegendHeightThreshold_) {
       addNutsSelectorToDOM();
     }
 
@@ -604,8 +604,8 @@ export function dorling() {
             `https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/overseas/NUTS${out.nutsLevel_}.json` //prod
           ).then((overseasTopo) => {
             addInsets(overseasTopo);
-            //hide legend and insets on small screens by default
-            if (window.innerWidth < out.showLegendWidthThreshold_ || window.innerHeight < out.showLegendHeightThreshold_) {
+            //hide insets on small screens by default
+            if (window.innerWidth < out.toggleLegendWidthThreshold_ || window.innerHeight < out.toggleLegendHeightThreshold_) {
               out.insetsSvg.node().style.display = "none";
             }
             addMouseEvents();
@@ -1469,9 +1469,11 @@ export function dorling() {
     //append legend div to main container
     out.legendDiv = document.createElement("div")
     out.legendDiv.classList.add("dorling-legend-div");
-    //hide legend and insets on small screens by default
-    if (window.innerWidth < out.showLegendWidthThreshold_ || window.innerHeight < out.showLegendHeightThreshold_) {
-      out.legendDiv.style.visibility = "hidden";
+    //hide legend on small screens by default
+    if (window.innerWidth < out.toggleLegendWidthThreshold_ || window.innerHeight < out.toggleLegendHeightThreshold_) {
+      if (!out.showLegend) {
+        out.legendDiv.style.visibility = "hidden";
+      }
       out.legendDiv.style.left = "50px";
     }
     out.legendDiv.appendChild(out.legendSvg.node());
@@ -1508,12 +1510,11 @@ export function dorling() {
     ctx.insertBefore(rect, textElem);
 
     //if mobile, append leaflet-like button to hide and show the legend + overseas maps
-    if (window.innerWidth < out.showLegendWidthThreshold_ || window.innerHeight < out.showLegendHeightThreshold_) {
+    if (window.innerWidth < out.toggleLegendWidthThreshold_ || window.innerHeight < out.toggleLegendHeightThreshold_) {
       addLegendMenuButtonToDOM();
       if (out.showInsets_) {
         addOverseasButtonToDOM();
       }
-
       if (out.showNutsSelector_) {
         addNutsSelectorButtonToDOM();
       }
@@ -1521,7 +1522,12 @@ export function dorling() {
     }
   }
 
-  out.showLegend = false;
+  //hidden on mobile screens but shown by default otherwise
+  if (window.innerWidth < 410) {
+    out.showLegend = false;
+  } else {
+    out.showLegend = true;
+  }
   function addLegendMenuButtonToDOM() {
     let buttonContainer = document.createElement("div");
     buttonContainer.classList.add("dorling-leaflet-control-legend")
@@ -1534,10 +1540,9 @@ export function dorling() {
     legendBtn.addEventListener("click", function (e) {
       out.showLegend = !out.showLegend;
       // for smaller screens
-      if (window.innerWidth < out.showLegendWidthThreshold_ || window.innerHeight < out.showLegendHeightThreshold_) {
+      if (window.innerWidth < out.toggleLegendWidthThreshold_ || window.innerHeight < out.toggleLegendHeightThreshold_) {
         if (out.showLegend) {
           out.legendDiv.style.visibility = "visible";
-
         } else if (!out.showLegend) {
           out.legendDiv.style.visibility = "hidden";
         }
@@ -1898,7 +1903,7 @@ export function dorling() {
     let outlineSelectedColor = "#022B58";
 
     //add to its own svg container on smaller screens and legendsSvg for larger screens
-    if (window.innerWidth < out.showLegendWidthThreshold_ || window.innerHeight < out.showLegendHeightThreshold_) {
+    if (window.innerWidth < out.toggleLegendWidthThreshold_ || window.innerHeight < out.toggleLegendHeightThreshold_) {
       out.nutsSelectorSvg = d3select.create("svg");
       out.nutsSelectorSvg
         .attr("class", "dorling-nuts-selector-svg")
