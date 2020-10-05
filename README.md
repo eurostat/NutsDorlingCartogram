@@ -1,5 +1,5 @@
 # NutsDorlingCartogram
-Dorling cartogram from NUTS regions with Eurostat statistics
+Dorling cartograms from NUTS regions with Eurostat statistics
 
 <div>
 <img src="assets/images/dorlingPreview.png" alt="preview"/>
