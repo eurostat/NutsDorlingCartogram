@@ -5,6 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel='shortcut icon' type='image/x-icon' href='../../assets/images/favicon.ico' />
+    <script src="../../build/dorling.min.js"></script>
     <title>Air Transport Dorling Cartogram</title>
 
     <!-- overrides when using a select -->
@@ -70,7 +71,7 @@
         <div class="input-group-prepend">
             <label class="input-group-text" for="dorling-transport-select">Type of transport..</label>
         </div>
-        <select class="custom-select" id="dorling-transport-select">
+        <select class="custom-select" id="dorling-transport-select" onchange="optionSelected()">
             <option value="air" selected>Air passengers</option>
             <option value="freight">Freight</option>
         </select>
@@ -242,8 +243,17 @@
             dropdown.classList.add("dorling-standalone-dropdown")
         }
 
+        function optionSelected() {
+            let id = document.getElementById("dorling-transport-select").value;
+            //apply config settings
+            for (const p in transportConfig[id]) {
+                dorling[p](transportConfig[id][p])
+            }
+            dorling.rebuild()
+        }
 
-        <script src="bundle/bundle.js"></script>
+
+    </script>
 </body>
 
 </html>
