@@ -1929,13 +1929,6 @@ export function dorling() {
         .attr("transform", "translate(0, " + out.nutsSelectorTranslateY_[out.nutsLevel_] + ")")
     }
 
-
-
-    //background
-    // out.radioContainer
-    //   .append("rect")
-    //   .attr("class", "dorling-legend-container-background dorling-plugin")
-
     //title
     out.radioContainer.append("text")
       .text("Choose geographic level").attr("class", "dorling-legend-title")
@@ -2105,8 +2098,6 @@ export function dorling() {
       });
     }
   }
-
-
 
   function nutsRadioEventHandler(nuts) {
     // let nuts = evt.currentTarget.value;

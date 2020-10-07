@@ -88,8 +88,7 @@ body{
 /* between 1050w and 600h the copyright hides crete and malta */
 @media only screen and (max-width: 1050px) and (max-height: 700px) {
 .dorling-attribution{
-  left:3px!important;
-  right:unset!important;
+  bottom:7%;
 }
 
 }
@@ -118,8 +117,8 @@ body{
   position: absolute;
   z-index:999;
   display:none;
-  bottom: 115px;
-  left: 35px;
+  bottom: 70px;
+  left: 38px;
 }
 .dorling-nuts-selector-svg {
   overflow: visible;

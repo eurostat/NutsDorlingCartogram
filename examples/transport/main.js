@@ -9,6 +9,11 @@ if (!simple) {
     dropdown.classList.add("dorling-standalone-dropdown")
 }
 
+//add event listeneer on select
+document.getElementById("dorling-transport-select").addEventListener("change", function () {
+    optionSelected();
+})
+
 //air vs freight configs
 let transportConfig = {
     air: {
@@ -133,7 +138,6 @@ let dorling = NutsDorlingCartogram.dorling()
     // .colors(["#3A6ABD", "#789BD8", "#D1D9F1", "#EBC2DE", "#E18FC8", "#A74177"])
     .colors(["#2d50a0", "#6487c3", "#aab9e1", "#f0cd91", "#e6a532", "#d76e2d"])
     .thresholdValues(transportConfig.air.thresholdValues)
-    .showNutsSelector(true)
     .sizeDatasetCode(transportConfig.air.sizeDatasetCode)
     .sizeDatasetFilters(transportConfig.air.sizeDatasetFilters)
     .colorDatasetCode(transportConfig.air.colorDatasetCode)

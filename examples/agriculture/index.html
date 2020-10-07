@@ -6,11 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Agriculture Dorling Cartogram</title>
     <link rel='shortcut icon' type='image/x-icon' href='../../assets/images/favicon.ico' />
-    <!-- for cereal select element -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-
-    <script src="../../build/dorling.min.js"></script>
-    <!-- overrides when using a select -->
     <style>
         #dorling-cereal-select-container {
             width: 350px;
@@ -26,7 +21,7 @@
 
         .dorling-standalone-dropdown {
             top: 70px !important;
-            left: 40px !important;
+            left: 70px !important;
         }
 
         @media only screen and (max-width: 850px) {
@@ -69,13 +64,12 @@
 </head>
 
 <body style="margin:0">
-
     <!-- crop selector -->
     <div class="input-group mb-3" id="dorling-cereal-select-container">
         <div class="input-group-prepend">
             <label class="input-group-text" for="dorling-cereal-select">Type of cereal..</label>
         </div>
-        <select class="custom-select" id="dorling-cereal-select" onchange="optionSelected()">
+        <select class="custom-select" id="dorling-cereal-select">
             <option value="C1110" selected>Common wheat and spelt</option>
             <option value="C1500">Grain maize and corn-cob mix</option>
             <option value="C1300">Barley</option>

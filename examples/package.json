@@ -1,0 +1,6 @@
+{
+    "scripts": {
+        "buildall": "(cd agriculture && npm run build); (cd gdp && npm run build); (cd population && npm run build); (cd tourism && npm run build); (cd transport && npm run build);",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    }
+}

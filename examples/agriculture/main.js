@@ -9,6 +9,11 @@ if (!simple) {
     dropdown.classList.add("dorling-standalone-dropdown")
 }
 
+//add event listeneer on select
+document.getElementById("dorling-cereal-select").addEventListener("change", function () {
+    optionSelected();
+})
+
 //indicator configs
 let cropConfig = {
     C1110: {
