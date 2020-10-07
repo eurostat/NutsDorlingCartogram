@@ -304,6 +304,7 @@ export function dorling() {
     if (out.zoomBtnContainer) out.zoomBtnContainer.remove();
     if (out.footnotesDiv) out.footnotesDiv.remove();
     if (out.attributionDiv) out.attributionDiv.remove();
+    if (out.sourcesDiv) out.sourcesDiv.remove();
   }
   function clearSvg() {
     //empty container of svgs
@@ -1117,11 +1118,10 @@ export function dorling() {
 
 
   function addSourcesToDOM() {
-    if (!out.sourcesDiv) {
-      out.sourcesDiv = document.createElement("div");
-      out.sourcesDiv.classList.add("dorling-sources-container");
-      out.bottomTextContainer.appendChild(out.sourcesDiv);
-    }
+    out.sourcesDiv = document.createElement("div");
+    out.sourcesDiv.classList.add("dorling-sources-container");
+    out.bottomTextContainer.appendChild(out.sourcesDiv);
+
     let colorURL = "https://appsso.eurostat.ec.europa.eu/nui/show.do?dataset=" + out.colorDatasetCode_
     let sizeURL = "https://appsso.eurostat.ec.europa.eu/nui/show.do?dataset=" + out.sizeDatasetCode_
 
