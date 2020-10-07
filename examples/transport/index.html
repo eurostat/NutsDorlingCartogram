@@ -243,16 +243,7 @@
         }
 
 
-        function optionSelected() {
-            let id = document.getElementById("dorling-transport-select").value;
-            //apply config settings
-            for (const p in transportConfig[id]) {
-                dorling[p](transportConfig[id][p])
-            }
-
-            dorling.rebuild()
-        }
-    </script>
+        <script src="bundle/bundle.js"></script>
 </body>
 
 </html>
