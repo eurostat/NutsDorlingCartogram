@@ -289,10 +289,21 @@ export function dorling() {
     out.containerNode_ = d3select.select("#" + out.containerId_);
 
     clearSvg();
+    clearContainers();
     clearBottomText();
     showLoadingSpinner();
     out.main();
     return out;
+  }
+  function clearContainers() {
+    if (out.legendDiv) out.legendDiv.remove();
+    if (out.legendBtn) out.legendBtn.remove();
+    if (out.nutsSelectorDiv) out.nutsSelectorDiv.remove();
+    if (out.nutsSelectorBtn) out.nutsSelectorBtn.remove();
+    if (out.overseasBtn) out.overseasBtn.remove();
+    if (out.zoomBtnContainer) out.zoomBtnContainer.remove();
+    if (out.footnotesDiv) out.footnotesDiv.remove();
+    if (out.attributionDiv) out.attributionDiv.remove();
   }
   function clearSvg() {
     //empty container of svgs
@@ -948,7 +959,6 @@ export function dorling() {
 
     let insets = defineInsets(geojson);
 
-
     //define blur
     var defs = out.insetsSvg.append('defs');
     defs
@@ -1075,8 +1085,8 @@ export function dorling() {
   }
 
   function addZoomButtonsToDOM() {
-    let buttonContainer = document.createElement("div");
-    buttonContainer.classList.add("dorling-leaflet-control-zoom")
+    out.zoomBtnContainer = document.createElement("div");
+    out.zoomBtnContainer.classList.add("dorling-leaflet-control-zoom")
     let zoomIn = document.createElement("div");
     zoomIn.title = "Zoom in";
     zoomIn.classList.add("dorling-leaflet-control-zoom-in")
@@ -1086,9 +1096,9 @@ export function dorling() {
     zoomOut.classList.add("dorling-leaflet-control-zoom-out")
     zoomOut.innerHTML = "-";
     zoomOut.title = "Zoom out";
-    buttonContainer.appendChild(zoomIn)
-    buttonContainer.appendChild(zoomOut)
-    out.dorlingContainer.node().appendChild(buttonContainer);
+    out.zoomBtnContainer.appendChild(zoomIn)
+    out.zoomBtnContainer.appendChild(zoomOut)
+    out.dorlingContainer.node().appendChild(out.zoomBtnContainer);
 
     zoomIn.addEventListener("click", function (e) {
       out.svg.transition().call(out.zoom.scaleBy, 1.5)
@@ -1099,53 +1109,37 @@ export function dorling() {
   }
 
   function addAttributionToDOM() {
-    //HTML
-    let div = document.createElement("div");
-    div.innerHTML = out.attributionText_;
-    div.classList.add("dorling-attribution");
-
-    out.dorlingContainer.node().appendChild(div);
-    //SVG
-    // let cont = out.dorlingContainer.append("svg").attr("class", "dorling-attribution");
-    // let t = cont.append("text").html(out.attributionText_)
-
-    //add background fill
-    // var ctx = cont.node(),
-    //   textElem = t.node(),
-    //   SVGRect = textElem.getBBox();
-
-    // var rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-    // rect.setAttribute("x", SVGRect.x);
-    // rect.setAttribute("y", SVGRect.y);
-    // rect.setAttribute("width", SVGRect.width + 2);
-    // rect.setAttribute("height", SVGRect.height + 2);
-    // rect.setAttribute("fill", "white");
-    // ctx.insertBefore(rect, textElem);
+    out.attributionDiv = document.createElement("div");
+    out.attributionDiv.innerHTML = out.attributionText_;
+    out.attributionDiv.classList.add("dorling-attribution");
+    out.dorlingContainer.node().appendChild(out.attributionDiv);
   }
 
 
   function addSourcesToDOM() {
+    if (!out.sourcesDiv) {
+      out.sourcesDiv = document.createElement("div");
+      out.sourcesDiv.classList.add("dorling-sources-container");
+      out.bottomTextContainer.appendChild(out.sourcesDiv);
+    }
     let colorURL = "https://appsso.eurostat.ec.europa.eu/nui/show.do?dataset=" + out.colorDatasetCode_
     let sizeURL = "https://appsso.eurostat.ec.europa.eu/nui/show.do?dataset=" + out.sizeDatasetCode_
-    let sources = document.createElement("div");
-    sources.classList.add("dorling-sources-container");
+
     let colorSource = document.createElement("div")
     if (out.sizeDatasetName_) {
       colorSource.innerHTML = "Source: Eurostat - access to dataset for <a target='_blank' href='" + sizeURL + "'>" + out.sizeDatasetName_ + "</a> and <a target='_blank' href='" + colorURL + "'>" + out.colorDatasetName_ + " " + " <i class='fas fa-external-link-alt'></i></a>"
-
     } else {
       colorSource.innerHTML = "Source: Eurostat - access to dataset for <a target='_blank' href='" + colorURL + "'>" + out.colorDatasetName_ + " " + "<i class='fas fa-external-link-alt'></i></a>"
-
     }
-    sources.appendChild(colorSource);
-    out.bottomTextContainer.appendChild(sources)
+    out.sourcesDiv.appendChild(colorSource);
+
   }
 
   function addFootnotesToDOM() {
-    let footnotes = document.createElement("div");
-    footnotes.classList.add("dorling-footnotes-container");
-    footnotes.innerHTML = out.footnotesText_;
-    out.bottomTextContainer.appendChild(footnotes)
+    out.footnotesDiv = document.createElement("div");
+    out.footnotesDiv.classList.add("dorling-footnotes-container");
+    out.bottomTextContainer.appendChild(out.footnotesDiv)
+    out.footnotesDiv.innerHTML = out.footnotesText_;
   }
 
   function addMouseEvents() {
@@ -1467,8 +1461,13 @@ export function dorling() {
 
 
     //append legend div to main container
+    // if (!out.legendDiv) {
     out.legendDiv = document.createElement("div")
     out.legendDiv.classList.add("dorling-legend-div");
+    out.legendDiv.appendChild(out.legendSvg.node());
+    out.dorlingContainer.node().appendChild(out.legendDiv);
+    // }
+
     //hide legend on small screens by default
     if (window.innerWidth < out.toggleLegendWidthThreshold_ || window.innerHeight < out.toggleLegendHeightThreshold_) {
       if (!out.showLegend) {
@@ -1476,8 +1475,6 @@ export function dorling() {
       }
       out.legendDiv.style.left = "50px";
     }
-    out.legendDiv.appendChild(out.legendSvg.node());
-    out.dorlingContainer.node().appendChild(out.legendDiv);
 
     //background container
     out.legendContainer = out.legendSvg
@@ -1489,7 +1486,7 @@ export function dorling() {
     addColorLegend();
     addColorLegendExplanation();
     addSizeLegend();
-    if (out.showNutsSelector_ && !out.nutsSelector) {
+    if (out.showNutsSelector_) {
       addNutsSelectorToDOM();
     }
 
@@ -1529,15 +1526,18 @@ export function dorling() {
     out.showLegend = true;
   }
   function addLegendMenuButtonToDOM() {
+
     let buttonContainer = document.createElement("div");
     buttonContainer.classList.add("dorling-leaflet-control-legend")
-    let legendBtn = document.createElement("div");
-    legendBtn.classList.add("dorling-leaflet-control-legendBtn")
-    legendBtn.innerHTML = "≡";
-    legendBtn.title = "Toggle legend";
-    buttonContainer.appendChild(legendBtn)
+    out.legendBtn = document.createElement("div");
+    out.legendBtn.classList.add("dorling-leaflet-control-legendBtn")
+    out.legendBtn.innerHTML = "≡";
+    out.legendBtn.title = "Toggle legend";
+    buttonContainer.appendChild(out.legendBtn)
     out.dorlingContainer.node().appendChild(buttonContainer);
-    legendBtn.addEventListener("click", function (e) {
+
+
+    out.legendBtn.addEventListener("click", function (e) {
       out.showLegend = !out.showLegend;
       // for smaller screens
       if (window.innerWidth < out.toggleLegendWidthThreshold_ || window.innerHeight < out.toggleLegendHeightThreshold_) {
@@ -1556,17 +1556,18 @@ export function dorling() {
     });
   }
 
-  out.showOverseas = false;
+
   function addOverseasButtonToDOM() {
+    out.showOverseas = false;
     let buttonContainer = document.createElement("div");
     buttonContainer.classList.add("dorling-leaflet-control-overseas")
-    let overseasBtn = document.createElement("div");
-    overseasBtn.classList.add("dorling-leaflet-control-overseasBtn")
-    overseasBtn.innerHTML = "<i class='fa fa-globe-europe'></i>";
-    overseasBtn.title = "Toggle overseas regions";
-    buttonContainer.appendChild(overseasBtn)
+    out.overseasBtn = document.createElement("div");
+    out.overseasBtn.classList.add("dorling-leaflet-control-overseasBtn")
+    out.overseasBtn.innerHTML = "<i class='fa fa-globe-europe'></i>";
+    out.overseasBtn.title = "Toggle overseas regions";
+    buttonContainer.appendChild(out.overseasBtn)
     out.dorlingContainer.node().appendChild(buttonContainer);
-    overseasBtn.addEventListener("click", function (e) {
+    out.overseasBtn.addEventListener("click", function (e) {
       out.showOverseas = !out.showOverseas;
       if (out.showOverseas) {
         out.insetsSvg.node().style.display = "block";
@@ -1576,17 +1577,18 @@ export function dorling() {
     });
   }
 
-  out.showNutsLevels = false;
+
   function addNutsSelectorButtonToDOM() {
+    out.showNutsLevels = false;
     let buttonContainer = document.createElement("div");
     buttonContainer.classList.add("dorling-leaflet-control-nuts-selector")
-    let nutsSelectorBtn = document.createElement("div");
-    nutsSelectorBtn.classList.add("dorling-leaflet-control-nuts-selector-btn")
-    nutsSelectorBtn.innerHTML = "<i class='fa fa-ellipsis-v'></i>";
-    nutsSelectorBtn.title = "Select geographic level";
-    buttonContainer.appendChild(nutsSelectorBtn)
+    out.nutsSelectorBtn = document.createElement("div");
+    out.nutsSelectorBtn.classList.add("dorling-leaflet-control-nuts-selector-btn")
+    out.nutsSelectorBtn.innerHTML = "<i class='fa fa-ellipsis-v'></i>";
+    out.nutsSelectorBtn.title = "Select geographic level";
+    buttonContainer.appendChild(out.nutsSelectorBtn)
     out.dorlingContainer.node().appendChild(buttonContainer);
-    nutsSelectorBtn.addEventListener("click", function (e) {
+    out.nutsSelectorBtn.addEventListener("click", function (e) {
       out.showNutsLevels = !out.showNutsLevels;
       if (out.showNutsLevels) {
         out.nutsSelectorDiv.style.display = "block";
@@ -1594,6 +1596,7 @@ export function dorling() {
         out.nutsSelectorDiv.style.display = "none";
       }
     });
+
   }
 
   function addColorLegendExplanation() {
@@ -1890,6 +1893,7 @@ export function dorling() {
    *
    */
   function addNutsSelectorToDOM() {
+
     let radioWidth = 30;
     let radioHeight = 30;
     let radioRadius = 8;
@@ -1916,6 +1920,8 @@ export function dorling() {
       out.nutsSelectorDiv.style.display = "none";
       out.nutsSelectorDiv.appendChild(out.nutsSelectorSvg.node());
       out.dorlingContainer.node().appendChild(out.nutsSelectorDiv);
+
+
       out.radioContainer = out.nutsSelectorSvg
         .append("g")
         .attr("id", "dorling-nuts-selector")
@@ -2097,6 +2103,7 @@ export function dorling() {
         nutsRadioEventHandler(3)
       });
     }
+
   }
 
   function nutsRadioEventHandler(nuts) {
