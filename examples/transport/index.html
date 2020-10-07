@@ -6,9 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel='shortcut icon' type='image/x-icon' href='../../assets/images/favicon.ico' />
     <title>Air Transport Dorling Cartogram</title>
-    <!-- bootstrap for select element styling -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-    <script src="../../build/dorling.min.js"></script>
+
     <!-- overrides when using a select -->
     <style>
         #dorling-transport-select-container {
@@ -67,19 +65,18 @@
 </head>
 
 <body>
-
     <!-- air passenger / freight selector -->
     <div class="input-group mb-3" id="dorling-transport-select-container">
         <div class="input-group-prepend">
             <label class="input-group-text" for="dorling-transport-select">Type of transport..</label>
         </div>
-        <select class="custom-select" id="dorling-transport-select" onchange="optionSelected()">
+        <select class="custom-select" id="dorling-transport-select">
             <option value="air" selected>Air passengers</option>
             <option value="freight">Freight</option>
         </select>
     </div>
 
-    <div id="containerDiv">
+    <div id="containerDiv"></div>
 
     </div>
     <script>
