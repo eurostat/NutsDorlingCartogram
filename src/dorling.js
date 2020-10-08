@@ -995,7 +995,7 @@ export function dorling() {
         return 'translate(' + [x, y] + ')';
       })
       .attr('id', function (d) {
-        return 'inset-' + d.name;
+        return 'inset-' + d.id;
       })
       .attr('clip-path', function (d) {
         return 'url(#clip-inset-' + d.id + ')'
@@ -2185,6 +2185,23 @@ export function dorling() {
           let name = f.properties.na;
           let id = f.properties.id;
           let circle = d3select.select("#" + id);
+          let node = circle.node();
+          let pos = getTooltipPositionFromNode(node)
+          setTooltip(name, id, pos)
+          out.highlightedRegion = nutsCode;
+          return "3px"
+        } else {
+          return "1px"
+        }
+      });
+    }
+
+    if (out.insetCircles) {
+      out.insetCircles.attr("stroke-width", (f) => {
+        if (f.id == nutsCode) {
+          let name = f.name;
+          let id = f.id;
+          let circle = d3select.select("#" + 'inset-' + id);
           let node = circle.node();
           let pos = getTooltipPositionFromNode(node)
           setTooltip(name, id, pos)
