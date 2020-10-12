@@ -9,7 +9,7 @@ const path = require("path");
 // const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 //analyse build
-// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 // const PATHS = {
 //   src: path.join(__dirname, 'src')
@@ -87,7 +87,7 @@ module.exports = {
     // }
   },
   plugins: [
-    // new BundleAnalyzerPlugin();
+    // new BundleAnalyzerPlugin()
     // new MiniCssExtractPlugin(),
     // new PurgeCSSPlugin({
     //   paths: glob.sync(`${PATHS.src}/**/*`, { nodir: true }),

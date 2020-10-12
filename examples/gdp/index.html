@@ -14,7 +14,7 @@
     <script>
         var dorling = NutsDorlingCartogram.dorling()
             .containerId("containerDiv")
-            .title("Gross domestic product")
+            .title("Gross domestic product, 2018")
             .nutsLevel(2)
             // .colors(["#3A6ABD", "#789BD8", "#D1D9F1", "#EBC2DE", "#E18FC8", "#A74177"])
             .colors(["#2d50a0", "#6487c3", "#aab9e1", "#f0cd91", "#e6a532", "#d76e2d"])
@@ -27,7 +27,7 @@
             .maxCircleRadius({ 0: 65, 1: 25, 2: 25, 3: 15 })
             .colorLegend({
                 //https://d3-legend.susielu.com/#color
-                titleWidth: 225,
+                titleWidth: 230,
                 title: "Gross domestic product (€ per inhabitant)",
                 orient: "vertical",
                 shapeRadius: 10,
@@ -39,7 +39,7 @@
                 shape: "circle",
                 titleYOffset: { 0: 220, 1: 150, 2: 150, 3: 150 }, // translate Y for legend title from sizeLegend Y
             })
-            .nutsSelectorTranslateY({ 0: 470, 1: 395, 2: 420, 3: 400 })
+            .nutsSelectorTranslateY({ 0: 450, 1: 385, 2: 385, 3: 380 })
             .sizeLegend({
                 title: "Gross domestic product (€ million)",
                 textFunction: function (d) { return d.toLocaleString("en").replace(/,/gi, " "); },

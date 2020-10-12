@@ -17,6 +17,7 @@
   <script>
     var dorling = NutsDorlingCartogram.dorling()
       .containerId("containerDiv")
+      .title("Total population and population change, 2019 and 2018")
       .nutsLevel(2)
       .colors(["#2d50a0", "#6487c3", "#aab9e1", "#f0cd91", "#e6a532", "#d76e2d"])
       .thresholdValues([-15, -10, 0, 10, 15, 20])
@@ -39,9 +40,9 @@
         labelOffset: 10,
         shape: "circle",
         labelFormat: d3.format(".0f"),
-        titleYOffset: { 0: 220, 1: 150, 2: 150, 3: 130 }, // translate Y for legend title from sizeLegend Y
+        titleYOffset: { 0: 220, 1: 150, 2: 140, 3: 130 }, // translate Y for legend title from sizeLegend Y
       })
-      .nutsSelectorTranslateY({ 0: 465, 1: 405, 2: 400, 3: 395 })
+      .nutsSelectorTranslateY({ 0: 465, 1: 405, 2: 370, 3: 395 })
       .sizeLegend({
         title: "Total population (million)",
         textFunction: function (d) {

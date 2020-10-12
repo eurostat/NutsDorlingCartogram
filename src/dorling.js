@@ -62,7 +62,7 @@ export function dorling() {
   out.pauseButton_ = false;
   out.showBorders_ = true;
   out.legendHeight_ = 550;
-  out.legendWidth_ = 200;
+  out.legendWidth_ = 250;
   //size legend (circle radiuses)
   out.sizeLegend_ = {
     title: "Circle Size",
@@ -80,7 +80,7 @@ export function dorling() {
   //color legend
   out.colorLegend_ = {
     //https://d3-legend.susielu.com/#color
-    titleWidth: 220,
+    titleWidth: 250,
     title: "Circle Colour",
     titleYOffset: { 0: 170, 1: 160, 2: 160, 3: 160 },
     bodyYOffset: { 0: 50, 1: 50, 2: 50, 3: 50 },
@@ -112,11 +112,12 @@ export function dorling() {
   //selectors
   out.nutsSelectorTranslateY_ = { 0: 375, 1: 375, 2: 375, 3: 375 };
   out.showNutsSelector_ = true;
-  out.nutsSelectorSvgHeight_ = 180;
-  out.nutsSelectorSvgWidth_ = 260;
+  out.nutsSelectorSvgHeight_ = 140;
+  out.nutsSelectorSvgWidth_ = 100;
   //overseas inset maps
   out.showInsets_ = true;
   out.insets_ = {
+    height: { 1: 340, 2: 340, 3: 550 },
     titleWidth: 120,
     overseasHeight: 60,
     overseasWidth: 60,
@@ -170,6 +171,8 @@ export function dorling() {
   out.colorCalculationDatasetFilters_ = "";
   //animation loop
   out.playing = true;
+  //mobile
+  out.mobileWidth_ = 410;
   //standalone
   out.standalone_ = {
     infoText: null,
@@ -241,8 +244,15 @@ export function dorling() {
       generateEmbed();
       generateTwitterLink();
       generateFacebook();
+
     } else {
       out.containerNode_.attr("class", "dorling-main-container");
+    }
+
+
+    if (out.standalone_) {
+      //add title between standaloneNav and dorling container
+      addDorlingTitleToDOM();
     }
     addDorlingContainerToDOM();
     addLoadingSpinnerToDOM();
@@ -273,11 +283,18 @@ export function dorling() {
     if (out.standalone_.infoText) {
       text = out.standalone_.infoText;
     } else {
-      text = "Each bubble represents a region. Its size represents " + out.tooltip_.sizeLabel.toLowerCase() + " and its colour represents " + out.tooltip_.colorLabel.toLowerCase() + ". Hover over a region using your mouse in order to read its values. To highlight all regions of the same colour-class, hover over the colours in the legend. In order to change NUTS level, use the radio buttons under 'choose geographic level' where available.";
+      text = "Each bubble represents a NUTS region. Its size represents " + out.tooltip_.sizeLabel.toLowerCase() + " and its colour represents " + out.tooltip_.colorLabel.toLowerCase() + ". Hover over a region using your mouse in order to read its values. To highlight all regions of the same colour-class, simply hover over the colours in the legend. In order to change NUTS level, use the radio buttons under 'choose geographic level' when available.";
     }
-
     let templateString = createStandaloneHTMLString(text);
     container.insertAdjacentHTML("beforeend", templateString);
+  }
+
+  function addDorlingTitleToDOM() {
+    let titleDiv = document.createElement("div");
+    titleDiv.classList.add("dorling-title");
+    titleDiv.innerHTML = out.title_;
+
+    out.containerNode_.node().appendChild(titleDiv);
   }
 
   //e.g. when changing nuts level
@@ -602,12 +619,6 @@ export function dorling() {
           .attr("fill", "#ffffff00")
           .attr("stroke", "#40404000")
           .attr("vector-effect", "non-scaling-stroke");
-
-
-        //responsiveness
-        if (window.innerWidth < 1000) { //coincides with css media rule
-          out.colorLegend_.titleWidth = 170;
-        }
 
         addLegendsToDOM();
 
@@ -946,7 +957,7 @@ export function dorling() {
     out.insetsSvg
       // .attr("viewBox", [0, 0, 272, 605])
       .attr("width", width)
-      .attr("height", out.legendHeight_)
+      .attr("height", out.insets_.height[out.nutsLevel_])
       .attr("class", "dorling-insets " + nutsClass)
     out.dorlingContainer.node().appendChild(out.insetsSvg.node());
 
@@ -1482,10 +1493,17 @@ export function dorling() {
       .attr("id", "dorling-legend-container")
       .attr("opacity", 0);
 
+    addSizeLegend();
+
+    //mobile
+    // if (window.innerWidth < out.mobileWidth_) {
+    //   // move body up to account for the reduction in font sizes on mobile
+    //   out.colorLegend_.bodyYOffset[out.nutsLevel_] = out.colorLegend_.bodyYOffset[out.nutsLevel_] - 30;
+    // }
 
     addColorLegend();
     addColorLegendExplanation();
-    addSizeLegend();
+
     if (out.showNutsSelector_) {
       addNutsSelectorToDOM();
     }
@@ -1506,7 +1524,7 @@ export function dorling() {
     rect.setAttribute("opacity", 0.8);
     ctx.insertBefore(rect, textElem);
 
-    //if mobile, append leaflet-like button to hide and show the legend + overseas maps
+    //if mobile, append leaflet-like button to hide and show the legend , overseas maps & nuts selector
     if (window.innerWidth < out.toggleLegendWidthThreshold_ || window.innerHeight < out.toggleLegendHeightThreshold_) {
       addLegendMenuButtonToDOM();
       if (out.showInsets_) {
@@ -1520,7 +1538,7 @@ export function dorling() {
   }
 
   //hidden on mobile screens but shown by default otherwise
-  if (window.innerWidth < 410) {
+  if (window.innerWidth < out.mobileWidth_) {
     out.showLegend = false;
   } else {
     out.showLegend = true;
@@ -1620,13 +1638,8 @@ export function dorling() {
       .append("g")
       .attr("class", "dorling-color-legend")
 
-    //ff positioning fix
-    if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
-      // Do Firefox-related activities
-      out.colorLegendContainer.attr("transform", "translate(" + out.colorLegend_.translateX + "," + (out.colorLegend_.titleYOffset[out.nutsLevel_] + out.colorLegend_.bodyYOffset[out.nutsLevel_]) + ")")
-    } else {
-      out.colorLegendContainer.attr("transform", "translate(" + out.colorLegend_.translateX + "," + (out.colorLegend_.titleYOffset[out.nutsLevel_] + out.colorLegend_.bodyYOffset[out.nutsLevel_]) + ")")
-    }
+    out.colorLegendContainer.attr("transform", "translate(" + out.colorLegend_.translateX + "," + (out.colorLegend_.titleYOffset[out.nutsLevel_] + out.colorLegend_.bodyYOffset[out.nutsLevel_]) + ")")
+
 
     let legend = legendColor()
       .title("Hover over the different legend classes to highlight them on the map")
@@ -1908,6 +1921,7 @@ export function dorling() {
 
     //add to its own svg container on smaller screens and legendsSvg for larger screens
     if (window.innerWidth < out.toggleLegendWidthThreshold_ || window.innerHeight < out.toggleLegendHeightThreshold_) {
+      marginTop = 15;
       out.nutsSelectorSvg = d3select.create("svg");
       out.nutsSelectorSvg
         .attr("class", "dorling-nuts-selector-svg")
@@ -1933,12 +1947,12 @@ export function dorling() {
         .attr("id", "dorling-nuts-selector")
         .attr("opacity", 0)
         .attr("transform", "translate(0, " + out.nutsSelectorTranslateY_[out.nutsLevel_] + ")")
-    }
 
-    //title
-    out.radioContainer.append("text")
-      .text("Choose geographic level").attr("class", "dorling-legend-title")
-      .attr("transform", "translate(0,28)");
+      //title only on larger screens
+      out.radioContainer.append("text")
+        .text("Select geographic level").attr("class", "dorling-legend-title")
+        .attr("transform", "translate(0,28)");
+    }
 
     //RADIO 0
     if (out.nutsAvailable_.indexOf(0) != -1) {
