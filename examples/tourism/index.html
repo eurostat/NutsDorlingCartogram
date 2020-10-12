@@ -38,10 +38,10 @@
                 labelUnit: " ",
                 labelOffset: 10,
                 shape: "circle",
-                titleYOffset: { 0: 210, 1: 160, 2: 160, 3: 160 }, // translate Y for legend title from sizeLegend Y
-                bodyYOffset: { 0: 75, 1: 70, 2: 70, 3: 70 }, // translate Y for legend body from titleYOffset
+                titleYOffset: { 0: 210, 1: 160, 2: 140 }, // translate Y for legend title from sizeLegend Y
+                bodyYOffset: { 0: 75, 1: 70, 2: 70 }, // translate Y for legend body from titleYOffset
             })
-            .nutsSelectorTranslateY({ 0: 480, 1: 420, 2: 425 })
+            .nutsSelectorTranslateY({ 0: 470, 1: 410, 2: 395 })
             .sizeLegend({
                 title: "Total number of nights spent (million)",
                 textFunction: function (d) {
@@ -56,7 +56,7 @@
                     3: [5000000, 2000000, 100000]
                 },
                 bodyXOffset: { 0: 85, 1: 55, 2: 50 },
-                bodyYOffset: { 0: 165, 1: 110, 2: 105 },
+                bodyYOffset: { 0: 165, 1: 120, 2: 105 },
                 labelsTranslateX: { 0: 90, 1: 45, 2: 40 }
             })
             .tooltip({
