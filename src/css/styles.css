@@ -71,6 +71,9 @@ text-align: center;
 }
 /* small mobile */
 @media only screen and (max-width: 400px) {
+  .dorling-tooltip {
+    font-size:11px !important;
+  }
   .dorling-attribution {
     display:none!important;
   }
