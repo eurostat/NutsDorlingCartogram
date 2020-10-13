@@ -172,7 +172,7 @@ export function dorling() {
   //animation loop
   out.playing = true;
   //mobile
-  out.mobileWidth_ = 410;
+  out.mobileWidth_ = 450;
   //standalone
   out.standalone_ = {
     infoText: null,
