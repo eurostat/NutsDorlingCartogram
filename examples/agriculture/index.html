@@ -31,7 +31,6 @@
             }
 
             #dorling-cereal-select-container {
-                left: 70px;
                 top: 5px;
             }
         }
@@ -46,13 +45,16 @@
                 top: 5px;
                 width: 180px;
             }
+
+            #transport-selector-prepend {
+                display: none;
+            }
         }
 
         /* height threshold for legend toggle button */
         @media only screen and (max-height: 700px) {
             .dorling-standalone-dropdown {
-                left: 70px !important;
-                top: 80px !important;
+                left: 50px !important;
             }
 
             #dorling-cereal-select-container {
@@ -66,7 +68,7 @@
 <body style="margin:0">
     <!-- crop selector -->
     <div class="input-group mb-3" id="dorling-cereal-select-container">
-        <div class="input-group-prepend">
+        <div class="input-group-prepend" id="transport-selector-prepend">
             <label class="input-group-text" for="dorling-cereal-select">Type of cereal..</label>
         </div>
         <select class="custom-select" id="dorling-cereal-select" onchange="optionSelected()">
