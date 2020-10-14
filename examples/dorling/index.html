@@ -14,9 +14,10 @@
     <script src="../../build/dorling.min.js"></script>
     <script>
         var dorling = NutsDorlingCartogram.dorling()
+            .standalone(false)
             .containerId("containerDiv")
-            .title("Population change")
-            .nutsLevel(2)
+            .title("True Dorling Cartogram showing population and population change")
+            .nutsLevel(1)
             .colors(["#2d50a0", "#6487c3", "#aab9e1", "#f0cd91", "#e6a532", "#d76e2d"])
             .thresholdValues([-15, -10, 0, 10, 15, 20])
             .sizeDatasetCode("demo_r_pjangrp3")
@@ -24,7 +25,10 @@
             .sizeDatasetFilters("sex=T&age=TOTAL&unit=NR&time=2019")
             .sizeLegend({
                 title: "Total population (million)",
-                values: { 2: [15e6, 5e6, 1e6] }
+                values: { 2: [15e6, 5e6, 1e6] },
+                bodyXOffset: { '0': 85, '1': 100, '2': 85, '3': 85 },
+                bodyYOffset: { '0': 140, '1': 200, '2': 140, '3': 140 },
+                labelsTranslateX: { 0: 90, 1: 45, 2: 40 },
             })
             .colorDatasetCode("demo_r_gind3")
             .colorDatasetFilters("indic_de=GROWRT&time=2018")
@@ -37,11 +41,11 @@
             .colorLegend({
                 title: "Population change 2018 - 2019 (per 1 000 inhabitants)",
                 titleWidth: 280,
-                titleYOffset: { 0: 170, 1: 140, 2: 140, 3: 140 }, // distance between colorLegend title and sizeLegend
+                titleYOffset: { 0: 170, 1: 240, 2: 140, 3: 140 }, // distance between colorLegend title and sizeLegend
                 bodyYOffset: { 0: 30, 1: 30, 2: 50, 3: 30 }, // distance between colorLegend explanation and colorLegend title
             })
             .legendWidth(500)
-            .nutsSelectorTranslateY({ 0: 405, 1: 375, 2: 375, 3: 375 })
+            .nutsSelectorTranslateY({ 0: 405, 1: 500, 2: 375, 3: 375 })
             .tooltip({
                 colorLabel: "Population change",
                 colorUnit: "per 1 000 inhabitants",
@@ -51,7 +55,8 @@
             .showBorders(false)
             .seaColor("white")
             .translateX(-490)// d3 projection.translate()
-            .collisionStrength(0.1) // d3 force
+            .collisionStrength(1) // d3 force
+            .positionStrength(1) // d3 force
             .build();
     </script>
 </body>
