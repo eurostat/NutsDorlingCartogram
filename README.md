@@ -1,7 +1,7 @@
 # NutsDorlingCartogram
 Dorling cartograms from NUTS regions with Eurostat statistics
 
-![npm bundle size](https://img.shields.io/bundlephobia/min/nutsdorlingcartogram) 
+![npm bundle size](https://img.shields.io/bundlephobia/min/nutsdorlingcartogram)
 ![npm](https://img.shields.io/npm/v/nutsdorlingcartogram)
 
 <div>
