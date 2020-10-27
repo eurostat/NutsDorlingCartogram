@@ -18,7 +18,9 @@ Dorling cartograms from NUTS regions with Eurostat statistics
 
 ## Installation
 
-'npm install nutsdorlingcartogram'
+```properties
+npm install nutsdorlingcartogram
+```  
 
 then 
 ```javascript
