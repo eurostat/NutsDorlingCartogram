@@ -3,6 +3,7 @@ Dorling cartograms from NUTS regions with Eurostat statistics
 
 ![npm bundle size](https://img.shields.io/bundlephobia/min/nutsdorlingcartogram)
 ![npm](https://img.shields.io/npm/v/nutsdorlingcartogram)
+![license](https://img.shields.io/badge/license-EUPL-success)
 
 <div>
 <img src="assets/images/dorlingPreview.png" alt="preview"/>
