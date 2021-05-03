@@ -86,7 +86,7 @@ export function dorling() {
     bodyYOffset: { 0: 50, 1: 50, 2: 50, 3: 50 },
     orient: "vertical",
     cells: null,
-    shape: "rect",
+    shape: "circle",
     shapeRadius: 10,
     shapePadding: 5,
     labelAlign: "middle",
@@ -353,8 +353,8 @@ export function dorling() {
     }
     //data promises
     let promises = [];
-    //add exeption for GDP at NUTS 3 level (no data for 2018 so overrides to 2017 data)
-    if (out.nutsLevel_ == 3 && out.sizeDatasetCode_ == "nama_10r_3gdp" && out.sizeDatasetFilters_ == "unit=MIO_EUR&time=2018") {
+    //add exeption for GDP at NUTS 3 level (no data for latest year so overrides to previous year)
+    if (out.nutsLevel_ == 3 && out.sizeDatasetCode_ == "nama_10r_3gdp" && out.colorDatasetFilters_ == "unit=PPS_EU27_2020_HAB&time=2019") {
       promises.push(
         d3fetch.json(
           `https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/nuts2json/nutspt_${out.nutsLevel_}.json`
@@ -365,10 +365,10 @@ export function dorling() {
         d3fetch.json(
           `https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/countries.json`), //countries
         d3fetch.json(
-          `${out.eurostatRESTBaseURL}${out.sizeDatasetCode_}?geoLevel=${nutsParam}&unit=MIO_EUR&time=2017&filterNonGeo=1`
+          `${out.eurostatRESTBaseURL}${out.sizeDatasetCode_}?geoLevel=${nutsParam}&unit=MIO_EUR&time=2018&filterNonGeo=1`
         ), //sizeData
         d3fetch.json(
-          `${out.eurostatRESTBaseURL}${out.colorDatasetCode_}?geoLevel=${nutsParam}&unit=EUR_HAB&time=2017&filterNonGeo=1`
+          `${out.eurostatRESTBaseURL}${out.colorDatasetCode_}?geoLevel=${nutsParam}&unit=PPS_EU27_2020_HAB&time=2018&filterNonGeo=1`
         ), //colorData
       );
     } else {
