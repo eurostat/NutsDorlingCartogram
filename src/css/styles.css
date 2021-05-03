@@ -406,11 +406,14 @@ font-size:14px;
 /* loading spinner */
 .dorling-loader{
   position: fixed;
-  left: 47%;
-  top: 47%;
+  left: 30%;
+  top: 50%;
   width: 100%;
   height: 100%;
   z-index:9999999;
+}
+.lds-roller {
+  transform: scale(0.65);
 }
 .lds-roller.show {
   display: inline-block;
@@ -498,6 +501,7 @@ font-size:14px;
     transform: rotate(360deg);
   }
 }
+
 
 /* //svg radio buttons  */
 .dorling-radio-button {

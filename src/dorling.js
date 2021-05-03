@@ -1972,7 +1972,7 @@ export function dorling() {
         .attr("r", "" + radioRadius + "")
         .attr("fill", "none")
         .attr("stroke", "black")
-        .attr("stroke-width", "3")
+        .attr("stroke-width", "1")
 
       var dot0 = radio0.append("circle")
         .attr("opacity", radioDotOpacity)
@@ -2004,7 +2004,7 @@ export function dorling() {
         .attr("r", "" + radioRadius + "")
         .attr("fill", "none")
         .attr("stroke", "black")
-        .attr("stroke-width", "3")
+        .attr("stroke-width", "1")
 
       var dot1 = radio1.append("circle")
         .attr("opacity", radioDotOpacity)
@@ -2036,7 +2036,7 @@ export function dorling() {
         .attr("r", "" + radioRadius + "")
         .attr("fill", "none")
         .attr("stroke", "black")
-        .attr("stroke-width", "3")
+        .attr("stroke-width", "1")
 
       var dot2 = radio2.append("circle")
         .attr("opacity", radioDotOpacity)
@@ -2068,7 +2068,7 @@ export function dorling() {
         .attr("r", "" + radioRadius + "")
         .attr("fill", "none")
         .attr("stroke", "black")
-        .attr("stroke-width", "3")
+        .attr("stroke-width", "1")
 
       var dot3 = radio3.append("circle")
         .attr("opacity", radioDotOpacity)
