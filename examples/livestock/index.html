@@ -33,7 +33,7 @@
 
       .dorling-standalone-dropdown {
         top: 12vh !important;
-        left: 70px !important;
+        left: 40px !important;
       }
 
       @media only screen and (max-width: 850px) {
@@ -66,14 +66,13 @@
         }
       }
 
-      /* height threshold for legend toggle button */
+      /* same height threshold for legend toggle button */
       @media only screen and (max-height: 700px) {
         .dorling-standalone-dropdown {
-          left: 50px !important;
+          left: 70px !important;
         }
 
         #dorling-livestock-select-container {
-          left: 50px;
           top: 5px;
         }
       }
@@ -102,17 +101,17 @@
         // swine
         A3100: {
           maxCircleRadius: { 2: 40 },
-          sizeLegend: { values: { 2: [8000, 4000, 100] }, bodyYOffset: { 2: 105 }, bodyXOffset: { 2: 55 } },
+          sizeLegend: { values: { 2: [8000, 4000, 100] }, bodyYOffset: { 2: 120 }, bodyXOffset: { 2: 55 } },
           colorLegend: {
-            titleYOffset: { 2: 145 },
+            titleYOffset: { 2: 165 },
           },
         },
         // bovine
         A2000: {
           maxCircleRadius: { 2: 35 },
-          sizeLegend: { values: { 2: [3500, 1500, 500] }, bodyYOffset: { 2: 105 }, bodyXOffset: { 2: 55 } },
+          sizeLegend: { values: { 2: [3500, 1500, 500] }, bodyYOffset: { 2: 120 }, bodyXOffset: { 2: 55 } },
           colorLegend: {
-            titleYOffset: { 2: 145 },
+            titleYOffset: { 2: 165 },
           },
         },
         // sheep
@@ -120,19 +119,19 @@
           maxCircleRadius: { 2: 40 },
           sizeLegend: {
             values: { 2: [3500, 1500, 500] },
-            bodyYOffset: { 2: 105 },
+            bodyYOffset: { 2: 120 },
             bodyXOffset: { 2: 65 },
             labelsTranslateX: { 2: 70 },
           },
           colorLegend: {
-            titleYOffset: { 2: 145 },
+            titleYOffset: { 2: 165 },
           },
         }, // goats
         A4200: {
           maxCircleRadius: { 2: 40 },
-          sizeLegend: { values: { 2: [1000, 500, 100] }, bodyYOffset: { 2: 105 }, bodyXOffset: { 2: 55 } },
+          sizeLegend: { values: { 2: [1000, 500, 100] }, bodyYOffset: { 2: 120 }, bodyXOffset: { 2: 55 } },
           colorLegend: {
-            titleYOffset: { 2: 145 },
+            titleYOffset: { 2: 165 },
           },
         },
       };
@@ -164,7 +163,7 @@
           labelUnit: " ",
           labelOffset: 10,
           shape: "circle",
-          translateY: 145,
+          translateY: 165,
           titleYOffset:  animalConfig.A3100.colorLegend.titleYOffset,
         })
         .sizeLegend({
