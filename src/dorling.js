@@ -2556,7 +2556,7 @@ function indexStat(data, type, out, resolve, reject) {
           });
 
           // loop the same number of times as there are groups of results in the eurostat REST response
-          for (let i = 1; i < dimensions.length - 1; i++) {
+          for (let i = 1; i < dimensions.length; i++) {
             let pos = (regions.length * i); // position in the values index : 341 | 683 etc;
             Object.entries(
               totals.dimension.geo.category.index
@@ -2572,7 +2572,6 @@ function indexStat(data, type, out, resolve, reject) {
               }
             });
           }
-
 
         } else {
           totalsArr = Object.entries(
