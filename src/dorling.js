@@ -162,6 +162,7 @@ export function dorling() {
   out.sizeDatasetFilters_ = "sex=T&age=TOTAL&unit=NR&time=2018";
   out.colorDatasetCode_ = "demo_r_gind3";
   out.colorDatasetFilters_ = "indic_de=GROWRT&time=2018";
+  out.colorCalculationDimension_ = null;
   out.exclude_ = null; //list of country codes to exclude from the data
   out.EUIds = ["EU", "EU27_2020", "EU28"] //EU ids to omit from size values
   out.colorIsPercentage_ = false;
@@ -1228,8 +1229,7 @@ export function dorling() {
       if (out.tooltip_.colorUnit == "€ per inhabitant") {
         out.tooltipElement.html(`<strong>${name}</strong>
   (${id}) <i>${out.countryNamesIndex_[id[0] + id[1]]}</i><br>
-  ${out.tooltip_.colorLabel}: ${out.tooltip_.colorUnit} <strong>${
-          formatNumber(roundToOneDecimal(out.colorIndicator[id]))
+  ${out.tooltip_.colorLabel}: ${out.tooltip_.colorUnit} <strong>${formatNumber(roundToOneDecimal(out.colorIndicator[id]))
           }</strong> per inhabitant <br>
   ${out.tooltip_.sizeLabel}: ${out.tooltip_.sizeUnit} ${out.tooltip_.sizeValueTextFunction((out.sizeIndicator[id]))} million <br>
   ${out.tooltip_.shareLabel}: ${roundToOneDecimal((out.sizeIndicator[id] /
@@ -1238,8 +1238,7 @@ export function dorling() {
       } else {
         out.tooltipElement.html(`<strong>${name}</strong>
   (${id}) <i>${out.countryNamesIndex_[id[0] + id[1]]}</i><br>
-  ${out.tooltip_.colorLabel}: <strong>${
-          formatNumber(roundToOneDecimal(out.colorIndicator[id]))
+  ${out.tooltip_.colorLabel}: <strong>${formatNumber(roundToOneDecimal(out.colorIndicator[id]))
           }</strong> ${out.tooltip_.colorUnit}<br>
   ${out.tooltip_.sizeLabel}: ${out.tooltip_.sizeValueTextFunction((out.sizeIndicator[id]))} ${out.tooltip_.sizeUnit}<br>
   ${out.tooltip_.shareLabel}: ${roundToOneDecimal((out.sizeIndicator[id] /
@@ -1251,8 +1250,7 @@ export function dorling() {
       if (out.tooltip_.colorUnit == "€ per inhabitant") {
         out.tooltipElement.html(`<strong>${name}</strong>
         (${id}) <i>${out.countryNamesIndex_[id[0] + id[1]]}</i><br>
-        ${out.tooltip_.colorLabel}: €<strong>${
-          formatNumber(roundToOneDecimal(out.colorIndicator[id]))
+        ${out.tooltip_.colorLabel}: €<strong>${formatNumber(roundToOneDecimal(out.colorIndicator[id]))
           }</strong> per inhabitant<br>
         ${out.tooltip_.sizeLabel}: €${formatNumber(roundToOneDecimal(out.sizeIndicator[id]))} million<br>
         ${out.tooltip_.shareLabel}: ${roundToOneDecimal((out.sizeIndicator[id] /
@@ -1261,8 +1259,7 @@ export function dorling() {
       } else {
         out.tooltipElement.html(`<strong>${name}</strong>
         (${id}) <i>${out.countryNamesIndex_[id[0] + id[1]]}</i><br>
-        ${out.tooltip_.colorLabel}: <strong>${
-          formatNumber(roundToOneDecimal(out.colorIndicator[id]))
+        ${out.tooltip_.colorLabel}: <strong>${formatNumber(roundToOneDecimal(out.colorIndicator[id]))
           }</strong> ${out.tooltip_.colorUnit}<br>
         ${out.tooltip_.sizeLabel}: ${formatNumber(roundToOneDecimal(out.sizeIndicator[id]))} ${out.tooltip_.sizeUnit}<br>
         ${out.tooltip_.shareLabel}: ${roundToOneDecimal((out.sizeIndicator[id] /
@@ -2537,9 +2534,52 @@ function indexStat(data, type, out, resolve, reject) {
     } else {
       //without mixed nuts
       d3fetch.json(`${out.eurostatRESTBaseURL}${out.colorCalculationDatasetCode_}?geoLevel=${nutsParam}&${out.colorCalculationDatasetFilters_}`).then((totals) => {
-        const totalsArr = Object.entries(
-          totals.dimension.geo.category.index
-        ).map(([k, v]) => ({ id: k, tot: +totals.value[v] || null }));
+
+        let totalsArr;
+        // for multiple values of a dimension we need to add them all to the total
+        // animals=A3100&animals=A2000&animals=A4100&animals=A4200 should be 4 iterations
+        if (out.colorCalculationDimension_) {
+
+          let regions = Object.keys(totals.dimension.geo.category.index); // 342
+          let values = totals.value;
+          let dimensions = Object.keys(totals.dimension[out.colorCalculationDimension_].category.index);
+
+          // totals for first dimension type
+          totalsArr = Object.entries(
+            totals.dimension.geo.category.index
+          ).map(([k, v]) => {
+            return {
+              id: k,
+              tot: values[v] || null
+            }
+          });
+
+          // loop the same number of times as there are groups of results in the eurostat REST response
+          for (let i = 1; i < dimensions.length - 1; i++) {
+            let pos = (regions.length * i); // position in the values index : 341 | 683 etc;
+            Object.entries(
+              totals.dimension.geo.category.index
+            ).map(([k, v]) => {
+              let regionIndex = totals.dimension.geo.category.index[k];
+              let dimValue = values[regionIndex + pos];
+              if (dimValue) {
+                if (totalsArr[v].tot) {
+                  totalsArr[v].tot = totalsArr[v].tot + dimValue;
+                } else {
+                  totalsArr[v].tot = dimValue;
+                }
+              }
+            });
+          }
+
+
+        } else {
+          totalsArr = Object.entries(
+            totals.dimension.geo.category.index
+          ).map(([k, v]) => ({ id: k, tot: +totals.value[v] || null }));
+        }
+
+
         //merge values array with totals array
         let merged = mergeById(arr, totalsArr);
         //divide each value by the desired total
