@@ -1822,8 +1822,20 @@ export function dorling() {
       .append("circle")
       .attr("fill", "none")
       .attr("stroke", "black")
-      .attr("cy", (d) => -sizeFunction(d))
-      .attr("r", sizeFunction);
+      .attr("cy", (d) => {
+        if (window.devicePixelRatio > 1) {
+          return -sizeFunction(d) / window.devicePixelRatio
+        } else {
+          return -sizeFunction(d);
+        }
+      })
+      .attr("r", (d) => {
+        if (window.devicePixelRatio > 1) {
+          return sizeFunction(d) / window.devicePixelRatio
+        } else {
+          return sizeFunction(d);
+        }
+      });
 
     //labels
     legC
@@ -1831,11 +1843,17 @@ export function dorling() {
       .attr("class", "dorling-size-legend-label")
       //.attr("y", (d) => 9 - 2 * sizeFunction(d))
       .attr("y", (d, i) => {
-        let y
-        if (i == 0) {
-          y = -1 - 2 * sizeFunction(d) + out.sizeLegend_.textOffsetY[out.nutsLevel_]; //add padding for first item
+        let r;
+        if (window.devicePixelRatio > 1) {
+          r= sizeFunction(d) / window.devicePixelRatio
         } else {
-          y = -1 - 2 * sizeFunction(d) + out.sizeLegend_.textOffsetY[out.nutsLevel_];
+          r= sizeFunction(d);
+        }
+        let y;
+        if (i == 0) {
+          y = -1 - 2 * r + out.sizeLegend_.textOffsetY[out.nutsLevel_]; //add padding for first item
+        } else {
+          y = -1 - 2 * r + out.sizeLegend_.textOffsetY[out.nutsLevel_];
         }
         return y + out.sizeLegend_.labelsOffsetY[out.nutsLevel_]
       })
@@ -1853,10 +1871,16 @@ export function dorling() {
       .attr("x1", 2)
       .attr("y1", (d, i) => {
         let y;
-        if (i == 0) {
-          y = -1 - 2 * sizeFunction(d); //add padding
+        let r;
+        if (window.devicePixelRatio > 1) {
+          r= sizeFunction(d) / window.devicePixelRatio
         } else {
-          y = -1 - 2 * sizeFunction(d);
+          r= sizeFunction(d);
+        }
+        if (i == 0) {
+          y = -1 - 2 * r; //add padding
+        } else {
+          y = -1 - 2 * r;
         }
         return y + out.sizeLegend_.labelsOffsetY[out.nutsLevel_];
       })
@@ -1864,10 +1888,16 @@ export function dorling() {
       .attr("x2", out.sizeLegend_.labelsTranslateX[out.nutsLevel_] - 3)
       .attr("y2", (d, i) => {
         let y;
-        if (i == 0) {
-          y = -1 - 2 * sizeFunction(d); //add padding
+        let r;
+        if (window.devicePixelRatio > 1) {
+          r= sizeFunction(d) / window.devicePixelRatio
         } else {
-          y = -1 - 2 * sizeFunction(d);
+          r= sizeFunction(d);
+        }
+        if (i == 0) {
+          y = -1 - 2 * r; //add padding
+        } else {
+          y = -1 - 2 * r;
         }
         return y + out.sizeLegend_.labelsOffsetY[out.nutsLevel_];
       })
