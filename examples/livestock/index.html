@@ -137,19 +137,19 @@
       };
       var dorling = NutsDorlingCartogram.dorling()
         .containerId("containerDiv")
-        .title("Livestock populations at NUTS 2 level, 2019")
+        .title("Livestock populations at NUTS 2 level, 2020")
         .nutsLevel(2)
         .colors(["#2d50a0", "#6487c3", "#aab9e1", "#f0cd91", "#e6a532", "#d76e2d"])
         .thresholdValues([10, 25, 50, 75, 90,100])
         .sizeDatasetCode("agr_r_animal")
-        .sizeDatasetFilters("precision=1&animals=A3100&unit=THS_HD&time=2019")
+        .sizeDatasetFilters("precision=1&animals=A3100&unit=THS_HD&time=2020")
         .colorDatasetCode("agr_r_animal")
         .colorDatasetName("Animal populations")
-        .colorDatasetFilters("precision=1&animals=A3100&unit=THS_HD&time=2019")
+        .colorDatasetFilters("precision=1&animals=A3100&unit=THS_HD&time=2020")
         .colorCalculation("percentage")
         .colorCalculationDatasetCode("agr_r_animal")
         .colorCalculationDimension("animals")
-        .colorCalculationDatasetFilters("precision=1&animals=A3100&animals=A2000&animals=A4100&animals=A4200&unit=THS_HD&time=2019")
+        .colorCalculationDatasetFilters("precision=1&animals=A3100&animals=A2000&animals=A4100&animals=A4200&unit=THS_HD&time=2020")
         .maxCircleRadius(animalConfig.A3100.maxCircleRadius)
         .colorLegend({
           //https://d3-legend.susielu.com/#color
@@ -209,8 +209,8 @@
       function optionSelected() {
         let id = document.getElementById("dorling-livestock-select").value;
         dorling
-          .sizeDatasetFilters("precision=1&animals=" + id + "&unit=THS_HD&time=2019")
-          .colorDatasetFilters("precision=1&animals=" + id + "&unit=THS_HD&time=2019")
+          .sizeDatasetFilters("precision=1&animals=" + id + "&unit=THS_HD&time=2020")
+          .colorDatasetFilters("precision=1&animals=" + id + "&unit=THS_HD&time=2020")
           .maxCircleRadius(animalConfig[id].maxCircleRadius);
         if (animalConfig[id].sizeLegend) {
           dorling.sizeLegend(animalConfig[id].sizeLegend);
