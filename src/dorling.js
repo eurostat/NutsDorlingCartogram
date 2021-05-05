@@ -1308,7 +1308,13 @@ export function dorling() {
       out.insetCircles
         .transition()
         .duration(1000)
-        .attr("r", (f) => sizeFunction(+out.sizeIndicator[f.featureCollection.features[0].properties.id]))
+        .attr("r", (f) => {
+          if (window.devicePixelRatio > 1) {
+            return sizeFunction(+out.sizeIndicator[f.featureCollection.features[0].properties.id]) / window.devicePixelRatio
+          } else {
+            return sizeFunction(+out.sizeIndicator[f.featureCollection.features[0].properties.id]);
+          }
+        })
         .attr("fill", (f) => colorFunction(+out.colorIndicator[f.featureCollection.features[0].properties.id]))
         .attr("stroke", "black");
     }
