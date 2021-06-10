@@ -27,21 +27,21 @@
     <script>
         var dorling = NutsDorlingCartogram.dorling()
             .containerId("containerDiv")
-            .title("Gross domestic product, 2018")
+            .title("Gross domestic product, 2019")
             .nutsLevel(2)
             // .colors(["#3A6ABD", "#789BD8", "#D1D9F1", "#EBC2DE", "#E18FC8", "#A74177"])
             .colors(["#2d50a0", "#6487c3", "#aab9e1", "#f0cd91", "#e6a532", "#d76e2d"])
             .thresholdValues([10000, 20000, 30200, 40000, 50000, 1000000])
             .sizeDatasetCode("nama_10r_3gdp")
-            .sizeDatasetFilters("unit=MIO_EUR&time=2018")
+            .sizeDatasetFilters("unit=MIO_EUR&time=2019")
             .colorDatasetCode("nama_10r_3gdp")
             .colorDatasetName("GDP")
-            .colorDatasetFilters("unit=EUR_HAB&time=2018")
+            .colorDatasetFilters("unit=EUR_HAB&time=2019")
             .maxCircleRadius({ 0: 65, 1: 35, 2: 35, 3: 20 })
             .colorLegend({
                 //https://d3-legend.susielu.com/#color
                 titleWidth: 230,
-                title: "Gross domestic product (€ per inhabitant)",
+                title: "Gross domestic product (PPS per inhabitant)",
                 orient: "vertical",
                 shapeRadius: 10,
                 shapePadding: 5,
@@ -68,15 +68,15 @@
             })
             .tooltip({
                 colorLabel: "Gross domestic product",
-                colorUnit: "€ per inhabitant",
+                colorUnit: "PPS per inhabitant",
                 sizeLabel: "Gross domestic product",
                 sizeUnit: "€ million ",
                 shareLabel: "Share of national gross domestic product",
             })
-            .exclude(["MK", "ME", "TR", "AL", "RS"])
+            .exclude(["MK", "ME", "TR", "AL", "RS", "UK"])
             .graticule(false)
             .showFootnotes(true)
-            .footnotesText(" Data at NUTS 3 level is from 2017. Data for France not available at NUTS 3 level.")
+            .footnotesText("Data at NUTS 3 level is from 2018.")
             .build();
 
     </script>

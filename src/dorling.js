@@ -44,7 +44,8 @@ export function dorling() {
   out.collisionStrength_ = 0.7;
   //circle radius
   out.minCircleRadius_ = { '0': 1.5, '1': 1.5, '2': 1.5, '3': 1.5 };
-  out.maxCircleRadius_ = { '0': 20, '1': 20, '2': 20, '3': 20 }
+  out.maxCircleRadius_ = { '0': 20, '1': 20, '2': 20, '3': 20 };
+  out.circleSizeFunction_ = null; // lets user define custom d3 scale function
   //d3-geo
   out.translateX_ = -350; //-390;
   out.translateY_ = 1120; //1126;
@@ -155,6 +156,8 @@ export function dorling() {
   out.nutsAvailable_ = [0, 1, 2, 3] //available nuts levels
   out.mixNuts_ = { 0: null, 1: null, 2: null, 3: null } // e.g. {2:{UK:1, DE:1}} adds UK and DE level 1 nuts to level 2
   out.eurostatRESTBaseURL = "https://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/";
+  out.Nuts2jsonBaseURL = "https://raw.githubusercontent.com/eurostat/Nuts2json/master/2021/3035/20M/";
+  out.dataExplorerBaseURL_ = "https://appsso.eurostat.ec.europa.eu/nui/show.do?dataset=";
   out.nutsLevel_ = 2;
   out.sizeDatasetCode_ = "demo_r_pjangrp3";
   out.sizeDatasetName_ = null;
@@ -359,37 +362,47 @@ export function dorling() {
     if (out.nutsLevel_ == 3 && out.sizeDatasetCode_ == "nama_10r_3gdp" && out.colorDatasetFilters_ == "unit=PPS_EU27_2020_HAB&time=2019") {
       promises.push(
         d3fetch.json(
+          //centroids
           `https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/nuts2json/nutspt_${out.nutsLevel_}.json`
-        ), //centroids
+        ),
         d3fetch.json(
-          `https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/nuts2json/20M/${out.nutsLevel_}.json`
-        ), //NUTS
+          //NUTS
+          `${out.Nuts2jsonBaseURL}${out.nutsLevel_}.json`
+        ),
         d3fetch.json(
-          `https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/countries.json`), //countries
+          //countries
+          `https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/countries.json`),
         d3fetch.json(
+          //sizeData
           `${out.eurostatRESTBaseURL}${out.sizeDatasetCode_}?geoLevel=${nutsParam}&unit=MIO_EUR&time=2018&filterNonGeo=1`
-        ), //sizeData
+        ),
         d3fetch.json(
+          //colorData
           `${out.eurostatRESTBaseURL}${out.colorDatasetCode_}?geoLevel=${nutsParam}&unit=PPS_EU27_2020_HAB&time=2018&filterNonGeo=1`
-        ), //colorData
+        ),
       );
     } else {
       promises.push(
         d3fetch.json(
+          //centroids
           `https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/nuts2json/nutspt_${out.nutsLevel_}.json`
-        ), //centroids
+        ),
         d3fetch.json(
-          `https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/nuts2json/20M/${out.nutsLevel_}.json`
-        ), //NUTS
+          //NUTS
+          `${out.Nuts2jsonBaseURL}${out.nutsLevel_}.json`
+        ),
         d3fetch.json(
+          //countries
           `https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/countries.json`
-        ), //countries
+        ),
         d3fetch.json(
+          //sizeData
           `${out.eurostatRESTBaseURL}${out.sizeDatasetCode_}?geoLevel=${nutsParam}&${out.sizeDatasetFilters_}&filterNonGeo=1`
-        ), //sizeData
+        ),
         d3fetch.json(
+          //colorData
           `${out.eurostatRESTBaseURL}${out.colorDatasetCode_}?geoLevel=${nutsParam}&${out.colorDatasetFilters_}&filterNonGeo=1`
-        ), //colorData
+        ),
       );
     }
 
@@ -567,7 +580,7 @@ export function dorling() {
             .enter().append("path").attr("d", out.path).attr("class", "dorling-graticule");
         }
 
-
+        // cartograms with borders
         if (out.showBorders_) {
           out.countries = out.map.append("path")
             .datum(topojson.mesh(out.nuts0, out.nuts0.objects.countries, function (a, b) { return a === b }))
@@ -575,10 +588,11 @@ export function dorling() {
             .attr("vector-effect", "non-scaling-stroke")
             .attr("class", "dorling-cntrg");
 
+          // nutsrg
           out.nuts = out.map.append("g").attr("id", "dorling-nuts").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.nutsrg).features)
-            .enter().append("path").attr("d", out.path).attr("class", function (bn) {
-              //exclude non-eu
-              if (out.exclude_.indexOf(bn.properties.id.substring(0, 2)) == -1) {
+            .enter().append("path").attr("d", out.path).attr("class", function (rg) {
+              //colour excluded regions differently
+              if (out.exclude_.indexOf(rg.properties.id.substring(0, 2)) == -1) {
                 return "nutsrg"
               } else {
                 return "cntrg"
@@ -586,21 +600,28 @@ export function dorling() {
             });
         }
 
-        //nuts
+        // nutsbn
         out.nutsBorders = out.map.append("g").attr("id", "dorling-nuts-borders").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.nutsbn).features)
           .enter().append("path").attr("d", out.path)
           .attr("vector-effect", "non-scaling-stroke")
           .attr("stroke", out.nutsBorderColor_).attr("fill", "none").attr("class", function (f) {
-            let c = "";
+            let c;
             if (f.properties.co === "T") {
-              c = c + "coastal"
-            }
-            //hide non-EU borders
-            if (f.properties.eu !== "T" && f.properties.efta !== "T") {
-              c = c + "dorling-no-data";
+              c = "coastal"
+            } else {
+              //hide non-EU / EFTA borders
+              // https://github.com/eurostat/Nuts2json/issues/38
+              if (f.properties.eu !== "T" && f.properties.cc == "T") {
+                c = "dorling-no-data";
+              }
+              // exclude uk when excluded
+              if (out.exclude_.indexOf('UK') !== -1) {
+                if (f.properties.eu !== "T" && f.properties.efta !== "T") {
+                  c = "dorling-no-data";
+                }
+              }
             }
             return c
-            // }
           });
 
         //define region centroids
@@ -1135,14 +1156,14 @@ export function dorling() {
     out.sourcesDiv.classList.add("dorling-sources-container");
     out.bottomTextContainer.appendChild(out.sourcesDiv);
 
-    let colorURL = "https://appsso.eurostat.ec.europa.eu/nui/show.do?dataset=" + out.colorDatasetCode_
-    let sizeURL = "https://appsso.eurostat.ec.europa.eu/nui/show.do?dataset=" + out.sizeDatasetCode_
+    let colorURL = out.dataExplorerBaseURL_ + out.colorDatasetCode_
+    let sizeURL = out.dataExplorerBaseURL_+ out.sizeDatasetCode_
 
     let colorSource = document.createElement("div")
     if (out.sizeDatasetName_) {
-      colorSource.innerHTML = "Source: Eurostat - access to dataset for <a target='_blank' href='" + sizeURL + "'>" + out.sizeDatasetName_ + "</a> and <a target='_blank' href='" + colorURL + "'>" + out.colorDatasetName_ + " " + " <i class='fas fa-external-link-alt'></i></a>"
+      colorSource.innerHTML = "Source: Eurostat - <a target='_blank' href='" + sizeURL + "'> access to dataset </a>  <a target='_blank' href='" + colorURL + "'>" + out.colorDatasetName_ + " " + " access to dataset <i class='fas fa-external-link-alt'></i></a>"
     } else {
-      colorSource.innerHTML = "Source: Eurostat - access to dataset for <a target='_blank' href='" + colorURL + "'>" + out.colorDatasetName_ + " " + "<i class='fas fa-external-link-alt'></i></a>"
+      colorSource.innerHTML = "Source: Eurostat - <a target='_blank' href='" + colorURL + "'> access to dataset <i class='fas fa-external-link-alt'>  </i></a>"
     }
     out.sourcesDiv.appendChild(colorSource);
 
@@ -1851,9 +1872,9 @@ export function dorling() {
       .attr("y", (d, i) => {
         let r;
         if (window.devicePixelRatio > 1) {
-          r= sizeFunction(d) / window.devicePixelRatio
+          r = sizeFunction(d) / window.devicePixelRatio
         } else {
-          r= sizeFunction(d);
+          r = sizeFunction(d);
         }
         let y;
         if (i == 0) {
@@ -1879,9 +1900,9 @@ export function dorling() {
         let y;
         let r;
         if (window.devicePixelRatio > 1) {
-          r= sizeFunction(d) / window.devicePixelRatio
+          r = sizeFunction(d) / window.devicePixelRatio
         } else {
-          r= sizeFunction(d);
+          r = sizeFunction(d);
         }
         if (i == 0) {
           y = -1 - 2 * r; //add padding
@@ -1896,9 +1917,9 @@ export function dorling() {
         let y;
         let r;
         if (window.devicePixelRatio > 1) {
-          r= sizeFunction(d) / window.devicePixelRatio
+          r = sizeFunction(d) / window.devicePixelRatio
         } else {
-          r= sizeFunction(d);
+          r = sizeFunction(d);
         }
         if (i == 0) {
           y = -1 - 2 * r; //add padding
@@ -2341,7 +2362,7 @@ export function dorling() {
    * @return d3.scale
    */
   function defineSizeScale() {
-    let scale = d3scale.scaleSqrt()
+    let scale = out.circleSizeFunction_ || d3scale.scaleSqrt()
       .range([out.minCircleRadius_[out.nutsLevel_], out.maxCircleRadius_[out.nutsLevel_]]).domain(out.sizeExtent);
     return scale;
   }
