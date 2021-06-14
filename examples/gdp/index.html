@@ -23,12 +23,13 @@
 
 <body style="margin:0">
     <div id="containerDiv"></div>
-    <script src="../../build/dorling.min.js"></script>
+    <script src="../../build/dorling.js"></script>
     <script>
         var dorling = NutsDorlingCartogram.dorling()
             .containerId("containerDiv")
             .title("Gross domestic product, 2019")
             .nutsLevel(2)
+            .nutsYear(2016)
             // .colors(["#3A6ABD", "#789BD8", "#D1D9F1", "#EBC2DE", "#E18FC8", "#A74177"])
             .colors(["#2d50a0", "#6487c3", "#aab9e1", "#f0cd91", "#e6a532", "#d76e2d"])
             .thresholdValues([10000, 20000, 30200, 40000, 50000, 1000000])

@@ -156,9 +156,10 @@ export function dorling() {
   out.nutsAvailable_ = [0, 1, 2, 3] //available nuts levels
   out.mixNuts_ = { 0: null, 1: null, 2: null, 3: null } // e.g. {2:{UK:1, DE:1}} adds UK and DE level 1 nuts to level 2
   out.eurostatRESTBaseURL = "https://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/";
-  out.Nuts2jsonBaseURL = "https://raw.githubusercontent.com/eurostat/Nuts2json/master/2021/3035/20M/";
+  out.Nuts2jsonBaseURL = '';
   out.dataExplorerBaseURL_ = "https://appsso.eurostat.ec.europa.eu/nui/show.do?dataset=";
   out.nutsLevel_ = 2;
+  out.nutsYear_ = 2016;
   out.sizeDatasetCode_ = "demo_r_pjangrp3";
   out.sizeDatasetName_ = null;
   out.colorDatasetName_ = "";
@@ -343,6 +344,9 @@ export function dorling() {
     if (window.innerWidth < out.toggleLegendWidthThreshold_ || window.innerHeight < out.toggleLegendHeightThreshold_) {
       addNutsSelectorToDOM();
     }
+
+    //set base URL for retrieving NUTS geometries
+    out.Nuts2jsonBaseURL = `https://raw.githubusercontent.com/eurostat/Nuts2json/master/${out.nutsYear_}/3035/20M/`;
 
     if (out.nutsLevel_ == 0) {
       out.showInsets_ = false;
