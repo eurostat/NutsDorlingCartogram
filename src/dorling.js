@@ -158,6 +158,9 @@ export function dorling() {
   out.eurostatRESTBaseURL = "https://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/";
   out.Nuts2jsonBaseURL = '';
   out.dataExplorerBaseURL_ = "https://appsso.eurostat.ec.europa.eu/nui/show.do?dataset=";
+  out.dataBrowserBaseURL_ = "https://ec.europa.eu/eurostat/databrowser/bookmark/";
+  out.customSourceURL_ = null;
+
   out.nutsLevel_ = 2;
   out.nutsYear_ = 2016;
   out.sizeDatasetCode_ = "demo_r_pjangrp3";
@@ -615,12 +618,12 @@ export function dorling() {
             } else {
               //hide non-EU / EFTA borders
               // https://github.com/eurostat/Nuts2json/issues/38
-              if (f.properties.eu !== "T" && f.properties.cc == "T") {
+              if (f.properties.eu == "F" && f.properties.cc == "T") {
                 c = "dorling-no-data";
               }
               // exclude uk when excluded
               if (out.exclude_.indexOf('UK') !== -1) {
-                if (f.properties.eu !== "T" && f.properties.efta !== "T") {
+                if (f.properties.eu == "F" && f.properties.efta == "F" && f.properties.cc == "F"  && f.properties.co == "F" && f.properties.oth == "T") {
                   c = "dorling-no-data";
                 }
               }
@@ -1161,14 +1164,16 @@ export function dorling() {
     out.bottomTextContainer.appendChild(out.sourcesDiv);
 
     let colorURL = out.dataExplorerBaseURL_ + out.colorDatasetCode_
-    let sizeURL = out.dataExplorerBaseURL_+ out.sizeDatasetCode_
-
-    let colorSource = document.createElement("div")
-    if (out.sizeDatasetName_) {
-      colorSource.innerHTML = "Source: Eurostat - <a target='_blank' href='" + sizeURL + "'> access to dataset </a>  <a target='_blank' href='" + colorURL + "'>" + out.colorDatasetName_ + " " + " access to dataset <i class='fas fa-external-link-alt'></i></a>"
+    //let sizeURL = out.dataExplorerBaseURL_+ out.sizeDatasetCode_
+    let colorSource = document.createElement("div");
+      
+    if (out.customSourceURL_) {
+      colorSource.innerHTML = "Source: Eurostat - <a target='_blank' href='" + out.customSourceURL_ + "'> access to dataset <i class='fas fa-external-link-alt'>  </i></a>";
     } else {
-      colorSource.innerHTML = "Source: Eurostat - <a target='_blank' href='" + colorURL + "'> access to dataset <i class='fas fa-external-link-alt'>  </i></a>"
+      colorSource.innerHTML = "Source: Eurostat - <a target='_blank' href='" + colorURL + "'> access to dataset <i class='fas fa-external-link-alt'>  </i></a>";
     }
+
+
     out.sourcesDiv.appendChild(colorSource);
 
   }
