@@ -101,7 +101,7 @@
     <script src="./lib/d3-format.v2.min.js"></script>
     <script src="./lib/d3-interpolate.v2.min.js"></script>
     <script src="./lib/d3-scale.v3.min.js"></script>
-    <script src="../../build/dorling.min.js"></script>
+    <script src="../../build/dorling.js"></script>
     <script>
       let animalConfig = {
         // swine
@@ -146,6 +146,13 @@
         .title("Share of total regional livestock (%), 2019")
         .nutsLevel(2)
         .nutsYear(2016)
+        .mixNuts({
+          // use level 1 instead of level 2 for the following regions (adds them to level 2)
+          2: {
+            level: 1,
+            ids: ["DE1", "DE2", "DE3", "DE4", "DE5", "DE6", "DE7", "DE8", "DE9", "DEA", "DEB", "DEC", "DED", "DEE", "DEF", "DEG"],
+          },
+        })
         .colors(["#2d50a0", "#6487c3", "#aab9e1", "#f0cd91", "#e6a532", "#d76e2d"])
         .thresholdValues([10, 25, 50, 75, 90, 100])
         .sizeDatasetCode("agr_r_animal")
@@ -192,7 +199,7 @@
           shareUnit: "%",
         })
         .showFootnotes(true)
-        .footnotesText("")
+        .footnotesText("NUTS 1 data shown for Germany.")
         .exclude(["MK", "ME", "TR", "AL", "RS", "UK"])
         .showNutsSelector(false)
         .build();

@@ -623,7 +623,7 @@ export function dorling() {
               }
               // exclude uk when excluded
               if (out.exclude_.indexOf('UK') !== -1) {
-                if (f.properties.eu == "F" && f.properties.efta == "F" && f.properties.cc == "F"  && f.properties.co == "F" && f.properties.oth == "T") {
+                if (f.properties.eu == "F" && f.properties.efta == "F" && f.properties.cc == "F" && f.properties.co == "F" && f.properties.oth == "T") {
                   c = "dorling-no-data";
                 }
               }
@@ -1166,7 +1166,7 @@ export function dorling() {
     let colorURL = out.dataExplorerBaseURL_ + out.colorDatasetCode_
     //let sizeURL = out.dataExplorerBaseURL_+ out.sizeDatasetCode_
     let colorSource = document.createElement("div");
-      
+
     if (out.customSourceURL_) {
       colorSource.innerHTML = "Source: Eurostat - <a target='_blank' href='" + out.customSourceURL_ + "'> access to dataset <i class='fas fa-external-link-alt'>  </i></a>";
     } else {
@@ -2509,7 +2509,7 @@ function indexStat(data, type, out, resolve, reject) {
   const arr = Object.entries(
     data.dimension.geo.category.index
   ).map(([key, val]) => ({ id: key, val: +data.value[val] || null }));
-  let ind = {};
+  let ind = {}; //index
 
   //if the color value is a percentage, divide each colorValue by its relevant total from colorPercentageCalculationData
   if (out.colorCalculation_ && type == "color") {
@@ -2539,7 +2539,7 @@ function indexStat(data, type, out, resolve, reject) {
       let promises = [];
       //totals for current nuts level
       promises.push(d3fetch.json(`${out.eurostatRESTBaseURL}${out.colorCalculationDatasetCode_}?geoLevel=${nutsParam}&${out.colorCalculationDatasetFilters_}`))
-      //totals for mixNuts injected data nuts level
+      //totals for mixNuts injected data (of a different nuts level)
       promises.push(d3fetch.json(`${out.eurostatRESTBaseURL}${out.colorCalculationDatasetCode_}?geoLevel=${mixNutsLevel}&${out.mixNutsFilterString}&${out.colorCalculationDatasetFilters_}`))
 
       Promise.all(promises).catch(function (err) {
@@ -2548,50 +2548,152 @@ function indexStat(data, type, out, resolve, reject) {
         return promises;
       }).then((res) => {
         //full array of resolved promises
-        let totals = res[0];
-        let mixTotals = res[1]
-        //mixNuts
-        const mixTotalsArr = Object.entries(
-          mixTotals.dimension.geo.category.index
-        ).map(([k, v]) => ({ id: k, tot: +mixTotals.value[v] || null }));
-        let mixNutsMerged = mergeById(out.mixNutsColorArr, mixTotalsArr);
-        for (let i = 0; i < mixNutsMerged.length; i++) {
-          let value = mixNutsMerged[i].val;
-          let total = mixNutsMerged[i].tot;
-          let indicator;
-          if (out.colorCalculation_ == "percentage") {
-            indicator = ((value / total) * 100);
-          } else if (out.colorCalculation_ == "per") {
-            if (out.colorCalculationFunction_) {
-              indicator = out.colorCalculationFunction_(value, total)
-            } else {
-              indicator = total / value;
-            }
-          }
-          ind[mixNutsMerged[i].id] = indicator || null;
-        }
+        let totals = res[0]; //(current nuts level)
+        let mixTotals = res[1] //(differnt nuts level)
 
-        //normal
-        const totalsArr = Object.entries(
-          totals.dimension.geo.category.index
-        ).map(([k, v]) => ({ id: k, tot: +totals.value[v] || null }));
-        //merge values array with totals array
-        let merged = mergeById(arr, totalsArr);
-        //divide each value by the desired total
-        for (let i = 0; i < merged.length; i++) {
-          let value = merged[i].val;
-          let total = merged[i].tot;
-          let indicator;
-          if (out.colorCalculation_ == "percentage") {
-            indicator = ((value / total) * 100);
-          } else if (out.colorCalculation_ == "per") {
-            if (out.colorCalculationFunction_) {
-              indicator = out.colorCalculationFunction_(value, total)
-            } else {
-              indicator = total / value;
+
+        let mixedTotalsArr; // array holding the totals of the regions being mixed in (those of a different NUTS level to the rest)
+
+        // for multiple values of a dimension we need to add them all to the total
+        // animals=A3100&animals=A2000&animals=A4100&animals=A4200 should be 4 iterations
+        if (out.colorCalculationDimension_) {
+
+          // NORMAL REGIONS
+
+          let regions = Object.keys(totals.dimension.geo.category.index); // 342
+          let values = totals.value;
+          let dimensions = Object.keys(totals.dimension[out.colorCalculationDimension_].category.index);
+          // totals for first dimension type of normal totals
+          let normaltotalsArr = Object.entries(
+            totals.dimension.geo.category.index
+          ).map(([k, v]) => {
+            return {
+              id: k,
+              tot: values[v] || null
             }
+          });
+
+          // INJECTED REGIONS
+
+          let injRegions = Object.keys(mixTotals.dimension.geo.category.index); // 342
+          let injValues = mixTotals.value;
+          let injDimensions = Object.keys(mixTotals.dimension[out.colorCalculationDimension_].category.index);
+          // totals for first dimension type of injected totals
+          let injectedTotalsArr = Object.entries(
+            mixTotals.dimension.geo.category.index
+          ).map(([k, v]) => {
+            return {
+              id: k,
+              tot: injValues[v] || null
+            }
+          });
+
+
+
+          // loop the same number of times as there are groups of results in the eurostat REST response
+          for (let i = 1; i < dimensions.length; i++) {
+            let pos = (regions.length * i); // position in the values index : 341 | 683 etc;
+            Object.entries(
+              totals.dimension.geo.category.index
+            ).map(([k, v]) => {
+              let regionIndex = totals.dimension.geo.category.index[k];
+              let dimValue = values[regionIndex + pos];
+              if (dimValue) {
+                if (normaltotalsArr[v].tot) {
+                  normaltotalsArr[v].tot = normaltotalsArr[v].tot + dimValue;
+                } else {
+                  normaltotalsArr[v].tot = dimValue;
+                }
+              }
+            });
           }
-          ind[merged[i].id] = indicator || null;
+
+          // loop the same number of times as there are groups of results in the eurostat REST response
+          for (let b = 1; b < injDimensions.length; b++) {
+            let pos = (injRegions.length * b); // posbtion in the values index (each dimension is piled on top of the next so *2 = position in 2nd dimension)
+            Object.entries(
+              mixTotals.dimension.geo.category.index
+            ).map(([k, v]) => {
+              let regionIndex = mixTotals.dimension.geo.category.index[k];
+              let dimValue = injValues[regionIndex + pos];
+              if (dimValue) {
+                if (injectedTotalsArr[v].tot) {
+                  injectedTotalsArr[v].tot = injectedTotalsArr[v].tot + dimValue;
+                } else {
+                  injectedTotalsArr[v].tot = dimValue;
+                }
+              }
+            });
+          }
+
+          // merge the totals of normal regions with the totals of injeted regions of a different NUTS level
+          mixedTotalsArr = normaltotalsArr.concat(injectedTotalsArr);
+
+          // merge the values with the totals for all nuts levels
+          let mixedValuesArr = out.mixNutsColorArr.concat(arr);
+          let mixNutsMerged = mergeById(mixedValuesArr, mixedTotalsArr);
+          // add the mixed nuts to the final index (ind)
+          for (let i = 0; i < mixNutsMerged.length; i++) {
+            let value = mixNutsMerged[i].val;
+            let total = mixNutsMerged[i].tot;
+            let indicator;
+            if (out.colorCalculation_ == "percentage") {
+              indicator = ((value / total) * 100);
+            } else if (out.colorCalculation_ == "per") {
+              if (out.colorCalculationFunction_) {
+                indicator = out.colorCalculationFunction_(value, total)
+              } else {
+                indicator = total / value;
+              }
+            }
+            ind[mixNutsMerged[i].id] = indicator || null;
+          }
+
+        } else {
+          // without colorCalculationDimension
+          let mixTotalsArr = Object.entries(
+            mixTotals.dimension.geo.category.index
+            ).map(([k, v]) => ({ id: k, tot: +mixTotals.value[v] || null }));
+          let mixNutsMerged = mergeById(out.mixNutsColorArr, mixTotalsArr);
+
+          for (let i = 0; i < mixNutsMerged.length; i++) {
+            let value = mixNutsMerged[i].val;
+            let total = mixNutsMerged[i].tot;
+            let indicator;
+            if (out.colorCalculation_ == "percentage") {
+              indicator = ((value / total) * 100);
+            } else if (out.colorCalculation_ == "per") {
+              if (out.colorCalculationFunction_) {
+                indicator = out.colorCalculationFunction_(value, total)
+              } else {
+                indicator = total / value;
+              }
+            }
+            ind[mixNutsMerged[i].id] = indicator || null;
+          }
+
+          //normal
+          const totalsArr = Object.entries(
+            totals.dimension.geo.category.index
+          ).map(([k, v]) => ({ id: k, tot: +totals.value[v] || null }));
+          //merge values array with totals array
+          let merged = mergeById(arr, totalsArr);
+          //divide each value by the desired total
+          for (let i = 0; i < merged.length; i++) {
+            let value = merged[i].val;
+            let total = merged[i].tot;
+            let indicator;
+            if (out.colorCalculation_ == "percentage") {
+              indicator = ((value / total) * 100);
+            } else if (out.colorCalculation_ == "per") {
+              if (out.colorCalculationFunction_) {
+                indicator = out.colorCalculationFunction_(value, total)
+              } else {
+                indicator = total / value;
+              }
+            }
+            ind[merged[i].id] = indicator || null;
+          }
         }
 
 

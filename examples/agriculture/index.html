@@ -22,8 +22,8 @@
       #dorling-cereal-select-container {
         width: 350px;
         position: absolute;
-        left: 15px;
-        top: 15px;
+        left: 45px;
+        top: 5px;
         z-index: 9;
       }
 
@@ -36,24 +36,13 @@
         left: 45px !important;
       }
 
-      @media only screen and (max-width: 850px) {
-        .dorling-standalone-dropdown {
-          left: 80px !important;
-        }
-
-        #dorling-cereal-select-container {
-          top: 5px;
-        }
-      }
-
       @media only screen and (max-width: 450px) {
         .dorling-standalone-dropdown {
           left: 50px !important;
         }
 
         #dorling-cereal-select-container {
-          left: 70px;
-          top: 5px;
+          left: 50px;
           width: 180px;
         }
 
@@ -67,9 +56,10 @@
       }
 
       /* height threshold for legend toggle button */
-      @media only screen and (max-height: 700px) {
+      /* height threshold for legend toggle button */
+      @media only screen and (max-height: 600px) {
         .dorling-standalone-dropdown {
-          left: 50px !important;
+          left: 70px !important;
         }
 
         #dorling-cereal-select-container {
@@ -105,7 +95,7 @@
     <script src="./lib/d3-format.v2.min.js"></script>
     <script src="./lib/d3-interpolate.v2.min.js"></script>
     <script src="./lib/d3-scale.v3.min.js"></script>
-    <script src="../../build/dorling.min.js"></script>
+    <script src="../../build/dorling.js"></script>
     <script>
       let cropConfig = {
         C1110: {
