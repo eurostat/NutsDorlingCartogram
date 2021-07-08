@@ -349,7 +349,7 @@ export function dorling() {
     }
 
     //set base URL for retrieving NUTS geometries
-    out.Nuts2jsonBaseURL = `https://raw.githubusercontent.com/eurostat/Nuts2json/master/${out.nutsYear_}/3035/20M/`;
+    out.Nuts2jsonBaseURL = `https://raw.githubusercontent.com/eurostat/Nuts2json/master/pub/v1/${out.nutsYear_}/3035/20M/`;
 
     if (out.nutsLevel_ == 0) {
       out.showInsets_ = false;

@@ -531,9 +531,6 @@ font-size:14px;
   width: 30px;
   height: 30px;
   line-height: 30px;
-  border-top-left-radius: 2px;
-  border-top-right-radius: 2px;
-  border-bottom: 1px solid #ccc;
   display:block;
 }
 .dorling-leaflet-control-legendBtn:hover{
@@ -554,9 +551,6 @@ font-size:14px;
   width: 30px;
   height: 30px;
   line-height: 30px;
-  border-top-left-radius: 2px;
-  border-top-right-radius: 2px;
-  border-bottom: 1px solid #ccc;
   display:block;
 }
 .dorling-leaflet-control-overseasBtn:hover{
