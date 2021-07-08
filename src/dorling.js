@@ -160,6 +160,7 @@ export function dorling() {
   out.dataExplorerBaseURL_ = "https://appsso.eurostat.ec.europa.eu/nui/show.do?dataset=";
   out.dataBrowserBaseURL_ = "https://ec.europa.eu/eurostat/databrowser/bookmark/";
   out.customSourceURL_ = null;
+  out.sourcesPopupContent_ = null;
 
   out.nutsLevel_ = 2;
   out.nutsYear_ = 2016;
@@ -267,6 +268,10 @@ export function dorling() {
     addLoadingSpinnerToDOM();
     showLoadingSpinner();
 
+    if (out.sourcesPopupContent_) {
+      addSourcesModalToDOM();
+    }
+
 
     //get data and animate
     out.main();
@@ -296,6 +301,58 @@ export function dorling() {
     }
     let templateString = createStandaloneHTMLString(text);
     container.insertAdjacentHTML("beforeend", templateString);
+  }
+
+  function addSourcesModalToDOM() {
+    // <div id="embed-modal" data-role="dialog" class="modal fade">
+    //     <div class="modal-dialog">
+    //         <!-- Modal content-->
+    //         <div class="modal-content">
+    //             <div class="modal-header">
+    //                 <h4 class="modal-title" translate="embed.title">
+    //                     Copy this code and paste it in your Website:
+    //                 </h4>
+    //                 <button type="button" class="close" data-dismiss="modal">
+    //                     &times;
+    //                 </button>
+    //             </div>
+    //             <div class="modal-body" id="embed-content">
+    //                 <pre class="pre-scrollable"><code></code></pre>
+    //             </div>
+    //             <div class="modal-footer">
+    //                 <!-- <button type="button" class="btn btn-warning" data-dismiss="modal">Close</button> -->
+    //             </div>
+    //         </div>
+    //     </div>
+    // </div>
+    let container = document.createElement("div");
+    container.classList.add("sources-popup");
+
+    let template = ` 
+    <!-- Modal -->
+    <div id="sources_overlay" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" translate="sources.title">Sources</h4>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" style="text-align:center;">
+                    ${out.sourcesPopupContent_}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-warning" data-dismiss="modal"
+                        translate="sources.closebutton">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>`
+    container.innerHTML = template;
+
+    out.containerNode_.node().appendChild(container);
   }
 
   function addDorlingTitleToDOM() {
@@ -1167,11 +1224,18 @@ export function dorling() {
     //let sizeURL = out.dataExplorerBaseURL_+ out.sizeDatasetCode_
     let colorSource = document.createElement("div");
 
-    if (out.customSourceURL_) {
-      colorSource.innerHTML = "Source: Eurostat - <a target='_blank' href='" + out.customSourceURL_ + "'> access to dataset <i class='fas fa-external-link-alt'>  </i></a>";
+    if (out.sourcesPopupContent_) {
+        // add popup trigger
+        colorSource.innerHTML = "Source: Eurostat - <a target='_blank' href='' data-toggle='modal' data-target='#sources_overlay' > access to dataset <i class='fas fa-external-link-alt'>  </i></a>";
     } else {
-      colorSource.innerHTML = "Source: Eurostat - <a target='_blank' href='" + colorURL + "'> access to dataset <i class='fas fa-external-link-alt'>  </i></a>";
+      if (out.customSourceURL_) {
+        colorSource.innerHTML = "Source: Eurostat - <a target='_blank' href='" + out.customSourceURL_ + "'> access to dataset <i class='fas fa-external-link-alt'>  </i></a>";
+      } else {
+        colorSource.innerHTML = "Source: Eurostat - <a target='_blank' href='" + colorURL + "'> access to dataset <i class='fas fa-external-link-alt'>  </i></a>";
+      }
+  
     }
+
 
 
     out.sourcesDiv.appendChild(colorSource);

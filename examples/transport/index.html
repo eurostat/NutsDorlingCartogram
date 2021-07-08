@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel='shortcut icon' type='image/x-icon' href='../../assets/images/favicon.ico' />
-    <script src="../../build/dorling.min.js"></script>
+    <script src="../../build/dorling.js"></script>
     <title>Air Transport Dorling Cartogram</title>
 
     <!-- Piwik  -->
@@ -36,7 +36,7 @@
         }
 
         .dorling-standalone-dropdown {
-            top: 12vh !important;
+            top: 70px !important;
             left: 45px !important;
         }
 
@@ -233,9 +233,7 @@
             .showFootnotes(true)
             .footnotesText("Air passenger refers to passenger carried.")
             .exclude(["MK", "ME", "TR", "AL", "RS", "UK"]) // :(
-            .graticule(false)
-            .loop(false)
-            .pauseButton(false)
+            .sourcesPopupContent("<h4>Air passengers</h4><a target='_blank' href='https://ec.europa.eu/eurostat/databrowser/bookmark/5cd6fa6a-6aaf-4612-b529-8cc1e966d11d?lang=en'>Dataset 1</a><br><a target='_blank' href='https://ec.europa.eu/eurostat/databrowser/bookmark/f6a956a0-e6e5-404e-95f7-6230ba3e6f2e?lang=en'>Dataset 2</a><h4>Freight and mail</h4><a target='_blank' href='https://ec.europa.eu/eurostat/databrowser/bookmark/649fb535-b7fe-44d6-b9cd-3ab58d5b294b?lang=en'>Dataset 1</a><br><a target='_blank' href='https://ec.europa.eu/eurostat/databrowser/bookmark/f6a956a0-e6e5-404e-95f7-6230ba3e6f2e?lang=en'>Dataset 2</a>") //inerHTML
             .showBorders(true)
             .positionStrength(0.3)
             .build();
