@@ -169,7 +169,7 @@ export function dorling() {
   out.sizeDatasetFilters_ = "sex=T&age=TOTAL&unit=NR&time=2018";
   out.colorDatasetCode_ = "demo_r_gind3";
   out.colorDatasetFilters_ = "indic_de=GROWRT&time=2018";
-  out.exclude_ = null; //list of country codes to exclude from the data
+  out.exclude_ = []; //list of country codes to exclude from the data
   out.EUIds = ["EU", "EU27_2020", "EU28"] //EU ids to omit from size values
   out.colorIsPercentage_ = false;
   out.colorCalculation_ = "";
