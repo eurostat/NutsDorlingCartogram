@@ -335,17 +335,13 @@ export function dorling() {
             <!-- Modal content-->
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title" translate="sources.title">Sources</h4>
+                    <h4 class="modal-title" translate="sources.title">Access to source datasets:</h4>
                     <button type="button" class="close" data-dismiss="modal">
                         <span>&times;</span>
                     </button>
                 </div>
                 <div class="modal-body" style="text-align:center;">
                     ${out.sourcesPopupContent_}
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-warning" data-dismiss="modal"
-                        translate="sources.closebutton">Close</button>
                 </div>
             </div>
         </div>

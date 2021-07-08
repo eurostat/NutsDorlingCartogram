@@ -28,7 +28,7 @@
       }
 
       .dorling-legend-div {
-        top: 50px !important;
+        top: 50px!important;
       }
 
       .dorling-standalone-dropdown {
@@ -53,7 +53,6 @@
 
         #dorling-livestock-select-container {
           left: 70px;
-          top: 5px;
           width: 180px;
         }
 
@@ -69,7 +68,7 @@
       /* height threshold for legend toggle button */
       @media only screen and (max-height: 700px) {
         .dorling-standalone-dropdown {
-          left: 50px !important;
+          left: 70px !important;
         }
 
         #dorling-livestock-select-container {
@@ -182,7 +181,7 @@
           titleYOffset: animalConfig.A3100.colorLegend.titleYOffset,
         })
         .sizeLegend({
-          title: "Total livestock (1 000 heads)",
+          title: "Total livestock (1 000 head)",
           textFunction: function (d) {
             return d.toLocaleString("en").replace(/,/gi, " ");
           },
@@ -194,7 +193,7 @@
           colorLabel: "Share of total regional livestock",
           colorUnit: "%",
           sizeLabel: "Total livestock",
-          sizeUnit: "(1 000 heads)",
+          sizeUnit: "(1 000 head)",
           shareLabel: "Share of total national livestock",
           shareUnit: "%",
         })
