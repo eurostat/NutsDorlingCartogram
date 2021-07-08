@@ -6,45 +6,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel='shortcut icon' type='image/x-icon' href='../../assets/images/favicon.ico' />
   <title>Population Density Dorling Cartogram</title>
-  <!-- Piwik  -->
-  <script defer src="//europa.eu/webtools/load.js" type="text/javascript"></script>
-  <script type="text/javascript">
-    var parentLocation = parent.location;
-    if (parentLocation.hostname.indexOf('ec.europa.eu') !== -1) {
-      document.write('<script defer src="//europa.eu/webtools/load.js" type="text/javascript"></sc' + 'ript>');
-      document.write('<script type="application/json">');
-      document.write('{ "utility" : "piwik", "siteID" : 59, "sitePath" : ["ec.europa.eu\/eurostat"] }');
-      document.write('</sc' + 'ript>');
-    }
-  </script>
-  <!-- End Piwik Code -->
 </head>
 
 <body style="margin:0">
   <div id="containerDiv">
 
   </div>
-  <script src="./lib/d3format.js"></script>
+  <script src="https://d3js.org/d3-format.v1.min.js"></script>
   <script src="../../build/dorling.min.js"></script>
   <script>
     var dorling = NutsDorlingCartogram.dorling()
       .containerId("containerDiv")
-      .title("Population, 1 January 2020")
       .nutsLevel(2)
-      .nutsYear(2016)
       .colors(["#2d50a0", "#6487c3", "#aab9e1", "#f0cd91", "#e6a532", "#d76e2d"])
       .thresholdValues([-15, -10, 0, 10, 15, 20])
       .sizeDatasetCode("demo_r_pjangrp3")
-      .sizeDatasetFilters("sex=T&age=TOTAL&unit=NR&time=2020")
+      .sizeDatasetFilters("sex=T&age=TOTAL&unit=NR&time=2019")
       .colorDatasetCode("demo_r_gind3")
       .sizeDatasetName("population")
       .colorDatasetName("population change")
-      .colorDatasetFilters("indic_de=GROWRT&time=2019")
+      .colorDatasetFilters("indic_de=GROWRT&time=2018")
       .positionStrength(0.1)
       .maxCircleRadius({ 0: 65, 1: 25, 2: 25, 3: 20 })
       .colorLegend({
         titleWidth: 230,
-        title: "Population change 2019 - 2020 (per 1 000 inhabitants)",
+        title: "Population change 2018 - 2019 (per 1 000 inhabitants)",
         orient: "vertical",
         shapeRadius: 10,
         shapePadding: 5,
@@ -53,10 +39,9 @@
         labelOffset: 10,
         shape: "circle",
         labelFormat: d3.format(".0f"),
-        titleYOffset: { 0: 210, 1: 155, 2: 155, 3: 130 },
-        bodyYOffset: { 0: 60, 1: 60, 2: 60, 3:60 }, // translate Y for legend title from sizeLegend Y
+        titleYOffset: { 0: 220, 1: 150, 2: 150, 3: 130 }, // translate Y for legend title from sizeLegend Y
       })
-      .nutsSelectorTranslateY({ 0: 455, 1: 395, 2: 395, 3: 375 })
+      .nutsSelectorTranslateY({ 0: 465, 1: 405, 2: 400, 3: 395 })
       .sizeLegend({
         title: "Total population (million)",
         textFunction: function (d) {
@@ -80,18 +65,15 @@
         shareLabel: "Share of national population",
       })
       .showSources(true)
-      .customSourceURL("https://ec.europa.eu/eurostat/databrowser/bookmark/54ab8263-c1ec-443a-ae0a-80bb7058582f?lang=en")
       .showFootnotes(true)
-      .footnotesText("")
-      .exclude(["MK", "ME", "TR", "AL", "RS","UK"])
+      .footnotesText("Data on population change refer to the changes between 1 January 2018 and 1 January 2019.")
+      .exclude(["MK", "ME", "TR", "AL", "RS"])
       .seaColor("white")
       .graticule(false)
       .loop(false)
       .pauseButton(false)
       .showBorders(true)
       .build();
-
-
   </script>
 </body>
 

@@ -6,44 +6,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel='shortcut icon' type='image/x-icon' href='../../assets/images/favicon.ico' />
     <title>GDP Dorling Cartogram</title>
-
-    <!-- Piwik  -->
-    <script defer src="//europa.eu/webtools/load.js" type="text/javascript"></script>
-    <script type="text/javascript">
-        var parentLocation = parent.location;
-        if (parentLocation.hostname.indexOf('ec.europa.eu') !== -1) {
-            document.write('<script defer src="//europa.eu/webtools/load.js" type="text/javascript"></sc' + 'ript>');
-            document.write('<script type="application/json">');
-            document.write('{ "utility" : "piwik", "siteID" : 59, "sitePath" : ["ec.europa.eu\/eurostat"] }');
-            document.write('</sc' + 'ript>');
-        }
-    </script>
-    <!-- End Piwik Code -->
 </head>
 
 <body style="margin:0">
-    <div id="containerDiv"></div>
+    <div id="containerDiv">
+
+    </div>
     <script src="../../build/dorling.min.js"></script>
     <script>
         var dorling = NutsDorlingCartogram.dorling()
             .containerId("containerDiv")
-            .title("Gross domestic product, 2019")
+            .title("Gross domestic product")
             .nutsLevel(2)
-            .nutsYear(2016)
             // .colors(["#3A6ABD", "#789BD8", "#D1D9F1", "#EBC2DE", "#E18FC8", "#A74177"])
             .colors(["#2d50a0", "#6487c3", "#aab9e1", "#f0cd91", "#e6a532", "#d76e2d"])
-            .thresholdValues([10000, 20000, 31200, 40000, 50000, 1000000])
+            .thresholdValues([10000, 20000, 30200, 40000, 50000, 1000000])
+            .showNutsSelector(true)
             .sizeDatasetCode("nama_10r_3gdp")
-            .sizeDatasetFilters("unit=MIO_EUR&time=2019")
+            .sizeDatasetFilters("unit=MIO_EUR&time=2018")
             .colorDatasetCode("nama_10r_3gdp")
             .colorDatasetName("GDP")
-            //please note: using a different year for NUTS 3, like in this example, is HARDCODED in dorling.js when preparing the REST request promises.
-            .colorDatasetFilters("unit=PPS_EU27_2020_HAB&time=2019")
+            .colorDatasetFilters("unit=EUR_HAB&time=2018")
             .maxCircleRadius({ 0: 65, 1: 25, 2: 25, 3: 15 })
             .colorLegend({
                 //https://d3-legend.susielu.com/#color
-                titleWidth: 230,
-                title: "Gross domestic product (PPS per inhabitant)",
+                titleWidth: 225,
+                title: "Gross domestic product (€ per inhabitant)",
                 orient: "vertical",
                 shapeRadius: 10,
                 shapePadding: 5,
@@ -54,7 +42,7 @@
                 shape: "circle",
                 titleYOffset: { 0: 220, 1: 150, 2: 150, 3: 150 }, // translate Y for legend title from sizeLegend Y
             })
-            .nutsSelectorTranslateY({ 0: 450, 1: 385, 2: 390, 3: 385 })
+            .nutsSelectorTranslateY({ 0: 470, 1: 395, 2: 420, 3: 400 })
             .sizeLegend({
                 title: "Gross domestic product (€ million)",
                 textFunction: function (d) { return d.toLocaleString("en").replace(/,/gi, " "); },
@@ -70,16 +58,15 @@
             })
             .tooltip({
                 colorLabel: "Gross domestic product",
-                colorUnit: "PPS per inhabitant",
+                colorUnit: "€ per inhabitant",
                 sizeLabel: "Gross domestic product",
                 sizeUnit: "€ million ",
                 shareLabel: "Share of national gross domestic product",
             })
-            .exclude(["MK", "ME", "TR", "AL", "RS", "UK"])
+            .exclude(["MK", "ME", "TR", "AL", "RS"])
             .graticule(false)
             .showFootnotes(true)
-            .customSourceURL("https://ec.europa.eu/eurostat/databrowser/bookmark/89e5293e-b6fc-44d1-b80e-94fbb86dfb8e?lang=en")
-            .footnotesText("Data for NUTS level 3 regions is for 2018")
+            .footnotesText(" Data at NUTS 3 level is from 2017. Data for France not available at NUTS 3 level.")
             .build();
 
     </script>

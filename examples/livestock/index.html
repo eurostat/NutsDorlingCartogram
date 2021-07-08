@@ -33,7 +33,7 @@
 
       .dorling-standalone-dropdown {
         top: 12vh !important;
-        left: 70px !important;
+        left: 45px !important;
       }
 
       @media only screen and (max-width: 850px) {
@@ -102,21 +102,20 @@
     <script src="./lib/d3-interpolate.v2.min.js"></script>
     <script src="./lib/d3-scale.v3.min.js"></script>
     <script src="../../build/dorling.min.js"></script>
-
     <script>
       let animalConfig = {
         // swine
         A3100: {
           maxCircleRadius: { 2: 40 },
-          sizeLegend: { values: { 2: [8000, 3000, 1000,100] }, bodyYOffset: { 2: 130 }, bodyXOffset: { 2: 55 } },
+          sizeLegend: { values: { 2: [9000, 3000, 1000] }, bodyYOffset: { 2: 130 }, bodyXOffset: { 2: 55 } },
           colorLegend: {
             titleYOffset: { 2: 155 },
           },
         },
         // bovine
         A2000: {
-          maxCircleRadius: { 2: 35 },
-          sizeLegend: { values: { 2: [8000, 3000, 1000,100] }, bodyYOffset: { 2: 130 }, bodyXOffset: { 2: 55 } },
+          maxCircleRadius: { 2: 40 },
+          sizeLegend: { values: { 2: [9000, 3000, 1000] }, bodyYOffset: { 2: 130 }, bodyXOffset: { 2: 55 } },
           colorLegend: {
             titleYOffset: { 2: 170 },
           },
@@ -125,7 +124,7 @@
         A4100: {
           maxCircleRadius: { 2: 40 },
           sizeLegend: {
-            values: { 2: [8000, 3000, 1000,100] },
+            values: { 2: [9000, 3000, 1000] },
             bodyYOffset: { 2: 130 },
             bodyXOffset: { 2: 65 },
             labelsTranslateX: { 2: 70 },
@@ -136,7 +135,7 @@
         }, // goats
         A4200: {
           maxCircleRadius: { 2: 40 },
-          sizeLegend: { values: { 2: [8000, 3000, 1000,100] }, bodyYOffset: { 2: 120 }, bodyXOffset: { 2: 55 } },
+          sizeLegend: { values: { 2: [9000, 3000, 1000] }, bodyYOffset: { 2: 120 }, bodyXOffset: { 2: 55 } },
           colorLegend: {
             titleYOffset: { 2: 150 },
           },
@@ -146,6 +145,7 @@
         .containerId("containerDiv")
         .title("Share of total regional livestock (%), 2019")
         .nutsLevel(2)
+        .nutsYear(2016)
         .colors(["#2d50a0", "#6487c3", "#aab9e1", "#f0cd91", "#e6a532", "#d76e2d"])
         .thresholdValues([10, 25, 50, 75, 90, 100])
         .sizeDatasetCode("agr_r_animal")
@@ -157,7 +157,7 @@
         .colorCalculationDatasetCode("agr_r_animal")
         .colorCalculationDimension("animals")
         .colorCalculationDatasetFilters("precision=1&animals=A3100&animals=A2000&animals=A4100&animals=A4200&unit=THS_HD&time=2019")
-        .maxCircleRadius(animalConfig.A3100.maxCircleRadius)
+        //.maxCircleRadius(animalConfig.A3100.maxCircleRadius)
         .circleSizeFunction(d3.scaleSqrt().range([5, 40]).domain([0, 8200]))
         .colorLegend({
           //https://d3-legend.susielu.com/#color
@@ -231,4 +231,3 @@
     </script>
   </body>
 </html>
-

@@ -14,18 +14,18 @@
     <script>
         var dorling = NutsDorlingCartogram.dorling()
             .containerId("containerDiv")
-            .title("Nights spent in tourist accommodation, 2019")
+            .title("Foreign tourism dependency")
             .nutsLevel(2)
-            .nutsYear(2016)
             .nutsAvailable([0, 1, 2])
             // .colors(["#3A6ABD", "#789BD8", "#D1D9F1", "#EBC2DE", "#E18FC8", "#A74177"])
             .colors(["#2d50a0", "#6487c3", "#aab9e1", "#f0cd91", "#e6a532", "#d76e2d"])
             .thresholdValues([20, 40, 50, 60, 80, 1000000])
+            .showNutsSelector(true)
             .sizeDatasetCode("tour_occ_nin2")
-            .sizeDatasetFilters("c_resid=TOTAL&unit=NR&precision=1&time=2019&nace_r2=I551-I553")
+            .sizeDatasetFilters("c_resid=TOTAL&unit=NR&precision=1&time=2018&nace_r2=I551-I553")
             .colorDatasetCode("tour_occ_nin2")
             .colorDatasetName("tourism")
-            .colorDatasetFilters("c_resid=FOR&unit=PC_TOT&precision=1&time=2019&nace_r2=I551-I553")
+            .colorDatasetFilters("c_resid=FOR&unit=PC_TOT&precision=1&time=2018&nace_r2=I551-I553")
             .maxCircleRadius({ 0: 70, 1: 35, 2: 30 })
             .colorLegend({
                 //https://d3-legend.susielu.com/#color
@@ -39,10 +39,10 @@
                 labelUnit: " ",
                 labelOffset: 10,
                 shape: "circle",
-                titleYOffset: { 0: 210, 1: 160, 2: 160 }, // translate Y for legend title from sizeLegend Y
-                bodyYOffset: { 0: 75, 1: 70, 2: 70 }, // translate Y for legend body from titleYOffset
+                titleYOffset: { 0: 210, 1: 160, 2: 160, 3: 160 }, // translate Y for legend title from sizeLegend Y
+                bodyYOffset: { 0: 75, 1: 70, 2: 70, 3: 70 }, // translate Y for legend body from titleYOffset
             })
-            .nutsSelectorTranslateY({ 0: 470, 1: 410, 2: 410 })
+            .nutsSelectorTranslateY({ 0: 480, 1: 420, 2: 425 })
             .sizeLegend({
                 title: "Total number of nights spent (million)",
                 textFunction: function (d) {
@@ -53,10 +53,11 @@
                 values: {
                     0: [300000000, 100000000, 1000000],
                     1: [150000000, 50000000, 1000000],
-                    2: [100000000, 50000000, 1000000],
+                    2: [50000000, 20000000, 1000000],
+                    3: [5000000, 2000000, 100000]
                 },
                 bodyXOffset: { 0: 85, 1: 55, 2: 50 },
-                bodyYOffset: { 0: 165, 1: 120, 2: 125 },
+                bodyYOffset: { 0: 165, 1: 110, 2: 105 },
                 labelsTranslateX: { 0: 90, 1: 45, 2: 40 }
             })
             .tooltip({
@@ -72,8 +73,8 @@
                 shareLabel: "Share of total nights spent in national total",
             })
             .showFootnotes(true)
-            .footnotesText("Greece, Bourgogne, Haute-Normandie, Picardie, Champagne-Ardenne, Limousin and Mayotte: not available.")
-            .exclude(["MK", "ME", "TR", "AL", "RS", "UK"])
+            .footnotesText("Data not available for Ireland, Slovenia and the French regions: Bourgogne, Haute-Normandie, Picardie, Champagne-Ardenne, Limousin as well as at country level.")
+            .exclude(["MK", "ME", "TR", "AL", "RS"])
             .graticule(false)
             .loop(false)
             .pauseButton(false)
