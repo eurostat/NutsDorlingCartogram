@@ -7,7 +7,7 @@ body{
 }
 
 #dorling-container > div.dorling-bottom-text-container > div.dorling-sources-container > div > a > svg {
-  color:#cccccc;
+  color:#cccccc !important;
 }
 
 .dorling-title {
