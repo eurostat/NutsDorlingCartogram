@@ -152,9 +152,14 @@ export function dorling() {
   out.showSources_ = true;
   out.showFootnotes_ = false;
   out.footnotesText_ = "";
+
   //data params
   out.nutsAvailable_ = [0, 1, 2, 3] //available nuts levels
+
   out.mixNuts_ = { 0: null, 1: null, 2: null, 3: null } // e.g. {2:{UK:1, DE:1}} adds UK and DE level 1 nuts to level 2
+  out.mixColorData_ = null;
+  out.mixSizeData_ = null;
+
   out.eurostatRESTBaseURL = "https://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/";
   out.Nuts2jsonBaseURL = '';
   out.dataExplorerBaseURL_ = "https://appsso.eurostat.ec.europa.eu/nui/show.do?dataset=";
@@ -374,6 +379,7 @@ export function dorling() {
     out.main();
     return out;
   }
+
   function clearContainers() {
     if (out.legendDiv) out.legendDiv.remove();
     if (out.legendBtn) out.legendBtn.remove();
@@ -467,7 +473,7 @@ export function dorling() {
     }
 
     //bag of mixed NUTS
-    // add specified NUTS IDs 9of any NUTS level) to the current nuts level
+    // add specified NUTS IDs (of any NUTS level) to the current nuts level
     if (out.mixNuts_ && out.mixNuts_[out.nutsLevel_]) {
       out.mixNutsFilterString = "";
       //prepare levels that need retrieving
@@ -488,6 +494,23 @@ export function dorling() {
           `${out.eurostatRESTBaseURL}${out.colorDatasetCode_}?${out.mixNutsFilterString}&${out.colorDatasetFilters_}`
         ), //mixLevel colorData
       )
+    }
+
+    if (out.mixColorData_ && out.mixColorData_[out.nutsLevel_] && out.mixSizeData_ && out.mixSizeData_[out.nutsLevel_]) {
+      // add different year for specified regions
+
+      // res[4] & res[5] when promises are executed but if mixNuts is used as well then its res[5] & res[6]
+      promises.push(
+        d3fetch.json(
+          `${out.eurostatRESTBaseURL}${out.sizeDatasetCode_}?geoLevel=${nutsParam}&${out.mixSizeData_.filters}&filterNonGeo=1`
+        )
+      )
+      promises.push(
+        d3fetch.json(
+          `${out.eurostatRESTBaseURL}${out.colorDatasetCode_}?geoLevel=${nutsParam}&${out.mixColorData_.filters}&filterNonGeo=1`
+        )
+      )
+
     }
 
     Promise.all(promises).then((res) => {
@@ -535,7 +558,6 @@ export function dorling() {
           }
         })
 
-
         //index color values
         out.mixNutsColorArr = Object.entries(
           colorData.dimension.geo.category.index
@@ -560,13 +582,31 @@ export function dorling() {
       let sizeData = res[3];
       let colorData = res[4];
 
-      //indexing requires the use of promises for when using colorPercentageCalculationData
-      let sizePromise = new Promise((resolve, reject) => {
-        indexStat(sizeData, "size", out, resolve, reject);
-      });
-      let colorPromise = new Promise((resolve, reject) => {
-        indexStat(colorData, "color", out, resolve, reject)
-      });
+      let colorPromise;
+      let sizePromise;
+
+      if (out.mixColorData_ && out.mixColorData_[out.nutsLevel_]) {
+        // data to fill in data gaps (e.g. greece tourism 2018)
+        let sizeDataToMix = res[5];
+        let colorDataToMix = res[6];
+        sizePromise = new Promise((resolve, reject) => {
+          indexStat(sizeData, "size", out, resolve, reject, sizeDataToMix, null);
+        });
+        colorPromise = new Promise((resolve, reject) => {
+          indexStat(colorData, "color", out, resolve, reject, null, colorDataToMix)
+        });
+
+      } else {
+        //indexing requires the use of promises for when using colorPercentageCalculationData
+        sizePromise = new Promise((resolve, reject) => {
+          indexStat(sizeData, "size", out, resolve, reject);
+        });
+        colorPromise = new Promise((resolve, reject) => {
+          indexStat(colorData, "color", out, resolve, reject)
+        });
+      }
+
+
 
       let promises = [colorPromise, sizePromise];
 
@@ -725,7 +765,7 @@ export function dorling() {
           addZoom();
           out.playing = true; //for pause/play
           out.stage = 1; //current transition number
-          animate();
+          animate(); // initiate d3 animation
         }
 
 
@@ -767,7 +807,7 @@ export function dorling() {
         },
         {
           id: "FRY",
-          name: "Dépt. d'Outre Mer (FR)",
+          name: "Régions Ultrapériphériques Françaises (FR)",
           featureCollection: {
             type: "FeatureCollection",
             features: [geojson.features[3]]
@@ -1221,15 +1261,15 @@ export function dorling() {
     let colorSource = document.createElement("div");
 
     if (out.sourcesPopupContent_) {
-        // add popup trigger
-        colorSource.innerHTML = "Source: Eurostat - <a target='_blank' href='' data-toggle='modal' data-target='#sources_overlay' > access to dataset <i class='fas fa-external-link-alt'>  </i></a>";
+      // add popup trigger
+      colorSource.innerHTML = "Source: Eurostat - <a target='_blank' href='' data-toggle='modal' data-target='#sources_overlay' > access to dataset <i class='fas fa-external-link-alt'>  </i></a>";
     } else {
       if (out.customSourceURL_) {
         colorSource.innerHTML = "Source: Eurostat - <a target='_blank' href='" + out.customSourceURL_ + "'> access to dataset <i class='fas fa-external-link-alt'>  </i></a>";
       } else {
         colorSource.innerHTML = "Source: Eurostat - <a target='_blank' href='" + colorURL + "'> access to dataset <i class='fas fa-external-link-alt'>  </i></a>";
       }
-  
+
     }
 
 
@@ -1369,13 +1409,11 @@ export function dorling() {
   function animate() {
     if (out.stage == 1) {
       if (out.playing) {
-        setTimeout(function () {
           //out.stage = 1;
           if (out.playing) {
             firstTransition();
             out.stage = 2;
           }
-        }, 2000);
       }
     } else if (out.stage == 2) {
       if (out.playing) {
@@ -1390,14 +1428,14 @@ export function dorling() {
     //show circles
     out.circles
       .transition()
-      .duration(1000)
+      .duration(750)
       .attr("r", (f) => sizeFunction(+out.sizeIndicator[f.properties.id]))
       .attr("fill", (f) => colorFunction(+out.colorIndicator[f.properties.id]))
       .attr("stroke", "black");
     if (out.showInsets_) {
       out.insetCircles
         .transition()
-        .duration(1000)
+        .duration(750)
         .attr("r", (f) => {
           if (window.devicePixelRatio > 1) {
             return sizeFunction(+out.sizeIndicator[f.featureCollection.features[0].properties.id]) / window.devicePixelRatio
@@ -1410,9 +1448,9 @@ export function dorling() {
     }
     //hide nuts
     if (out.showBorders_) {
-      out.nutsBorders.transition().duration(1000).attr("stroke", "grey");
+      out.nutsBorders.transition().duration(750).attr("stroke", "grey");
     } else {
-      out.nutsBorders.transition().duration(1000).attr("stroke", "#1f1f1f00");
+      out.nutsBorders.transition().duration(750).attr("stroke", "#1f1f1f00");
       if (out.coastalMargins_) {
         if (out.margins) {
           out.margins.forEach((margin => {
@@ -1424,10 +1462,10 @@ export function dorling() {
     }
 
     // show legends & nuts selector
-    out.legendContainer.transition().duration(1000).attr("opacity", 0.9);
-    out.sizeLegendContainer.transition().duration(1000).attr("opacity", 0.9);
+    out.legendContainer.transition().duration(750).attr("opacity", 0.9);
+    out.sizeLegendContainer.transition().duration(750).attr("opacity", 0.9);
     if (out.showNutsSelector_) {
-      out.radioContainer.transition().duration(1000).attr("opacity", 0.9);
+      out.radioContainer.transition().duration(750).attr("opacity", 0.9);
     }
 
     if (!out.forceInProgress) {
@@ -2565,11 +2603,40 @@ export function dorling() {
  * @param {*} resolve
  * @param {*} reject
  */
-function indexStat(data, type, out, resolve, reject) {
-  const arr = Object.entries(
-    data.dimension.geo.category.index
-  ).map(([key, val]) => ({ id: key, val: +data.value[val] || null }));
-  let ind = {}; //index
+function indexStat(data, type, out, resolve, reject, mixSizeData, mixColorData) {
+  let ind = {}; //initial index
+
+  let arr;
+
+  //add mixed data to array here
+  if (mixColorData || mixSizeData) {
+    let dataToMix = mixColorData ? mixColorData : mixSizeData;
+    arr = Object.entries(
+      data.dimension.geo.category.index
+    ).map(([key, val]) => ({ id: key, val: +data.value[val] || null }));
+
+    let dataToMixArr = Object.entries(
+      dataToMix.dimension.geo.category.index
+    ).map(([key, val]) => ({ id: key, val: +dataToMix.value[val] || null }));
+
+    let a = mixColorData ? out.mixColorData_[out.nutsLevel_] : out.mixSizeData_[out.nutsLevel_];
+    dataToMixArr.forEach((rg) => {
+      // if the user has specified that this region should be used to fill in the data gaps
+      if (a) {
+        if (a.includes(rg.id)) {
+          // then add it to the main color data array
+          arr.push(rg);
+        }
+      }
+    })
+
+  } else {
+    arr = Object.entries(
+      data.dimension.geo.category.index
+    ).map(([key, val]) => ({ id: key, val: +data.value[val] || null }));
+  }
+
+
 
   //if the color value is a percentage, divide each colorValue by its relevant total from colorPercentageCalculationData
   if (out.colorCalculation_ && type == "color") {
@@ -2713,7 +2780,7 @@ function indexStat(data, type, out, resolve, reject) {
           // without colorCalculationDimension
           let mixTotalsArr = Object.entries(
             mixTotals.dimension.geo.category.index
-            ).map(([k, v]) => ({ id: k, tot: +mixTotals.value[v] || null }));
+          ).map(([k, v]) => ({ id: k, tot: +mixTotals.value[v] || null }));
           let mixNutsMerged = mergeById(out.mixNutsColorArr, mixTotalsArr);
 
           for (let i = 0; i < mixNutsMerged.length; i++) {

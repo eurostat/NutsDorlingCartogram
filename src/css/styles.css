@@ -6,6 +6,10 @@ body{
   overflow:hidden;
 }
 
+#dorling-container > div.dorling-bottom-text-container > div.dorling-sources-container > div > a > svg {
+  color:#cccccc;
+}
+
 .dorling-title {
 font-size: 1rem;
 font-weight:bold;
@@ -585,7 +589,7 @@ font-size:14px;
   line-height: 30px;
   border-top-left-radius: 2px;
   border-top-right-radius: 2px;
-  border-bottom: 1px solid #ccc;
+  /* border-bottom: 1px solid #ccc; */
   display:block;
 }
 .dorling-leaflet-control-nuts-selector-btn:hover{
