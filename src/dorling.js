@@ -216,6 +216,8 @@ export function dorling() {
   };
   out.standaloneUrl_ = "";
 
+  out.circleStrokeWidth_ = 0.4;
+
   //definition of generic accessors based on the name of each parameter name
   for (let p in out)
     (function () {
@@ -854,6 +856,7 @@ export function dorling() {
           .attr("cy", (f) => out.projection(f.geometry.coordinates)[1])
           .attr("fill", "#ffffff00")
           .attr("stroke", "#40404000")
+          .attr("stroke-width", out.circleStrokeWidth_ + "px")
           .attr("vector-effect", "non-scaling-stroke");
 
         addLegendsToDOM();
@@ -1462,7 +1465,9 @@ export function dorling() {
     out.circles.on("mouseout", function () {
       if (out.stage == 2) {
         out.tooltipElement.style("visibility", "hidden");
-        d3select.select(this).attr("stroke-width", "1px");
+        d3select
+          .select(this)
+          .attr("stroke-width", out.circleStrokeWidth_ + "px");
       }
     });
 
@@ -1484,7 +1489,9 @@ export function dorling() {
       out.insetCircles.on("mouseout", function () {
         if (out.stage == 2) {
           out.tooltipElement.style("visibility", "hidden");
-          d3select.select(this).attr("stroke-width", "1px");
+          d3select
+            .select(this)
+            .attr("stroke-width", out.circleStrokeWidth_ + "px");
           out.unhightlightRegion(); //in case highlightRegion() has been used
         }
       });
@@ -2691,7 +2698,7 @@ export function dorling() {
           out.highlightedRegion = nutsCode;
           return "3px";
         } else {
-          return "1px";
+          return out.circleStrokeWidth_ + "px";
         }
       });
     }
@@ -2708,7 +2715,7 @@ export function dorling() {
           out.highlightedRegion = nutsCode;
           return "3px";
         } else {
-          return "1px";
+          return out.circleStrokeWidth_ + "px";
         }
       });
     }
@@ -2717,7 +2724,7 @@ export function dorling() {
   out.unhightlightRegion = function () {
     out.circles.attr("stroke-width", (f) => {
       if (f.properties.id == out.highlightedRegion) {
-        return "1px";
+        return out.circleStrokeWidth_ + "px";
       }
     });
     out.highlightedRegion = null;
