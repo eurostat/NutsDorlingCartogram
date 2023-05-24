@@ -92,10 +92,10 @@
         let transportConfig = {
             air: {
                 "sizeDatasetCode": "tran_r_avpa_nm",
-                "sizeDatasetFilters": "tra_meas=PAS_CRD&precision=1&unit=THS_PAS&time=2019",
+                "sizeDatasetFilters": "tra_meas=PAS_CRD&unit=THS_PAS&time=2020",
                 "colorDatasetCode": "tran_r_avpa_nm",
                 "colorDatasetName": "air transport of passengers",
-                "colorDatasetFilters": "tra_meas=PAS_CRD&precision=1&unit=THS_PAS&time=2019",
+                "colorDatasetFilters": "tra_meas=PAS_CRD&unit=THS_PAS&time=2020",
                 "colorCalculationFunction": function (airPassengers, population) {
                     if (airPassengers && population) {
                         return (airPassengers * 1000) / population;
@@ -105,20 +105,20 @@
 
                 },
                 "colorCalculationDatasetCode": "demo_r_d2jan",
-                "colorCalculationDatasetFilters": "precision=1&sex=T&unit=NR&time=2020&age=TOTAL",
-                "thresholdValues": [1, 2, 4, 8, 20, 9999],
-                "maxCircleRadius": { 0: 70, 1: 35, 2: 30 },
+                "colorCalculationDatasetFilters": "sex=T&unit=NR&time=2020&age=TOTAL",
+                "thresholdValues": [1, 2, 4, 6, 8, 9999],
+                "maxCircleRadius": { 0: 60, 1: 40, 2: 40 },
                 "sizeLegend": {
                     title: "Air passengers (million)",
                     values: {
-                        0: [100e3, 50e3, 10e3],
-                        1: [100e3, 50e3, 10e3],
-                        2: [100e3, 50e3, 10e3],
-                        3: [100e3, 50e3, 10e3]
+                        0: [60e3, 30e3, 10e3],
+                        1: [40e3, 25e3, 10e3],
+                        2: [40e3, 25e3, 10e3],
+                        3: [40e3, 25e3, 10e3]
                     },
                     bodyXOffset: { 0: 85, 1: 55, 2: 50 },
-                    bodyYOffset: { 0: 135, 1: 120, 2: 120 },
-                    labelsTranslateX: { 0: 90, 1: 45, 2: 40 },
+                    bodyYOffset: { 0: 160, 1: 120, 2: 120 },
+                    labelsTranslateX: { 0: 70, 1: 40, 2: 40 },
                     textFunction: function (d) {
                         let n = ((d * 1000) / 1000000);
                         if (n == 1) {
@@ -154,21 +154,21 @@
                     },
                     shareLabel: "Share of national air passengers",
                 },
-                "nutsSelectorTranslateY": { 0: 385, 1: 375, 2: 375 },
-                "title": "Air transport of passengers and freight, 2019"
+                "nutsSelectorTranslateY": { 0: 385, 1: 385, 2: 385 },
+                "title": "Air transport of passengers and freight, 2020"
             },
             freight: {
                 "maxCircleRadius": { 0: 70, 1: 50, 2: 50 },
                 "sizeDatasetCode": "tran_r_avgo_nm",
-                "sizeDatasetFilters": "tra_meas=FRM_LD_NLD&precision=1&unit=THS_T&time=2019",
+                "sizeDatasetFilters": "tra_meas=FRM_LD_NLD&unit=THS_T&time=2020",
                 "colorDatasetCode": "tran_r_avgo_nm",
                 "colorDatasetName": "air transport of freight",
-                "colorDatasetFilters": "tra_meas=FRM_LD_NLD&precision=1&unit=THS_T&time=2019",
+                "colorDatasetFilters": "tra_meas=FRM_LD_NLD&unit=THS_T&time=2020",
                 "colorCalculationFunction": function (freight, population) {
                     return (freight / population) * 1000000;
                 },
                 "colorCalculationDatasetCode": "demo_r_d2jan",
-                "colorCalculationDatasetFilters": "precision=1&sex=T&unit=NR&time=2020&age=TOTAL",
+                "colorCalculationDatasetFilters": "sex=T&unit=NR&time=2020&age=TOTAL",
                 "thresholdValues": [1, 5, 10, 50, 200, 99999999],
                 "sizeLegend": {
                     title: "Freight and mail carried (1 000 tonnes)",
@@ -204,17 +204,24 @@
                     },
                 },
                 "nutsSelectorTranslateY": { 0: 420, 1: 420, 2: 420 },
-                "title": "Air transport of passengers and freight, 2019"
+                "title": "Air transport of passengers and freight, 2020"
             },
         }
-        var dorling = NutsDorlingCartogram.dorling()
+        let dorling = NutsDorlingCartogram.dorling()
             .containerId("containerDiv")
             .title(transportConfig.air.title)
             .nutsLevel(2)
-            .nutsYear(2016)
+            .nutsYear(2021)
             .nutsAvailable([0, 1, 2])
             // .colors(["#3A6ABD", "#789BD8", "#D1D9F1", "#EBC2DE", "#E18FC8", "#A74177"])
-            .colors(["#2d50a0", "#6487c3", "#aab9e1", "#f0cd91", "#e6a532", "#d76e2d"])
+            .colors([          
+                "#ffeb99",
+                "#c7e9b4",
+                "#7fcdbb",
+                "#41b6c4",
+                "#104f99",
+                "#17256b"
+            ])
             .thresholdValues(transportConfig.air.thresholdValues)
             .sizeDatasetCode(transportConfig.air.sizeDatasetCode)
             .sizeDatasetFilters(transportConfig.air.sizeDatasetFilters)
@@ -232,7 +239,7 @@
             .tooltip(transportConfig.air.tooltip)
             .showFootnotes(true)
             .footnotesText("Air passenger refers to passenger carried.")
-            .sourcesPopupContent("<h4>Air passengers</h4><a target='_blank' href='https://ec.europa.eu/eurostat/databrowser/bookmark/5cd6fa6a-6aaf-4612-b529-8cc1e966d11d?lang=en'>Dataset 1</a><br><a target='_blank' href='https://ec.europa.eu/eurostat/databrowser/bookmark/f6a956a0-e6e5-404e-95f7-6230ba3e6f2e?lang=en'>Dataset 2</a><h4>Freight and mail</h4><a target='_blank' href='https://ec.europa.eu/eurostat/databrowser/bookmark/649fb535-b7fe-44d6-b9cd-3ab58d5b294b?lang=en'>Dataset 1</a><br><a target='_blank' href='https://ec.europa.eu/eurostat/databrowser/bookmark/f6a956a0-e6e5-404e-95f7-6230ba3e6f2e?lang=en'>Dataset 2</a>") //inerHTML
+            .sourcesPopupContent("<h4>Air passengers</h4><a target='_blank' href='https://ec.europa.eu/eurostat/databrowser/bookmark/e3e4a1b4-931e-41eb-a142-2c16219260ef?lang=en'>Dataset 1</a><br><a target='_blank' href='https://ec.europa.eu/eurostat/databrowser/bookmark/4f0c2e0a-74b0-4ade-bc61-67e745c7d367?lang=en'>Dataset 2</a><h4>Freight and mail</h4><a target='_blank' href='https://ec.europa.eu/eurostat/databrowser/bookmark/cc520fd5-0a2f-416f-b63d-5e6f955aac83?lang=en'>Dataset 1</a><br><a target='_blank' href='https://ec.europa.eu/eurostat/databrowser/bookmark/4f0c2e0a-74b0-4ade-bc61-67e745c7d367?lang=en'>Dataset 2</a>") //inerHTML
             .exclude(["MK", "ME", "TR", "AL", "RS", "UK"]) // :(
             .graticule(false)
             .loop(false)
@@ -240,6 +247,7 @@
             .showBorders(true)
             .positionStrength(0.3)
             .build();
+
 
         function getURLParamValue(paramName) {
             var url = window.location.search.substring(1); //get rid of "?" in querystring
