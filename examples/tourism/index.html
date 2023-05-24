@@ -32,18 +32,16 @@
         ])
         .thresholdValues([20, 40, 50, 60, 80, 1000000])
         .sizeDatasetCode("tour_occ_nin2")
-        .sizeDatasetFilters(
-          "c_resid=TOTAL&unit=NR&precision=1&time=2021&nace_r2=I551-I553"
-        )
+        .sizeDatasetFilters("c_resid=TOTAL&unit=NR&time=2021&nace_r2=I551-I553")
         .colorDatasetCode("tour_occ_nin2")
         .colorDatasetName("tourism")
         .colorDatasetFilters(
-          "c_resid=FOR&unit=PC_TOT&precision=1&time=2021&nace_r2=I551-I553"
+          "c_resid=FOR&unit=PC_TOT&time=2021&nace_r2=I551-I553"
         )
         // .mixColorData({
         //   // use 2020 data for colouring the following regions
         //   filters:
-        //     "c_resid=FOR&unit=PC_TOT&precision=1&time=2020&nace_r2=I551-I553",
+        //     "c_resid=FOR&unit=PC_TOT&time=2020&nace_r2=I551-I553",
         //   1: ["EL3", "EL4", "EL5", "EL6"],
         //   2: [
         //     "EL30",
@@ -63,7 +61,7 @@
         // .mixSizeData({
         //   // use 2020 data for sizing the following regions
         //   filters:
-        //     "c_resid=TOTAL&unit=NR&precision=1&time=2020&nace_r2=I551-I553",
+        //     "c_resid=TOTAL&unit=NR&time=2020&nace_r2=I551-I553",
         //   0: ["EL"],
         //   1: ["EL3", "EL4", "EL5", "EL6"],
         //   2: [
