@@ -6,13 +6,13 @@ import * as d3format from "d3-format";
 import * as d3force from "d3-force";
 import * as d3array from "d3-array";
 import * as d3select from "d3-selection";
-import { event as currentEvent } from 'd3-selection';
+import { event as currentEvent } from "d3-selection";
 import * as d3geo from "d3-geo";
 import * as topojson from "topojson";
 import { legendColor } from "d3-svg-legend";
-import $ from 'jquery'
+import $ from "jquery";
 
-const createStandaloneHTMLString = require('./templates/standalone');
+const createStandaloneHTMLString = require("./templates/standalone");
 
 /**
  * Main accessor function
@@ -43,8 +43,8 @@ export function dorling() {
   out.positionStrength_ = 0.4;
   out.collisionStrength_ = 0.7;
   //circle radius
-  out.minCircleRadius_ = { '0': 1.5, '1': 1.5, '2': 1.5, '3': 1.5 };
-  out.maxCircleRadius_ = { '0': 20, '1': 20, '2': 20, '3': 20 };
+  out.minCircleRadius_ = { 0: 1.5, 1: 1.5, 2: 1.5, 3: 1.5 };
+  out.maxCircleRadius_ = { 0: 20, 1: 20, 2: 20, 3: 20 };
   out.circleSizeFunction_ = null; // lets user define custom d3 scale function
   //d3-geo
   out.translateX_ = -350; //-390;
@@ -67,16 +67,18 @@ export function dorling() {
   //size legend (circle radiuses)
   out.sizeLegend_ = {
     title: "Circle Size",
-    titleYOffset: { '0': 20, '1': 20, '2': 20, '3': 20 },
-    titleXOffset: { '0': 0, '1': 0, '2': 0, '3': 0 },
-    textFunction: function (d) { return d.toLocaleString() },
+    titleYOffset: { 0: 20, 1: 20, 2: 20, 3: 20 },
+    titleXOffset: { 0: 0, 1: 0, 2: 0, 3: 0 },
+    textFunction: function (d) {
+      return d.toLocaleString();
+    },
     values: {},
-    translateY: { '0': 0, '1': 0, '2': 0, '3': 0 },
-    bodyXOffset: { '0': 50, '1': 50, '2': 50, '3': 50 },
-    bodyYOffset: { '0': 140, '1': 100, '2': 100, '3': 90 },
-    labelsTranslateX: { '0': 40, '1': 40, '2': 40, '3': 40 },
-    textOffsetY: { '0': -12, '1': -12, '2': -12, '3': -12 },
-    labelsOffsetY: { '0': 2, '1': 2, '2': 2, '3': 2 }
+    translateY: { 0: 0, 1: 0, 2: 0, 3: 0 },
+    bodyXOffset: { 0: 50, 1: 50, 2: 50, 3: 50 },
+    bodyYOffset: { 0: 140, 1: 100, 2: 100, 3: 90 },
+    labelsTranslateX: { 0: 40, 1: 40, 2: 40, 3: 40 },
+    textOffsetY: { 0: -12, 1: -12, 2: -12, 3: -12 },
+    labelsOffsetY: { 0: 2, 1: 2, 2: 2, 3: 2 },
   };
   //color legend
   out.colorLegend_ = {
@@ -94,11 +96,22 @@ export function dorling() {
     labelOffset: 10,
     labelFormat: d3format.format(".1f"),
     locale: {
-      "decimal": "\u066b",
-      "thousands": " ",
-      "grouping": [3],
-      "currency": ["", " \u062f\u002e\u0625\u002e"],
-      "numerals": ["\u0660", "\u0661", "\u0662", "\u0663", "\u0664", "\u0665", "\u0666", "\u0667", "\u0668", "\u0669"]
+      decimal: "\u066b",
+      thousands: " ",
+      grouping: [3],
+      currency: ["", " \u062f\u002e\u0625\u002e"],
+      numerals: [
+        "\u0660",
+        "\u0661",
+        "\u0662",
+        "\u0663",
+        "\u0664",
+        "\u0665",
+        "\u0666",
+        "\u0667",
+        "\u0668",
+        "\u0669",
+      ],
     },
     labelFontSize: 15,
     labelDelimiter: " to ",
@@ -108,7 +121,7 @@ export function dorling() {
     translateX: 0,
     translateY: 135,
     cellsTranslateX: 3,
-    cellsTranslateY: 2
+    cellsTranslateY: 2,
   };
   //selectors
   out.nutsSelectorTranslateY_ = { 0: 375, 1: 375, 2: 375, 3: 375 };
@@ -134,8 +147,8 @@ export function dorling() {
     circleYOffset: 45,
     circleXOffset: 37,
     spacing: 78, //between the start of each rect
-    padding: 15 //so that the geometries arent touching the rect borders
-  }
+    padding: 15, //so that the geometries arent touching the rect borders
+  };
   //tooltip html
   out.tooltip_ = {
     colorLabel: "Color value",
@@ -144,26 +157,30 @@ export function dorling() {
     sizeUnit: "",
     shareLabel: "Share value",
     shareUnit: "%",
-    sizeValueTextFunction: null
-  }
+    sizeValueTextFunction: null,
+  };
   //additional text and links
   out.showAttribution_ = true;
-  out.attributionText_ = 'Boundaries: © <a href="https://eurogeographics.org/" target="_blank" class="externallink">EuroGeographics</a> © <a href="https://www.fao.org/" target="_blank">UN-FAO</a>  © <a href="http://www.turkstat.gov.tr/" target="_blank">Turkstat</a>, Cartography: <a href="https://ec.europa.eu/eurostat/en/web/gisco" target="_blank">Eurostat - GISCO, 2018</a>';
+  out.attributionText_ =
+    'Boundaries: © <a href="https://eurogeographics.org/" target="_blank" class="externallink">EuroGeographics</a> © <a href="https://www.fao.org/" target="_blank">UN-FAO</a>  © <a href="http://www.turkstat.gov.tr/" target="_blank">Turkstat</a>, Cartography: <a href="https://ec.europa.eu/eurostat/en/web/gisco" target="_blank">Eurostat - GISCO, 2018</a>';
   out.showSources_ = true;
   out.showFootnotes_ = false;
   out.footnotesText_ = "";
 
   //data params
-  out.nutsAvailable_ = [0, 1, 2, 3] //available nuts levels
+  out.nutsAvailable_ = [0, 1, 2, 3]; //available nuts levels
 
-  out.mixNuts_ = { 0: null, 1: null, 2: null, 3: null } // e.g. {2:{UK:1, DE:1}} adds UK and DE level 1 nuts to level 2
+  out.mixNuts_ = { 0: null, 1: null, 2: null, 3: null }; // e.g. {2:{UK:1, DE:1}} adds UK and DE level 1 nuts to level 2
   out.mixColorData_ = null;
   out.mixSizeData_ = null;
 
-  out.eurostatRESTBaseURL = "https://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/";
-  out.Nuts2jsonBaseURL = '';
-  out.dataExplorerBaseURL_ = "https://appsso.eurostat.ec.europa.eu/nui/show.do?dataset=";
-  out.dataBrowserBaseURL_ = "https://ec.europa.eu/eurostat/databrowser/bookmark/";
+  out.eurostatRESTBaseURL =
+    "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/";
+  out.Nuts2jsonBaseURL = "";
+  out.dataExplorerBaseURL_ =
+    "https://appsso.eurostat.ec.europa.eu/nui/show.do?dataset=";
+  out.dataBrowserBaseURL_ =
+    "https://ec.europa.eu/eurostat/databrowser/bookmark/";
   out.customSourceURL_ = null;
   out.sourcesPopupContent_ = null;
 
@@ -176,7 +193,7 @@ export function dorling() {
   out.colorDatasetCode_ = "demo_r_gind3";
   out.colorDatasetFilters_ = "indic_de=GROWRT&time=2018";
   out.exclude_ = []; //list of country codes to exclude from the data
-  out.EUIds = ["EU", "EU27_2020", "EU28"] //EU ids to omit from size values
+  out.EUIds = ["EU", "EU27_2020", "EU28"]; //EU ids to omit from size values
   out.colorIsPercentage_ = false;
   out.colorCalculation_ = "";
   out.colorCalculationFunction_ = null;
@@ -195,9 +212,9 @@ export function dorling() {
     twitterTags: ["Eurostat", "DigitalRegionalYearbook"],
     twitterURL: window.location,
     embedURL: window.location,
-    facebookTitle: null
-  }
-  out.standaloneUrl_ = ""
+    facebookTitle: null,
+  };
+  out.standaloneUrl_ = "";
 
   //definition of generic accessors based on the name of each parameter name
   for (let p in out)
@@ -259,11 +276,9 @@ export function dorling() {
       generateEmbed();
       generateTwitterLink();
       generateFacebook();
-
     } else {
       out.containerNode_.attr("class", "dorling-main-container");
     }
-
 
     if (out.standalone_) {
       //add title between standaloneNav and dorling container
@@ -277,7 +292,6 @@ export function dorling() {
       addSourcesModalToDOM();
     }
 
-
     //get data and animate
     out.main();
     return out;
@@ -287,8 +301,8 @@ export function dorling() {
     if (out.standalone_) {
       out.containerNode_.append("div").attr("id", "dorling-container");
       out.dorlingContainer = d3select.select("#dorling-container");
-      out.dorlingContainer.node().classList.add("standalone-dorling")
-      out.containerNode_.node().classList.add("standalone-container")
+      out.dorlingContainer.node().classList.add("standalone-dorling");
+      out.containerNode_.node().classList.add("standalone-container");
     } else {
       out.dorlingContainer = out.containerNode_;
     }
@@ -302,7 +316,12 @@ export function dorling() {
     if (out.standalone_.infoText) {
       text = out.standalone_.infoText;
     } else {
-      text = "Each bubble represents a NUTS region. Its size represents " + out.tooltip_.sizeLabel.toLowerCase() + " and its colour represents " + out.tooltip_.colorLabel.toLowerCase() + ". Hover over a region using your mouse in order to read its values. To highlight all regions of the same colour-class, simply hover over the colours in the legend. In order to change NUTS level, use the radio buttons under 'choose geographic level' when available.";
+      text =
+        "Each bubble represents a NUTS region. Its size represents " +
+        out.tooltip_.sizeLabel.toLowerCase() +
+        " and its colour represents " +
+        out.tooltip_.colorLabel.toLowerCase() +
+        ". Hover over a region using your mouse in order to read its values. To highlight all regions of the same colour-class, simply hover over the colours in the legend. In order to change NUTS level, use the radio buttons under 'choose geographic level' when available.";
     }
     let templateString = createStandaloneHTMLString(text);
     container.insertAdjacentHTML("beforeend", templateString);
@@ -350,7 +369,7 @@ export function dorling() {
                 </div>
             </div>
         </div>
-    </div>`
+    </div>`;
     container.innerHTML = template;
 
     out.containerNode_.node().appendChild(container);
@@ -378,7 +397,7 @@ export function dorling() {
     showLoadingSpinner();
     out.main();
     return out;
-  }
+  };
 
   function clearContainers() {
     if (out.legendDiv) out.legendDiv.remove();
@@ -403,7 +422,10 @@ export function dorling() {
   //main d3 logic
   out.main = function () {
     //add nuts selector on smaller screens
-    if (window.innerWidth < out.toggleLegendWidthThreshold_ || window.innerHeight < out.toggleLegendHeightThreshold_) {
+    if (
+      window.innerWidth < out.toggleLegendWidthThreshold_ ||
+      window.innerHeight < out.toggleLegendHeightThreshold_
+    ) {
       addNutsSelectorToDOM();
     }
 
@@ -425,7 +447,11 @@ export function dorling() {
     //data promises
     let promises = [];
     //add exeption for GDP at NUTS 3 level (no data for latest year so overrides to previous year)
-    if (out.nutsLevel_ == 3 && out.sizeDatasetCode_ == "nama_10r_3gdp" && out.colorDatasetFilters_ == "unit=PPS_EU27_2020_HAB&time=2019") {
+    if (
+      out.nutsLevel_ == 3 &&
+      out.sizeDatasetCode_ == "nama_10r_3gdp" &&
+      out.colorDatasetFilters_ == "unit=PPS_EU27_2020_HAB&time=2019"
+    ) {
       promises.push(
         d3fetch.json(
           //centroids
@@ -437,15 +463,16 @@ export function dorling() {
         ),
         d3fetch.json(
           //countries
-          `https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/countries.json`),
+          `https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/countries.json`
+        ),
         d3fetch.json(
           //sizeData
-          `${out.eurostatRESTBaseURL}${out.sizeDatasetCode_}?geoLevel=${nutsParam}&unit=MIO_EUR&time=2018&filterNonGeo=1`
+          `${out.eurostatRESTBaseURL}${out.sizeDatasetCode_}?geoLevel=${nutsParam}&unit=MIO_EUR&time=2018`
         ),
         d3fetch.json(
           //colorData
-          `${out.eurostatRESTBaseURL}${out.colorDatasetCode_}?geoLevel=${nutsParam}&unit=PPS_EU27_2020_HAB&time=2018&filterNonGeo=1`
-        ),
+          `${out.eurostatRESTBaseURL}${out.colorDatasetCode_}?geoLevel=${nutsParam}&unit=PPS_EU27_2020_HAB&time=2018`
+        )
       );
     } else {
       promises.push(
@@ -463,12 +490,12 @@ export function dorling() {
         ),
         d3fetch.json(
           //sizeData
-          `${out.eurostatRESTBaseURL}${out.sizeDatasetCode_}?geoLevel=${nutsParam}&${out.sizeDatasetFilters_}&filterNonGeo=1`
+          `${out.eurostatRESTBaseURL}${out.sizeDatasetCode_}?geoLevel=${nutsParam}&${out.sizeDatasetFilters_}`
         ),
         d3fetch.json(
           //colorData
-          `${out.eurostatRESTBaseURL}${out.colorDatasetCode_}?geoLevel=${nutsParam}&${out.colorDatasetFilters_}&filterNonGeo=1`
-        ),
+          `${out.eurostatRESTBaseURL}${out.colorDatasetCode_}?geoLevel=${nutsParam}&${out.colorDatasetFilters_}`
+        )
       );
     }
 
@@ -479,7 +506,7 @@ export function dorling() {
       //prepare levels that need retrieving
       out.mixNuts_[out.nutsLevel_].ids.forEach((nutsID) => {
         out.mixNutsFilterString = out.mixNutsFilterString + "&geo=" + nutsID;
-      })
+      });
       let nutsLevel = out.mixNuts_[out.nutsLevel_].level;
       //add promises for retrieving centroids, sizeData and ColorData of the nuts level to be merged with the current nutsLevel_
       //not currently possible to only request data for certain countries therefore I have to request the whole dataset
@@ -492,32 +519,36 @@ export function dorling() {
         ), //mixLevel sizeData
         d3fetch.json(
           `${out.eurostatRESTBaseURL}${out.colorDatasetCode_}?${out.mixNutsFilterString}&${out.colorDatasetFilters_}`
-        ), //mixLevel colorData
-      )
+        ) //mixLevel colorData
+      );
     }
 
-    if (out.mixColorData_ && out.mixColorData_[out.nutsLevel_] && out.mixSizeData_ && out.mixSizeData_[out.nutsLevel_]) {
+    if (
+      out.mixColorData_ &&
+      out.mixColorData_[out.nutsLevel_] &&
+      out.mixSizeData_ &&
+      out.mixSizeData_[out.nutsLevel_]
+    ) {
       // add different year for specified regions
 
       // res[4] & res[5] when promises are executed but if mixNuts is used as well then its res[5] & res[6]
       promises.push(
         d3fetch.json(
-          `${out.eurostatRESTBaseURL}${out.sizeDatasetCode_}?geoLevel=${nutsParam}&${out.mixSizeData_.filters}&filterNonGeo=1`
+          `${out.eurostatRESTBaseURL}${out.sizeDatasetCode_}?geoLevel=${nutsParam}&${out.mixSizeData_.filters}`
         )
-      )
+      );
       promises.push(
         d3fetch.json(
-          `${out.eurostatRESTBaseURL}${out.colorDatasetCode_}?geoLevel=${nutsParam}&${out.mixColorData_.filters}&filterNonGeo=1`
+          `${out.eurostatRESTBaseURL}${out.colorDatasetCode_}?geoLevel=${nutsParam}&${out.mixColorData_.filters}`
         )
-      )
-
+      );
     }
 
     Promise.all(promises).then((res) => {
       hideLoadingSpinner();
       //stop previous d3 simulation
       if (out.simulation) {
-        out.simulation.stop()
+        out.simulation.stop();
         out.forceInProgress = false;
       }
 
@@ -537,7 +568,14 @@ export function dorling() {
       if (out.showInsets_) {
         let newFeatures = [];
         out.centroids.features.forEach((f) => {
-          if (f.properties.id !== "PT20" && f.properties.id !== "PT30" && f.properties.id !== "PT3" && f.properties.id !== "PT2" && f.properties.id !== "PT200" && f.properties.id !== "PT300") {
+          if (
+            f.properties.id !== "PT20" &&
+            f.properties.id !== "PT30" &&
+            f.properties.id !== "PT3" &&
+            f.properties.id !== "PT2" &&
+            f.properties.id !== "PT200" &&
+            f.properties.id !== "PT300"
+          ) {
             newFeatures.push(f);
           }
         });
@@ -552,18 +590,24 @@ export function dorling() {
 
         //get centroids for specified nuts ids
         cent.features.forEach((c) => {
-          if (out.mixNuts_[out.nutsLevel_].ids.indexOf(c.properties.id) !== -1) {
+          if (
+            out.mixNuts_[out.nutsLevel_].ids.indexOf(c.properties.id) !== -1
+          ) {
             //add centroids of mixedNuts to current level centroids
             out.centroids.features.push(c);
           }
-        })
+        });
 
         //index color values
         out.mixNutsColorArr = Object.entries(
           colorData.dimension.geo.category.index
-        ).map(([key, val]) => ({ id: key, val: +colorData.value[val] || null }));
+        ).map(([key, val]) => ({
+          id: key,
+          val: +colorData.value[val] || null,
+        }));
         let colorInd = {};
-        for (let i = 0; i < out.mixNutsColorArr.length; i++) colorInd[out.mixNutsColorArr[i].id] = out.mixNutsColorArr[i].val;
+        for (let i = 0; i < out.mixNutsColorArr.length; i++)
+          colorInd[out.mixNutsColorArr[i].id] = out.mixNutsColorArr[i].val;
         out.mixNutsColorInd = colorInd;
 
         //index size values
@@ -571,9 +615,9 @@ export function dorling() {
           sizeData.dimension.geo.category.index
         ).map(([key, val]) => ({ id: key, val: +sizeData.value[val] || null }));
         let sizeInd = {};
-        for (let i = 0; i < sizeArr.length; i++) sizeInd[sizeArr[i].id] = sizeArr[i].val;
+        for (let i = 0; i < sizeArr.length; i++)
+          sizeInd[sizeArr[i].id] = sizeArr[i].val;
         out.mixNutsSizeInd = sizeInd;
-
       }
 
       out.n2j = res[1];
@@ -590,28 +634,40 @@ export function dorling() {
         let sizeDataToMix = res[5];
         let colorDataToMix = res[6];
         sizePromise = new Promise((resolve, reject) => {
-          indexStat(sizeData, "size", out, resolve, reject, sizeDataToMix, null);
+          indexStat(
+            sizeData,
+            "size",
+            out,
+            resolve,
+            reject,
+            sizeDataToMix,
+            null
+          );
         });
         colorPromise = new Promise((resolve, reject) => {
-          indexStat(colorData, "color", out, resolve, reject, null, colorDataToMix)
+          indexStat(
+            colorData,
+            "color",
+            out,
+            resolve,
+            reject,
+            null,
+            colorDataToMix
+          );
         });
-
       } else {
         //indexing requires the use of promises for when using colorPercentageCalculationData
         sizePromise = new Promise((resolve, reject) => {
           indexStat(sizeData, "size", out, resolve, reject);
         });
         colorPromise = new Promise((resolve, reject) => {
-          indexStat(colorData, "color", out, resolve, reject)
+          indexStat(colorData, "color", out, resolve, reject);
         });
       }
-
-
 
       let promises = [colorPromise, sizePromise];
 
       Promise.all(promises).then(() => {
-
         out.totalsIndex = getTotals(out.sizeIndicator); //total of sizeIndicator for each country
 
         // exclude values from eurostat data indices
@@ -619,7 +675,10 @@ export function dorling() {
         let newSizeIndicator = {};
         for (let key in out.sizeIndicator) {
           if (out.exclude_) {
-            if (out.exclude_.indexOf(key.substring(0, 2)) == -1 && key.indexOf("EU") == -1) {
+            if (
+              out.exclude_.indexOf(key.substring(0, 2)) == -1 &&
+              key.indexOf("EU") == -1
+            ) {
               newSizeIndicator[key] = out.sizeIndicator[key];
             }
           } else {
@@ -633,14 +692,16 @@ export function dorling() {
 
         out.countryNamesIndex_ = getCountryNamesIndex();
 
-        out.height_ = out.width_ * (out.n2j.bbox[3] - out.n2j.bbox[1]) / (out.n2j.bbox[2] - out.n2j.bbox[0])
+        out.height_ =
+          (out.width_ * (out.n2j.bbox[3] - out.n2j.bbox[1])) /
+          (out.n2j.bbox[2] - out.n2j.bbox[0]);
 
         //set up svg element
         out.svg = d3select.create("svg");
         out.svg
           .attr("viewBox", [0, 0, out.width_, out.height_])
           .attr("class", "dorling-svg")
-          .style("background-color", out.seaColor_)
+          .style("background-color", out.seaColor_);
         // .style("width", "100%")
 
         out.dorlingContainer.node().appendChild(out.svg.node());
@@ -654,7 +715,16 @@ export function dorling() {
         out.projection = d3geo
           .geoIdentity()
           .reflectY(true)
-          .fitExtent([[0, 0], [out.width_ + out.fitSizePadding_, out.height_ + out.fitSizePadding_]], topojson.feature(out.n2j, out.n2j.objects.nutsbn))
+          .fitExtent(
+            [
+              [0, 0],
+              [
+                out.width_ + out.fitSizePadding_,
+                out.height_ + out.fitSizePadding_,
+              ],
+            ],
+            topojson.feature(out.n2j, out.n2j.objects.nutsbn)
+          );
 
         out.path = d3geo.geoPath().projection(out.projection);
 
@@ -673,41 +743,75 @@ export function dorling() {
         out.sizeScale = defineSizeScale();
 
         //container for all map stuff
-        out.map = out.svg.append("g").attr("transform", "translate(0,0)").attr("class", "dorling-map-container");
+        out.map = out.svg
+          .append("g")
+          .attr("transform", "translate(0,0)")
+          .attr("class", "dorling-map-container");
 
         if (out.graticule_) {
-          out.graticule = out.map.append("g").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.gra).features)
-            .enter().append("path").attr("d", out.path).attr("class", "dorling-graticule");
+          out.graticule = out.map
+            .append("g")
+            .selectAll("path")
+            .data(topojson.feature(out.n2j, out.n2j.objects.gra).features)
+            .enter()
+            .append("path")
+            .attr("d", out.path)
+            .attr("class", "dorling-graticule");
         }
 
         // cartograms with borders
         if (out.showBorders_) {
-          out.countries = out.map.append("path")
-            .datum(topojson.mesh(out.nuts0, out.nuts0.objects.countries, function (a, b) { return a === b }))
+          out.countries = out.map
+            .append("path")
+            .datum(
+              topojson.mesh(out.nuts0, out.nuts0.objects.countries, function (
+                a,
+                b
+              ) {
+                return a === b;
+              })
+            )
             .attr("d", out.path)
             .attr("vector-effect", "non-scaling-stroke")
             .attr("class", "dorling-cntrg");
 
           // nutsrg
-          out.nuts = out.map.append("g").attr("id", "dorling-nuts").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.nutsrg).features)
-            .enter().append("path").attr("d", out.path).attr("class", function (rg) {
+          out.nuts = out.map
+            .append("g")
+            .attr("id", "dorling-nuts")
+            .selectAll("path")
+            .data(topojson.feature(out.n2j, out.n2j.objects.nutsrg).features)
+            .enter()
+            .append("path")
+            .attr("d", out.path)
+            .attr("class", function (rg) {
               //colour excluded regions differently
-              if (out.exclude_.indexOf(rg.properties.id.substring(0, 2)) == -1) {
-                return "nutsrg"
+              if (
+                out.exclude_.indexOf(rg.properties.id.substring(0, 2)) == -1
+              ) {
+                return "nutsrg";
               } else {
-                return "cntrg"
+                return "cntrg";
               }
             });
         }
 
         // nutsbn
-        out.nutsBorders = out.map.append("g").attr("id", "dorling-nuts-borders").selectAll("path").data(topojson.feature(out.n2j, out.n2j.objects.nutsbn).features)
-          .enter().append("path").attr("d", out.path)
+        out.nutsBorders = out.map
+          .append("g")
+          .attr("id", "dorling-nuts-borders")
+          .selectAll("path")
+          .data(topojson.feature(out.n2j, out.n2j.objects.nutsbn).features)
+          .enter()
+          .append("path")
+          .attr("d", out.path)
           .attr("vector-effect", "non-scaling-stroke")
-          .attr("stroke", out.nutsBorderColor_).attr("fill", "none").attr("class", function (f) {
+          .attr("stroke", out.nutsBorderColor_)
+          .attr("fill", "none")
+          .attr("class", function (f) {
             let c;
             if (f.properties.co === "T") {
-              c = "coastal"
+              c = "coastal";
             } else {
               //hide non-EU / EFTA borders
               // https://github.com/eurostat/Nuts2json/issues/38
@@ -715,13 +819,19 @@ export function dorling() {
                 c = "dorling-no-data";
               }
               // exclude uk when excluded
-              if (out.exclude_.indexOf('UK') !== -1) {
-                if (f.properties.eu == "F" && f.properties.efta == "F" && f.properties.cc == "F" && f.properties.co == "F" && f.properties.oth == "T") {
+              if (out.exclude_.indexOf("UK") !== -1) {
+                if (
+                  f.properties.eu == "F" &&
+                  f.properties.efta == "F" &&
+                  f.properties.cc == "F" &&
+                  f.properties.co == "F" &&
+                  f.properties.oth == "T"
+                ) {
                   c = "dorling-no-data";
                 }
               }
             }
-            return c
+            return c;
           });
 
         //define region centroids
@@ -731,7 +841,10 @@ export function dorling() {
           .data(out.centroids.features)
           .enter()
           .filter((f) => {
-            if (out.sizeIndicator[f.properties.id] && out.colorIndicator[f.properties.id]) {
+            if (
+              out.sizeIndicator[f.properties.id] &&
+              out.colorIndicator[f.properties.id]
+            ) {
               return f;
             }
           })
@@ -746,20 +859,25 @@ export function dorling() {
         addLegendsToDOM();
 
         if (out.showInsets_) {
-          d3fetch.json(
-            `https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/overseas/NUTS${out.nutsLevel_}.json` //prod
-          ).then((overseasTopo) => {
-            addInsets(overseasTopo);
-            //hide insets on small screens by default
-            if (window.innerWidth < out.toggleLegendWidthThreshold_ || window.innerHeight < out.toggleLegendHeightThreshold_) {
-              out.insetsSvg.node().style.display = "none";
-            }
-            addMouseEvents();
-            addZoom();
-            out.playing = true; //for pause/play
-            out.stage = 1; //current transition number
-            animate();
-          });
+          d3fetch
+            .json(
+              `https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/overseas/NUTS${out.nutsLevel_}.json` //prod
+            )
+            .then((overseasTopo) => {
+              addInsets(overseasTopo);
+              //hide insets on small screens by default
+              if (
+                window.innerWidth < out.toggleLegendWidthThreshold_ ||
+                window.innerHeight < out.toggleLegendHeightThreshold_
+              ) {
+                out.insetsSvg.node().style.display = "none";
+              }
+              addMouseEvents();
+              addZoom();
+              out.playing = true; //for pause/play
+              out.stage = 1; //current transition number
+              animate();
+            });
         } else {
           addMouseEvents();
           addZoom();
@@ -768,14 +886,13 @@ export function dorling() {
           animate(); // initiate d3 animation
         }
 
-
         if (out.showAttribution_) {
           addAttributionToDOM();
         }
         //additional texts
-        out.bottomTextContainer = document.createElement("div")
-        out.bottomTextContainer.classList.add("dorling-bottom-text-container")
-        out.dorlingContainer.node().appendChild(out.bottomTextContainer)
+        out.bottomTextContainer = document.createElement("div");
+        out.bottomTextContainer.classList.add("dorling-bottom-text-container");
+        out.dorlingContainer.node().appendChild(out.bottomTextContainer);
         if (out.showFootnotes_) {
           addFootnotesToDOM();
         }
@@ -788,7 +905,7 @@ export function dorling() {
         }
       });
       return out;
-    })//Promise.all
+    }); //Promise.all
   };
 
   function defineInsets(geojson) {
@@ -802,33 +919,34 @@ export function dorling() {
           name: "Canarias (ES)",
           featureCollection: {
             type: "FeatureCollection",
-            features: [geojson.features[2]]
-          }
+            features: [geojson.features[2]],
+          },
         },
         {
           id: "FRY",
           name: "Régions Ultrapériphériques Françaises (FR)",
           featureCollection: {
             type: "FeatureCollection",
-            features: [geojson.features[3]]
-          }
+            features: [geojson.features[3]],
+          },
         },
         {
           id: "PT2",
           name: "Açores (PT)",
           featureCollection: {
             type: "FeatureCollection",
-            features: [geojson.features[0]]
-          }
-        }, {
+            features: [geojson.features[0]],
+          },
+        },
+        {
           id: "PT3",
           name: "Madeira (PT)",
           featureCollection: {
             type: "FeatureCollection",
-            features: [geojson.features[1]]
-          }
+            features: [geojson.features[1]],
+          },
         },
-      ]
+      ];
     } else if (out.nutsLevel_ == 2) {
       insetsJson = [
         {
@@ -836,66 +954,66 @@ export function dorling() {
           name: "Canarias (ES)",
           featureCollection: {
             type: "FeatureCollection",
-            features: [geojson.features[0]]
-          }
+            features: [geojson.features[0]],
+          },
         },
         {
           id: "FRY2",
           name: "Martinique (FR)",
           featureCollection: {
             type: "FeatureCollection",
-            features: [geojson.features[2]]
-          }
+            features: [geojson.features[2]],
+          },
         },
         {
           id: "FRY4",
           name: "Réunion (FR)",
           featureCollection: {
             type: "FeatureCollection",
-            features: [geojson.features[4]]
-          }
+            features: [geojson.features[4]],
+          },
         },
         {
           id: "PT20",
           name: "Açores (PT)",
           featureCollection: {
             type: "FeatureCollection",
-            features: [geojson.features[6]]
-          }
+            features: [geojson.features[6]],
+          },
         },
         {
           id: "FRY1",
           name: "Guadeloupe (FR)",
           featureCollection: {
             type: "FeatureCollection",
-            features: [geojson.features[1]]
-          }
+            features: [geojson.features[1]],
+          },
         },
         {
           id: "FRY3",
           name: "Guyane (FR)",
           featureCollection: {
             type: "FeatureCollection",
-            features: [geojson.features[3], geojson.features[8]]
-          }
+            features: [geojson.features[3], geojson.features[8]],
+          },
         },
         {
           id: "FRY5",
           name: "Mayotte (FR)",
           featureCollection: {
             type: "FeatureCollection",
-            features: [geojson.features[5]]
-          }
+            features: [geojson.features[5]],
+          },
         },
         {
           id: "PT30",
           name: "Madeira (PT)",
           featureCollection: {
             type: "FeatureCollection",
-            features: [geojson.features[7]]
-          }
-        }
-      ]
+            features: [geojson.features[7]],
+          },
+        },
+      ];
     } else if (out.nutsLevel_ === 3) {
       insetsJson = [
         {
@@ -903,145 +1021,167 @@ export function dorling() {
           name: "El Hierro (ES)",
           featureCollection: {
             type: "FeatureCollection",
-            features: [geojson.features[0]]
-          }
+            features: [geojson.features[0]],
+          },
         },
         {
           id: "ES704",
           name: "Fuertaventura (ES)",
           featureCollection: {
             type: "FeatureCollection",
-            features: [geojson.features[1]]
-          }
-        }, {
+            features: [geojson.features[1]],
+          },
+        },
+        {
           id: "ES705",
           name: "Gran Canaria (ES)",
           featureCollection: {
             type: "FeatureCollection",
-            features: [geojson.features[2]]
-          }
-        }, {
+            features: [geojson.features[2]],
+          },
+        },
+        {
           id: "ES706",
           name: "La Gomera (ES)",
           featureCollection: {
             type: "FeatureCollection",
-            features: [geojson.features[3]]
-          }
-        }, {
+            features: [geojson.features[3]],
+          },
+        },
+        {
           id: "ES707",
           name: "La Palma (ES)",
           featureCollection: {
             type: "FeatureCollection",
-            features: [geojson.features[4]]
-          }
-        }, {
+            features: [geojson.features[4]],
+          },
+        },
+        {
           id: "ES708",
           name: "Lanzarote (ES)",
           featureCollection: {
             type: "FeatureCollection",
-            features: [geojson.features[5]]
-          }
+            features: [geojson.features[5]],
+          },
         },
         {
           id: "ES709",
           name: "Tenerife (ES)",
           featureCollection: {
             type: "FeatureCollection",
-            features: [geojson.features[6]]
-          }
-        }, {
+            features: [geojson.features[6]],
+          },
+        },
+        {
           id: "FRY10",
           name: "Guadeloupe (FR)",
           featureCollection: {
             type: "FeatureCollection",
-            features: [geojson.features[7]]
-          }
-        }, {
+            features: [geojson.features[7]],
+          },
+        },
+        {
           id: "FRY20",
           name: "Martinique (FR)",
           featureCollection: {
             type: "FeatureCollection",
-            features: [geojson.features[8]]
-          }
-        }, {
+            features: [geojson.features[8]],
+          },
+        },
+        {
           id: "FRY30",
           name: "Guayane (FR)",
           featureCollection: {
             type: "FeatureCollection",
-            features: [geojson.features[14], geojson.features[9]]
-          }
-        }, {
+            features: [geojson.features[14], geojson.features[9]],
+          },
+        },
+        {
           id: "FRY40",
           name: "Réunion (FR)",
           featureCollection: {
             type: "FeatureCollection",
-            features: [geojson.features[10]]
-          }
-        }, {
+            features: [geojson.features[10]],
+          },
+        },
+        {
           id: "FRY50",
           name: "Mayotte (FR)",
           featureCollection: {
             type: "FeatureCollection",
-            features: [geojson.features[11]]
-          }
-        }, {
+            features: [geojson.features[11]],
+          },
+        },
+        {
           id: "PT200",
           name: "Açores (PT)",
           featureCollection: {
             type: "FeatureCollection",
-            features: [geojson.features[12]]
-          }
-        }, {
+            features: [geojson.features[12]],
+          },
+        },
+        {
           id: "PT300",
           name: "Madeira (PT)",
           featureCollection: {
             type: "FeatureCollection",
-            features: [geojson.features[13]]
-          }
+            features: [geojson.features[13]],
+          },
         },
-      ]
+      ];
     }
-
 
     //add properties to insets...
     let translateY = out.insets_.translateY;
     let translateX = out.insets_.translateX;
     insetsJson.forEach(function (inset, i) {
       //define a projection for each inset - needs improving
-      let proj
+      let proj;
       if (inset.id == "FRY3") {
         //zoom in on guyane, not the border feature
         let fc = {
           type: "FeatureCollection",
-          features: [geojson.features[3]]
-        }
+          features: [geojson.features[3]],
+        };
         proj = d3geo
           .geoIdentity()
           .reflectY(true)
           .fitExtent(
-            [[10, 30], [out.insets_.overseasWidth, out.insets_.overseasHeight]],
-            fc)
+            [
+              [10, 30],
+              [out.insets_.overseasWidth, out.insets_.overseasHeight],
+            ],
+            fc
+          );
         // .clipExtent([[-55.26, 6.05], [-50.88, 1.93]]);
-      } else if (inset.id == "FRY30") { //guyane nuts 3
+      } else if (inset.id == "FRY30") {
+        //guyane nuts 3
         //zoom in on guyane, not the border feature
         let fc = {
           type: "FeatureCollection",
-          features: [geojson.features[9]]
-        }
+          features: [geojson.features[9]],
+        };
         proj = d3geo
           .geoIdentity()
           .reflectY(true)
           .fitExtent(
-            [[10, 30], [out.insets_.overseasWidth, out.insets_.overseasHeight]],
-            fc)
-
+            [
+              [10, 30],
+              [out.insets_.overseasWidth, out.insets_.overseasHeight],
+            ],
+            fc
+          );
       } else {
         proj = d3geo
           .geoIdentity()
           .reflectY(true)
           .fitExtent(
-            [[10, 30], [out.insets_.overseasWidth, out.insets_.overseasHeight]],
-            inset.featureCollection);
+            [
+              [10, 30],
+              [out.insets_.overseasWidth, out.insets_.overseasHeight],
+            ],
+            inset.featureCollection
+          );
       }
       //positioning
       inset.x = translateX;
@@ -1062,7 +1202,6 @@ export function dorling() {
           translateX = out.insets_.translateX + out.insets_.spacing;
         }
       }
-
     });
 
     return insetsJson;
@@ -1073,21 +1212,25 @@ export function dorling() {
     let nutsClass = "dorling-insets-nuts" + out.nutsLevel_;
     let width;
     if (out.nutsLevel_ == 1) {
-      width = "80"
+      width = "80";
     } else {
-      width = "160"
+      width = "160";
     }
     out.insetsSvg
       // .attr("viewBox", [0, 0, 272, 605])
       .attr("width", width)
       .attr("height", out.insets_.height[out.nutsLevel_])
-      .attr("class", "dorling-insets " + nutsClass)
+      .attr("class", "dorling-insets " + nutsClass);
     out.dorlingContainer.node().appendChild(out.insetsSvg.node());
 
     let objectName = "NUTS" + out.nutsLevel_;
-    var geojson = topojson.feature(overseasTopo, overseasTopo.objects[objectName]);
+    var geojson = topojson.feature(
+      overseasTopo,
+      overseasTopo.objects[objectName]
+    );
 
-    if (out.nutsLevel_ === 3) { //guyane is in a different object within the topojson for NUTS 3
+    if (out.nutsLevel_ === 3) {
+      //guyane is in a different object within the topojson for NUTS 3
       let guyane = topojson.feature(overseasTopo, overseasTopo.objects.guyane);
       geojson.features.push(guyane.features[0]);
     }
@@ -1095,77 +1238,87 @@ export function dorling() {
     let insets = defineInsets(geojson);
 
     //define blur
-    var defs = out.insetsSvg.append('defs');
+    var defs = out.insetsSvg.append("defs");
     defs
-      .append('filter')
-      .attr('id', 'blur')
-      .append('feGaussianBlur')
-      .attr('stdDeviation', 4);
+      .append("filter")
+      .attr("id", "blur")
+      .append("feGaussianBlur")
+      .attr("stdDeviation", 4);
     defs
-      .selectAll('clipPath')
+      .selectAll("clipPath")
       .data(insets)
       .enter()
-      .append('clipPath')
-      .attr('id', function (d) {
-        return 'clip-inset-' + d.id;
+      .append("clipPath")
+      .attr("id", function (d) {
+        return "clip-inset-" + d.id;
       })
       .append("rect")
-      .attr('x', 0)
-      .attr('y', 0)
-      .attr('height', out.insets_.overseasHeight + out.insets_.padding)
-      .attr('width', out.insets_.overseasWidth + out.insets_.padding);
+      .attr("x", 0)
+      .attr("y", 0)
+      .attr("height", out.insets_.overseasHeight + out.insets_.padding)
+      .attr("width", out.insets_.overseasWidth + out.insets_.padding);
 
     //inset parent G element
     var g = out.insetsSvg
-      .selectAll('g.insetmap')
+      .selectAll("g.insetmap")
       .data(insets)
       .enter()
-      .append('g')
-      .classed('insetmap', true)
-      .attr('transform', function (d, i) {
-        let x, y
+      .append("g")
+      .classed("insetmap", true)
+      .attr("transform", function (d, i) {
+        let x, y;
         x = d.x;
-        y = d.y
-        return 'translate(' + [x, y] + ')';
+        y = d.y;
+        return "translate(" + [x, y] + ")";
       })
-      .attr('id', function (d) {
-        return 'inset-' + d.id;
+      .attr("id", function (d) {
+        return "inset-" + d.id;
       })
-      .attr('clip-path', function (d) {
-        return 'url(#clip-inset-' + d.id + ')'
+      .attr("clip-path", function (d) {
+        return "url(#clip-inset-" + d.id + ")";
       });
 
     //background rect
-    g.append('rect')
-      .classed('background', true)
-      .attr('rx', "5")
-      .attr('ry', "5")
-      .attr('height', out.insets_.overseasHeight + out.insets_.padding)
-      .attr('width', out.insets_.overseasWidth + out.insets_.padding)
+    g.append("rect")
+      .classed("background", true)
+      .attr("rx", "0")
+      .attr("ry", "0")
+      .attr("height", out.insets_.overseasHeight + out.insets_.padding)
+      .attr("width", out.insets_.overseasWidth + out.insets_.padding);
     // /.attr('transform', "translate(-" + (out.insets_.overseasWidth / 2) + ",-" + (out.insets_.overseasHeight / 2) + ")")
 
     //geometries
     // let features = out.insetsGeojson.features;
     let index = 0;
-    let insetPath = g.selectAll('path')
-      .data(function (d) { return d.featureCollection.features.map(d.path); })
-      .enter().append('path')
-      .attr("class", function (d, i) { index++; return "inset" + index; })
+    let insetPath = g
+      .selectAll("path")
+      .data(function (d) {
+        return d.featureCollection.features.map(d.path);
+      })
+      .enter()
+      .append("path")
+      .attr("class", function (d, i) {
+        index++;
+        return "inset" + index;
+      })
       .attr("fill", "white")
       .attr("stroke", "black")
-      .attr('d', function (d) { return d; });
+      .attr("d", function (d) {
+        return d;
+      });
 
     index = 0;
     //apply unique styling to specific regions
     if (out.nutsLevel_ === 2) {
       insetPath.attr("fill", function (d, i) {
         index++;
-        if (index == 7) { //guyane bordering geometry
+        if (index == 7) {
+          //guyane bordering geometry
           return "#E5E5E5";
         } else {
           return "white";
         }
-      })
+      });
     } else if (out.nutsLevel_ === 3) {
       insetPath.attr("fill", function (d, i) {
         index++;
@@ -1174,29 +1327,31 @@ export function dorling() {
         } else {
           return "white";
         }
-      })
+      });
     }
 
     //caption
     let caption = g
       .append("text")
       .data(insets)
-      .text(d => {
+      .text((d) => {
         return d.name;
       })
       .attr("class", "overseas-caption")
       .attr("font-size", out.insets_.captionFontSize)
       .attr("stroke-width", 0.2)
-      .attr("transform", "translate(" + out.insets_.captionX + "," + out.insets_.captionY + ")")
+      .attr(
+        "transform",
+        "translate(" + out.insets_.captionX + "," + out.insets_.captionY + ")"
+      )
       .call(d3_textWrapping, out.insets_.titleWidth);
 
-    g
-      .append('rect')
-      .classed('outline', true)
-      .attr('rx', "5")
-      .attr('ry', "5")
-      .attr('height', out.insets_.overseasHeight + out.insets_.padding - 1)
-      .attr('width', out.insets_.overseasWidth + out.insets_.padding - 1)
+    g.append("rect")
+      .classed("outline", true)
+      .attr("rx", "0")
+      .attr("ry", "0")
+      .attr("height", out.insets_.overseasHeight + out.insets_.padding - 1)
+      .attr("width", out.insets_.overseasWidth + out.insets_.padding - 1);
     //.attr('transform', "translate(-" + (out.insets_.overseasWidth / 2) + ",-" + (out.insets_.overseasHeight / 2) + ")")
 
     //add circles
@@ -1212,34 +1367,37 @@ export function dorling() {
         }
       })
       .append("circle")
-      .attr("cx", (d) => { return (d.x + out.insets_.circleXOffset) })
-      .attr("cy", (d) => { return (d.y + out.insets_.circleYOffset) })
+      .attr("cx", (d) => {
+        return d.x + out.insets_.circleXOffset;
+      })
+      .attr("cy", (d) => {
+        return d.y + out.insets_.circleYOffset;
+      })
       .attr("fill", "#ffffff00")
       .attr("stroke", "#40404000");
-
   }
 
   function addZoomButtonsToDOM() {
     out.zoomBtnContainer = document.createElement("div");
-    out.zoomBtnContainer.classList.add("dorling-leaflet-control-zoom")
+    out.zoomBtnContainer.classList.add("dorling-leaflet-control-zoom");
     let zoomIn = document.createElement("div");
     zoomIn.title = "Zoom in";
-    zoomIn.classList.add("dorling-leaflet-control-zoom-in")
+    zoomIn.classList.add("dorling-leaflet-control-zoom-in");
     zoomIn.innerHTML = "+";
 
     let zoomOut = document.createElement("div");
-    zoomOut.classList.add("dorling-leaflet-control-zoom-out")
+    zoomOut.classList.add("dorling-leaflet-control-zoom-out");
     zoomOut.innerHTML = "-";
     zoomOut.title = "Zoom out";
-    out.zoomBtnContainer.appendChild(zoomIn)
-    out.zoomBtnContainer.appendChild(zoomOut)
+    out.zoomBtnContainer.appendChild(zoomIn);
+    out.zoomBtnContainer.appendChild(zoomOut);
     out.dorlingContainer.node().appendChild(out.zoomBtnContainer);
 
     zoomIn.addEventListener("click", function (e) {
-      out.svg.transition().call(out.zoom.scaleBy, 1.5)
+      out.svg.transition().call(out.zoom.scaleBy, 1.5);
     });
     zoomOut.addEventListener("click", function (e) {
-      out.svg.transition().call(out.zoom.scaleBy, 0.5)
+      out.svg.transition().call(out.zoom.scaleBy, 0.5);
     });
   }
 
@@ -1250,38 +1408,40 @@ export function dorling() {
     out.dorlingContainer.node().appendChild(out.attributionDiv);
   }
 
-
   function addSourcesToDOM() {
     out.sourcesDiv = document.createElement("div");
     out.sourcesDiv.classList.add("dorling-sources-container");
     out.bottomTextContainer.appendChild(out.sourcesDiv);
 
-    let colorURL = out.dataExplorerBaseURL_ + out.colorDatasetCode_
+    let colorURL = out.dataExplorerBaseURL_ + out.colorDatasetCode_;
     //let sizeURL = out.dataExplorerBaseURL_+ out.sizeDatasetCode_
     let colorSource = document.createElement("div");
 
     if (out.sourcesPopupContent_) {
       // add popup trigger
-      colorSource.innerHTML = "Source: Eurostat - <a target='_blank' href='' data-toggle='modal' data-target='#sources_overlay' > access to dataset <i class='fas fa-external-link-alt'>  </i></a>";
+      colorSource.innerHTML =
+        "Source: Eurostat - <a target='_blank' href='' data-toggle='modal' data-target='#sources_overlay' > access to dataset <i class='fas fa-external-link-alt'>  </i></a>";
     } else {
       if (out.customSourceURL_) {
-        colorSource.innerHTML = "Source: Eurostat - <a target='_blank' href='" + out.customSourceURL_ + "'> access to dataset <i class='fas fa-external-link-alt'>  </i></a>";
+        colorSource.innerHTML =
+          "Source: Eurostat - <a target='_blank' href='" +
+          out.customSourceURL_ +
+          "'> access to dataset <i class='fas fa-external-link-alt'>  </i></a>";
       } else {
-        colorSource.innerHTML = "Source: Eurostat - <a target='_blank' href='" + colorURL + "'> access to dataset <i class='fas fa-external-link-alt'>  </i></a>";
+        colorSource.innerHTML =
+          "Source: Eurostat - <a target='_blank' href='" +
+          colorURL +
+          "'> access to dataset <i class='fas fa-external-link-alt'>  </i></a>";
       }
-
     }
 
-
-
     out.sourcesDiv.appendChild(colorSource);
-
   }
 
   function addFootnotesToDOM() {
     out.footnotesDiv = document.createElement("div");
     out.footnotesDiv.classList.add("dorling-footnotes-container");
-    out.bottomTextContainer.appendChild(out.footnotesDiv)
+    out.bottomTextContainer.appendChild(out.footnotesDiv);
     out.footnotesDiv.innerHTML = out.footnotesText_;
   }
 
@@ -1289,11 +1449,11 @@ export function dorling() {
     out.circles.on("mouseover", function (f) {
       if (out.stage == 2) {
         if (out.highlightedRegion) {
-          out.unhightlightRegion() //in case highlightRegion() has been used
+          out.unhightlightRegion(); //in case highlightRegion() has been used
         }
         d3select.select(this).attr("stroke-width", "3px");
         //calculate tooltip position + offsets
-        let pos = getTooltipPositionFromNode(this)
+        let pos = getTooltipPositionFromNode(this);
         let name = f.properties.na;
         let id = f.properties.id;
         setTooltip(name, id, pos);
@@ -1310,7 +1470,7 @@ export function dorling() {
     if (out.showInsets_) {
       out.insetCircles.on("mouseover", function (f) {
         if (out.highlightedRegion) {
-          out.unhightlightRegion() //in case highlightRegion() has been used
+          out.unhightlightRegion(); //in case highlightRegion() has been used
         }
         let id = f.featureCollection.features[0].properties.id;
         let name = f.name;
@@ -1318,14 +1478,14 @@ export function dorling() {
           d3select.select(this).attr("stroke-width", "3px");
           out.tooltipElement.style("visibility", "visible");
           let pos = getTooltipPositionFromNode(this);
-          setTooltip(name, id, pos)
+          setTooltip(name, id, pos);
         }
       });
       out.insetCircles.on("mouseout", function () {
         if (out.stage == 2) {
           out.tooltipElement.style("visibility", "hidden");
           d3select.select(this).attr("stroke-width", "1px");
-          out.unhightlightRegion() //in case highlightRegion() has been used
+          out.unhightlightRegion(); //in case highlightRegion() has been used
         }
       });
     }
@@ -1352,7 +1512,7 @@ export function dorling() {
     if (top < 0) {
       top = top + (tooltipHeight + 40); //offset
     }
-    return { left: left, top: top }
+    return { left: left, top: top };
   }
 
   function setTooltip(name, id, pos) {
@@ -1360,60 +1520,75 @@ export function dorling() {
       if (out.tooltip_.colorUnit == "€ per inhabitant") {
         out.tooltipElement.html(`<strong>${name}</strong>
   (${id}) <i>${out.countryNamesIndex_[id[0] + id[1]]}</i><br>
-  ${out.tooltip_.colorLabel}: ${out.tooltip_.colorUnit} <strong>${formatNumber(roundToOneDecimal(out.colorIndicator[id]))
-          }</strong> per inhabitant <br>
-  ${out.tooltip_.sizeLabel}: ${out.tooltip_.sizeUnit} ${out.tooltip_.sizeValueTextFunction((out.sizeIndicator[id]))} million <br>
-  ${out.tooltip_.shareLabel}: ${roundToOneDecimal((out.sizeIndicator[id] /
-            out.totalsIndex[id.substring(0, 2)]) *
-            100)} ${out.tooltip_.shareUnit} <br>`);
+  ${out.tooltip_.colorLabel}: ${out.tooltip_.colorUnit} <strong>${formatNumber(
+          roundToOneDecimal(out.colorIndicator[id])
+        )}</strong> per inhabitant <br>
+  ${out.tooltip_.sizeLabel}: ${
+          out.tooltip_.sizeUnit
+        } ${out.tooltip_.sizeValueTextFunction(
+          out.sizeIndicator[id]
+        )} million <br>
+  ${out.tooltip_.shareLabel}: ${roundToOneDecimal(
+          (out.sizeIndicator[id] / out.totalsIndex[id.substring(0, 2)]) * 100
+        )} ${out.tooltip_.shareUnit} <br>`);
       } else {
         out.tooltipElement.html(`<strong>${name}</strong>
   (${id}) <i>${out.countryNamesIndex_[id[0] + id[1]]}</i><br>
-  ${out.tooltip_.colorLabel}: <strong>${formatNumber(roundToOneDecimal(out.colorIndicator[id]))
-          }</strong> ${out.tooltip_.colorUnit}<br>
-  ${out.tooltip_.sizeLabel}: ${out.tooltip_.sizeValueTextFunction((out.sizeIndicator[id]))} ${out.tooltip_.sizeUnit}<br>
-  ${out.tooltip_.shareLabel}: ${roundToOneDecimal((out.sizeIndicator[id] /
-            out.totalsIndex[id.substring(0, 2)]) *
-            100)} ${out.tooltip_.shareUnit} <br>`);
+  ${out.tooltip_.colorLabel}: <strong>${formatNumber(
+          roundToOneDecimal(out.colorIndicator[id])
+        )}</strong> ${out.tooltip_.colorUnit}<br>
+  ${out.tooltip_.sizeLabel}: ${out.tooltip_.sizeValueTextFunction(
+          out.sizeIndicator[id]
+        )} ${out.tooltip_.sizeUnit}<br>
+  ${out.tooltip_.shareLabel}: ${roundToOneDecimal(
+          (out.sizeIndicator[id] / out.totalsIndex[id.substring(0, 2)]) * 100
+        )} ${out.tooltip_.shareUnit} <br>`);
       }
-
     } else {
       if (out.tooltip_.colorUnit == "€ per inhabitant") {
         out.tooltipElement.html(`<strong>${name}</strong>
         (${id}) <i>${out.countryNamesIndex_[id[0] + id[1]]}</i><br>
-        ${out.tooltip_.colorLabel}: €<strong>${formatNumber(roundToOneDecimal(out.colorIndicator[id]))
-          }</strong> per inhabitant<br>
-        ${out.tooltip_.sizeLabel}: €${formatNumber(roundToOneDecimal(out.sizeIndicator[id]))} million<br>
-        ${out.tooltip_.shareLabel}: ${roundToOneDecimal((out.sizeIndicator[id] /
-            out.totalsIndex[id.substring(0, 2)]) *
-            100)} ${out.tooltip_.shareUnit} <br>`);
+        ${out.tooltip_.colorLabel}: €<strong>${formatNumber(
+          roundToOneDecimal(out.colorIndicator[id])
+        )}</strong> per inhabitant<br>
+        ${out.tooltip_.sizeLabel}: €${formatNumber(
+          roundToOneDecimal(out.sizeIndicator[id])
+        )} million<br>
+        ${out.tooltip_.shareLabel}: ${roundToOneDecimal(
+          (out.sizeIndicator[id] / out.totalsIndex[id.substring(0, 2)]) * 100
+        )} ${out.tooltip_.shareUnit} <br>`);
       } else {
         out.tooltipElement.html(`<strong>${name}</strong>
         (${id}) <i>${out.countryNamesIndex_[id[0] + id[1]]}</i><br>
-        ${out.tooltip_.colorLabel}: <strong>${formatNumber(roundToOneDecimal(out.colorIndicator[id]))
-          }</strong> ${out.tooltip_.colorUnit}<br>
-        ${out.tooltip_.sizeLabel}: ${formatNumber(roundToOneDecimal(out.sizeIndicator[id]))} ${out.tooltip_.sizeUnit}<br>
-        ${out.tooltip_.shareLabel}: ${roundToOneDecimal((out.sizeIndicator[id] /
-            out.totalsIndex[id.substring(0, 2)]) *
-            100)} ${out.tooltip_.shareUnit} <br>`);
+        ${out.tooltip_.colorLabel}: <strong>${formatNumber(
+          roundToOneDecimal(out.colorIndicator[id])
+        )}</strong> ${out.tooltip_.colorUnit}<br>
+        ${out.tooltip_.sizeLabel}: ${formatNumber(
+          roundToOneDecimal(out.sizeIndicator[id])
+        )} ${out.tooltip_.sizeUnit}<br>
+        ${out.tooltip_.shareLabel}: ${roundToOneDecimal(
+          (out.sizeIndicator[id] / out.totalsIndex[id.substring(0, 2)]) * 100
+        )} ${out.tooltip_.shareUnit} <br>`);
       }
     }
     out.tooltipElement.style("visibility", "visible");
-    out.tooltipElement.style("left", pos.left + "px").style("top", pos.top + "px");
+    out.tooltipElement
+      .style("left", pos.left + "px")
+      .style("top", pos.top + "px");
   }
 
   function roundToOneDecimal(n) {
-    return Math.round(n * 10) / 10
+    return Math.round(n * 10) / 10;
   }
 
   function animate() {
     if (out.stage == 1) {
       if (out.playing) {
-          //out.stage = 1;
-          if (out.playing) {
-            firstTransition();
-            out.stage = 2;
-          }
+        //out.stage = 1;
+        if (out.playing) {
+          firstTransition();
+          out.stage = 2;
+        }
       }
     } else if (out.stage == 2) {
       if (out.playing) {
@@ -1438,12 +1613,24 @@ export function dorling() {
         .duration(750)
         .attr("r", (f) => {
           if (window.devicePixelRatio > 1) {
-            return sizeFunction(+out.sizeIndicator[f.featureCollection.features[0].properties.id]) / window.devicePixelRatio
+            return (
+              sizeFunction(
+                +out.sizeIndicator[
+                  f.featureCollection.features[0].properties.id
+                ]
+              ) / window.devicePixelRatio
+            );
           } else {
-            return sizeFunction(+out.sizeIndicator[f.featureCollection.features[0].properties.id]);
+            return sizeFunction(
+              +out.sizeIndicator[f.featureCollection.features[0].properties.id]
+            );
           }
         })
-        .attr("fill", (f) => colorFunction(+out.colorIndicator[f.featureCollection.features[0].properties.id]))
+        .attr("fill", (f) =>
+          colorFunction(
+            +out.colorIndicator[f.featureCollection.features[0].properties.id]
+          )
+        )
         .attr("stroke", "black");
     }
     //hide nuts
@@ -1453,12 +1640,11 @@ export function dorling() {
       out.nutsBorders.transition().duration(750).attr("stroke", "#1f1f1f00");
       if (out.coastalMargins_) {
         if (out.margins) {
-          out.margins.forEach((margin => {
+          out.margins.forEach((margin) => {
             margin.attr("stroke", "#1f1f1f00").attr("stroke-width", "0px");
-          }))
+          });
         }
       }
-
     }
 
     // show legends & nuts selector
@@ -1474,14 +1660,12 @@ export function dorling() {
   }
 
   function formatNumber(n) {
-    return n
-      .toLocaleString("en")
-      .replace(/,/gi, " ")
+    return n.toLocaleString("en").replace(/,/gi, " ");
   }
 
   function applyForce() {
     if (out.simulation) {
-      out.simulation.stop()
+      out.simulation.stop();
       out.forceInProgress = false;
     }
     out.simulation = d3force
@@ -1531,7 +1715,6 @@ export function dorling() {
     });
   }
 
-
   function restartTransition() {
     out.stage = 1;
     out.tooltipElement.style("visibility", "hidden");
@@ -1560,16 +1743,24 @@ export function dorling() {
             margin
               .attr("stroke", "#404040ff")
               .attr("stroke-width", m * 10 + "px")
-              .attr("stroke", d3scaleChromatic.interpolateBlues(1 - Math.sqrt(m / out.marginNb)))
+              .attr(
+                "stroke",
+                d3scaleChromatic.interpolateBlues(
+                  1 - Math.sqrt(m / out.marginNb)
+                )
+              )
               .attr("fill", "none")
               .attr("opacity", "0.6")
               .attr("stroke-linecap", "round")
               .attr("stroke-linejoin", "round");
-          })
+          });
         }
       }
     } else {
-      out.nutsBorders.transition().duration(1000).attr("stroke", out.nutsBorderColor_);
+      out.nutsBorders
+        .transition()
+        .duration(1000)
+        .attr("stroke", out.nutsBorderColor_);
     }
 
     animate();
@@ -1590,29 +1781,29 @@ export function dorling() {
       .scaleExtent([1, 8])
       .on("zoom", () => {
         zoomed();
-      })
-    out.svg.call(
-      out.zoom
-    ).on("wheel.zoom", null);
+      });
+    out.svg.call(out.zoom).on("wheel.zoom", null);
   }
   function addLegendsToDOM() {
     out.legendSvg = d3select.create("svg");
     out.legendSvg
       // .attr("width", out.legendWidth_) //this is defined in the background size calculations
       .attr("class", "dorling-legend-svg")
-      .attr("height", out.legendHeight_)
-
+      .attr("height", out.legendHeight_);
 
     //append legend div to main container
     // if (!out.legendDiv) {
-    out.legendDiv = document.createElement("div")
+    out.legendDiv = document.createElement("div");
     out.legendDiv.classList.add("dorling-legend-div");
     out.legendDiv.appendChild(out.legendSvg.node());
     out.dorlingContainer.node().appendChild(out.legendDiv);
     // }
 
     //hide legend on small screens by default
-    if (window.innerWidth < out.toggleLegendWidthThreshold_ || window.innerHeight < out.toggleLegendHeightThreshold_) {
+    if (
+      window.innerWidth < out.toggleLegendWidthThreshold_ ||
+      window.innerHeight < out.toggleLegendHeightThreshold_
+    ) {
       if (!out.showLegend) {
         out.legendDiv.style.visibility = "hidden";
       }
@@ -1640,7 +1831,6 @@ export function dorling() {
       addNutsSelectorToDOM();
     }
 
-
     //add background fill rect to legend svg
     var ctx = out.legendSvg.node(),
       textElem = out.legendContainer.node(),
@@ -1657,7 +1847,10 @@ export function dorling() {
     ctx.insertBefore(rect, textElem);
 
     //if mobile, append leaflet-like button to hide and show the legend , overseas maps & nuts selector
-    if (window.innerWidth < out.toggleLegendWidthThreshold_ || window.innerHeight < out.toggleLegendHeightThreshold_) {
+    if (
+      window.innerWidth < out.toggleLegendWidthThreshold_ ||
+      window.innerHeight < out.toggleLegendHeightThreshold_
+    ) {
       addLegendMenuButtonToDOM();
       if (out.showInsets_) {
         addOverseasButtonToDOM();
@@ -1665,7 +1858,6 @@ export function dorling() {
       if (out.showNutsSelector_) {
         addNutsSelectorButtonToDOM();
       }
-
     }
   }
 
@@ -1676,21 +1868,22 @@ export function dorling() {
     out.showLegend = true;
   }
   function addLegendMenuButtonToDOM() {
-
     let buttonContainer = document.createElement("div");
-    buttonContainer.classList.add("dorling-leaflet-control-legend")
+    buttonContainer.classList.add("dorling-leaflet-control-legend");
     out.legendBtn = document.createElement("div");
-    out.legendBtn.classList.add("dorling-leaflet-control-legendBtn")
+    out.legendBtn.classList.add("dorling-leaflet-control-legendBtn");
     out.legendBtn.innerHTML = "≡";
     out.legendBtn.title = "Toggle legend";
-    buttonContainer.appendChild(out.legendBtn)
+    buttonContainer.appendChild(out.legendBtn);
     out.dorlingContainer.node().appendChild(buttonContainer);
-
 
     out.legendBtn.addEventListener("click", function (e) {
       out.showLegend = !out.showLegend;
       // for smaller screens
-      if (window.innerWidth < out.toggleLegendWidthThreshold_ || window.innerHeight < out.toggleLegendHeightThreshold_) {
+      if (
+        window.innerWidth < out.toggleLegendWidthThreshold_ ||
+        window.innerHeight < out.toggleLegendHeightThreshold_
+      ) {
         if (out.showLegend) {
           out.legendDiv.style.visibility = "visible";
         } else if (!out.showLegend) {
@@ -1706,16 +1899,15 @@ export function dorling() {
     });
   }
 
-
   function addOverseasButtonToDOM() {
     out.showOverseas = false;
     let buttonContainer = document.createElement("div");
-    buttonContainer.classList.add("dorling-leaflet-control-overseas")
+    buttonContainer.classList.add("dorling-leaflet-control-overseas");
     out.overseasBtn = document.createElement("div");
-    out.overseasBtn.classList.add("dorling-leaflet-control-overseasBtn")
+    out.overseasBtn.classList.add("dorling-leaflet-control-overseasBtn");
     out.overseasBtn.innerHTML = "<i class='fa fa-globe-europe'></i>";
     out.overseasBtn.title = "Toggle overseas regions";
-    buttonContainer.appendChild(out.overseasBtn)
+    buttonContainer.appendChild(out.overseasBtn);
     out.dorlingContainer.node().appendChild(buttonContainer);
     out.overseasBtn.addEventListener("click", function (e) {
       out.showOverseas = !out.showOverseas;
@@ -1727,16 +1919,17 @@ export function dorling() {
     });
   }
 
-
   function addNutsSelectorButtonToDOM() {
     out.showNutsLevels = false;
     let buttonContainer = document.createElement("div");
-    buttonContainer.classList.add("dorling-leaflet-control-nuts-selector")
+    buttonContainer.classList.add("dorling-leaflet-control-nuts-selector");
     out.nutsSelectorBtn = document.createElement("div");
-    out.nutsSelectorBtn.classList.add("dorling-leaflet-control-nuts-selector-btn")
+    out.nutsSelectorBtn.classList.add(
+      "dorling-leaflet-control-nuts-selector-btn"
+    );
     out.nutsSelectorBtn.innerHTML = "<i class='fa fa-ellipsis-v'></i>";
     out.nutsSelectorBtn.title = "Select geographic level";
-    buttonContainer.appendChild(out.nutsSelectorBtn)
+    buttonContainer.appendChild(out.nutsSelectorBtn);
     out.dorlingContainer.node().appendChild(buttonContainer);
     out.nutsSelectorBtn.addEventListener("click", function (e) {
       out.showNutsLevels = !out.showNutsLevels;
@@ -1746,7 +1939,6 @@ export function dorling() {
         out.nutsSelectorDiv.style.display = "none";
       }
     });
-
   }
 
   function addColorLegendExplanation() {
@@ -1755,26 +1947,45 @@ export function dorling() {
       .attr("fill", "black")
       .attr("class", "dorling-color-legend-explanation")
       .attr("text-anchor", "right")
-      .attr("transform", "translate(" + out.colorLegend_.translateX + "," + (out.sizeLegend_.translateY[out.nutsLevel_] + out.colorLegend_.titleYOffset[out.nutsLevel_]) + ")")
+      .attr(
+        "transform",
+        "translate(" +
+          out.colorLegend_.translateX +
+          "," +
+          (out.sizeLegend_.translateY[out.nutsLevel_] +
+            out.colorLegend_.titleYOffset[out.nutsLevel_]) +
+          ")"
+      );
 
     explanation
       .append("text")
       .attr("y", 5)
       .attr("x", 0)
       .attr("dy", "0em")
-      .text(out.colorLegend_.title).call(d3_textWrapping, (out.colorLegend_.titleWidth - 20));
+      .text(out.colorLegend_.title)
+      .call(d3_textWrapping, out.colorLegend_.titleWidth - 20);
   }
 
   function addColorLegend() {
     out.colorLegendContainer = out.legendContainer
       .append("g")
-      .attr("class", "dorling-color-legend")
+      .attr("class", "dorling-color-legend");
 
-    out.colorLegendContainer.attr("transform", "translate(" + out.colorLegend_.translateX + "," + (out.colorLegend_.titleYOffset[out.nutsLevel_] + out.colorLegend_.bodyYOffset[out.nutsLevel_]) + ")")
-
+    out.colorLegendContainer.attr(
+      "transform",
+      "translate(" +
+        out.colorLegend_.translateX +
+        "," +
+        (out.colorLegend_.titleYOffset[out.nutsLevel_] +
+          out.colorLegend_.bodyYOffset[out.nutsLevel_]) +
+        ")"
+    );
 
     let legend = legendColor()
-      .title("Hover over the different legend classes to highlight them on the map")
+      .ascending(true)
+      .title(
+        "Hover over the different legend classes to highlight them on the map"
+      )
       .titleWidth(out.colorLegend_.titleWidth)
       .orient(out.colorLegend_.orient)
       .shape(out.colorLegend_.shape)
@@ -1787,39 +1998,61 @@ export function dorling() {
       .labelWrap(out.colorLegend_.labelWrap)
       .on("cellover", function (color) {
         if (out.stage == 2) {
-          out.circles.transition()
+          out.circles
+            .transition()
             .duration(750)
             .attr("fill", (f) => {
               //if circle color isnt that of the hovered cell
-              if (colorFunction(+out.colorIndicator[f.properties.id]) !== color) {
+              if (
+                colorFunction(+out.colorIndicator[f.properties.id]) !== color
+              ) {
                 //
-                return "white"
+                return "white";
               } else {
-                return color
+                return color;
               }
-            })
+            });
           if (out.insetCircles) {
-            out.insetCircles.transition()
+            out.insetCircles
+              .transition()
               .duration(750)
               .attr("fill", (f) => {
                 //if circle color isnt that of the hovered cell
-                if (colorFunction(+out.colorIndicator[f.featureCollection.features[0].properties.id]) !== color) {
+                if (
+                  colorFunction(
+                    +out.colorIndicator[
+                      f.featureCollection.features[0].properties.id
+                    ]
+                  ) !== color
+                ) {
                   //
-                  return "white"
+                  return "white";
                 } else {
-                  return color
+                  return color;
                 }
-              })
+              });
           }
         }
       })
       .on("cellout", function (d) {
         if (out.stage == 2) {
-          out.circles.transition()
-            .duration(750).attr("fill", (f) => colorFunction(+out.colorIndicator[f.properties.id]))
+          out.circles
+            .transition()
+            .duration(750)
+            .attr("fill", (f) =>
+              colorFunction(+out.colorIndicator[f.properties.id])
+            );
           if (out.insetCircles) {
-            out.insetCircles.transition()
-              .duration(750).attr("fill", (f) => colorFunction(+out.colorIndicator[f.featureCollection.features[0].properties.id]))
+            out.insetCircles
+              .transition()
+              .duration(750)
+              .attr("fill", (f) =>
+                colorFunction(
+                  +out.colorIndicator[
+                    f.featureCollection.features[0].properties.id
+                  ]
+                )
+              );
           }
         }
       });
@@ -1829,7 +2062,7 @@ export function dorling() {
     }
     if (out.colors_) {
       if (out.colorLegend_.labels) {
-        legend.labels(out.colorLegend_.labels)
+        legend.labels(out.colorLegend_.labels);
       } else {
         legend.labels(function (d) {
           //colorLegend.locale() doesnt work with d3v5 so this is a work around for implementing spaces as a thousand separator
@@ -1837,10 +2070,14 @@ export function dorling() {
           let r = /[+-]?\d+(\.\d+)?/g; //float
           let label;
 
-          if (d.generatedLabels[d.i].toString().indexOf(d.labelDelimiter) !== -1) {
+          if (
+            d.generatedLabels[d.i].toString().indexOf(d.labelDelimiter) !== -1
+          ) {
             //first label
             if (d.i === 0) {
-              label = d.generatedLabels[d.i].split(d.labelDelimiter)[1] + out.colorLegend_.labelUnit;
+              label =
+                d.generatedLabels[d.i].split(d.labelDelimiter)[1] +
+                out.colorLegend_.labelUnit;
               var m = label.match(r);
               if (m) {
                 return "< " + formatNumber(parseFloat(m[0]));
@@ -1849,7 +2086,9 @@ export function dorling() {
               }
               //last label
             } else if (d.i === d.genLength - 1) {
-              label = d.generatedLabels[d.i].split(d.labelDelimiter)[0] + out.colorLegend_.labelUnit;
+              label =
+                d.generatedLabels[d.i].split(d.labelDelimiter)[0] +
+                out.colorLegend_.labelUnit;
               var m = label.match(r);
               if (m) {
                 return "≥ " + formatNumber(parseFloat(m[0]));
@@ -1861,7 +2100,11 @@ export function dorling() {
               label = d.generatedLabels[d.i] + out.colorLegend_.labelUnit;
               var m = label.match(r);
               if (m) {
-                return formatNumber(parseFloat(m[0])) + d.labelDelimiter + formatNumber(parseFloat(m[1]));
+                return (
+                  formatNumber(parseFloat(m[0])) +
+                  d.labelDelimiter +
+                  formatNumber(parseFloat(m[1]))
+                );
               } else {
                 return label;
               }
@@ -1871,7 +2114,7 @@ export function dorling() {
       }
     } else {
       if (out.colorLegend_.labels) {
-        legend.labels(out.colorLegend_.labels)
+        legend.labels(out.colorLegend_.labels);
       }
     }
 
@@ -1882,15 +2125,22 @@ export function dorling() {
     out.legendSvg.select(".dorling-color-legend").call(legend);
 
     //apply indentation to legend cells
-    let legendCells = d3select.select(".legendCells")
+    let legendCells = d3select.select(".legendCells");
     let transform = legendCells.attr("transform");
     let translation = getTranslation(transform);
-    legendCells.attr("transform", "translate(" + (translation[0] + out.colorLegend_.cellsTranslateX) + "," + (translation[1] + out.colorLegend_.cellsTranslateY) + ")")
+    legendCells.attr(
+      "transform",
+      "translate(" +
+        (translation[0] + out.colorLegend_.cellsTranslateX) +
+        "," +
+        (translation[1] + out.colorLegend_.cellsTranslateY) +
+        ")"
+    );
   }
 
   function getTranslation(transform) {
     // Create a dummy g for calculation purposes only. This will never
-    // be appended to the DOM and will be discarded once this function 
+    // be appended to the DOM and will be discarded once this function
     // returns.
     var g = document.createElementNS("http://www.w3.org/2000/svg", "g");
 
@@ -1899,7 +2149,7 @@ export function dorling() {
 
     // consolidate the SVGTransformList containing all transformations
     // to a single SVGTransform of type SVG_TRANSFORM_MATRIX and get
-    // its SVGMatrix. 
+    // its SVGMatrix.
     var matrix = g.transform.baseVal.consolidate().matrix;
 
     // As per definition values e and f are the ones for the translation.
@@ -1909,7 +2159,11 @@ export function dorling() {
   function addSizeLegend() {
     //assign default circle radiuses if none specified by user
     if (!out.sizeLegend_.values[out.nutsLevel_]) {
-      out.sizeLegend_.values[out.nutsLevel_] = [Math.floor(out.sizeExtent[1]), Math.floor(out.sizeExtent[1] / 2), Math.floor(out.sizeExtent[1] / 10)]
+      out.sizeLegend_.values[out.nutsLevel_] = [
+        Math.floor(out.sizeExtent[1]),
+        Math.floor(out.sizeExtent[1] / 2),
+        Math.floor(out.sizeExtent[1] / 10),
+      ];
     }
 
     out.sizeLegendContainer = out.legendContainer
@@ -1918,11 +2172,17 @@ export function dorling() {
       .attr("opacity", 0);
 
     //ff positioning fix
-    if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
+    if (navigator.userAgent.toLowerCase().indexOf("firefox") > -1) {
       // Do Firefox-related activities
-      out.sizeLegendContainer.attr("transform", "translate(0," + (out.sizeLegend_.translateY[out.nutsLevel_] + 2) + ")")
+      out.sizeLegendContainer.attr(
+        "transform",
+        "translate(0," + (out.sizeLegend_.translateY[out.nutsLevel_] + 2) + ")"
+      );
     } else {
-      out.sizeLegendContainer.attr("transform", "translate(0," + out.sizeLegend_.translateY[out.nutsLevel_] + ")")
+      out.sizeLegendContainer.attr(
+        "transform",
+        "translate(0," + out.sizeLegend_.translateY[out.nutsLevel_] + ")"
+      );
     }
 
     // let sizeLegendBackground = out.sizeLegendContainer
@@ -1933,20 +2193,36 @@ export function dorling() {
       .append("g")
       .attr("fill", "black")
       .attr("class", "dorling-size-legend-title")
-      .attr("transform", "translate(" + out.sizeLegend_.titleXOffset[out.nutsLevel_] + "," + out.sizeLegend_.titleYOffset[out.nutsLevel_] + ")")
+      .attr(
+        "transform",
+        "translate(" +
+          out.sizeLegend_.titleXOffset[out.nutsLevel_] +
+          "," +
+          out.sizeLegend_.titleYOffset[out.nutsLevel_] +
+          ")"
+      )
       .attr("text-anchor", "right");
     legendTitle
       .append("text")
       .attr("y", 5)
       .attr("x", 0)
       .attr("dy", "0em")
-      .text(out.sizeLegend_.title).attr("class", "dorling-legend-title").call(d3_textWrapping, out.colorLegend_.titleWidth);
+      .text(out.sizeLegend_.title)
+      .attr("class", "dorling-legend-title")
+      .call(d3_textWrapping, out.colorLegend_.titleWidth);
 
     //circles
     const legC = out.sizeLegendContainer
       .append("g")
       .attr("fill", "black")
-      .attr("transform", "translate(" + out.sizeLegend_.bodyXOffset[out.nutsLevel_] + "," + out.sizeLegend_.bodyYOffset[out.nutsLevel_] + ")") //TODO: make dynamic
+      .attr(
+        "transform",
+        "translate(" +
+          out.sizeLegend_.bodyXOffset[out.nutsLevel_] +
+          "," +
+          out.sizeLegend_.bodyYOffset[out.nutsLevel_] +
+          ")"
+      ) //TODO: make dynamic
       .attr("text-anchor", "right")
       .selectAll("g")
       // .data([20e6, 10e6, 1e6])
@@ -1958,14 +2234,14 @@ export function dorling() {
       .attr("stroke", "black")
       .attr("cy", (d) => {
         if (window.devicePixelRatio > 1) {
-          return -sizeFunction(d) / window.devicePixelRatio
+          return -sizeFunction(d) / window.devicePixelRatio;
         } else {
           return -sizeFunction(d);
         }
       })
       .attr("r", (d) => {
         if (window.devicePixelRatio > 1) {
-          return sizeFunction(d) / window.devicePixelRatio
+          return sizeFunction(d) / window.devicePixelRatio;
         } else {
           return sizeFunction(d);
         }
@@ -1979,7 +2255,7 @@ export function dorling() {
       .attr("y", (d, i) => {
         let r;
         if (window.devicePixelRatio > 1) {
-          r = sizeFunction(d) / window.devicePixelRatio
+          r = sizeFunction(d) / window.devicePixelRatio;
         } else {
           r = sizeFunction(d);
         }
@@ -1989,7 +2265,7 @@ export function dorling() {
         } else {
           y = -1 - 2 * r + out.sizeLegend_.textOffsetY[out.nutsLevel_];
         }
-        return y + out.sizeLegend_.labelsOffsetY[out.nutsLevel_]
+        return y + out.sizeLegend_.labelsOffsetY[out.nutsLevel_];
       })
       .attr("x", out.sizeLegend_.labelsTranslateX[out.nutsLevel_])
       .attr("dy", "1.2em")
@@ -1997,9 +2273,10 @@ export function dorling() {
       .text((d) => {
         return out.sizeLegend_.textFunction(d);
         //return d.toLocaleString("en").replace(/,/gi, " ");
-      })
+      });
     //line pointing to top of corresponding circle:
-    legC.append("line")
+    legC
+      .append("line")
       .style("stroke-dasharray", 2)
       .style("stroke", "grey")
       .attr("x1", 2)
@@ -2007,7 +2284,7 @@ export function dorling() {
         let y;
         let r;
         if (window.devicePixelRatio > 1) {
-          r = sizeFunction(d) / window.devicePixelRatio
+          r = sizeFunction(d) / window.devicePixelRatio;
         } else {
           r = sizeFunction(d);
         }
@@ -2024,7 +2301,7 @@ export function dorling() {
         let y;
         let r;
         if (window.devicePixelRatio > 1) {
-          r = sizeFunction(d) / window.devicePixelRatio
+          r = sizeFunction(d) / window.devicePixelRatio;
         } else {
           r = sizeFunction(d);
         }
@@ -2034,7 +2311,7 @@ export function dorling() {
           y = -1 - 2 * r;
         }
         return y + out.sizeLegend_.labelsOffsetY[out.nutsLevel_];
-      })
+      });
   }
 
   var d3_textWrapping = function d3_textWrapping(text, width) {
@@ -2048,16 +2325,24 @@ export function dorling() {
         //ems
         y = text.attr("y"),
         dy = parseFloat(text.attr("dy")) || 0,
-        tspan = text.text(null).append("tspan").attr("x", 0).attr("dy", dy + "em");
+        tspan = text
+          .text(null)
+          .append("tspan")
+          .attr("x", 0)
+          .attr("dy", dy + "em");
 
-      while (word = words.pop()) {
+      while ((word = words.pop())) {
         line.push(word);
         tspan.text(line.join(" "));
         if (tspan.node().getComputedTextLength() > width && line.length > 1) {
           line.pop();
           tspan.text(line.join(" "));
           line = [word];
-          tspan = text.append("tspan").attr("x", 0).attr("dy", lineHeight + dy + "em").text(word);
+          tspan = text
+            .append("tspan")
+            .attr("x", 0)
+            .attr("dy", lineHeight + dy + "em")
+            .text(word);
         }
       }
     });
@@ -2068,12 +2353,11 @@ export function dorling() {
    *
    */
   function addNutsSelectorToDOM() {
-
     let radioWidth = 30;
     let radioHeight = 30;
     let radioRadius = 8;
     let radioDotRadius = 6;
-    let padding = 0;//vertical padding between radios
+    let padding = 0; //vertical padding between radios
     let marginTop = 40;
     let marginLeft = 5;
     let radioCxy = 5;
@@ -2082,43 +2366,51 @@ export function dorling() {
     let outlineSelectedColor = "#022B58";
 
     //add to its own svg container on smaller screens and legendsSvg for larger screens
-    if (window.innerWidth < out.toggleLegendWidthThreshold_ || window.innerHeight < out.toggleLegendHeightThreshold_) {
+    if (
+      window.innerWidth < out.toggleLegendWidthThreshold_ ||
+      window.innerHeight < out.toggleLegendHeightThreshold_
+    ) {
       marginTop = 15;
       out.nutsSelectorSvg = d3select.create("svg");
       out.nutsSelectorSvg
         .attr("class", "dorling-nuts-selector-svg")
         .attr("height", out.nutsSelectorSvgHeight_)
-        .attr("width", out.nutsSelectorSvgWidth_)
+        .attr("width", out.nutsSelectorSvgWidth_);
 
-      out.nutsSelectorDiv = document.createElement("div")
+      out.nutsSelectorDiv = document.createElement("div");
       out.nutsSelectorDiv.classList.add("dorling-nuts-selector-div");
       //hide nutsSelector and insets on small screens by default
       out.nutsSelectorDiv.style.display = "none";
       out.nutsSelectorDiv.appendChild(out.nutsSelectorSvg.node());
       out.dorlingContainer.node().appendChild(out.nutsSelectorDiv);
 
-
       out.radioContainer = out.nutsSelectorSvg
         .append("g")
         .attr("id", "dorling-nuts-selector")
         .attr("opacity", 1)
-        .attr("transform", "translate(10,0)")
+        .attr("transform", "translate(10,0)");
     } else {
       out.radioContainer = out.legendContainer
         .append("g")
         .attr("id", "dorling-nuts-selector")
         .attr("opacity", 0)
-        .attr("transform", "translate(0, " + out.nutsSelectorTranslateY_[out.nutsLevel_] + ")")
+        .attr(
+          "transform",
+          "translate(0, " + out.nutsSelectorTranslateY_[out.nutsLevel_] + ")"
+        );
 
       //title only on larger screens
-      out.radioContainer.append("text")
-        .text("Select geographic level").attr("class", "dorling-legend-title")
+      out.radioContainer
+        .append("text")
+        .text("Select geographic level")
+        .attr("class", "dorling-legend-title")
         .attr("transform", "translate(0,28)");
     }
 
     //RADIO 0
     if (out.nutsAvailable_.indexOf(0) != -1) {
-      var radio0 = out.radioContainer.append("g")
+      var radio0 = out.radioContainer
+        .append("g")
         .attr("fill", "currentColor")
         .attr("class", "dorling-radio-button")
         .attr("preserveAspectRatio", "xMidYMid meet")
@@ -2127,119 +2419,155 @@ export function dorling() {
         .attr("viewBox", "0 0 " + radioWidth + " " + radioHeight + "")
         .attr("transform", "translate(" + marginLeft + "," + marginTop + ")");
 
-      var outline0 = radio0.append("circle")
+      var outline0 = radio0
+        .append("circle")
         .attr("class", "dorling-radio-outline")
         .attr("cx", "" + radioCxy + "")
         .attr("cy", "" + radioCxy + "")
         .attr("r", "" + radioRadius + "")
         .attr("fill", "none")
         .attr("stroke", "black")
-        .attr("stroke-width", "1")
+        .attr("stroke-width", "1");
 
-      var dot0 = radio0.append("circle")
+      var dot0 = radio0
+        .append("circle")
         .attr("opacity", radioDotOpacity)
         .attr("cx", "" + radioCxy + "")
         .attr("cy", "" + radioCxy + "")
         .attr("r", "" + radioDotRadius + "")
-        .attr("class", "dorling-radio-dot")
+        .attr("class", "dorling-radio-dot");
 
-      var label0 = radio0.append("text")
+      var label0 = radio0
+        .append("text")
         .text("Country")
         .attr("transform", "translate(25,10)");
     }
 
     //RADIO 1
     if (out.nutsAvailable_.indexOf(1) !== -1) {
-      var radio1 = out.radioContainer.append("g")
+      var radio1 = out.radioContainer
+        .append("g")
         .attr("fill", "currentColor")
         .attr("class", "dorling-radio-button")
         .attr("preserveAspectRatio", "xMidYMid meet")
         .attr("height", "" + radioHeight + "px")
         .attr("width", "" + radioWidth + "px")
         .attr("viewBox", "0 0 " + radioWidth + " " + radioHeight + "")
-        .attr("transform", "translate(" + marginLeft + "," + (radioHeight + padding + marginTop) + ")");
+        .attr(
+          "transform",
+          "translate(" +
+            marginLeft +
+            "," +
+            (radioHeight + padding + marginTop) +
+            ")"
+        );
 
-      var outline1 = radio1.append("circle")
+      var outline1 = radio1
+        .append("circle")
         .attr("class", "dorling-radio-outline")
         .attr("cx", "" + radioCxy + "")
         .attr("cy", "" + radioCxy + "")
         .attr("r", "" + radioRadius + "")
         .attr("fill", "none")
         .attr("stroke", "black")
-        .attr("stroke-width", "1")
+        .attr("stroke-width", "1");
 
-      var dot1 = radio1.append("circle")
+      var dot1 = radio1
+        .append("circle")
         .attr("opacity", radioDotOpacity)
         .attr("cx", "" + radioCxy + "")
         .attr("cy", "" + radioCxy + "")
         .attr("r", "" + radioDotRadius + "")
-        .attr("class", "dorling-radio-dot")
+        .attr("class", "dorling-radio-dot");
 
-      var label1 = radio1.append("text")
+      var label1 = radio1
+        .append("text")
         .text("NUTS 1")
         .attr("transform", "translate(25,10)");
     }
 
     //RADIO 2
     if (out.nutsAvailable_.indexOf(2) !== -1) {
-      var radio2 = out.radioContainer.append("g")
+      var radio2 = out.radioContainer
+        .append("g")
         .attr("fill", "currentColor")
         .attr("class", "dorling-radio-button")
         .attr("preserveAspectRatio", "xMidYMid meet")
         .attr("height", "" + radioHeight + "px")
         .attr("width", "" + radioWidth + "px")
         .attr("viewBox", "0 0 " + radioWidth + " " + radioHeight + "")
-        .attr("transform", "translate(" + marginLeft + "," + (radioHeight * 2 + padding * 2 + marginTop) + ")")
+        .attr(
+          "transform",
+          "translate(" +
+            marginLeft +
+            "," +
+            (radioHeight * 2 + padding * 2 + marginTop) +
+            ")"
+        );
 
-      var outline2 = radio2.append("circle")
+      var outline2 = radio2
+        .append("circle")
         .attr("class", "dorling-radio-outline")
         .attr("cx", "" + radioCxy + "")
         .attr("cy", "" + radioCxy + "")
         .attr("r", "" + radioRadius + "")
         .attr("fill", "none")
         .attr("stroke", "black")
-        .attr("stroke-width", "1")
+        .attr("stroke-width", "1");
 
-      var dot2 = radio2.append("circle")
+      var dot2 = radio2
+        .append("circle")
         .attr("opacity", radioDotOpacity)
         .attr("cx", "" + radioCxy + "")
         .attr("cy", "" + radioCxy + "")
         .attr("r", "" + radioDotRadius + "")
-        .attr("class", "dorling-radio-dot")
+        .attr("class", "dorling-radio-dot");
 
-      var label2 = radio2.append("text")
+      var label2 = radio2
+        .append("text")
         .text("NUTS 2")
         .attr("transform", "translate(25,10)");
     }
 
     //RADIO 3
     if (out.nutsAvailable_.indexOf(3) !== -1) {
-      var radio3 = out.radioContainer.append("g")
+      var radio3 = out.radioContainer
+        .append("g")
         .attr("fill", "currentColor")
         .attr("class", "dorling-radio-button")
         .attr("preserveAspectRatio", "xMidYMid meet")
         .attr("height", "" + radioHeight + "px")
         .attr("width", "" + radioWidth + "px")
         .attr("viewBox", "0 0 " + radioWidth + " " + radioHeight + "")
-        .attr("transform", "translate(" + marginLeft + "," + (radioHeight * 3 + padding * 3 + marginTop) + ")")
+        .attr(
+          "transform",
+          "translate(" +
+            marginLeft +
+            "," +
+            (radioHeight * 3 + padding * 3 + marginTop) +
+            ")"
+        );
 
-      var outline3 = radio3.append("circle")
+      var outline3 = radio3
+        .append("circle")
         .attr("class", "dorling-radio-outline")
         .attr("cx", "" + radioCxy + "")
         .attr("cy", "" + radioCxy + "")
         .attr("r", "" + radioRadius + "")
         .attr("fill", "none")
         .attr("stroke", "black")
-        .attr("stroke-width", "1")
+        .attr("stroke-width", "1");
 
-      var dot3 = radio3.append("circle")
+      var dot3 = radio3
+        .append("circle")
         .attr("opacity", radioDotOpacity)
         .attr("cx", "" + radioCxy + "")
         .attr("cy", "" + radioCxy + "")
         .attr("r", "" + radioDotRadius + "")
-        .attr("class", "dorling-radio-dot")
+        .attr("class", "dorling-radio-dot");
 
-      var label3 = radio3.append("text")
+      var label3 = radio3
+        .append("text")
         .text("NUTS 3")
         .attr("transform", "translate(25,10)");
     }
@@ -2261,25 +2589,24 @@ export function dorling() {
 
     if (radio0) {
       radio0.on("click", function (e) {
-        nutsRadioEventHandler(0)
+        nutsRadioEventHandler(0);
       });
     }
     if (radio1) {
       radio1.on("click", function (e) {
-        nutsRadioEventHandler(1)
+        nutsRadioEventHandler(1);
       });
     }
     if (radio2) {
       radio2.on("click", function (e) {
-        nutsRadioEventHandler(2)
+        nutsRadioEventHandler(2);
       });
     }
     if (radio3) {
       radio3.on("click", function (e) {
-        nutsRadioEventHandler(3)
+        nutsRadioEventHandler(3);
       });
     }
-
   }
 
   function nutsRadioEventHandler(nuts) {
@@ -2296,7 +2623,7 @@ export function dorling() {
       .attr("class", "dorling-play-button")
       .attr(
         "transform",
-        "translate(" + ((out.width_) - 30) + "," + (out.height_ - 30) + ")"
+        "translate(" + (out.width_ - 30) + "," + (out.height_ - 30) + ")"
       );
     let playBtn = buttonContainer.append("g").style("visibility", "hidden");
     let pauseBtn = buttonContainer.append("g").style("visibility", "visible");
@@ -2312,10 +2639,7 @@ export function dorling() {
       .append("path")
       .attr("d", "M15 10 L15 40 L35 25 Z")
       .style("fill", "white")
-      .attr(
-        "transform",
-        "scale(0.5)translate(1,0)"
-      )
+      .attr("transform", "scale(0.5)translate(1,0)");
 
     pauseBtn
       .append("rect")
@@ -2328,7 +2652,7 @@ export function dorling() {
       .append("path")
       .attr("d", "M12,11 L23,11 23,40 12,40 M26,11 L37,11 37,40 26,40")
       .style("fill", "white")
-      .attr("transform", "scale(0.5)translate(1,0)")
+      .attr("transform", "scale(0.5)translate(1,0)");
 
     buttonContainer.on("mousedown", function () {
       out.playing = !out.playing;
@@ -2350,10 +2674,10 @@ export function dorling() {
   out.play = function () {
     out.playing = true;
     animate();
-  }
+  };
   out.pause = function () {
     out.playing = false;
-  }
+  };
   out.highlightRegion = function (nutsCode) {
     if (out.circles) {
       out.circles.attr("stroke-width", (f) => {
@@ -2362,12 +2686,12 @@ export function dorling() {
           let id = f.properties.id;
           let circle = d3select.select("#" + id);
           let node = circle.node();
-          let pos = getTooltipPositionFromNode(node)
-          setTooltip(name, id, pos)
+          let pos = getTooltipPositionFromNode(node);
+          setTooltip(name, id, pos);
           out.highlightedRegion = nutsCode;
-          return "3px"
+          return "3px";
         } else {
-          return "1px"
+          return "1px";
         }
       });
     }
@@ -2377,27 +2701,27 @@ export function dorling() {
         if (f.id == nutsCode) {
           let name = f.name;
           let id = f.id;
-          let circle = d3select.select("#" + 'inset-' + id);
+          let circle = d3select.select("#" + "inset-" + id);
           let node = circle.node();
-          let pos = getTooltipPositionFromNode(node)
-          setTooltip(name, id, pos)
+          let pos = getTooltipPositionFromNode(node);
+          setTooltip(name, id, pos);
           out.highlightedRegion = nutsCode;
-          return "3px"
+          return "3px";
         } else {
-          return "1px"
+          return "1px";
         }
       });
     }
-  }
+  };
 
   out.unhightlightRegion = function () {
     out.circles.attr("stroke-width", (f) => {
       if (f.properties.id == out.highlightedRegion) {
-        return "1px"
+        return "1px";
       }
-    })
+    });
     out.highlightedRegion = null;
-  }
+  };
 
   function addTooltipToDOM() {
     return d3select
@@ -2420,9 +2744,8 @@ export function dorling() {
           .scaleThreshold()
           .domain(out.thresholdValues_)
           .range(out.colors_)
-          .unknown("#ccc")
+          .unknown("#ccc");
       } else {
-
         //split range into equal parts, rounding up or down to nearest n
         const split = function (left, right, parts) {
           var result = [],
@@ -2433,7 +2756,7 @@ export function dorling() {
           }
           result.push(round(right, 5));
           return result;
-        }
+        };
         let domain;
         if (out.colorExtent[0] < 1) {
           domain = split(5, out.colorExtent[1], 6);
@@ -2443,8 +2766,15 @@ export function dorling() {
         return d3scale
           .scaleThreshold()
           .domain(domain)
-          .range(["#2d50a0", "#6487c3", "#aab9e1", "#f0cd91", "#e6a532", "#d76e2d"])
-          .unknown("#ccc")
+          .range([
+            "#2d50a0",
+            "#6487c3",
+            "#aab9e1",
+            "#f0cd91",
+            "#e6a532",
+            "#d76e2d",
+          ])
+          .unknown("#ccc");
       }
     } else {
       if (out.thresholdValues_) {
@@ -2456,8 +2786,14 @@ export function dorling() {
       } else {
         //default
         return d3scale
-          .scaleDivergingSymlog((t) => d3scaleChromatic[out.colorScheme_](1 - t))
-          .domain([out.colorExtent[0], out.colorExtent[1] / 2, out.colorExtent[1]])
+          .scaleDivergingSymlog((t) =>
+            d3scaleChromatic[out.colorScheme_](1 - t)
+          )
+          .domain([
+            out.colorExtent[0],
+            out.colorExtent[1] / 2,
+            out.colorExtent[1],
+          ])
           .nice();
       }
     }
@@ -2469,11 +2805,17 @@ export function dorling() {
    * @return d3.scale
    */
   function defineSizeScale() {
-    let scale = out.circleSizeFunction_ || d3scale.scaleSqrt()
-      .range([out.minCircleRadius_[out.nutsLevel_], out.maxCircleRadius_[out.nutsLevel_]]).domain(out.sizeExtent);
+    let scale =
+      out.circleSizeFunction_ ||
+      d3scale
+        .scaleSqrt()
+        .range([
+          out.minCircleRadius_[out.nutsLevel_],
+          out.maxCircleRadius_[out.nutsLevel_],
+        ])
+        .domain(out.sizeExtent);
     return scale;
   }
-
 
   /**
    * returns a colour from a value using the defined d3 colour scale
@@ -2485,12 +2827,11 @@ export function dorling() {
     return out.colorScale(v);
   }
 
-
   /**
    * returns a radius from an indicator value using the defined d3 sizing scale
    *
    * @param {float} v indicator value
-   * @return {float} 
+   * @return {float}
    */
   function sizeFunction(v) {
     // let r = out.circleExaggerationFactor_ * 0.005 * Math.sqrt(val);
@@ -2498,7 +2839,6 @@ export function dorling() {
     // let rad = r * out.circleExaggerationFactor_
     return r;
   }
-
 
   /**
    * map zoom event handler
@@ -2515,8 +2855,8 @@ export function dorling() {
   function addLoadingSpinnerToDOM() {
     out.spinner = document.createElement("div");
     out.spinner.classList.add("dorling-loader");
-    let lds = document.createElement("div")
-    lds.classList.add("lds-roller")
+    let lds = document.createElement("div");
+    lds.classList.add("lds-roller");
     let son1 = document.createElement("div");
     let son2 = document.createElement("div");
     let son3 = document.createElement("div");
@@ -2546,50 +2886,52 @@ export function dorling() {
   }
 
   //standalone stuff
-  const generateTwitterURL = require('./components/twitter.js').generateURL
+  const generateTwitterURL = require("./components/twitter.js").generateURL;
   function generateEmbed() {
-    $('#embed-content').html(
+    $("#embed-content").html(
       '<pre class="pre-scrollable"><code>&lt;iframe frameborder="0" height="600px" scrolling="no" width="100%" src="' +
-      out.standalone_.embedURL +
-      '"&gt;&lt;/iframe&gt;</code></pre>'
-    )
+        out.standalone_.embedURL +
+        '"&gt;&lt;/iframe&gt;</code></pre>'
+    );
   }
   function generateTwitterLink() {
     let text;
     if (out.standalone_.twitterText) {
       text = out.standalone_.twitterText;
     } else {
-      text = "Digital Regional Yearbook: " + out.title_
+      text = "Digital Regional Yearbook: " + out.title_;
     }
-    $('#tweet').attr(
-      'href',
-      generateTwitterURL(text, out.standalone_.twitterURL, out.standalone_.twitterTags)
-    )
+    $("#tweet").attr(
+      "href",
+      generateTwitterURL(
+        text,
+        out.standalone_.twitterURL,
+        out.standalone_.twitterTags
+      )
+    );
   }
   function generateFacebook() {
-    $('#facebook-button').click(function () {
-      let u = window.location.href
+    $("#facebook-button").click(function () {
+      let u = window.location.href;
       let t;
       if (out.standalone_.facebookTitle) {
         t = out.standalone_.facebookTitle;
       } else {
-        t = out.title_
+        t = out.title_;
       }
 
       let url =
-        'https://www.facebook.com/sharer/sharer.php?u=' +
+        "https://www.facebook.com/sharer/sharer.php?u=" +
         encodeURIComponent(u) +
-        '&t=' +
-        encodeURIComponent(t)
+        "&t=" +
+        encodeURIComponent(t);
       window.open(
-        url + '?redirect=facebook',
-        'sharer',
-        'toolbar=0,status=0,width=626,height=436'
-      )
-    })
+        url + "?redirect=facebook",
+        "sharer",
+        "toolbar=0,status=0,width=626,height=436"
+      );
+    });
   }
-
-
 
   return out;
 }
@@ -2599,11 +2941,19 @@ export function dorling() {
  *
  * @param {*} data //REST query reponse data
  * @param {*} type //type of data (colour or size)
- * @param {*} out 
+ * @param {*} out
  * @param {*} resolve
  * @param {*} reject
  */
-function indexStat(data, type, out, resolve, reject, mixSizeData, mixColorData) {
+function indexStat(
+  data,
+  type,
+  out,
+  resolve,
+  reject,
+  mixSizeData,
+  mixColorData
+) {
   let ind = {}; //initial index
 
   let arr;
@@ -2619,7 +2969,9 @@ function indexStat(data, type, out, resolve, reject, mixSizeData, mixColorData) 
       dataToMix.dimension.geo.category.index
     ).map(([key, val]) => ({ id: key, val: +dataToMix.value[val] || null }));
 
-    let a = mixColorData ? out.mixColorData_[out.nutsLevel_] : out.mixSizeData_[out.nutsLevel_];
+    let a = mixColorData
+      ? out.mixColorData_[out.nutsLevel_]
+      : out.mixSizeData_[out.nutsLevel_];
     dataToMixArr.forEach((rg) => {
       // if the user has specified that this region should be used to fill in the data gaps
       if (a) {
@@ -2628,15 +2980,12 @@ function indexStat(data, type, out, resolve, reject, mixSizeData, mixColorData) 
           arr.push(rg);
         }
       }
-    })
-
+    });
   } else {
     arr = Object.entries(
       data.dimension.geo.category.index
     ).map(([key, val]) => ({ id: key, val: +data.value[val] || null }));
   }
-
-
 
   //if the color value is a percentage, divide each colorValue by its relevant total from colorPercentageCalculationData
   if (out.colorCalculation_ && type == "color") {
@@ -2649,12 +2998,12 @@ function indexStat(data, type, out, resolve, reject, mixSizeData, mixColorData) 
 
     //util function
     const mergeById = (a1, a2) =>
-      a1.map(itm => ({
-        ...a2.find((item) => (item.id === itm.id) && item),
-        ...itm
+      a1.map((itm) => ({
+        ...a2.find((item) => item.id === itm.id && item),
+        ...itm,
       }));
 
-    //if mixNuts and colorPercentageCalculationData, 
+    //if mixNuts and colorPercentageCalculationData,
     //then the data used to calculate percentages has to be of the same nuts level as the mixNuts data
     if (out.mixNuts_[out.nutsLevel_]) {
       let mixNutsLevel;
@@ -2665,144 +3014,230 @@ function indexStat(data, type, out, resolve, reject, mixSizeData, mixColorData) 
       }
       let promises = [];
       //totals for current nuts level
-      promises.push(d3fetch.json(`${out.eurostatRESTBaseURL}${out.colorCalculationDatasetCode_}?geoLevel=${nutsParam}&${out.colorCalculationDatasetFilters_}`))
+      promises.push(
+        d3fetch.json(
+          `${out.eurostatRESTBaseURL}${out.colorCalculationDatasetCode_}?geoLevel=${nutsParam}&${out.colorCalculationDatasetFilters_}`
+        )
+      );
       //totals for mixNuts injected data (of a different nuts level)
-      promises.push(d3fetch.json(`${out.eurostatRESTBaseURL}${out.colorCalculationDatasetCode_}?geoLevel=${mixNutsLevel}&${out.mixNutsFilterString}&${out.colorCalculationDatasetFilters_}`))
+      promises.push(
+        d3fetch.json(
+          `${out.eurostatRESTBaseURL}${out.colorCalculationDatasetCode_}?geoLevel=${mixNutsLevel}&${out.mixNutsFilterString}&${out.colorCalculationDatasetFilters_}`
+        )
+      );
 
-      Promise.all(promises).catch(function (err) {
-        // log that I have an error, return the entire array;
-        console.log('A promise failed to resolve', err);
-        return promises;
-      }).then((res) => {
-        //full array of resolved promises
-        let totals = res[0]; //(current nuts level)
-        let mixTotals = res[1] //(differnt nuts level)
+      Promise.all(promises)
+        .catch(function (err) {
+          // log that I have an error, return the entire array;
+          console.log("A promise failed to resolve", err);
+          return promises;
+        })
+        .then((res) => {
+          //full array of resolved promises
+          let totals = res[0]; //(current nuts level)
+          let mixTotals = res[1]; //(differnt nuts level)
 
+          let mixedTotalsArr; // array holding the totals of the regions being mixed in (those of a different NUTS level to the rest)
 
-        let mixedTotalsArr; // array holding the totals of the regions being mixed in (those of a different NUTS level to the rest)
+          // for multiple values of a dimension we need to add them all to the total
+          // animals=A3100&animals=A2000&animals=A4100&animals=A4200 should be 4 iterations
+          if (out.colorCalculationDimension_) {
+            // NORMAL REGIONS
 
-        // for multiple values of a dimension we need to add them all to the total
-        // animals=A3100&animals=A2000&animals=A4100&animals=A4200 should be 4 iterations
-        if (out.colorCalculationDimension_) {
-
-          // NORMAL REGIONS
-
-          let regions = Object.keys(totals.dimension.geo.category.index); // 342
-          let values = totals.value;
-          let dimensions = Object.keys(totals.dimension[out.colorCalculationDimension_].category.index);
-          // totals for first dimension type of normal totals
-          let normaltotalsArr = Object.entries(
-            totals.dimension.geo.category.index
-          ).map(([k, v]) => {
-            return {
-              id: k,
-              tot: values[v] || null
-            }
-          });
-
-          // INJECTED REGIONS
-
-          let injRegions = Object.keys(mixTotals.dimension.geo.category.index); // 342
-          let injValues = mixTotals.value;
-          let injDimensions = Object.keys(mixTotals.dimension[out.colorCalculationDimension_].category.index);
-          // totals for first dimension type of injected totals
-          let injectedTotalsArr = Object.entries(
-            mixTotals.dimension.geo.category.index
-          ).map(([k, v]) => {
-            return {
-              id: k,
-              tot: injValues[v] || null
-            }
-          });
-
-
-
-          // loop the same number of times as there are groups of results in the eurostat REST response
-          for (let i = 1; i < dimensions.length; i++) {
-            let pos = (regions.length * i); // position in the values index : 341 | 683 etc;
-            Object.entries(
+            let regions = Object.keys(totals.dimension.geo.category.index); // 342
+            let values = totals.value;
+            let dimensions = Object.keys(
+              totals.dimension[out.colorCalculationDimension_].category.index
+            );
+            // totals for first dimension type of normal totals
+            let normaltotalsArr = Object.entries(
               totals.dimension.geo.category.index
             ).map(([k, v]) => {
-              let regionIndex = totals.dimension.geo.category.index[k];
-              let dimValue = values[regionIndex + pos];
-              if (dimValue) {
-                if (normaltotalsArr[v].tot) {
-                  normaltotalsArr[v].tot = normaltotalsArr[v].tot + dimValue;
-                } else {
-                  normaltotalsArr[v].tot = dimValue;
-                }
-              }
+              return {
+                id: k,
+                tot: values[v] || null,
+              };
             });
-          }
 
-          // loop the same number of times as there are groups of results in the eurostat REST response
-          for (let b = 1; b < injDimensions.length; b++) {
-            let pos = (injRegions.length * b); // posbtion in the values index (each dimension is piled on top of the next so *2 = position in 2nd dimension)
-            Object.entries(
+            // INJECTED REGIONS
+
+            let injRegions = Object.keys(
+              mixTotals.dimension.geo.category.index
+            ); // 342
+            let injValues = mixTotals.value;
+            let injDimensions = Object.keys(
+              mixTotals.dimension[out.colorCalculationDimension_].category.index
+            );
+            // totals for first dimension type of injected totals
+            let injectedTotalsArr = Object.entries(
               mixTotals.dimension.geo.category.index
             ).map(([k, v]) => {
-              let regionIndex = mixTotals.dimension.geo.category.index[k];
-              let dimValue = injValues[regionIndex + pos];
-              if (dimValue) {
-                if (injectedTotalsArr[v].tot) {
-                  injectedTotalsArr[v].tot = injectedTotalsArr[v].tot + dimValue;
+              return {
+                id: k,
+                tot: injValues[v] || null,
+              };
+            });
+
+            // loop the same number of times as there are groups of results in the eurostat REST response
+            for (let i = 1; i < dimensions.length; i++) {
+              let pos = regions.length * i; // position in the values index : 341 | 683 etc;
+              Object.entries(totals.dimension.geo.category.index).map(
+                ([k, v]) => {
+                  let regionIndex = totals.dimension.geo.category.index[k];
+                  let dimValue = values[regionIndex + pos];
+                  if (dimValue) {
+                    if (normaltotalsArr[v].tot) {
+                      normaltotalsArr[v].tot =
+                        normaltotalsArr[v].tot + dimValue;
+                    } else {
+                      normaltotalsArr[v].tot = dimValue;
+                    }
+                  }
+                }
+              );
+            }
+
+            // loop the same number of times as there are groups of results in the eurostat REST response
+            for (let b = 1; b < injDimensions.length; b++) {
+              let pos = injRegions.length * b; // posbtion in the values index (each dimension is piled on top of the next so *2 = position in 2nd dimension)
+              Object.entries(mixTotals.dimension.geo.category.index).map(
+                ([k, v]) => {
+                  let regionIndex = mixTotals.dimension.geo.category.index[k];
+                  let dimValue = injValues[regionIndex + pos];
+                  if (dimValue) {
+                    if (injectedTotalsArr[v].tot) {
+                      injectedTotalsArr[v].tot =
+                        injectedTotalsArr[v].tot + dimValue;
+                    } else {
+                      injectedTotalsArr[v].tot = dimValue;
+                    }
+                  }
+                }
+              );
+            }
+
+            // merge the totals of normal regions with the totals of injeted regions of a different NUTS level
+            mixedTotalsArr = normaltotalsArr.concat(injectedTotalsArr);
+
+            // merge the values with the totals for all nuts levels
+            let mixedValuesArr = out.mixNutsColorArr.concat(arr);
+            let mixNutsMerged = mergeById(mixedValuesArr, mixedTotalsArr);
+            // add the mixed nuts to the final index (ind)
+            for (let i = 0; i < mixNutsMerged.length; i++) {
+              let value = mixNutsMerged[i].val;
+              let total = mixNutsMerged[i].tot;
+              let indicator;
+              if (out.colorCalculation_ == "percentage") {
+                indicator = (value / total) * 100;
+              } else if (out.colorCalculation_ == "per") {
+                if (out.colorCalculationFunction_) {
+                  indicator = out.colorCalculationFunction_(value, total);
                 } else {
-                  injectedTotalsArr[v].tot = dimValue;
+                  indicator = total / value;
                 }
               }
-            });
-          }
-
-          // merge the totals of normal regions with the totals of injeted regions of a different NUTS level
-          mixedTotalsArr = normaltotalsArr.concat(injectedTotalsArr);
-
-          // merge the values with the totals for all nuts levels
-          let mixedValuesArr = out.mixNutsColorArr.concat(arr);
-          let mixNutsMerged = mergeById(mixedValuesArr, mixedTotalsArr);
-          // add the mixed nuts to the final index (ind)
-          for (let i = 0; i < mixNutsMerged.length; i++) {
-            let value = mixNutsMerged[i].val;
-            let total = mixNutsMerged[i].tot;
-            let indicator;
-            if (out.colorCalculation_ == "percentage") {
-              indicator = ((value / total) * 100);
-            } else if (out.colorCalculation_ == "per") {
-              if (out.colorCalculationFunction_) {
-                indicator = out.colorCalculationFunction_(value, total)
-              } else {
-                indicator = total / value;
-              }
+              ind[mixNutsMerged[i].id] = indicator || null;
             }
-            ind[mixNutsMerged[i].id] = indicator || null;
-          }
+          } else {
+            // without colorCalculationDimension
+            let mixTotalsArr = Object.entries(
+              mixTotals.dimension.geo.category.index
+            ).map(([k, v]) => ({ id: k, tot: +mixTotals.value[v] || null }));
+            let mixNutsMerged = mergeById(out.mixNutsColorArr, mixTotalsArr);
 
-        } else {
-          // without colorCalculationDimension
-          let mixTotalsArr = Object.entries(
-            mixTotals.dimension.geo.category.index
-          ).map(([k, v]) => ({ id: k, tot: +mixTotals.value[v] || null }));
-          let mixNutsMerged = mergeById(out.mixNutsColorArr, mixTotalsArr);
-
-          for (let i = 0; i < mixNutsMerged.length; i++) {
-            let value = mixNutsMerged[i].val;
-            let total = mixNutsMerged[i].tot;
-            let indicator;
-            if (out.colorCalculation_ == "percentage") {
-              indicator = ((value / total) * 100);
-            } else if (out.colorCalculation_ == "per") {
-              if (out.colorCalculationFunction_) {
-                indicator = out.colorCalculationFunction_(value, total)
-              } else {
-                indicator = total / value;
+            for (let i = 0; i < mixNutsMerged.length; i++) {
+              let value = mixNutsMerged[i].val;
+              let total = mixNutsMerged[i].tot;
+              let indicator;
+              if (out.colorCalculation_ == "percentage") {
+                indicator = (value / total) * 100;
+              } else if (out.colorCalculation_ == "per") {
+                if (out.colorCalculationFunction_) {
+                  indicator = out.colorCalculationFunction_(value, total);
+                } else {
+                  indicator = total / value;
+                }
               }
+              ind[mixNutsMerged[i].id] = indicator || null;
             }
-            ind[mixNutsMerged[i].id] = indicator || null;
+
+            //normal
+            const totalsArr = Object.entries(
+              totals.dimension.geo.category.index
+            ).map(([k, v]) => ({ id: k, tot: +totals.value[v] || null }));
+            //merge values array with totals array
+            let merged = mergeById(arr, totalsArr);
+            //divide each value by the desired total
+            for (let i = 0; i < merged.length; i++) {
+              let value = merged[i].val;
+              let total = merged[i].tot;
+              let indicator;
+              if (out.colorCalculation_ == "percentage") {
+                indicator = (value / total) * 100;
+              } else if (out.colorCalculation_ == "per") {
+                if (out.colorCalculationFunction_) {
+                  indicator = out.colorCalculationFunction_(value, total);
+                } else {
+                  indicator = total / value;
+                }
+              }
+              ind[merged[i].id] = indicator || null;
+            }
           }
 
-          //normal
-          const totalsArr = Object.entries(
-            totals.dimension.geo.category.index
-          ).map(([k, v]) => ({ id: k, tot: +totals.value[v] || null }));
+          out.colorIndicator = ind;
+          resolve();
+        });
+    } else {
+      //without mixed nuts
+      d3fetch
+        .json(
+          `${out.eurostatRESTBaseURL}${out.colorCalculationDatasetCode_}?geoLevel=${nutsParam}&${out.colorCalculationDatasetFilters_}`
+        )
+        .then((totals) => {
+          let totalsArr;
+          // for multiple values of a dimension we need to add them all to the total
+          // animals=A3100&animals=A2000&animals=A4100&animals=A4200 should be 4 iterations
+          if (out.colorCalculationDimension_) {
+            let regions = Object.keys(totals.dimension.geo.category.index); // 342
+            let values = totals.value;
+            let dimensions = Object.keys(
+              totals.dimension[out.colorCalculationDimension_].category.index
+            );
+
+            // totals for first dimension type
+            totalsArr = Object.entries(totals.dimension.geo.category.index).map(
+              ([k, v]) => {
+                return {
+                  id: k,
+                  tot: values[v] || null,
+                };
+              }
+            );
+
+            // loop the same number of times as there are groups of results in the eurostat REST response
+            for (let i = 1; i < dimensions.length; i++) {
+              let pos = regions.length * i; // position in the values index : 341 | 683 etc;
+              Object.entries(totals.dimension.geo.category.index).map(
+                ([k, v]) => {
+                  let regionIndex = totals.dimension.geo.category.index[k];
+                  let dimValue = values[regionIndex + pos];
+                  if (dimValue) {
+                    if (totalsArr[v].tot) {
+                      totalsArr[v].tot = totalsArr[v].tot + dimValue;
+                    } else {
+                      totalsArr[v].tot = dimValue;
+                    }
+                  }
+                }
+              );
+            }
+          } else {
+            totalsArr = Object.entries(
+              totals.dimension.geo.category.index
+            ).map(([k, v]) => ({ id: k, tot: +totals.value[v] || null }));
+          }
+
           //merge values array with totals array
           let merged = mergeById(arr, totalsArr);
           //divide each value by the desired total
@@ -2811,91 +3246,19 @@ function indexStat(data, type, out, resolve, reject, mixSizeData, mixColorData) 
             let total = merged[i].tot;
             let indicator;
             if (out.colorCalculation_ == "percentage") {
-              indicator = ((value / total) * 100);
+              indicator = (value / total) * 100;
             } else if (out.colorCalculation_ == "per") {
               if (out.colorCalculationFunction_) {
-                indicator = out.colorCalculationFunction_(value, total)
+                indicator = out.colorCalculationFunction_(value, total);
               } else {
                 indicator = total / value;
               }
             }
             ind[merged[i].id] = indicator || null;
           }
-        }
-
-
-        out.colorIndicator = ind;
-        resolve();
-      })
-    } else {
-      //without mixed nuts
-      d3fetch.json(`${out.eurostatRESTBaseURL}${out.colorCalculationDatasetCode_}?geoLevel=${nutsParam}&${out.colorCalculationDatasetFilters_}`).then((totals) => {
-
-        let totalsArr;
-        // for multiple values of a dimension we need to add them all to the total
-        // animals=A3100&animals=A2000&animals=A4100&animals=A4200 should be 4 iterations
-        if (out.colorCalculationDimension_) {
-
-          let regions = Object.keys(totals.dimension.geo.category.index); // 342
-          let values = totals.value;
-          let dimensions = Object.keys(totals.dimension[out.colorCalculationDimension_].category.index);
-
-          // totals for first dimension type
-          totalsArr = Object.entries(
-            totals.dimension.geo.category.index
-          ).map(([k, v]) => {
-            return {
-              id: k,
-              tot: values[v] || null
-            }
-          });
-
-          // loop the same number of times as there are groups of results in the eurostat REST response
-          for (let i = 1; i < dimensions.length; i++) {
-            let pos = (regions.length * i); // position in the values index : 341 | 683 etc;
-            Object.entries(
-              totals.dimension.geo.category.index
-            ).map(([k, v]) => {
-              let regionIndex = totals.dimension.geo.category.index[k];
-              let dimValue = values[regionIndex + pos];
-              if (dimValue) {
-                if (totalsArr[v].tot) {
-                  totalsArr[v].tot = totalsArr[v].tot + dimValue;
-                } else {
-                  totalsArr[v].tot = dimValue;
-                }
-              }
-            });
-          }
-
-        } else {
-          totalsArr = Object.entries(
-            totals.dimension.geo.category.index
-          ).map(([k, v]) => ({ id: k, tot: +totals.value[v] || null }));
-        }
-
-
-        //merge values array with totals array
-        let merged = mergeById(arr, totalsArr);
-        //divide each value by the desired total
-        for (let i = 0; i < merged.length; i++) {
-          let value = merged[i].val;
-          let total = merged[i].tot;
-          let indicator;
-          if (out.colorCalculation_ == "percentage") {
-            indicator = ((value / total) * 100);
-          } else if (out.colorCalculation_ == "per") {
-            if (out.colorCalculationFunction_) {
-              indicator = out.colorCalculationFunction_(value, total)
-            } else {
-              indicator = total / value;
-            }
-          }
-          ind[merged[i].id] = indicator || null;
-        }
-        out.colorIndicator = ind;
-        resolve();
-      })
+          out.colorIndicator = ind;
+          resolve();
+        });
     }
   } else {
     //otherwise, just index the data normally
@@ -2905,19 +3268,22 @@ function indexStat(data, type, out, resolve, reject, mixSizeData, mixColorData) 
 
       if (out.mixNuts_[out.nutsLevel_]) {
         //add values to be mixed to current indices
-        for (var attr in out.mixNutsSizeInd) { out.sizeIndicator[attr] = out.mixNutsSizeInd[attr]; }
+        for (var attr in out.mixNutsSizeInd) {
+          out.sizeIndicator[attr] = out.mixNutsSizeInd[attr];
+        }
       }
-
     } else if (type == "color") {
       out.colorIndicator = ind;
 
       if (out.mixNuts_[out.nutsLevel_]) {
         //add values to be mixed to current indices
-        for (var attr in out.mixNutsColorInd) { out.colorIndicator[attr] = out.mixNutsColorInd[attr]; }
+        for (var attr in out.mixNutsColorInd) {
+          out.colorIndicator[attr] = out.mixNutsColorInd[attr];
+        }
       }
     }
 
-    resolve()
+    resolve();
   }
 }
 
@@ -2925,7 +3291,7 @@ function indexStat(data, type, out, resolve, reject, mixSizeData, mixColorData) 
  * Groups data by country and calculates the sum for the given indicator
  *
  * @param {*} data //eurostat REST query response data
- * @return {*} 
+ * @return {*}
  */
 function getTotals(data) {
   //get total for each country
@@ -2944,7 +3310,7 @@ function getTotals(data) {
 
 //rounds both positive and negative float to nearest n
 function round(v, nearest) {
-  return (v >= 0 || -1) * Math.round((Math.abs(v) / nearest)) * nearest;
+  return (v >= 0 || -1) * Math.round(Math.abs(v) / nearest) * nearest;
 }
 
 function getCountryNamesIndex() {
@@ -2987,22 +3353,18 @@ function getCountryNamesIndex() {
     TR: "Turkey",
     BA: "Bosnia and Herzegovina",
     XK: "Kosovo",
-    UK: "United Kingdom"
-  }
+    UK: "United Kingdom",
+  };
 }
 
 function getURLParamValue(paramName) {
   var url = window.location.search.substring(1); //get rid of "?" in querystring
-  var qArray = url.split('&'); //get key-value pairs
+  var qArray = url.split("&"); //get key-value pairs
   for (var i = 0; i < qArray.length; i++) {
-    var pArr = qArray[i].split('='); //split key and value
+    var pArr = qArray[i].split("="); //split key and value
     if (pArr[0] == paramName) {
-      pArr[1] = decodeURI(pArr[1])
+      pArr[1] = decodeURI(pArr[1]);
       return pArr[1]; //return value
     }
   }
 }
-
-
-
-
