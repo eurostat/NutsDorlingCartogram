@@ -34,6 +34,7 @@ export function dorling() {
   out.coastalMargins_ = false;
   out.graticule_ = false;
   out.nutsBorderColor_ = "grey";
+  out.nutsBorderWidth_ = 0.4;
   out.toggleLegendWidthThreshold_ = 850;
   out.toggleLegendHeightThreshold_ = 700; //height (px) at which the legend is loaded in "collapsable" mode
 
@@ -775,7 +776,8 @@ export function dorling() {
             )
             .attr("d", out.path)
             .attr("vector-effect", "non-scaling-stroke")
-            .attr("class", "dorling-cntrg");
+            .attr("class", "dorling-cntrg")
+            .attr("stroke-width", out.nutsBorderWidth_ + "px");
 
           // nutsrg
           out.nuts = out.map
@@ -809,6 +811,11 @@ export function dorling() {
           .attr("d", out.path)
           .attr("vector-effect", "non-scaling-stroke")
           .attr("stroke", out.nutsBorderColor_)
+          .attr("stroke-width", (f) => {
+            if (f.properties.co === "T") return out.nutsBorderWidth_ + "px";
+            if (f.properties.lvl === 0) return "1px";
+            return out.nutsBorderWidth_ + "px";
+          })
           .attr("fill", "none")
           .attr("class", function (f) {
             let c;

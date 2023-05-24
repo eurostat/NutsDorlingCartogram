@@ -20,7 +20,7 @@
         .title("Nights spent in tourist accommodation, 2021")
         .nutsLevel(2)
         .nutsYear(2016)
-        .nutsAvailable([0, 1, 2])
+        .nutsAvailable([0, 1, 2, 3])
         // .colors(["#3A6ABD", "#789BD8", "#D1D9F1", "#EBC2DE", "#E18FC8", "#A74177"])
         .colors([
           "#ffeb99",
@@ -80,7 +80,7 @@
         //   ],
         // })
 
-        .maxCircleRadius({ 0: 70, 1: 35, 2: 30 })
+        .maxCircleRadius({ 0: 70, 1: 35, 2: 30, 3: 20 })
         .colorLegend({
           //https://d3-legend.susielu.com/#color
           titleWidth: 250,
@@ -94,10 +94,10 @@
           labelUnit: " ",
           labelOffset: 10,
           shape: "circle",
-          titleYOffset: { 0: 210, 1: 160, 2: 160 }, // translate Y for legend title from sizeLegend Y
-          bodyYOffset: { 0: 75, 1: 70, 2: 70 }, // translate Y for legend body from titleYOffset
+          titleYOffset: { 0: 210, 1: 160, 2: 160, 3: 160 }, // translate Y for legend title from sizeLegend Y
+          bodyYOffset: { 0: 75, 1: 70, 2: 70, 3: 70 }, // translate Y for legend body from titleYOffset
         })
-        .nutsSelectorTranslateY({ 0: 470, 1: 410, 2: 410 })
+        .nutsSelectorTranslateY({ 0: 470, 1: 410, 2: 410, 3: 410 })
         .sizeLegend({
           title: "Total number of nights spent (million)",
           textFunction: function (d) {
@@ -108,10 +108,11 @@
             0: [300000000, 100000000, 1000000],
             1: [150000000, 50000000, 1000000],
             2: [100000000, 50000000, 1000000],
+            3: [50000000, 25000000, 1000000],
           },
-          bodyXOffset: { 0: 85, 1: 55, 2: 50 },
-          bodyYOffset: { 0: 165, 1: 120, 2: 125 },
-          labelsTranslateX: { 0: 90, 1: 45, 2: 40 },
+          bodyXOffset: { 0: 85, 1: 55, 2: 50, 3: 50 },
+          bodyYOffset: { 0: 185, 1: 130, 2: 125, 3: 125 },
+          labelsTranslateX: { 0: 90, 1: 45, 2: 40, 3: 40 },
         })
         .tooltip({
           colorLabel:
@@ -127,9 +128,7 @@
           shareLabel: "Share of total nights spent in national total",
         })
         .showFootnotes(true)
-        .footnotesText(
-          "Greece: 2018. Data unavailable for several regions in France (NUTS level 1 and NUTS level 2) and for France (national data)."
-        )
+        .footnotesText("")
         .exclude(["MK", "ME", "TR", "AL", "RS", "UK"])
         .customSourceURL(
           "https://ec.europa.eu/eurostat/databrowser/bookmark/9d59b746-1069-403c-a57a-ffb56955fb5b?lang=en"
