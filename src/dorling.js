@@ -2730,9 +2730,7 @@ export function dorling() {
 
   out.unhightlightRegion = function () {
     out.circles.attr("stroke-width", (f) => {
-      if (f.properties.id == out.highlightedRegion) {
-        return out.circleStrokeWidth_ + "px";
-      }
+      return out.circleStrokeWidth_ + "px";
     });
     out.highlightedRegion = null;
   };
