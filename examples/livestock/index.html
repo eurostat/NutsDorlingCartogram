@@ -210,15 +210,15 @@
         ])
         .thresholdValues([10, 25, 50, 75, 90, 100])
         .sizeDatasetCode("agr_r_animal")
-        .sizeDatasetFilters("precision=1&animals=A3100&unit=THS_HD&time=2022")
+        .sizeDatasetFilters("animals=A3100&unit=THS_HD&time=2022")
         .colorDatasetCode("agr_r_animal")
         .colorDatasetName("Animal populations")
-        .colorDatasetFilters("precision=1&animals=A3100&unit=THS_HD&time=2022")
+        .colorDatasetFilters("animals=A3100&unit=THS_HD&time=2022")
         .colorCalculation("percentage")
         .colorCalculationDatasetCode("agr_r_animal")
         .colorCalculationDimension("animals")
         .colorCalculationDatasetFilters(
-          "precision=1&animals=A3100&animals=A2000&animals=A4100&animals=A4200&unit=THS_HD&time=2022"
+          "animals=A3100&animals=A2000&animals=A4100&animals=A4200&unit=THS_HD&time=2022"
         )
         //.maxCircleRadius(animalConfig.A3100.maxCircleRadius)
         .circleSizeFunction(d3.scaleSqrt().range([5, 40]).domain([0, 8200]))
@@ -282,12 +282,8 @@
       function optionSelected() {
         let id = document.getElementById("dorling-livestock-select").value;
         dorling
-          .sizeDatasetFilters(
-            "precision=1&animals=" + id + "&unit=THS_HD&time=2022"
-          )
-          .colorDatasetFilters(
-            "precision=1&animals=" + id + "&unit=THS_HD&time=2022"
-          )
+          .sizeDatasetFilters("animals=" + id + "&unit=THS_HD&time=2022")
+          .colorDatasetFilters("animals=" + id + "&unit=THS_HD&time=2022")
           .maxCircleRadius(animalConfig[id].maxCircleRadius);
         if (animalConfig[id].sizeLegend) {
           dorling.sizeLegend(animalConfig[id].sizeLegend);
