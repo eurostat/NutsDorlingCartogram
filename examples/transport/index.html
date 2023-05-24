@@ -92,10 +92,10 @@
         let transportConfig = {
             air: {
                 "sizeDatasetCode": "tran_r_avpa_nm",
-                "sizeDatasetFilters": "tra_meas=PAS_CRD&unit=THS_PAS&time=2020",
+                "sizeDatasetFilters": "tra_meas=PAS_CRD&unit=THS_PAS&time=2021",
                 "colorDatasetCode": "tran_r_avpa_nm",
                 "colorDatasetName": "air transport of passengers",
-                "colorDatasetFilters": "tra_meas=PAS_CRD&unit=THS_PAS&time=2020",
+                "colorDatasetFilters": "tra_meas=PAS_CRD&unit=THS_PAS&time=2021",
                 "colorCalculationFunction": function (airPassengers, population) {
                     if (airPassengers && population) {
                         return (airPassengers * 1000) / population;
@@ -105,7 +105,7 @@
 
                 },
                 "colorCalculationDatasetCode": "demo_r_d2jan",
-                "colorCalculationDatasetFilters": "sex=T&unit=NR&time=2020&age=TOTAL",
+                "colorCalculationDatasetFilters": "sex=T&unit=NR&time=2021&age=TOTAL",
                 "thresholdValues": [1, 2, 4, 6, 8, 9999],
                 "maxCircleRadius": { 0: 60, 1: 40, 2: 40 },
                 "sizeLegend": {
@@ -155,20 +155,20 @@
                     shareLabel: "Share of national air passengers",
                 },
                 "nutsSelectorTranslateY": { 0: 385, 1: 385, 2: 385 },
-                "title": "Air transport of passengers and freight, 2020"
+                "title": "Air transport of passengers and freight, 2021"
             },
             freight: {
                 "maxCircleRadius": { 0: 70, 1: 50, 2: 50 },
                 "sizeDatasetCode": "tran_r_avgo_nm",
-                "sizeDatasetFilters": "tra_meas=FRM_LD_NLD&unit=THS_T&time=2020",
+                "sizeDatasetFilters": "tra_meas=FRM_LD_NLD&unit=THS_T&time=2021",
                 "colorDatasetCode": "tran_r_avgo_nm",
                 "colorDatasetName": "air transport of freight",
-                "colorDatasetFilters": "tra_meas=FRM_LD_NLD&unit=THS_T&time=2020",
+                "colorDatasetFilters": "tra_meas=FRM_LD_NLD&unit=THS_T&time=2021",
                 "colorCalculationFunction": function (freight, population) {
                     return (freight / population) * 1000000;
                 },
                 "colorCalculationDatasetCode": "demo_r_d2jan",
-                "colorCalculationDatasetFilters": "sex=T&unit=NR&time=2020&age=TOTAL",
+                "colorCalculationDatasetFilters": "sex=T&unit=NR&time=2021&age=TOTAL",
                 "thresholdValues": [1, 5, 10, 50, 200, 99999999],
                 "sizeLegend": {
                     title: "Freight and mail carried (1 000 tonnes)",
@@ -204,7 +204,7 @@
                     },
                 },
                 "nutsSelectorTranslateY": { 0: 420, 1: 420, 2: 420 },
-                "title": "Air transport of passengers and freight, 2020"
+                "title": "Air transport of passengers and freight, 2021"
             },
         }
         let dorling = NutsDorlingCartogram.dorling()
