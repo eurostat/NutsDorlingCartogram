@@ -450,7 +450,7 @@ export function dorling() {
     if (
       out.nutsLevel_ == 3 &&
       out.sizeDatasetCode_ == "nama_10r_3gdp" &&
-      out.colorDatasetFilters_ == "unit=PPS_EU27_2020_HAB&time=2019"
+      out.colorDatasetFilters_ == "unit=PPS_EU27_2020_HAB&time=2021"
     ) {
       promises.push(
         d3fetch.json(
@@ -467,11 +467,11 @@ export function dorling() {
         ),
         d3fetch.json(
           //sizeData
-          `${out.eurostatRESTBaseURL}${out.sizeDatasetCode_}?geoLevel=${nutsParam}&unit=MIO_EUR&time=2018`
+          `${out.eurostatRESTBaseURL}${out.sizeDatasetCode_}?geoLevel=${nutsParam}&unit=MIO_EUR&time=2020`
         ),
         d3fetch.json(
           //colorData
-          `${out.eurostatRESTBaseURL}${out.colorDatasetCode_}?geoLevel=${nutsParam}&unit=PPS_EU27_2020_HAB&time=2018`
+          `${out.eurostatRESTBaseURL}${out.colorDatasetCode_}?geoLevel=${nutsParam}&unit=PPS_EU27_2020_HAB&time=2020`
         )
       );
     } else {
