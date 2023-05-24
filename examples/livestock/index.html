@@ -171,11 +171,11 @@
           },
         },
       };
-      var dorling = NutsDorlingCartogram.dorling()
+      let dorling = NutsDorlingCartogram.dorling()
         .containerId("containerDiv")
         .title("Animal populations, December 2022")
         .nutsLevel(2)
-        .nutsYear(2016)
+        .nutsYear(2022)
         .mixNuts({
           // use level 1 instead of level 2 for the following regions (adds them to level 2)
           2: {
@@ -255,8 +255,13 @@
           shareUnit: "%",
         })
         .showFootnotes(true)
-        .footnotesText("NUTS 1 data shown for Germany.")
+        .footnotesText(
+          "Only those countries with at least 500 000 sheep or 500 000 goats have to provide statistics for their livestock populations. Germany, NUTS level 1 regions."
+        )
         .exclude(["MK", "ME", "TR", "AL", "RS", "UK"])
+        .customSourceURL(
+          "https://ec.europa.eu/eurostat/databrowser/bookmark/53e9ec0b-437c-4563-ba27-9237a1d93cef?lang=en"
+        )
         .showNutsSelector(false)
         .build();
 
