@@ -24,7 +24,6 @@ export function dorling() {
 
     //default values
     out.containerId_ = ''
-    out.standalone_ = false
 
     out.title_ = '' //viz main title
     //styles
@@ -174,7 +173,7 @@ export function dorling() {
     out.mixSizeData_ = null
 
     out.eurostatRESTBaseURL = 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/'
-    out.Nuts2jsonBaseURL = ''
+    out.Nuts2jsonBaseURL_ = 'https://raw.githubusercontent.com/eurostat/Nuts2json/master/pub/v1'
     out.dataExplorerBaseURL_ = 'https://appsso.eurostat.ec.europa.eu/nui/show.do?dataset='
     out.dataBrowserBaseURL_ = 'https://ec.europa.eu/eurostat/databrowser/bookmark/'
     out.customSourceURL_ = null
@@ -208,7 +207,7 @@ export function dorling() {
         embedURL: window.location,
         facebookTitle: null,
     }
-    out.standalone_ = standaloneDefault
+    out.standalone_ = false
     out.standaloneUrl_ = ''
 
     out.circleStrokeWidth_ = 0.4
@@ -256,9 +255,9 @@ export function dorling() {
         return out
     }
     out.standalone = function (v) {
-        if (v === false) {
+        if (v == false || v == 'false') {
             out.standalone_ = false
-        } else if (v === true) {
+        } else if (v == true || v == 'true') {
             out.standalone_ = standaloneDefault
         } else {
             // set properties individually
@@ -426,9 +425,6 @@ export function dorling() {
             addNutsSelectorToDOM()
         }
 
-        //set base URL for retrieving NUTS geometries
-        out.Nuts2jsonBaseURL = `https://raw.githubusercontent.com/eurostat/Nuts2json/master/pub/v1/${out.nutsYear_}/3035/20M/`
-
         if (out.nutsLevel_ == 0) {
             out.showInsets_ = false
         } else {
@@ -452,11 +448,11 @@ export function dorling() {
             promises.push(
                 d3fetch.json(
                     //centroids
-                    `https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/nuts2json/nutspt_${out.nutsLevel_}.json`
+                    `${out.Nuts2jsonBaseURL_}/${out.nutsYear_}/3035/nutspt_${out.nutsLevel_}.json`
                 ),
                 d3fetch.json(
                     //NUTS
-                    `${out.Nuts2jsonBaseURL}${out.nutsLevel_}.json`
+                    `${out.Nuts2jsonBaseURL_}/${out.nutsYear_}/3035/20M/${out.nutsLevel_}.json`
                 ),
                 d3fetch.json(
                     //countries
@@ -475,11 +471,11 @@ export function dorling() {
             promises.push(
                 d3fetch.json(
                     //centroids
-                    `https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/nuts2json/nutspt_${out.nutsLevel_}.json`
+                    `${out.Nuts2jsonBaseURL_}/${out.nutsYear_}/3035/nutspt_${out.nutsLevel_}.json`
                 ),
                 d3fetch.json(
                     //NUTS
-                    `${out.Nuts2jsonBaseURL}${out.nutsLevel_}.json`
+                    `${out.Nuts2jsonBaseURL_}/${out.nutsYear_}/3035/20M/${out.nutsLevel_}.json`
                 ),
                 d3fetch.json(
                     //countries
@@ -501,15 +497,21 @@ export function dorling() {
         if (out.mixNuts_ && out.mixNuts_[out.nutsLevel_]) {
             out.mixNutsFilterString = ''
             //prepare levels that need retrieving
-            out.mixNuts_[out.nutsLevel_].ids.forEach((nutsID) => {
-                out.mixNutsFilterString = out.mixNutsFilterString + '&geo=' + nutsID
+            out.mixNuts_[out.nutsLevel_].ids.forEach((nutsID, index) => {
+                if (index == 0) {
+                    out.mixNutsFilterString += 'geo=' + nutsID
+                } else {
+                    out.mixNutsFilterString += '&geo=' + nutsID
+                }
             })
-            let nutsLevel = out.mixNuts_[out.nutsLevel_].level
+
             //add promises for retrieving centroids, sizeData and ColorData of the nuts level to be merged with the current nutsLevel_
-            //not currently possible to only request data for certain countries therefore I have to request the whole dataset
+            //not currently possible to only request data for certain countries therefore I have to request the whole dataset for the 'injected' nuts level
             promises.push(
                 d3fetch.json(
-                    `https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/nuts2json/nutspt_${nutsLevel}.json`
+                    `${out.Nuts2jsonBaseURL_}/${out.nutsYear_}/3035/nutspt_${
+                        out.mixNuts_[out.nutsLevel_].level
+                    }.json`
                 ), //mixLevel centroids
                 d3fetch.json(
                     `${out.eurostatRESTBaseURL}${out.sizeDatasetCode_}?${out.mixNutsFilterString}&${out.sizeDatasetFilters_}`
@@ -2828,7 +2830,7 @@ function indexStat(data, type, out, resolve, reject, mixSizeData, mixColorData) 
             //totals for mixNuts injected data (of a different nuts level)
             promises.push(
                 d3fetch.json(
-                    `${out.eurostatRESTBaseURL}${out.colorCalculationDatasetCode_}?geoLevel=${mixNutsLevel}&${out.mixNutsFilterString}&${out.colorCalculationDatasetFilters_}`
+                    `${out.eurostatRESTBaseURL}${out.colorCalculationDatasetCode_}?${out.mixNutsFilterString}&${out.colorCalculationDatasetFilters_}`
                 )
             )
 
@@ -2914,7 +2916,7 @@ function indexStat(data, type, out, resolve, reject, mixSizeData, mixColorData) 
                             })
                         }
 
-                        // merge the totals of normal regions with the totals of injeted regions of a different NUTS level
+                        // merge the totals of normal regions with the totals of injected regions of a different NUTS level
                         mixedTotalsArr = normaltotalsArr.concat(injectedTotalsArr)
 
                         // merge the values with the totals for all nuts levels

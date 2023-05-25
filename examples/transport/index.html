@@ -207,7 +207,18 @@
                 "title": "Air transport of passengers and freight, 2021"
             },
         }
+
+        let standalone = true
+        let simple = getURLParamValue("simple");
+        if (!simple) {
+            let dropdown = document.getElementById("dorling-transport-select-container");
+            dropdown.classList.add("dorling-standalone-dropdown")
+        } else {
+            standalone = false
+        }
+
         let dorling = NutsDorlingCartogram.dorling()
+            .standalone(standalone)
             .containerId("containerDiv")
             .title(transportConfig.air.title)
             .nutsLevel(2)
@@ -259,11 +270,6 @@
                     return pArr[1]; //return value
                 }
             }
-        }
-        let simple = getURLParamValue("simple");
-        if (!simple) {
-            let dropdown = document.getElementById("dorling-transport-select-container");
-            dropdown.classList.add("dorling-standalone-dropdown")
         }
 
         function optionSelected() {

@@ -1,144 +1,148 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      rel="shortcut icon"
-      type="image/x-icon"
-      href="../../assets/images/favicon.ico"
-    />
-    <title>Tourism Dorling Cartogram</title>
-  </head>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="shortcut icon" type="image/x-icon" href="../../assets/images/favicon.ico" />
+        <title>Tourism Dorling Cartogram</title>
+    </head>
 
-  <body>
-    <div id="containerDiv"></div>
-    <script src="../../build/dorling.js"></script>
-    <script>
-      var dorling = NutsDorlingCartogram.dorling()
-        .containerId("containerDiv")
-        .title("Nights spent in tourist accommodation, 2021")
-        .nutsLevel(2)
-        .nutsYear(2021)
-        .nutsAvailable([0, 1, 2, 3])
-        // .colors(["#3A6ABD", "#789BD8", "#D1D9F1", "#EBC2DE", "#E18FC8", "#A74177"])
-        .colors([
-          "#ffeb99",
-          "#c7e9b4",
-          "#7fcdbb",
-          "#41b6c4",
-          "#104f99",
-          "#17256b",
-        ])
-        .thresholdValues([20, 40, 50, 60, 80, 1000000])
-        .sizeDatasetCode("tour_occ_nin2")
-        .sizeDatasetFilters("c_resid=TOTAL&unit=NR&time=2021&nace_r2=I551-I553")
-        .colorDatasetCode("tour_occ_nin2")
-        .colorDatasetName("tourism")
-        .colorDatasetFilters(
-          "c_resid=FOR&unit=PC_TOT&time=2021&nace_r2=I551-I553"
-        )
-        // .mixColorData({
-        //   // use 2020 data for colouring the following regions
-        //   filters:
-        //     "c_resid=FOR&unit=PC_TOT&time=2020&nace_r2=I551-I553",
-        //   1: ["EL3", "EL4", "EL5", "EL6"],
-        //   2: [
-        //     "EL30",
-        //     "EL41",
-        //     "EL42",
-        //     "EL43",
-        //     "EL51",
-        //     "EL53",
-        //     "EL54",
-        //     "EL61",
-        //     "EL62",
-        //     "EL63",
-        //     "EL64",
-        //     "EL65",
-        //   ],
-        // })
-        // .mixSizeData({
-        //   // use 2020 data for sizing the following regions
-        //   filters:
-        //     "c_resid=TOTAL&unit=NR&time=2020&nace_r2=I551-I553",
-        //   0: ["EL"],
-        //   1: ["EL3", "EL4", "EL5", "EL6"],
-        //   2: [
-        //     "EL30",
-        //     "EL41",
-        //     "EL42",
-        //     "EL43",
-        //     "EL51",
-        //     "EL53",
-        //     "EL54",
-        //     "EL61",
-        //     "EL62",
-        //     "EL63",
-        //     "EL64",
-        //     "EL65",
-        //   ],
-        // })
+    <body>
+        <div id="containerDiv"></div>
+        <script src="../../build/dorling.js"></script>
+        <script>
+            let standalone = true
+            let simple = getURLParamValue('simple')
+            if (simple) {
+                standalone = false
+            }
 
-        .maxCircleRadius({ 0: 70, 1: 35, 2: 30, 3: 20 })
-        .colorLegend({
-          //https://d3-legend.susielu.com/#color
-          titleWidth: 250,
-          title:
-            "Foreign tourism dependency (% share of foreign tourists in total nights spent)",
-          orient: "vertical",
-          shapeRadius: 10,
-          shapePadding: 5,
-          labelAlign: "middle",
-          labelFormat: ".0f",
-          labelUnit: " ",
-          labelOffset: 10,
-          shape: "circle",
-          titleYOffset: { 0: 210, 1: 160, 2: 160, 3: 160 }, // translate Y for legend title from sizeLegend Y
-          bodyYOffset: { 0: 75, 1: 70, 2: 70, 3: 70 }, // translate Y for legend body from titleYOffset
-        })
-        .nutsSelectorTranslateY({ 0: 470, 1: 410, 2: 410, 3: 410 })
-        .sizeLegend({
-          title: "Total number of nights spent (million)",
-          textFunction: function (d) {
-            let n = d / 1000000;
-            return n;
-          },
-          values: {
-            0: [300000000, 100000000, 1000000],
-            1: [150000000, 50000000, 1000000],
-            2: [100000000, 50000000, 1000000],
-            3: [50000000, 25000000, 1000000],
-          },
-          bodyXOffset: { 0: 85, 1: 55, 2: 50, 3: 50 },
-          bodyYOffset: { 0: 185, 1: 130, 2: 125, 3: 125 },
-          labelsTranslateX: { 0: 90, 1: 45, 2: 40, 3: 40 },
-        })
-        .tooltip({
-          colorLabel:
-            "Foreign tourism dependency (share of total nights spent by non-residents)",
-          colorUnit: "%",
-          sizeLabel: "Total number of nights spent",
-          sizeUnit: "million",
-          sizeValueTextFunction: function (d) {
-            let m = d / 1000000;
-            let n = Math.round(m * 10) / 10;
-            return n.toLocaleString("en").replace(/,/gi, " ");
-          },
-          shareLabel: "Share of total nights spent in national total",
-        })
-        .showFootnotes(true)
-        .footnotesText("")
-        .exclude(["MK", "ME", "TR", "AL", "RS", "UK"])
-        .customSourceURL(
-          "https://ec.europa.eu/eurostat/databrowser/bookmark/9d59b746-1069-403c-a57a-ffb56955fb5b?lang=en"
-        )
-        .graticule(false)
-        .loop(false)
-        .pauseButton(false)
-        .showBorders(true)
-        .positionStrength(0.3)
-        .build();
-    </script>
-  </body>
+            let dorling = NutsDorlingCartogram.dorling()
+                .standalone(standalone)
+                .containerId('containerDiv')
+                .title('Nights spent in tourist accommodation, 2021')
+                .nutsLevel(2)
+                .nutsYear(2021)
+                .nutsAvailable([0, 1, 2, 3])
+                // .colors(["#3A6ABD", "#789BD8", "#D1D9F1", "#EBC2DE", "#E18FC8", "#A74177"])
+                .colors(['#ffeb99', '#c7e9b4', '#7fcdbb', '#41b6c4', '#104f99', '#17256b'])
+                .thresholdValues([20, 40, 50, 60, 80, 1000000])
+                .sizeDatasetCode('tour_occ_nin2')
+                .sizeDatasetFilters('c_resid=TOTAL&unit=NR&time=2021&nace_r2=I551-I553')
+                .colorDatasetCode('tour_occ_nin2')
+                .colorDatasetName('tourism')
+                .colorDatasetFilters('c_resid=FOR&unit=PC_TOT&time=2021&nace_r2=I551-I553')
+                // .mixColorData({
+                //   // use 2020 data for colouring the following regions
+                //   filters:
+                //     "c_resid=FOR&unit=PC_TOT&time=2020&nace_r2=I551-I553",
+                //   1: ["EL3", "EL4", "EL5", "EL6"],
+                //   2: [
+                //     "EL30",
+                //     "EL41",
+                //     "EL42",
+                //     "EL43",
+                //     "EL51",
+                //     "EL53",
+                //     "EL54",
+                //     "EL61",
+                //     "EL62",
+                //     "EL63",
+                //     "EL64",
+                //     "EL65",
+                //   ],
+                // })
+                // .mixSizeData({
+                //   // use 2020 data for sizing the following regions
+                //   filters:
+                //     "c_resid=TOTAL&unit=NR&time=2020&nace_r2=I551-I553",
+                //   0: ["EL"],
+                //   1: ["EL3", "EL4", "EL5", "EL6"],
+                //   2: [
+                //     "EL30",
+                //     "EL41",
+                //     "EL42",
+                //     "EL43",
+                //     "EL51",
+                //     "EL53",
+                //     "EL54",
+                //     "EL61",
+                //     "EL62",
+                //     "EL63",
+                //     "EL64",
+                //     "EL65",
+                //   ],
+                // })
+
+                .maxCircleRadius({ 0: 70, 1: 35, 2: 30, 3: 20 })
+                .colorLegend({
+                    //https://d3-legend.susielu.com/#color
+                    titleWidth: 250,
+                    title: 'Foreign tourism dependency (% share of foreign tourists in total nights spent)',
+                    orient: 'vertical',
+                    shapeRadius: 10,
+                    shapePadding: 5,
+                    labelAlign: 'middle',
+                    labelFormat: '.0f',
+                    labelUnit: ' ',
+                    labelOffset: 10,
+                    shape: 'circle',
+                    titleYOffset: { 0: 210, 1: 160, 2: 160, 3: 160 }, // translate Y for legend title from sizeLegend Y
+                    bodyYOffset: { 0: 75, 1: 70, 2: 70, 3: 70 }, // translate Y for legend body from titleYOffset
+                })
+                .nutsSelectorTranslateY({ 0: 470, 1: 410, 2: 410, 3: 410 })
+                .sizeLegend({
+                    title: 'Total number of nights spent (million)',
+                    textFunction: function (d) {
+                        let n = d / 1000000
+                        return n
+                    },
+                    values: {
+                        0: [300000000, 100000000, 1000000],
+                        1: [150000000, 50000000, 1000000],
+                        2: [100000000, 50000000, 1000000],
+                        3: [50000000, 25000000, 1000000],
+                    },
+                    bodyXOffset: { 0: 85, 1: 55, 2: 50, 3: 50 },
+                    bodyYOffset: { 0: 185, 1: 130, 2: 125, 3: 125 },
+                    labelsTranslateX: { 0: 90, 1: 45, 2: 40, 3: 40 },
+                })
+                .tooltip({
+                    colorLabel: 'Foreign tourism dependency (share of total nights spent by non-residents)',
+                    colorUnit: '%',
+                    sizeLabel: 'Total number of nights spent',
+                    sizeUnit: 'million',
+                    sizeValueTextFunction: function (d) {
+                        let m = d / 1000000
+                        let n = Math.round(m * 10) / 10
+                        return n.toLocaleString('en').replace(/,/gi, ' ')
+                    },
+                    shareLabel: 'Share of total nights spent in national total',
+                })
+                .showFootnotes(true)
+                .footnotesText('')
+                .exclude(['MK', 'ME', 'TR', 'AL', 'RS', 'UK'])
+                .customSourceURL(
+                    'https://ec.europa.eu/eurostat/databrowser/bookmark/9d59b746-1069-403c-a57a-ffb56955fb5b?lang=en'
+                )
+                .graticule(false)
+                .loop(false)
+                .pauseButton(false)
+                .showBorders(true)
+                .positionStrength(0.3)
+                .build()
+
+            function getURLParamValue(paramName) {
+                var url = window.location.search.substring(1) //get rid of "?" in querystring
+                var qArray = url.split('&') //get key-value pairs
+                for (var i = 0; i < qArray.length; i++) {
+                    var pArr = qArray[i].split('=') //split key and value
+                    if (pArr[0] == paramName) {
+                        pArr[1] = decodeURI(pArr[1])
+                        return pArr[1] //return value
+                    }
+                }
+            }
+        </script>
+    </body>
 </html>

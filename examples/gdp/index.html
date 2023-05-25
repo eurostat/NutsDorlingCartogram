@@ -28,10 +28,16 @@
         <div id="containerDiv"></div>
         <script src="../../build/dorling.js"></script>
         <script>
+            let standalone = true
+            let simple = getURLParamValue('simple')
+            if (simple) {
+                standalone = false
+            }
+
             let dorling = NutsDorlingCartogram.dorling()
+                .standalone(standalone)
                 .containerId('containerDiv')
                 .title('Gross domestic product, 2021')
-                .standalone(false)
                 .nutsLevel(2)
                 .nutsYear(2021)
                 // .colors(["#3A6ABD", "#789BD8", "#D1D9F1", "#EBC2DE", "#E18FC8", "#A74177"])
@@ -90,6 +96,18 @@
                 )
                 .footnotesText('Data for NUTS level 3 regions are for 2020.')
                 .build()
+
+            function getURLParamValue(paramName) {
+                var url = window.location.search.substring(1) //get rid of "?" in querystring
+                var qArray = url.split('&') //get key-value pairs
+                for (var i = 0; i < qArray.length; i++) {
+                    var pArr = qArray[i].split('=') //split key and value
+                    if (pArr[0] == paramName) {
+                        pArr[1] = decodeURI(pArr[1])
+                        return pArr[1] //return value
+                    }
+                }
+            }
         </script>
     </body>
 </html>
