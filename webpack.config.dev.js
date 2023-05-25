@@ -11,28 +11,25 @@ module.exports = {
     publicPath: "build/",
     library: "NutsDorlingCartogram",
     libraryTarget: "umd",
-    path: path.resolve(__dirname, "build")
+    path: path.resolve(__dirname, "build"),
   },
 
   module: {
     rules: [
       {
         test: /\.css$/i,
-        use: ["style-loader", "css-loader"]
+        use: ["style-loader", "css-loader"],
       },
       {
         test: /\.(woff|woff2|eot|ttf|otf)$/,
-        loader: 'file-loader',
+        loader: "file-loader",
         options: {
-          outputPath: '../fonts',
+          outputPath: "../fonts",
         },
       },
     ],
   },
-  node: {
-    fs: "empty"
-  },
   plugins: [new LiveReloadPlugin()],
   watch: true,
-  devtool: "inline-source-map"
+  devtool: "inline-source-map",
 };

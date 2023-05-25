@@ -58,7 +58,7 @@
         .colorDatasetName("GDP")
         //please note: using a different year for NUTS 3, like in this example, is HARDCODED in dorling.js when preparing the REST request promises.
         .colorDatasetFilters("unit=PPS_EU27_2020_HAB&time=2021")
-        .maxCircleRadius({ 0: 50, 1: 25, 2: 25, 3: 18 })
+        .maxCircleRadius({ 0: 70, 1: 25, 2: 25, 3: 18 })
         .colorLegend({
           //https://d3-legend.susielu.com/#color
           titleWidth: 230,
@@ -71,7 +71,7 @@
           labelUnit: " ",
           labelOffset: 10,
           shape: "circle",
-          titleYOffset: { 0: 220, 1: 150, 2: 150, 3: 150 }, // translate Y for legend title from sizeLegend Y
+          titleYOffset: { 0: 220, 1: 160, 2: 160, 3: 150 }, // set distance between size legend and colour legend
         })
         .nutsSelectorTranslateY({ 0: 450, 1: 385, 2: 390, 3: 385 })
         .sizeLegend({
@@ -86,7 +86,7 @@
             3: [300000, 100000, 10000],
           },
           bodyXOffset: { 0: 90, 1: 50, 2: 50, 3: 50 },
-          bodyYOffset: { 0: 190, 1: 120, 2: 120, 3: 100 },
+          bodyYOffset: { 0: 150, 1: 120, 2: 120, 3: 100 },
           labelsTranslateX: { 0: 80, 1: 45, 2: 40, 3: 40 },
         })
         .tooltip({
