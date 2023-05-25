@@ -200,7 +200,7 @@ export function dorling() {
     //mobile
     out.mobileWidth_ = 768
     //standalone
-    out.standalone_ = {
+    const standaloneDefault = {
         infoText: null,
         twitterText: null,
         twitterTags: ['Eurostat', 'DigitalRegionalYearbook'],
@@ -208,6 +208,7 @@ export function dorling() {
         embedURL: window.location,
         facebookTitle: null,
     }
+    out.standalone_ = standaloneDefault
     out.standaloneUrl_ = ''
 
     out.circleStrokeWidth_ = 0.4
@@ -255,9 +256,12 @@ export function dorling() {
         return out
     }
     out.standalone = function (v) {
-        if (!v) {
+        if (v === false) {
             out.standalone_ = false
+        } else if (v === true) {
+            out.standalone_ = standaloneDefault
         } else {
+            // set properties individually
             for (let key in v) {
                 out.standalone_[key] = v[key]
             }
