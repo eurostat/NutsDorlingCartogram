@@ -276,8 +276,10 @@ export function dorling() {
             out.standalone_ = false
         }
         out.containerNode_ = d3select.select('#' + out.containerId_)
+
+        // clear out existing container
         if (out.containerNode_) {
-            out.containerNode_.empty()
+            out.containerNode_.selectAll('*').remove()
         }
 
         if (out.standalone_) {
