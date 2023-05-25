@@ -24,7 +24,7 @@ export function dorling() {
 
     //default values
     out.containerId_ = ''
-    out.standalone_ = true
+    out.standalone_ = false
 
     out.title_ = '' //viz main title
     //styles
@@ -255,9 +255,14 @@ export function dorling() {
         return out
     }
     out.standalone = function (v) {
-        for (let key in v) {
-            out.standalone_[key] = v[key]
+        if (!v) {
+            out.standalone_ = false
+        } else {
+            for (let key in v) {
+                out.standalone_[key] = v[key]
+            }
         }
+
         return out
     }
 
@@ -267,6 +272,10 @@ export function dorling() {
             out.standalone_ = false
         }
         out.containerNode_ = d3select.select('#' + out.containerId_)
+        if (out.containerNode_) {
+            out.containerNode_.empty()
+        }
+
         if (out.standalone_) {
             addStandaloneToDOM()
             generateEmbed()
