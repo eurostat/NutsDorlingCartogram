@@ -19,6 +19,8 @@ Dorling cartograms from NUTS regions with Eurostat statistics
 -   [GDP](https://eurostat.github.io/NutsDorlingCartogram/examples/gdp/)
 -   [Tourism](https://eurostat.github.io/NutsDorlingCartogram/examples/tourism/)
 -   [Agriculture](https://eurostat.github.io/NutsDorlingCartogram/examples/agriculture/)
+-   [Transport](https://eurostat.github.io/NutsDorlingCartogram/examples/transport/)
+-   [Livestock](https://eurostat.github.io/NutsDorlingCartogram/examples/livestock/)
 
 ## Installation
 
