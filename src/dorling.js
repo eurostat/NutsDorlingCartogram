@@ -1914,7 +1914,8 @@ export function dorling() {
             .scale(out.colorScale)
             .labelDelimiter(out.colorLegend_.labelDelimiter)
             .labelWrap(out.colorLegend_.labelWrap)
-            .on('cellover', function (color) {
+            .on('cellover', function (event) {
+                let color = event.currentTarget.__data__
                 if (out.stage == 2) {
                     out.circles
                         .transition()
