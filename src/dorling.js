@@ -160,7 +160,7 @@ export function dorling() {
     //additional text and links
     out.showAttribution_ = true
     out.attributionText_ =
-        'Boundaries: © <a href="https://eurogeographics.org/" target="_blank" class="externallink">EuroGeographics</a> © <a href="https://www.fao.org/" target="_blank">UN-FAO</a>  © <a href="http://www.turkstat.gov.tr/" target="_blank">Turkstat</a>, Cartography: <a href="https://ec.europa.eu/eurostat/en/web/gisco" target="_blank">Eurostat - GISCO, 2018</a>'
+        'Boundaries: © <a href="https://eurogeographics.org/" target="_blank" class="externallink">EuroGeographics</a> © <a href="https://www.fao.org/" target="_blank">UN-FAO</a>  © <a href="http://www.turkstat.gov.tr/" target="_blank">Turkstat</a>, Cartography: <a href="https://ec.europa.eu/eurostat/en/web/gisco" target="_blank">Eurostat - GISCO, 2023</a>'
     out.showSources_ = true
     out.showFootnotes_ = false
     out.footnotesText_ = ''
@@ -1182,9 +1182,9 @@ export function dorling() {
         let nutsClass = 'dorling-insets-nuts' + out.nutsLevel_
         let width
         if (out.nutsLevel_ == 1) {
-            width = '80'
+            width = out.insets_.overseasWidth + out.insets_.padding
         } else {
-            width = '160'
+            width = out.insets_.overseasWidth * 2 + out.insets_.padding * 2 + 2
         }
         out.insetsSvg
             // .attr("viewBox", [0, 0, 272, 605])

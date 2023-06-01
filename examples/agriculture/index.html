@@ -218,7 +218,7 @@
             let dorling = NutsDorlingCartogram.dorling()
                 .standalone(standalone)
                 .containerId('containerDiv')
-                .title('Cereal production, 2019')
+                .title('Cereal production, 2021')
                 .nutsLevel(2)
                 .nutsYear(2016)
                 .mixNuts({
@@ -249,13 +249,13 @@
                 .colors(['#ffeb99', '#c7e9b4', '#7fcdbb', '#41b6c4', '#104f99', '#17256b'])
                 .thresholdValues([10, 25, 50, 75, 90, 100])
                 .sizeDatasetCode('apro_cpshr')
-                .sizeDatasetFilters('crops=C1110&strucpro=PR_HU_EU&time=2019')
+                .sizeDatasetFilters('crops=C1110&strucpro=PR_HU_EU&time=2021')
                 .colorDatasetCode('apro_cpshr')
                 .colorDatasetName('crop production')
-                .colorDatasetFilters('crops=C1110&strucpro=PR_HU_EU&time=2019')
+                .colorDatasetFilters('crops=C1110&strucpro=PR_HU_EU&time=2021')
                 .colorCalculation('percentage')
                 .colorCalculationDatasetCode('apro_cpshr')
-                .colorCalculationDatasetFilters('crops=C0000&strucpro=PR_HU_EU&time=2019')
+                .colorCalculationDatasetFilters('crops=C0000&strucpro=PR_HU_EU&time=2021')
                 //.maxCircleRadius(cropConfig.C1110.maxCircleRadius)
                 .circleSizeFunction(d3.scaleSqrt().range([5, 40]).domain([0, 4889]))
                 .colorLegend({
@@ -278,7 +278,7 @@
                     textFunction: function (d) {
                         return d.toLocaleString('en').replace(/,/gi, ' ')
                     },
-                    values: { 2: [5000, 2500, 1000, 100] },
+                    values: { 2: [5000, 2000, 100] },
                     bodyXOffset: { 2: 55 },
                     bodyYOffset: { 2: 128 },
                 })
@@ -291,7 +291,7 @@
                     shareUnit: '%',
                 })
                 .showFootnotes(true)
-                .footnotesText('NUTS 1 data shown for Germany. No regional data for Portugal for 2019.')
+                .footnotesText('NUTS 1 data shown for Germany.')
                 .exclude(['MK', 'ME', 'TR', 'AL', 'RS', 'UK'])
                 .showNutsSelector(false)
                 .build()
@@ -311,8 +311,8 @@
             function optionSelected() {
                 let id = document.getElementById('dorling-cereal-select').value
                 dorling
-                    .sizeDatasetFilters('crops=' + id + '&strucpro=PR_HU_EU&time=2019')
-                    .colorDatasetFilters('crops=' + id + '&strucpro=PR_HU_EU&time=2019')
+                    .sizeDatasetFilters('crops=' + id + '&strucpro=PR_HU_EU&time=2021')
+                    .colorDatasetFilters('crops=' + id + '&strucpro=PR_HU_EU&time=2021')
                     .maxCircleRadius(cropConfig[id].maxCircleRadius)
                 if (cropConfig[id].sizeLegend) {
                     dorling.sizeLegend(cropConfig[id].sizeLegend)
