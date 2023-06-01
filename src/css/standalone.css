@@ -1,129 +1,129 @@
 @media only screen and (max-height: 600px) {
     .standalone-container {
-        height:95vh !important;
-      }
-  }
-  /* mobile */
+        height: 95vh !important;
+    }
+}
+/* mobile */
 @media only screen and (max-width: 600px) {
     .standalone-container {
-        margin-left:1px!important;
-        margin-right:1px!important;
-      }
-      .standalone-dorling {
-        margin-left:1px!important;
-        margin-right:1px!important;
-      }
-      #global{
-        padding-left:1px!important;
-        padding-right:1px!important;
-      }
-      #navbar-desktop {
-        padding:2px!important;
-      }
+        margin-left: 1px !important;
+        margin-right: 1px !important;
+    }
+    .standalone-dorling {
+        margin-left: 1px !important;
+        margin-right: 1px !important;
+    }
+    #global {
+        padding-left: 1px !important;
+        padding-right: 1px !important;
+    }
+    #navbar-desktop {
+        padding: 2px !important;
+    }
 }
 .standalone-container {
-    height:98vh !important;
-    margin-left:20px;
-    margin-right:20px;
-  }
-  .standalone-nav {
-    height:6vh !important;
-    width:100% !important;
-  }
-  .standalone-dorling {
-    height:89vh !important;
-    width:unset !important;
-    margin-left:2px;
-    margin-right:2px;
-    text-align:center;
+    height: 98vh !important;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+.standalone-nav {
+    height: 6vh !important;
+    width: 100% !important;
+}
+.standalone-dorling {
+    height: 89vh !important;
+    width: unset !important;
+    margin-left: 2px;
+    margin-right: 2px;
+    text-align: center;
     /* overflow:hidden; */
-    position:relative;
-  }
+    position: relative;
+}
 
-  div#navItems {
-      z-index:999;
-  }
+div#navItems {
+    z-index: 999;
+}
 
-  #logo {
-    width: 6rem
+#logo {
+    width: 6rem;
 }
 
 .logo {
-    padding: 6px 1px
+    padding: 6px 1px;
 }
 
 @media screen and (min-width: 48em) {
     #logo {
-        width:8rem
+        width: 8rem;
     }
 
     #title {
-        font-size: 1rem
+        font-size: 1rem;
     }
 
     #subtitle {
-        font-size: 0.7rem
+        font-size: 0.7rem;
     }
 }
 
 @media screen and (min-width: 62em) {
     #logo {
-        width:12.5rem
+        width: 12.5rem;
     }
 
     #title {
-        font-size: 1.1rem
+        font-size: 1.1rem;
     }
 
     #subtitle {
-        font-size: .8rem
+        font-size: 0.8rem;
     }
 }
 
 @media screen and (min-width: 75em) {
     #logo {
-        width:12.5rem
+        width: 12.5rem;
     }
 
     #title {
-        font-size: 1.2rem
+        font-size: 1.2rem;
     }
 
     #subtitle {
-        font-size: 1.1rem
+        font-size: 1.1rem;
     }
 }
 
 #global {
     text-align: center;
     display: block;
-    height: 100%
+    height: 100%;
 }
 
 .social-button {
-    color: #044AA3 !important;
+    color: #044aa3 !important;
 }
 
 .pointer {
-    cursor: pointer
+    cursor: pointer;
 }
 
 #loader {
     position: fixed;
     top: 50%;
     left: 50%;
-    z-index: 100
+    z-index: 100;
 }
 
 #header div.right img.socialmedia {
     float: left;
     height: 20px;
     margin-top: 10px;
-    margin-left: 10px
+    margin-left: 10px;
 }
 
 #header div.right img.fcb {
-    border-radius: 3px
+    border-radius: 3px;
 }
 
 #codeEmbed {
@@ -140,45 +140,46 @@
     font-size: 12px;
     word-wrap: break-word;
     line-height: 20px;
-    font-family: Courier
+    font-family: Courier;
 }
 
 #top-bar {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
-    justify-content: space-between
+    justify-content: space-between;
 }
 
 .navbar-light .navbar-nav .nav-link {
-    color: #044AA3
+    color: #044aa3;
 }
 
-.navbar-light .navbar-nav .nav-link:focus,.navbar-light .navbar-nav .nav-link:hover {
-    color: #044AA3
+.navbar-light .navbar-nav .nav-link:focus,
+.navbar-light .navbar-nav .nav-link:hover {
+    color: #044aa3;
 }
 
 .nav-link {
-    padding: 0
+    padding: 0;
 }
 nav#navbar-desktop {
-    padding-left:0px!important;
+    padding-left: 0px !important;
 }
-div#global{
-    padding-right:0px;
+div#global {
+    padding-right: 0px;
 }
 
 @media (min-width: 576px) {
     .navbar-expand-sm .navbar-nav .nav-link {
-        padding-right:.15rem;
-        padding-left: .15rem
+        padding-right: 0.15rem;
+        padding-left: 0.15rem;
     }
 }
 
 @media screen and (max-width: 36em) {
     .navbar-collapse {
-        position:absolute;
-        top: 50px
+        position: absolute;
+        top: 50px;
     }
 }
 .dorling-standalone-instructions-text {

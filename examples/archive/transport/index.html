@@ -1,262 +1,254 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel='shortcut icon' type='image/x-icon' href='../../assets/images/favicon.ico' />
-    <title>Air Transport Dorling Cartogram</title>
-    <!-- bootstrap for select element styling -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-    <script src="../../build/dorling.min.js"></script>
-    <!-- overrides when using a select -->
-    <style>
-        #dorling-transport-select-container {
-            width: 350px;
-            position: absolute;
-            left: 15px;
-            top: 15px;
-            z-index: 9;
-        }
-
-        .dorling-legend-div {
-            top: 50px !important;
-        }
-
-        .dorling-standalone-dropdown {
-            top: 70px !important;
-            left: 40px !important;
-        }
-
-        @media only screen and (max-width: 850px) {
-            .dorling-standalone-dropdown {
-                left: 70px !important;
-            }
-
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="shortcut icon" type="image/x-icon" href="../../assets/images/favicon.ico" />
+        <title>Air Transport Dorling Cartogram</title>
+        <!-- bootstrap for select element styling -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" />
+        <script src="../../build/dorling.min.js"></script>
+        <!-- overrides when using a select -->
+        <style>
             #dorling-transport-select-container {
-                left: 70px;
-                top: 5px;
+                width: 350px;
+                position: absolute;
+                left: 15px;
+                top: 15px;
+                z-index: 9;
             }
-        }
 
-        @media only screen and (max-width: 400px) {
+            .dorling-legend-div {
+                top: 50px !important;
+            }
+
             .dorling-standalone-dropdown {
-                left: 50px !important;
                 top: 70px !important;
+                left: 40px !important;
             }
 
-            #dorling-transport-select-container {
-                left: 70px;
-                top: 5px;
-            }
-        }
+            @media only screen and (max-width: 850px) {
+                .dorling-standalone-dropdown {
+                    left: 70px !important;
+                }
 
-        /* height threshold for legend toggle button */
-        @media only screen and (max-height: 600px) {
-            .dorling-standalone-dropdown {
-                left: 70px !important;
-                top: 60px !important;
-            }
-
-            #dorling-transport-select-container {
-                left: 50px;
-                top: 5px;
-            }
-        }
-    </style>
-</head>
-
-<body>
-
-    <!-- air passenger / freight selector -->
-    <div class="input-group mb-3" id="dorling-transport-select-container">
-        <div class="input-group-prepend">
-            <label class="input-group-text" for="dorling-transport-select">Type of transport..</label>
-        </div>
-        <select class="custom-select" id="dorling-transport-select" onchange="transportSelected()">
-            <option value="air" selected>Air passengers</option>
-            <option value="freight">Freight</option>
-        </select>
-    </div>
-
-    <div id="containerDiv">
-
-    </div>
-    <script>
-        let transportConfig = {
-            air: {
-                "sizeDatasetCode": "tran_r_avpa_nm",
-                "sizeDatasetFilters": "tra_meas=PAS_CRD&precision=1&unit=THS_PAS&time=2018",
-                "colorDatasetCode": "tran_r_avpa_nm",
-                "colorDatasetName": "air transport of passengers",
-                "colorDatasetFilters": "tra_meas=PAS_CRD&precision=1&unit=THS_PAS&time=2018",
-                "colorCalculationFunction": function (airPassengers, population) {
-                    if (airPassengers && population) {
-                        return (airPassengers * 1000) / population;
-                    } else {
-                        return "n/a"
-                    }
-
-                },
-                "thresholdValues": [1, 2, 4, 8, 20, 9999],
-                "maxCircleRadius": { 0: 70, 1: 35, 2: 30 },
-                "sizeLegend": {
-                    title: "Air passengers (million)",
-                    values: {
-                        0: [100e3, 50e3, 10e3],
-                        1: [100e3, 50e3, 10e3],
-                        2: [100e3, 50e3, 10e3],
-                        3: [100e3, 50e3, 10e3]
-                    },
-                    bodyXOffset: { 0: 85, 1: 55, 2: 50 },
-                    bodyYOffset: { 0: 145, 1: 120, 2: 120 },
-                    labelsTranslateX: { 0: 90, 1: 45, 2: 40 },
-                    textFunction: function (d) {
-                        let n = ((d * 1000) / 1000000);
-                        if (n == 1) {
-                            return n;
-                        } else {
-                            return n;
-                        }
-                    },
-                },
-                "colorLegend": {
-                    titleWidth: 250,
-                    title: "Air passengers per inhabitant",
-                    orient: "vertical",
-                    shapeRadius: 10,
-                    shapePadding: 5,
-                    labelAlign: "middle",
-                    labelFormat: ".0f",
-                    labelUnit: " ",
-                    labelOffset: 10,
-                    shape: "circle",
-                    titleYOffset: { 0: 170, 1: 160, 2: 160 },
-                    bodyYOffset: { 0: 30, 1: 30, 2: 30 }
-                },
-                "tooltip": {
-                    colorLabel: "Air passengers per inhabitant",
-                    colorUnit: "",
-                    sizeLabel: "Total air passengers",
-                    sizeUnit: "million",
-                    sizeValueTextFunction: function (d) {
-                        let m = ((d * 1000) / 1000000);
-                        let n = Math.round(m * 10) / 10;
-                        return n.toLocaleString("en").replace(/,/gi, " ");
-                    },
-                    shareLabel: "Share of national air passengers",
-                },
-                "nutsSelectorTranslateY": { 0: 415, 1: 395, 2: 395 },
-                "title": "Air transport of passengers and freight, 2018"
-            },
-            freight: {
-                "maxCircleRadius": { 0: 70, 1: 50, 2: 50 },
-                "sizeDatasetCode": "tran_r_avgo_nm",
-                "sizeDatasetFilters": "tra_meas=FRM_LD_NLD&precision=1&unit=THS_T&time=2018",
-                "colorDatasetCode": "tran_r_avgo_nm",
-                "colorDatasetName": "air transport of freight",
-                "colorDatasetFilters": "tra_meas=FRM_LD_NLD&precision=1&unit=THS_T&time=2018",
-                "colorCalculationFunction": function (freight, population) {
-                    return (freight / population) * 1000000;
-                },
-                "thresholdValues": [1, 5, 10, 50, 200, 99999999],
-                "sizeLegend": {
-                    title: "Freight and mail carried (1 000 tonnes)",
-                    values: {
-                        0: [2000, 1000, 500],
-                        1: [2000, 1000, 500],
-                        2: [2000, 1000, 500],
-                        3: [2000, 1000, 500]
-                    },
-                    textFunction: function (d) {
-                        return d.toLocaleString("en")
-                            .replace(/,/gi, " ");
-                    },
-                    bodyXOffset: { 0: 80, 1: 80, 2: 80 },
-                    bodyYOffset: { 0: 170, 1: 170, 2: 170 },
-                    labelsTranslateX: { 0: 100, 1: 100, 2: 100 },
-                },
-                "colorLegend": {
-                    title: "Freight and mail carried per inhabitant (kg)",
-                    titleYOffset: { 0: 220, 1: 210, 2: 210 },
-                    bodyYOffset: { 0: 50, 1: 50, 2: 50 },
-                },
-                "tooltip": {
-                    colorLabel: "Freight and mail carried per inhabitant",
-                    colorUnit: "kg",
-                    sizeLabel: "Total freight carried",
-                    sizeUnit: "tonnes",
-                    shareLabel: "Share of total national freight carried",
-                    sizeValueTextFunction: function (d) {
-                        let m = (d * 1000);
-                        let n = Math.round(m * 10) / 10;
-                        return n.toLocaleString("en").replace(/,/gi, " ");
-                    },
-                },
-                "nutsSelectorTranslateY": { 0: 460, 1: 460, 2: 460 },
-                "title": "Air transport of passengers and freight, 2018"
-            },
-        }
-        var dorling = NutsDorlingCartogram.dorling()
-            .containerId("containerDiv")
-            .nutsLevel(2)
-            .nutsAvailable([0, 1, 2])
-            // .colors(["#3A6ABD", "#789BD8", "#D1D9F1", "#EBC2DE", "#E18FC8", "#A74177"])
-            .colors(["#2d50a0", "#6487c3", "#aab9e1", "#f0cd91", "#e6a532", "#d76e2d"])
-            .thresholdValues(transportConfig.air.thresholdValues)
-            .showNutsSelector(true)
-            .sizeDatasetCode(transportConfig.air.sizeDatasetCode)
-            .sizeDatasetFilters(transportConfig.air.sizeDatasetFilters)
-            .colorDatasetCode(transportConfig.air.colorDatasetCode)
-            .colorDatasetName(transportConfig.air.colorDatasetName)
-            .colorDatasetFilters(transportConfig.air.colorDatasetFilters)
-            .colorCalculation("per")
-            .colorCalculationFunction(transportConfig.air.colorCalculationFunction)
-            .colorCalculationDatasetCode("demo_r_d2jan")
-            .colorCalculationDatasetFilters("precision=1&sex=T&unit=NR&time=2018&age=TOTAL")
-            .maxCircleRadius(transportConfig.air.maxCircleRadius)
-            .colorLegend(transportConfig.air.colorLegend)
-            .nutsSelectorTranslateY(transportConfig.air.nutsSelectorTranslateY)
-            .sizeLegend(transportConfig.air.sizeLegend)
-            .tooltip(transportConfig.air.tooltip)
-            .showFootnotes(true)
-            .footnotesText("Air passenger refers to passenger carried.")
-            .exclude(["MK", "ME", "TR", "AL", "RS"])
-            .graticule(false)
-            .loop(false)
-            .pauseButton(false)
-            .showBorders(true)
-            .positionStrength(0.3)
-            .build();
-
-        function getURLParamValue(paramName) {
-            var url = window.location.search.substring(1); //get rid of "?" in querystring
-            var qArray = url.split('&'); //get key-value pairs
-            for (var i = 0; i < qArray.length; i++) {
-                var pArr = qArray[i].split('='); //split key and value
-                if (pArr[0] == paramName) {
-                    pArr[1] = decodeURI(pArr[1])
-                    return pArr[1]; //return value
+                #dorling-transport-select-container {
+                    left: 70px;
+                    top: 5px;
                 }
             }
-        }
-        let simple = getURLParamValue("simple");
-        if (!simple) {
-            let dropdown = document.getElementById("dorling-transport-select-container");
-            dropdown.classList.add("dorling-standalone-dropdown")
-        }
 
+            @media only screen and (max-width: 400px) {
+                .dorling-standalone-dropdown {
+                    left: 50px !important;
+                    top: 70px !important;
+                }
 
-        function transportSelected() {
-            let id = document.getElementById("dorling-transport-select").value;
-            //apply config settings
-            for (const p in transportConfig[id]) {
-                dorling[p](transportConfig[id][p])
+                #dorling-transport-select-container {
+                    left: 70px;
+                    top: 5px;
+                }
             }
 
-            dorling.rebuild()
-        }
-    </script>
-</body>
+            /* height threshold for legend toggle button */
+            @media only screen and (max-height: 600px) {
+                .dorling-standalone-dropdown {
+                    left: 70px !important;
+                    top: 60px !important;
+                }
 
+                #dorling-transport-select-container {
+                    left: 50px;
+                    top: 5px;
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+        <!-- air passenger / freight selector -->
+        <div class="input-group mb-3" id="dorling-transport-select-container">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="dorling-transport-select">Type of transport..</label>
+            </div>
+            <select class="custom-select" id="dorling-transport-select" onchange="transportSelected()">
+                <option value="air" selected>Air passengers</option>
+                <option value="freight">Freight</option>
+            </select>
+        </div>
+
+        <div id="containerDiv"></div>
+        <script>
+            let transportConfig = {
+                air: {
+                    sizeDatasetCode: 'tran_r_avpa_nm',
+                    sizeDatasetFilters: 'tra_meas=PAS_CRD&precision=1&unit=THS_PAS&time=2018',
+                    colorDatasetCode: 'tran_r_avpa_nm',
+                    colorDatasetName: 'air transport of passengers',
+                    colorDatasetFilters: 'tra_meas=PAS_CRD&precision=1&unit=THS_PAS&time=2018',
+                    colorCalculationFunction: function (airPassengers, population) {
+                        if (airPassengers && population) {
+                            return (airPassengers * 1000) / population
+                        } else {
+                            return 'n/a'
+                        }
+                    },
+                    thresholdValues: [1, 2, 4, 8, 20, 9999],
+                    maxCircleRadius: { 0: 70, 1: 35, 2: 30 },
+                    sizeLegend: {
+                        title: 'Air passengers (million)',
+                        values: {
+                            0: [100e3, 50e3, 10e3],
+                            1: [100e3, 50e3, 10e3],
+                            2: [100e3, 50e3, 10e3],
+                            3: [100e3, 50e3, 10e3],
+                        },
+                        bodyXOffset: { 0: 85, 1: 55, 2: 50 },
+                        bodyYOffset: { 0: 145, 1: 120, 2: 120 },
+                        labelsTranslateX: { 0: 90, 1: 45, 2: 40 },
+                        textFunction: function (d) {
+                            let n = (d * 1000) / 1000000
+                            if (n == 1) {
+                                return n
+                            } else {
+                                return n
+                            }
+                        },
+                    },
+                    colorLegend: {
+                        titleWidth: 250,
+                        title: 'Air passengers per inhabitant',
+                        orient: 'vertical',
+                        shapeRadius: 10,
+                        shapePadding: 5,
+                        labelAlign: 'middle',
+                        labelFormat: '.0f',
+                        labelUnit: ' ',
+                        labelOffset: 10,
+                        shape: 'circle',
+                        titleYOffset: { 0: 170, 1: 160, 2: 160 },
+                        bodyYOffset: { 0: 30, 1: 30, 2: 30 },
+                    },
+                    tooltip: {
+                        colorLabel: 'Air passengers per inhabitant',
+                        colorUnit: '',
+                        sizeLabel: 'Total air passengers',
+                        sizeUnit: 'million',
+                        sizeValueTextFunction: function (d) {
+                            let m = (d * 1000) / 1000000
+                            let n = Math.round(m * 10) / 10
+                            return n.toLocaleString('en').replace(/,/gi, ' ')
+                        },
+                        shareLabel: 'Share of national air passengers',
+                    },
+                    nutsSelectorTranslateY: { 0: 415, 1: 395, 2: 395 },
+                    title: 'Air transport of passengers and freight, 2018',
+                },
+                freight: {
+                    maxCircleRadius: { 0: 70, 1: 50, 2: 50 },
+                    sizeDatasetCode: 'tran_r_avgo_nm',
+                    sizeDatasetFilters: 'tra_meas=FRM_LD_NLD&precision=1&unit=THS_T&time=2018',
+                    colorDatasetCode: 'tran_r_avgo_nm',
+                    colorDatasetName: 'air transport of freight',
+                    colorDatasetFilters: 'tra_meas=FRM_LD_NLD&precision=1&unit=THS_T&time=2018',
+                    colorCalculationFunction: function (freight, population) {
+                        return (freight / population) * 1000000
+                    },
+                    thresholdValues: [1, 5, 10, 50, 200, 99999999],
+                    sizeLegend: {
+                        title: 'Freight and mail carried (1 000 tonnes)',
+                        values: {
+                            0: [2000, 1000, 500],
+                            1: [2000, 1000, 500],
+                            2: [2000, 1000, 500],
+                            3: [2000, 1000, 500],
+                        },
+                        textFunction: function (d) {
+                            return d.toLocaleString('en').replace(/,/gi, ' ')
+                        },
+                        bodyXOffset: { 0: 80, 1: 80, 2: 80 },
+                        bodyYOffset: { 0: 170, 1: 170, 2: 170 },
+                        labelsTranslateX: { 0: 100, 1: 100, 2: 100 },
+                    },
+                    colorLegend: {
+                        title: 'Freight and mail carried per inhabitant (kg)',
+                        titleYOffset: { 0: 220, 1: 210, 2: 210 },
+                        bodyYOffset: { 0: 50, 1: 50, 2: 50 },
+                    },
+                    tooltip: {
+                        colorLabel: 'Freight and mail carried per inhabitant',
+                        colorUnit: 'kg',
+                        sizeLabel: 'Total freight carried',
+                        sizeUnit: 'tonnes',
+                        shareLabel: 'Share of total national freight carried',
+                        sizeValueTextFunction: function (d) {
+                            let m = d * 1000
+                            let n = Math.round(m * 10) / 10
+                            return n.toLocaleString('en').replace(/,/gi, ' ')
+                        },
+                    },
+                    nutsSelectorTranslateY: { 0: 460, 1: 460, 2: 460 },
+                    title: 'Air transport of passengers and freight, 2018',
+                },
+            }
+            var dorling = NutsDorlingCartogram.dorling()
+                .containerId('containerDiv')
+                .nutsLevel(2)
+                .nutsAvailable([0, 1, 2])
+                // .colors(["#3A6ABD", "#789BD8", "#D1D9F1", "#EBC2DE", "#E18FC8", "#A74177"])
+                .colors(['#2d50a0', '#6487c3', '#aab9e1', '#f0cd91', '#e6a532', '#d76e2d'])
+                .thresholdValues(transportConfig.air.thresholdValues)
+                .showNutsSelector(true)
+                .sizeDatasetCode(transportConfig.air.sizeDatasetCode)
+                .sizeDatasetFilters(transportConfig.air.sizeDatasetFilters)
+                .colorDatasetCode(transportConfig.air.colorDatasetCode)
+                .colorDatasetName(transportConfig.air.colorDatasetName)
+                .colorDatasetFilters(transportConfig.air.colorDatasetFilters)
+                .colorCalculation('per')
+                .colorCalculationFunction(transportConfig.air.colorCalculationFunction)
+                .colorCalculationDatasetCode('demo_r_d2jan')
+                .colorCalculationDatasetFilters('precision=1&sex=T&unit=NR&time=2018&age=TOTAL')
+                .maxCircleRadius(transportConfig.air.maxCircleRadius)
+                .colorLegend(transportConfig.air.colorLegend)
+                .nutsSelectorTranslateY(transportConfig.air.nutsSelectorTranslateY)
+                .sizeLegend(transportConfig.air.sizeLegend)
+                .tooltip(transportConfig.air.tooltip)
+                .showFootnotes(true)
+                .footnotesText('Air passenger refers to passenger carried.')
+                .exclude(['MK', 'ME', 'TR', 'AL', 'RS'])
+                .graticule(false)
+                .loop(false)
+                .pauseButton(false)
+                .showBorders(true)
+                .positionStrength(0.3)
+                .build()
+
+            function getURLParamValue(paramName) {
+                var url = window.location.search.substring(1) //get rid of "?" in querystring
+                var qArray = url.split('&') //get key-value pairs
+                for (var i = 0; i < qArray.length; i++) {
+                    var pArr = qArray[i].split('=') //split key and value
+                    if (pArr[0] == paramName) {
+                        pArr[1] = decodeURI(pArr[1])
+                        return pArr[1] //return value
+                    }
+                }
+            }
+            let simple = getURLParamValue('simple')
+            if (!simple) {
+                let dropdown = document.getElementById('dorling-transport-select-container')
+                dropdown.classList.add('dorling-standalone-dropdown')
+            }
+
+            function transportSelected() {
+                let id = document.getElementById('dorling-transport-select').value
+                //apply config settings
+                for (const p in transportConfig[id]) {
+                    dorling[p](transportConfig[id][p])
+                }
+
+                dorling.rebuild()
+            }
+        </script>
+    </body>
 </html>

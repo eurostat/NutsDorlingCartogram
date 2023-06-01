@@ -13,7 +13,7 @@ function generateURL(text, url, hashtags, via, related) {
     // related is an Array of objects containing name and description.
     if (related !== undefined && related.length > 0) {
         let relatedString = ''
-        related.forEach(relatedEntry => {
+        related.forEach((relatedEntry) => {
             let relatedEntryString = relatedEntry.name + ',' + relatedEntry.description
             relatedString += encodeURIComponent(relatedEntryString)
         })
@@ -22,6 +22,4 @@ function generateURL(text, url, hashtags, via, related) {
     return returnURL
 }
 
-export {
-    generateURL
-}
+export { generateURL }

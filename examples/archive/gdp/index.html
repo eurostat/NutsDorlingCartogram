@@ -1,75 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="shortcut icon" type="image/x-icon" href="../../assets/images/favicon.ico" />
+        <title>GDP Dorling Cartogram</title>
+    </head>
 
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel='shortcut icon' type='image/x-icon' href='../../assets/images/favicon.ico' />
-    <title>GDP Dorling Cartogram</title>
-</head>
-
-<body style="margin:0">
-    <div id="containerDiv">
-
-    </div>
-    <script src="../../build/dorling.min.js"></script>
-    <script>
-        var dorling = NutsDorlingCartogram.dorling()
-            .containerId("containerDiv")
-            .title("Gross domestic product")
-            .nutsLevel(2)
-            // .colors(["#3A6ABD", "#789BD8", "#D1D9F1", "#EBC2DE", "#E18FC8", "#A74177"])
-            .colors(["#2d50a0", "#6487c3", "#aab9e1", "#f0cd91", "#e6a532", "#d76e2d"])
-            .thresholdValues([10000, 20000, 30200, 40000, 50000, 1000000])
-            .showNutsSelector(true)
-            .sizeDatasetCode("nama_10r_3gdp")
-            .sizeDatasetFilters("unit=MIO_EUR&time=2018")
-            .colorDatasetCode("nama_10r_3gdp")
-            .colorDatasetName("GDP")
-            .colorDatasetFilters("unit=EUR_HAB&time=2018")
-            .maxCircleRadius({ 0: 65, 1: 25, 2: 25, 3: 15 })
-            .colorLegend({
-                //https://d3-legend.susielu.com/#color
-                titleWidth: 225,
-                title: "Gross domestic product (€ per inhabitant)",
-                orient: "vertical",
-                shapeRadius: 10,
-                shapePadding: 5,
-                labelAlign: "middle",
-                labelFormat: ".0f",
-                labelUnit: " ",
-                labelOffset: 10,
-                shape: "circle",
-                titleYOffset: { 0: 220, 1: 150, 2: 150, 3: 150 }, // translate Y for legend title from sizeLegend Y
-            })
-            .nutsSelectorTranslateY({ 0: 470, 1: 395, 2: 420, 3: 400 })
-            .sizeLegend({
-                title: "Gross domestic product (€ million)",
-                textFunction: function (d) { return d.toLocaleString("en").replace(/,/gi, " "); },
-                values: {
-                    0: [3500000, 1000000, 250000],
-                    1: [1000000, 500000, 100000],
-                    2: [1000000, 500000, 100000],
-                    3: [300000, 100000, 10000]
-                },
-                bodyXOffset: { 0: 90, 1: 50, 2: 50, 3: 50 },
-                bodyYOffset: { 0: 190, 1: 120, 2: 120, 3: 100 },
-                labelsTranslateX: { 0: 80, 1: 45, 2: 40, 3: 40 }
-            })
-            .tooltip({
-                colorLabel: "Gross domestic product",
-                colorUnit: "€ per inhabitant",
-                sizeLabel: "Gross domestic product",
-                sizeUnit: "€ million ",
-                shareLabel: "Share of national gross domestic product",
-            })
-            .exclude(["MK", "ME", "TR", "AL", "RS"])
-            .graticule(false)
-            .showFootnotes(true)
-            .footnotesText(" Data at NUTS 3 level is from 2017. Data for France not available at NUTS 3 level.")
-            .build();
-
-    </script>
-</body>
-
+    <body style="margin: 0">
+        <div id="containerDiv"></div>
+        <script src="../../build/dorling.min.js"></script>
+        <script>
+            var dorling = NutsDorlingCartogram.dorling()
+                .containerId('containerDiv')
+                .title('Gross domestic product')
+                .nutsLevel(2)
+                // .colors(["#3A6ABD", "#789BD8", "#D1D9F1", "#EBC2DE", "#E18FC8", "#A74177"])
+                .colors(['#2d50a0', '#6487c3', '#aab9e1', '#f0cd91', '#e6a532', '#d76e2d'])
+                .thresholdValues([10000, 20000, 30200, 40000, 50000, 1000000])
+                .showNutsSelector(true)
+                .sizeDatasetCode('nama_10r_3gdp')
+                .sizeDatasetFilters('unit=MIO_EUR&time=2018')
+                .colorDatasetCode('nama_10r_3gdp')
+                .colorDatasetName('GDP')
+                .colorDatasetFilters('unit=EUR_HAB&time=2018')
+                .maxCircleRadius({ 0: 65, 1: 25, 2: 25, 3: 15 })
+                .colorLegend({
+                    //https://d3-legend.susielu.com/#color
+                    titleWidth: 225,
+                    title: 'Gross domestic product (€ per inhabitant)',
+                    orient: 'vertical',
+                    shapeRadius: 10,
+                    shapePadding: 5,
+                    labelAlign: 'middle',
+                    labelFormat: '.0f',
+                    labelUnit: ' ',
+                    labelOffset: 10,
+                    shape: 'circle',
+                    titleYOffset: { 0: 220, 1: 150, 2: 150, 3: 150 }, // translate Y for legend title from sizeLegend Y
+                })
+                .nutsSelectorTranslateY({ 0: 470, 1: 395, 2: 420, 3: 400 })
+                .sizeLegend({
+                    title: 'Gross domestic product (€ million)',
+                    textFunction: function (d) {
+                        return d.toLocaleString('en').replace(/,/gi, ' ')
+                    },
+                    values: {
+                        0: [3500000, 1000000, 250000],
+                        1: [1000000, 500000, 100000],
+                        2: [1000000, 500000, 100000],
+                        3: [300000, 100000, 10000],
+                    },
+                    bodyXOffset: { 0: 90, 1: 50, 2: 50, 3: 50 },
+                    bodyYOffset: { 0: 190, 1: 120, 2: 120, 3: 100 },
+                    labelsTranslateX: { 0: 80, 1: 45, 2: 40, 3: 40 },
+                })
+                .tooltip({
+                    colorLabel: 'Gross domestic product',
+                    colorUnit: '€ per inhabitant',
+                    sizeLabel: 'Gross domestic product',
+                    sizeUnit: '€ million ',
+                    shareLabel: 'Share of national gross domestic product',
+                })
+                .exclude(['MK', 'ME', 'TR', 'AL', 'RS'])
+                .graticule(false)
+                .showFootnotes(true)
+                .footnotesText(
+                    ' Data at NUTS 3 level is from 2017. Data for France not available at NUTS 3 level.'
+                )
+                .build()
+        </script>
+    </body>
 </html>
