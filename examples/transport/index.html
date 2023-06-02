@@ -111,13 +111,13 @@
                     sizeLegend: {
                         title: 'Air passengers (million)',
                         values: {
-                            0: [60e3, 30e3, 10e3],
-                            1: [40e3, 25e3, 10e3],
-                            2: [40e3, 25e3, 10e3],
-                            3: [40e3, 25e3, 10e3],
+                            0: [60e3, 30e3, 5e3],
+                            1: [40e3, 20e3, 5e3],
+                            2: [40e3, 20e3, 5e3],
+                            3: [40e3, 20e3, 5e3],
                         },
-                        bodyXOffset: { 0: 85, 1: 55, 2: 50 },
-                        bodyYOffset: { 0: 160, 1: 120, 2: 120 },
+                        bodyXOffset: { 0: 65, 1: 55, 2: 50 },
+                        bodyYOffset: { 0: 130, 1: 120, 2: 120 },
                         labelsTranslateX: { 0: 70, 1: 40, 2: 40 },
                         textFunction: function (d) {
                             let n = (d * 1000) / 1000000
@@ -181,9 +181,9 @@
                         textFunction: function (d) {
                             return d.toLocaleString('en').replace(/,/gi, ' ')
                         },
-                        bodyXOffset: { 0: 80, 1: 80, 2: 80 },
-                        bodyYOffset: { 0: 155, 1: 155, 2: 155 },
-                        labelsTranslateX: { 0: 100, 1: 100, 2: 100 },
+                        bodyXOffset: { 0: 70, 1: 70, 2: 70 },
+                        bodyYOffset: { 0: 145, 1: 145, 2: 145 },
+                        labelsTranslateX: { 0: 90, 1: 90, 2: 90 },
                     },
                     colorLegend: {
                         title: 'Freight and mail carried per inhabitant (kg)',

@@ -41,7 +41,7 @@ export function dorling() {
     out.positionStrength_ = 0.4
     out.collisionStrength_ = 0.7
     //circle radius
-    out.minCircleRadius_ = { 0: 1.5, 1: 1.5, 2: 1.5, 3: 1.5 }
+    out.minCircleRadius_ = { 0: 5, 1: 5, 2: 5, 3: 5 }
     out.maxCircleRadius_ = { 0: 20, 1: 20, 2: 20, 3: 20 }
     out.circleSizeFunction_ = null // lets user define custom d3 scale function
     //d3-geo
