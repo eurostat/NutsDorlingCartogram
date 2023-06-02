@@ -1779,7 +1779,7 @@ export function dorling() {
         //set container width to calculated element node width
         out.legendSvg.attr('width', SVGRect.width)
         rect.setAttribute('height', SVGRect.height + 20)
-        rect.setAttribute('fill', 'white')
+        rect.setAttribute('fill', 'none') // legend fill
         rect.setAttribute('opacity', 0.8)
         ctx.insertBefore(rect, textElem)
 
