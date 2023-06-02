@@ -5,10 +5,19 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="shortcut icon" type="image/x-icon" href="../../assets/images/favicon.ico" />
         <title>Agriculture Dorling Cartogram</title>
+
+        <style>
+            .flexbox-container {
+                display: flex;
+            }
+            .flexbox-container.wrap {
+                flex-wrap: wrap;
+            }
+        </style>
     </head>
 
     <body style="margin: 0">
-        <div style="display: flex">
+        <div class="flexbox-container wrap">
             <div>
                 <iframe
                     src="https://eurostat.github.io/NutsDorlingCartogram/examples/gdp/?simple=true"
@@ -19,6 +28,20 @@
             <div>
                 <iframe
                     src="https://eurostat.github.io/NutsDorlingCartogram/examples/population/?simple=true"
+                    height="800px"
+                    width="710px"
+                ></iframe>
+            </div>
+            <div>
+                <iframe
+                    src="https://eurostat.github.io/NutsDorlingCartogram/examples/livestock/?simple=true"
+                    height="800px"
+                    width="710px"
+                ></iframe>
+            </div>
+            <div>
+                <iframe
+                    src="https://eurostat.github.io/NutsDorlingCartogram/examples/agriculture/?simple=true"
                     height="800px"
                     width="710px"
                 ></iframe>

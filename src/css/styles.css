@@ -25,19 +25,15 @@ body {
         top: 45% !important;
         left: 40% !important;
     }
-    .dorling-leaflet-control-zoom,
-    .dorling-leaflet-control-nuts-selector {
+    .dorling-leaflet-control-zoom {
         top: 45px !important;
         bottom: unset !important;
     }
     .dorling-attribution {
         display: none !important;
     }
-    .dorling-nuts-selector-div {
-        top: 50px !important;
-    }
     .dorling-legend-div {
-        left: 40px !important;
+        left: 5px !important;
         z-index: 99999;
     }
 }
@@ -75,7 +71,7 @@ body {
     }
 
     .dorling-legend-div {
-        top: 0px !important;
+        top: 30px !important;
         left: 5px;
     }
     .dorling-legend-container-background .dorling-legend-svg {
