@@ -31,7 +31,7 @@ export function dorling() {
     out.coastalMargins_ = false
     out.graticule_ = false
     out.nutsBorderColor_ = 'grey'
-    out.nutsBorderWidth_ = 0.4
+    out.nutsBorderWidth_ = 0.2
     out.toggleLegendWidthThreshold_ = 850
     out.toggleLegendHeightThreshold_ = 700 //height (px) at which the legend is loaded in "collapsable" mode
 
@@ -210,7 +210,7 @@ export function dorling() {
     out.standalone_ = false
     out.standaloneUrl_ = ''
 
-    out.circleStrokeWidth_ = 0.4
+    out.circleStrokeWidth_ = 0.2
 
     //definition of generic accessors based on the name of each parameter name
     for (let p in out)
@@ -778,7 +778,7 @@ export function dorling() {
                     .attr('vector-effect', 'non-scaling-stroke')
                     .attr('stroke', out.nutsBorderColor_)
                     .attr('stroke-width', (f) => {
-                        if (f.properties.co === 'T') return out.nutsBorderWidth_ + 'px'
+                        if (f.properties.co === 'T') return out.nutsBorderWidth_ + 0.1 + 'px'
                         if (f.properties.lvl === 0) return '1px'
                         return out.nutsBorderWidth_ + 'px'
                     })
