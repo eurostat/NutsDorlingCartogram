@@ -1736,7 +1736,7 @@ export function dorling() {
         out.dorlingContainer.node().appendChild(out.legendDiv)
         // }
 
-        //hide legend on small screens by default
+        //hide legend on small screens
         if (
             window.innerWidth < out.toggleLegendWidthThreshold_ ||
             window.innerHeight < out.toggleLegendHeightThreshold_
@@ -1744,6 +1744,7 @@ export function dorling() {
             if (!out.showLegend) {
                 out.legendDiv.style.visibility = 'hidden'
             }
+            out.legendDiv.classList.add('dorling-legend-compact')
         }
 
         //background container

@@ -1,0 +1,39 @@
+.dorling-legend-compact {
+    top: 40px !important;
+}
+.dorling-legend-container {
+    font-size: 14px;
+}
+.dorling-size-legend-label {
+    font-size: 14px;
+}
+.dorling-legend-container-background {
+    fill: white;
+}
+/* allow mouse events to travel through legend background svg */
+.dorling-legend-svg {
+    pointer-events: none;
+}
+.dorling-legend-svg * {
+    pointer-events: auto;
+}
+.dorling-legend-div {
+    position: absolute;
+    top: 0px;
+    left: 5px;
+}
+.dorling-legend-svg {
+    position: absolute;
+    left: 15px;
+    top: 0;
+    overflow: visible;
+}
+.dorling-legend-title {
+    font-weight: bold;
+    font-style: italic;
+}
+.legendTitle {
+    font-weight: 100;
+    font-style: italic;
+    font-size: 12px;
+}

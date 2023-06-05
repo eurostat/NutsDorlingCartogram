@@ -11,6 +11,8 @@ import { modal } from 'bootstrap'
 
 // NutsDorlingCartogram
 import './css/standalone.css'
+import './css/responsive.css'
+import './css/legend.css'
 import './css/styles.css'
 import './css/bootstrap-override.css'
 
