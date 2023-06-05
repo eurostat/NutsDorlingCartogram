@@ -1776,6 +1776,7 @@ export function dorling() {
         rect.setAttribute('x', SVGRect.x - 10)
         rect.setAttribute('y', SVGRect.y - 10)
         rect.setAttribute('width', SVGRect.width + 20)
+        rect.classList.add('dorling-legend-background-rect')
         //set container width to calculated element node width
         out.legendSvg.attr('width', SVGRect.width)
         rect.setAttribute('height', SVGRect.height + 20)
