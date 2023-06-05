@@ -630,3 +630,11 @@ text.label {
     background-color: #e5e5e5;
     cursor: pointer;
 }
+
+/* allow mouse events to travel through legend background svg */
+.dorling-legend-svg {
+    pointer-events: none;
+}
+.dorling-legend-svg * {
+    pointer-events: auto;
+}
