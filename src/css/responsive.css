@@ -39,7 +39,8 @@
         font-size: 11px;
     }
 }
-/* smaller screens: width at which the legend changes to toggle mode */
+
+/* smaller screens: width threshold at which the legend changes to toggle mode */
 @media only screen and (max-width: 850px) {
     .standalone-nav {
         margin-bottom: 5px;
@@ -57,7 +58,11 @@
         height: 545px !important;
         width: 189px !important;
     }
+    .dorling-leaflet-control-zoom {
+        top: 55px !important;
+    }
 }
+
 /* small mobile */
 @media only screen and (max-width: 450px) {
     .dorling-tooltip {
