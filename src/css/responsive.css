@@ -60,6 +60,7 @@
     }
     .dorling-leaflet-control-zoom {
         top: 55px !important;
+        bottom: unset !important;
     }
 }
 
