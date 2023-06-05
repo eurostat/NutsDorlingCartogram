@@ -1744,7 +1744,6 @@ export function dorling() {
             if (!out.showLegend) {
                 out.legendDiv.style.visibility = 'hidden'
             }
-            out.legendDiv.style.left = '50px'
         }
 
         //background container
