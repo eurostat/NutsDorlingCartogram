@@ -12,7 +12,7 @@
 }
 .dorling-legend-background-rect {
     fill: white;
-    pointer-events: none;
+    pointer-events: none !important;
 }
 /* allow mouse events to travel through legend background svg */
 .dorling-legend-svg {
