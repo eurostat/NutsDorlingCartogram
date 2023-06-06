@@ -1066,7 +1066,7 @@ export function dorling() {
                 },
                 {
                     id: 'FRY30',
-                    name: 'Guayane (FR)',
+                    name: 'Guyane (FR)',
                     featureCollection: {
                         type: 'FeatureCollection',
                         features: [geojson.features[14], geojson.features[9]],
@@ -1867,7 +1867,10 @@ export function dorling() {
             }
         })
     }
-
+    /**
+     * Add a radio button for a NUTS level to the DOM
+     *
+     */
     function addNutsSelectorButtonToDOM() {
         out.showNutsLevels = false
         let buttonContainer = document.createElement('div')
@@ -1915,7 +1918,7 @@ export function dorling() {
     }
 
     /**
-     * @description Adds a colour legend using d3-svg-legend
+     * @description Adds a colour legend to the DOM using d3-svg-legend
      */
     function addColorLegend() {
         out.colorLegendContainer = out.legendContainer.append('g').attr('class', 'dorling-color-legend')
@@ -2073,7 +2076,12 @@ export function dorling() {
                 ')'
         )
     }
-
+    /**
+     * Retrieve the translation applied to a DOM element
+     *
+     * @param {*} transform
+     * @returns
+     */
     function getTranslation(transform) {
         // Create a dummy g for calculation purposes only. This will never
         // be appended to the DOM and will be discarded once this function
@@ -2328,11 +2336,20 @@ export function dorling() {
                 .attr('opacity', 1)
                 .attr('transform', 'translate(10,0)')
         } else {
+            let colorLegendHeight = out.colorLegendContainer.node().getBBox().height || 0
+            let sizeLegendHeight = out.sizeLegendContainer.node().getBBox().height || 0
+            let translateY =
+                out.sizeLegend_.bodyYOffset[out.nutsLevel_] +
+                out.colorLegend_.titleYOffset[out.nutsLevel_] +
+                out.colorLegend_.bodyYOffset[out.nutsLevel_] +
+                sizeLegendHeight +
+                colorLegendHeight
+
             out.radioContainer = out.legendContainer
                 .append('g')
                 .attr('id', 'dorling-nuts-selector')
                 .attr('opacity', 0)
-                .attr('transform', 'translate(0, ' + out.nutsSelectorTranslateY_[out.nutsLevel_] + ')')
+                .attr('transform', 'translate(0, ' + translateY + ')')
 
             //title only on larger screens
             out.radioContainer
