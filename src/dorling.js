@@ -2033,7 +2033,7 @@ export function dorling() {
                         return '≤ ' + formatNumber(parseFloat(thresholdValue))
                     } else if (d.i === d.genLength - 1) {
                         //last label
-                        let thresholdValue = d.domain[d.i]
+                        let thresholdValue = d.domain[d.i - 1]
                         return '≥ ' + formatNumber(parseFloat(thresholdValue))
                     } else {
                         // other labels
