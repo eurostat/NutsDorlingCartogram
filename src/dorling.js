@@ -61,7 +61,8 @@ export function dorling() {
     out.pauseButton_ = false
     out.showBorders_ = true
     out.legendHeight_ = 550
-    out.legendWidth_ = 250
+    out.legendWidth_ = window.innerWidth > 1000 ? 300 : 230
+    out.legendOpacity_ = 0.5
     //size legend (circle radiuses)
     out.sizeLegend_ = {
         title: 'Circle Size',
@@ -877,7 +878,12 @@ export function dorling() {
             return out
         }) //Promise.all
     }
-
+    /**
+     * Defines a custom geojson for the inset maps
+     *
+     * @param {*} geojson The parsed topojson object
+     * @returns
+     */
     function defineInsets(geojson) {
         out.insetsGeojson = geojson
         let insetsJson
@@ -1177,6 +1183,11 @@ export function dorling() {
         return insetsJson
     }
 
+    /**
+     * Adds inset maps to the DOM
+     *
+     * @param {TopoJSON} overseasTopo The topojson object containing the geometries of the overseas regions to show
+     */
     function addInsets(overseasTopo) {
         out.insetsSvg = d3select.create('svg')
         let nutsClass = 'dorling-insets-nuts' + out.nutsLevel_
@@ -1781,7 +1792,7 @@ export function dorling() {
         out.legendSvg.attr('width', SVGRect.width)
         rect.setAttribute('height', SVGRect.height + 20)
         rect.setAttribute('fill', 'none') // legend fill
-        rect.setAttribute('opacity', 0.8)
+        rect.setAttribute('opacity', out.legendOpacity_)
         ctx.insertBefore(rect, textElem)
 
         //if mobile, append leaflet-like button to hide and show the legend , overseas maps & nuts selector
@@ -1878,6 +1889,7 @@ export function dorling() {
     }
 
     function addColorLegendExplanation() {
+        let dpr = window.devicePixelRatio
         let explanation = out.legendContainer
             .append('g')
             .attr('fill', 'black')
@@ -1886,10 +1898,10 @@ export function dorling() {
             .attr(
                 'transform',
                 'translate(' +
-                    out.colorLegend_.translateX +
+                    out.colorLegend_.translateX * dpr +
                     ',' +
-                    (out.sizeLegend_.translateY[out.nutsLevel_] +
-                        out.colorLegend_.titleYOffset[out.nutsLevel_]) +
+                    (out.sizeLegend_.translateY[out.nutsLevel_] * dpr +
+                        out.colorLegend_.titleYOffset[out.nutsLevel_] * dpr) +
                     ')'
             )
 
@@ -1899,7 +1911,7 @@ export function dorling() {
             .attr('x', 0)
             .attr('dy', '0em')
             .text(out.colorLegend_.title)
-            .call(d3_textWrapping, out.colorLegend_.titleWidth - 20)
+            .call(d3_textWrapping, out.legendWidth_ - 20)
     }
 
     /**
@@ -1907,14 +1919,14 @@ export function dorling() {
      */
     function addColorLegend() {
         out.colorLegendContainer = out.legendContainer.append('g').attr('class', 'dorling-color-legend')
-
+        let dpr = window.devicePixelRatio
         out.colorLegendContainer.attr(
             'transform',
             'translate(' +
-                out.colorLegend_.translateX +
+                out.colorLegend_.translateX * dpr +
                 ',' +
-                (out.colorLegend_.titleYOffset[out.nutsLevel_] +
-                    out.colorLegend_.bodyYOffset[out.nutsLevel_]) +
+                (out.colorLegend_.titleYOffset[out.nutsLevel_] * dpr +
+                    out.colorLegend_.bodyYOffset[out.nutsLevel_] * dpr) +
                 ')'
         )
 
@@ -1922,7 +1934,7 @@ export function dorling() {
             .default()
             .ascending(true)
             .title('Hover over the different legend classes to highlight them on the map')
-            .titleWidth(out.colorLegend_.titleWidth)
+            .titleWidth(out.legendWidth_)
             .orient(out.colorLegend_.orient)
             .shape(out.colorLegend_.shape)
             .shapePadding(out.colorLegend_.shapePadding)
@@ -2084,6 +2096,8 @@ export function dorling() {
      * @description Adds a circle size legend to the DOM manually
      */
     function addSizeLegend() {
+        let dpr = window.devicePixelRatio
+
         //assign default circle radiuses if none specified by user
         if (!out.sizeLegend_.values[out.nutsLevel_]) {
             out.sizeLegend_.values[out.nutsLevel_] = [
@@ -2103,12 +2117,12 @@ export function dorling() {
             // Do Firefox-related activities
             out.sizeLegendContainer.attr(
                 'transform',
-                'translate(0,' + (out.sizeLegend_.translateY[out.nutsLevel_] + 2) + ')'
+                'translate(0,' + (out.sizeLegend_.translateY[out.nutsLevel_] * dpr + 2) + ')'
             )
         } else {
             out.sizeLegendContainer.attr(
                 'transform',
-                'translate(0,' + out.sizeLegend_.translateY[out.nutsLevel_] + ')'
+                'translate(0,' + out.sizeLegend_.translateY[out.nutsLevel_] * dpr + ')'
             )
         }
 
@@ -2123,9 +2137,9 @@ export function dorling() {
             .attr(
                 'transform',
                 'translate(' +
-                    out.sizeLegend_.titleXOffset[out.nutsLevel_] +
+                    out.sizeLegend_.titleXOffset[out.nutsLevel_] * dpr +
                     ',' +
-                    out.sizeLegend_.titleYOffset[out.nutsLevel_] +
+                    out.sizeLegend_.titleYOffset[out.nutsLevel_] * dpr +
                     ')'
             )
             .attr('text-anchor', 'right')
@@ -2136,7 +2150,7 @@ export function dorling() {
             .attr('dy', '0em')
             .text(out.sizeLegend_.title)
             .attr('class', 'dorling-legend-title')
-            .call(d3_textWrapping, out.colorLegend_.titleWidth)
+            .call(d3_textWrapping, out.legendWidth_)
 
         //circles
         const legC = out.sizeLegendContainer
@@ -2145,9 +2159,9 @@ export function dorling() {
             .attr(
                 'transform',
                 'translate(' +
-                    out.sizeLegend_.bodyXOffset[out.nutsLevel_] +
+                    out.sizeLegend_.bodyXOffset[out.nutsLevel_] * dpr +
                     ',' +
-                    out.sizeLegend_.bodyYOffset[out.nutsLevel_] +
+                    out.sizeLegend_.bodyYOffset[out.nutsLevel_] * dpr +
                     ')'
             ) //TODO: make dynamic
             .attr('text-anchor', 'right')

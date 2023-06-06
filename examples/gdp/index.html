@@ -52,7 +52,6 @@
                 .maxCircleRadius({ 0: 70, 1: 25, 2: 25, 3: 18 })
                 .colorLegend({
                     //https://d3-legend.susielu.com/#color
-                    titleWidth: 230,
                     title: 'Gross domestic product (PPS per inhabitant)',
                     orient: 'vertical',
                     shapeRadius: 10,
@@ -62,9 +61,10 @@
                     labelUnit: ' ',
                     labelOffset: 10,
                     shape: 'circle',
-                    titleYOffset: { 0: 170, 1: 120, 2: 120, 3: 120 }, // set distance between size legend and colour legend
+                    bodyYOffset: { 0: 30, 1: 30, 2: 30, 3: 30 },
+                    titleYOffset: { 0: 170, 1: 110, 2: 110, 3: 110 }, // set distance between size legend and colour legend
                 })
-                .nutsSelectorTranslateY({ 0: 450, 1: 385, 2: 390, 3: 385 })
+                .nutsSelectorTranslateY({ 0: 450, 1: 365, 2: 365, 3: 365 })
                 .sizeLegend({
                     title: 'Gross domestic product (€ million)',
                     textFunction: function (d) {
