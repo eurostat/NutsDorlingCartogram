@@ -1296,7 +1296,7 @@ export function dorling() {
             insetPath.attr('fill', function (d, i) {
                 index++
                 //guyane bordering geometry
-                if (index == 11) {
+                if (index == 10) {
                     return '#E5E5E5'
                 } else {
                     return 'white'
@@ -1630,6 +1630,12 @@ export function dorling() {
         }
     }
 
+    /**
+     * Replaces thousand separator with a space
+     *
+     * @param {*} n
+     * @returns
+     */
     function formatNumber(n) {
         return n.toLocaleString('en').replace(/,/gi, ' ')
     }
@@ -2025,45 +2031,19 @@ export function dorling() {
                 colorLegend.labels(out.colorLegend_.labels)
             } else {
                 colorLegend.labels(function (d) {
-                    //colorLegend.locale() doesnt work with d3v5 so this is a work around for implementing spaces as a thousand separator
-                    //var r = /\-?\d+/g; //regExp for getting integers from a string
-                    let r = /[+-]?\d+(\.\d+)?/g //float
-                    let label
-
-                    if (d.generatedLabels[d.i].toString().indexOf(d.labelDelimiter) !== -1) {
-                        if (d.i === 0) {
-                            // first label
-                            label =
-                                d.generatedLabels[d.i].split(d.labelDelimiter)[1] + out.colorLegend_.labelUnit
-                            var m = label.match(r)
-                            if (m) {
-                                return '≤ ' + formatNumber(parseFloat(m[0]))
-                            } else {
-                                return label
-                            }
-                        } else if (d.i === d.genLength - 1) {
-                            //last label
-                            label =
-                                d.generatedLabels[d.i].split(d.labelDelimiter)[0] + out.colorLegend_.labelUnit
-                            var m = label.match(r)
-                            if (m) {
-                                return '≥ ' + formatNumber(parseFloat(m[0]))
-                            } else {
-                                return label
-                            }
-                        } else {
-                            label = d.generatedLabels[d.i] + out.colorLegend_.labelUnit
-                            var m = label.match(r)
-                            if (m) {
-                                return (
-                                    formatNumber(parseFloat(m[0])) +
-                                    d.labelDelimiter +
-                                    formatNumber(parseFloat(m[1]))
-                                )
-                            } else {
-                                return label
-                            }
-                        }
+                    if (d.i === 0) {
+                        // first label
+                        let thresholdValue = d.domain[d.i]
+                        return '≤ ' + formatNumber(parseFloat(thresholdValue))
+                    } else if (d.i === d.genLength - 1) {
+                        //last label
+                        let thresholdValue = d.domain[d.i]
+                        return '≥ ' + formatNumber(parseFloat(thresholdValue))
+                    } else {
+                        // other labels
+                        let thresholdValue = d.domain[d.i]
+                        let previous = d.domain[d.i - 1]
+                        return formatNumber(previous) + d.labelDelimiter + formatNumber(thresholdValue)
                     }
                 })
             }
