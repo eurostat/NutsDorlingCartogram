@@ -2325,12 +2325,10 @@ export function dorling() {
         } else {
             let colorLegendHeight = out.colorLegendContainer.node().getBBox().height || 0
             let sizeLegendHeight = out.sizeLegendContainer.node().getBBox().height || 0
-            let translateY =
-                out.sizeLegend_.bodyYOffset[out.nutsLevel_] +
-                out.colorLegend_.titleYOffset[out.nutsLevel_] +
-                out.colorLegend_.bodyYOffset[out.nutsLevel_] +
-                sizeLegendHeight +
-                colorLegendHeight
+            let clegendY =
+                out.colorLegend_.titleYOffset[out.nutsLevel_] + out.colorLegend_.bodyYOffset[out.nutsLevel_]
+            let padding = 0
+            let translateY = clegendY + colorLegendHeight + padding
 
             out.radioContainer = out.legendContainer
                 .append('g')
