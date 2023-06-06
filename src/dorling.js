@@ -1898,10 +1898,10 @@ export function dorling() {
             .attr(
                 'transform',
                 'translate(' +
-                    out.colorLegend_.translateX * dpr +
+                    out.colorLegend_.translateX +
                     ',' +
-                    (out.sizeLegend_.translateY[out.nutsLevel_] * dpr +
-                        out.colorLegend_.titleYOffset[out.nutsLevel_] * dpr) +
+                    (out.sizeLegend_.translateY[out.nutsLevel_] +
+                        out.colorLegend_.titleYOffset[out.nutsLevel_]) +
                     ')'
             )
 
@@ -1923,10 +1923,10 @@ export function dorling() {
         out.colorLegendContainer.attr(
             'transform',
             'translate(' +
-                out.colorLegend_.translateX * dpr +
+                out.colorLegend_.translateX +
                 ',' +
-                (out.colorLegend_.titleYOffset[out.nutsLevel_] * dpr +
-                    out.colorLegend_.bodyYOffset[out.nutsLevel_] * dpr) +
+                (out.colorLegend_.titleYOffset[out.nutsLevel_] +
+                    out.colorLegend_.bodyYOffset[out.nutsLevel_]) +
                 ')'
         )
 
@@ -2117,12 +2117,12 @@ export function dorling() {
             // Do Firefox-related activities
             out.sizeLegendContainer.attr(
                 'transform',
-                'translate(0,' + (out.sizeLegend_.translateY[out.nutsLevel_] * dpr + 2) + ')'
+                'translate(0,' + (out.sizeLegend_.translateY[out.nutsLevel_] + 2) + ')'
             )
         } else {
             out.sizeLegendContainer.attr(
                 'transform',
-                'translate(0,' + out.sizeLegend_.translateY[out.nutsLevel_] * dpr + ')'
+                'translate(0,' + out.sizeLegend_.translateY[out.nutsLevel_] + ')'
             )
         }
 
@@ -2137,9 +2137,9 @@ export function dorling() {
             .attr(
                 'transform',
                 'translate(' +
-                    out.sizeLegend_.titleXOffset[out.nutsLevel_] * dpr +
+                    out.sizeLegend_.titleXOffset[out.nutsLevel_] +
                     ',' +
-                    out.sizeLegend_.titleYOffset[out.nutsLevel_] * dpr +
+                    out.sizeLegend_.titleYOffset[out.nutsLevel_] +
                     ')'
             )
             .attr('text-anchor', 'right')
@@ -2159,9 +2159,9 @@ export function dorling() {
             .attr(
                 'transform',
                 'translate(' +
-                    out.sizeLegend_.bodyXOffset[out.nutsLevel_] * dpr +
+                    out.sizeLegend_.bodyXOffset[out.nutsLevel_] +
                     ',' +
-                    out.sizeLegend_.bodyYOffset[out.nutsLevel_] * dpr +
+                    out.sizeLegend_.bodyYOffset[out.nutsLevel_] +
                     ')'
             ) //TODO: make dynamic
             .attr('text-anchor', 'right')
