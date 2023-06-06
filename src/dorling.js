@@ -34,6 +34,7 @@ export function dorling() {
     out.nutsBorderWidth_ = 0.2
     out.toggleLegendWidthThreshold_ = 850
     out.toggleLegendHeightThreshold_ = 700 //height (px) at which the legend is loaded in "collapsable" mode
+    out.nutsLevelToggleHeightThreshold_ = 600 // the minimum height for the legend and toggle to be in the same container, otherwise they are separated.
 
     //d3 force
     // out.circleExaggerationFactor_ = 1.2; //deprecated
@@ -418,14 +419,6 @@ export function dorling() {
 
     //main d3 logic
     out.main = function () {
-        //add nuts selector on smaller screens
-        if (
-            window.innerWidth < out.toggleLegendWidthThreshold_ ||
-            window.innerHeight < out.toggleLegendHeightThreshold_
-        ) {
-            addNutsSelectorToDOM()
-        }
-
         if (out.nutsLevel_ == 0) {
             out.showInsets_ = false
         } else {
@@ -1823,6 +1816,10 @@ export function dorling() {
             if (out.showInsets_) {
                 addOverseasButtonToDOM()
             }
+        }
+
+        if (window.innerHeight < out.nutsLevelToggleHeightThreshold_) {
+            // show nuts level radios in separate container
             if (out.showNutsSelector_) {
                 addNutsSelectorButtonToDOM()
             }
@@ -2289,7 +2286,8 @@ export function dorling() {
     }
 
     /**
-     * Add svg radio buttons for changing NUTS levels
+     * Add svg radio buttons for changing NUTS levels.
+     * If screen height is smaller than out.nutsLevelToggleHeightThreshold then the radios are shown in a separate container
      *
      */
     function addNutsSelectorToDOM() {
@@ -2306,10 +2304,7 @@ export function dorling() {
         let outlineSelectedColor = '#022B58'
 
         //add to its own svg container on smaller screens and legendsSvg for larger screens
-        if (
-            window.innerWidth < out.toggleLegendWidthThreshold_ ||
-            window.innerHeight < out.toggleLegendHeightThreshold_
-        ) {
+        if (window.innerHeight < out.nutsLevelToggleHeightThreshold_) {
             marginTop = 15
             out.nutsSelectorSvg = d3select.create('svg')
             out.nutsSelectorSvg
@@ -2330,8 +2325,9 @@ export function dorling() {
                 .attr('opacity', 1)
                 .attr('transform', 'translate(10,0)')
         } else {
+            // add radios to legend container
+
             let colorLegendHeight = out.colorLegendContainer.node().getBBox().height || 0
-            let sizeLegendHeight = out.sizeLegendContainer.node().getBBox().height || 0
             let clegendY =
                 out.colorLegend_.titleYOffset[out.nutsLevel_] + out.colorLegend_.bodyYOffset[out.nutsLevel_]
             let padding = 0

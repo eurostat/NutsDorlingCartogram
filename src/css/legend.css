@@ -11,7 +11,7 @@
     fill: white;
 }
 .dorling-legend-background-rect {
-    fill: white;
+    /* fill: white; */
     pointer-events: none !important;
 }
 /* allow mouse events to travel through legend background svg */
@@ -24,11 +24,11 @@
 .dorling-legend-div {
     position: absolute;
     top: 0px;
-    left: 5px;
+    left: 0px;
 }
 .dorling-legend-svg {
     position: absolute;
-    left: 15px;
+    left: 2px;
     top: 0;
     overflow: visible;
 }

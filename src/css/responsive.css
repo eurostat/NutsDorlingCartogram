@@ -12,7 +12,7 @@
         display: none !important;
     }
     .dorling-legend-div {
-        left: 5px !important;
+        left: 0px !important;
         z-index: 99999;
     }
 }
@@ -52,7 +52,7 @@
 
     .dorling-legend-div {
         top: 30px !important;
-        left: 5px;
+        left: 0px;
     }
     .dorling-legend-container-background .dorling-legend-svg {
         height: 545px !important;
