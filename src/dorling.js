@@ -1497,26 +1497,25 @@ export function dorling() {
         if (out.tooltip_.sizeValueTextFunction) {
             if (out.tooltip_.colorUnit == '€ per inhabitant') {
                 out.tooltipElement.html(`<strong>${name}</strong>
-  (${id}) <i>${out.countryNamesIndex_[id[0] + id[1]]}</i><br>
-  ${out.tooltip_.colorLabel}: ${out.tooltip_.colorUnit} <strong>${formatNumber(
+                (${id}) <i>${out.countryNamesIndex_[id[0] + id[1]]}</i><br>
+                ${out.tooltip_.colorLabel}: ${out.tooltip_.colorUnit} <strong>${formatNumber(
                     roundToOneDecimal(out.colorIndicator[id])
                 )}</strong> per inhabitant <br>
-  ${out.tooltip_.sizeLabel}: ${out.tooltip_.sizeUnit} ${out.tooltip_.sizeValueTextFunction(
+                ${out.tooltip_.sizeLabel}: ${out.tooltip_.sizeUnit} ${out.tooltip_.sizeValueTextFunction(
                     out.sizeIndicator[id]
-                )} million <br>
-  ${out.tooltip_.shareLabel}: ${roundToOneDecimal(
+                )}  <br>
+                ${out.tooltip_.shareLabel}: ${roundToOneDecimal(
                     (out.sizeIndicator[id] / out.totalsIndex[id.substring(0, 2)]) * 100
                 )} ${out.tooltip_.shareUnit} <br>`)
             } else {
                 out.tooltipElement.html(`<strong>${name}</strong>
-  (${id}) <i>${out.countryNamesIndex_[id[0] + id[1]]}</i><br>
-  ${out.tooltip_.colorLabel}: <strong>${formatNumber(roundToOneDecimal(out.colorIndicator[id]))}</strong> ${
-                    out.tooltip_.colorUnit
-                }<br>
-  ${out.tooltip_.sizeLabel}: ${out.tooltip_.sizeValueTextFunction(out.sizeIndicator[id])} ${
-                    out.tooltip_.sizeUnit
-                }<br>
-  ${out.tooltip_.shareLabel}: ${roundToOneDecimal(
+                (${id}) <i>${out.countryNamesIndex_[id[0] + id[1]]}</i><br>
+                ${out.tooltip_.colorLabel}: <strong>${formatNumber(
+                    roundToOneDecimal(out.colorIndicator[id])
+                )}</strong> ${out.tooltip_.colorUnit}<br>
+                ${out.tooltip_.sizeLabel}: ${out.tooltip_.sizeValueTextFunction(out.sizeIndicator[id])}
+                <br>
+                ${out.tooltip_.shareLabel}: ${roundToOneDecimal(
                     (out.sizeIndicator[id] / out.totalsIndex[id.substring(0, 2)]) * 100
                 )} ${out.tooltip_.shareUnit} <br>`)
             }

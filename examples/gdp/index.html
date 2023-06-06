@@ -83,8 +83,12 @@
                     colorLabel: 'Gross domestic product',
                     colorUnit: 'PPS per inhabitant',
                     sizeLabel: 'Gross domestic product',
-                    sizeUnit: '€ million ',
                     shareLabel: 'Share of national gross domestic product',
+                    sizeValueTextFunction: function (d) {
+                        let m = d / 1000000
+                        let n = Math.round(m * 10) / 10
+                        return '€' + n.toLocaleString('en').replace(/,/gi, ' ') + ' million'
+                    },
                 })
                 .exclude(['MK', 'ME', 'TR', 'AL', 'RS', 'UK'])
                 .graticule(false)

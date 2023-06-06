@@ -157,11 +157,10 @@
                         colorLabel: 'Air passengers per inhabitant',
                         colorUnit: '',
                         sizeLabel: 'Total air passengers',
-                        sizeUnit: 'million',
                         sizeValueTextFunction: function (d) {
                             let m = (d * 1000) / 1000000
                             let n = Math.round(m * 10) / 10
-                            return n.toLocaleString('en').replace(/,/gi, ' ')
+                            return n.toLocaleString('en').replace(/,/gi, ' ') + 'million'
                         },
                         shareLabel: 'Share of national air passengers',
                     },
@@ -204,12 +203,12 @@
                         colorLabel: 'Freight and mail carried per inhabitant',
                         colorUnit: 'kg',
                         sizeLabel: 'Total freight carried',
-                        sizeUnit: 'tonnes',
+
                         shareLabel: 'Share of total national freight carried',
                         sizeValueTextFunction: function (d) {
                             let m = d * 1000
                             let n = Math.round(m * 10) / 10
-                            return n.toLocaleString('en').replace(/,/gi, ' ')
+                            return n.toLocaleString('en').replace(/,/gi, ' ') + ' tonnes'
                         },
                     },
                     title: 'Air transport of passengers and freight, 2021',

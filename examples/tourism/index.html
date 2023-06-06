@@ -109,11 +109,10 @@
                     colorLabel: 'Foreign tourism dependency (share of total nights spent by non-residents)',
                     colorUnit: '%',
                     sizeLabel: 'Total number of nights spent',
-                    sizeUnit: 'million',
                     sizeValueTextFunction: function (d) {
                         let m = d / 1000000
                         let n = Math.round(m * 10) / 10
-                        return n.toLocaleString('en').replace(/,/gi, ' ')
+                        return n.toLocaleString('en').replace(/,/gi, ' ') + ' million'
                     },
                     shareLabel: 'Share of total nights spent in national total',
                 })
