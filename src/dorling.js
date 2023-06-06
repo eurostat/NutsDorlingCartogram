@@ -2015,18 +2015,8 @@ export function dorling() {
                     let label
 
                     if (d.generatedLabels[d.i].toString().indexOf(d.labelDelimiter) !== -1) {
-                        //first label
-                        if (d.i === 0) {
-                            label =
-                                d.generatedLabels[d.i].split(d.labelDelimiter)[1] + out.colorLegend_.labelUnit
-                            var m = label.match(r)
-                            if (m) {
-                                return '< ' + formatNumber(parseFloat(m[0]))
-                            } else {
-                                return label
-                            }
-                            //last label
-                        } else if (d.i === d.genLength - 1) {
+                        //last label
+                        if (d.i === d.genLength - 1) {
                             label =
                                 d.generatedLabels[d.i].split(d.labelDelimiter)[0] + out.colorLegend_.labelUnit
                             var m = label.match(r)
@@ -2037,14 +2027,11 @@ export function dorling() {
                             }
                             //intermediate labels
                         } else {
-                            label = d.generatedLabels[d.i] + out.colorLegend_.labelUnit
+                            label =
+                                d.generatedLabels[d.i].split(d.labelDelimiter)[1] + out.colorLegend_.labelUnit
                             var m = label.match(r)
                             if (m) {
-                                return (
-                                    formatNumber(parseFloat(m[0])) +
-                                    d.labelDelimiter +
-                                    formatNumber(parseFloat(m[1]))
-                                )
+                                return '≤ ' + formatNumber(parseFloat(m[0]))
                             } else {
                                 return label
                             }
