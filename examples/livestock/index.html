@@ -170,7 +170,7 @@
             let dorling = NutsDorlingCartogram.dorling()
                 .standalone(standalone)
                 .containerId('containerDiv')
-                .title('Animal populations, December 2022')
+                .title('Livestock, December 2022')
                 .nutsLevel(2)
                 .nutsYear(2021)
                 .mixNuts({
@@ -227,7 +227,7 @@
                     titleYOffset: animalConfig.A3100.colorLegend.titleYOffset,
                 })
                 .sizeLegend({
-                    title: 'Total livestock (1 000 head)',
+                    title: 'Livestock (1 000 head)',
                     textFunction: function (d) {
                         return d.toLocaleString('en').replace(/,/gi, ' ')
                     },
@@ -241,7 +241,7 @@
                     colorUnit: '%',
                     sizeLabel: 'Total livestock',
                     sizeUnit: '(1 000 head)',
-                    shareLabel: 'Share of total national livestock',
+                    shareLabel: 'Share of national livestock',
                     shareUnit: '%',
                 })
                 .showFootnotes(true)

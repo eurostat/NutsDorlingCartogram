@@ -259,7 +259,8 @@
                 .colorCalculationDatasetCode('apro_cpshr')
                 .colorCalculationDatasetFilters('crops=C0000&strucpro=PR_HU_EU&time=2021')
                 //.maxCircleRadius(cropConfig.C1110.maxCircleRadius)
-                .circleSizeFunction(d3.scaleSqrt().range([5, 40]).domain([0, 4889]))
+                // here we manually define the same scale for all cereal types
+                .circleSizeFunction(d3.scaleSqrt().range([5, 35]).domain([0, 4889]))
                 .colorLegend({
                     //https://d3-legend.susielu.com/#color
                     title: 'Share of total regional cereal production (%)',
@@ -292,7 +293,7 @@
                     shareUnit: '%',
                 })
                 .showFootnotes(true)
-                .footnotesText('NUTS 1 data shown for Germany.')
+                .footnotesText('Germany, NUTS level 1 regions.')
                 .exclude(['MK', 'ME', 'TR', 'AL', 'RS', 'UK'])
                 .showNutsSelector(false)
                 .build()

@@ -333,7 +333,12 @@ export function dorling() {
                 out.tooltip_.sizeLabel.toLowerCase() +
                 ' and its colour represents ' +
                 out.tooltip_.colorLabel.toLowerCase() +
-                ". Hover over a region using your mouse in order to read its values. To highlight all regions of the same colour-class, simply hover over the colours in the legend. In order to change NUTS level, use the radio buttons under 'choose geographic level' when available."
+                '. Hover over a region using your mouse in order to read its values. To highlight all regions of the same colour-class, simply hover over the colours in the legend. '
+
+            if (out.showNutsSelector_) {
+                text +=
+                    "In order to change NUTS level, use the radio buttons under 'choose geographic level' when available."
+            }
         }
         let templateString = createStandaloneHTMLString(text)
         container.insertAdjacentHTML('beforeend', templateString)
