@@ -1295,7 +1295,8 @@ export function dorling() {
         } else if (out.nutsLevel_ === 3) {
             insetPath.attr('fill', function (d, i) {
                 index++
-                if (index == 10) {
+                //guyane bordering geometry
+                if (index == 11) {
                     return '#E5E5E5'
                 } else {
                     return 'white'
@@ -1331,7 +1332,10 @@ export function dorling() {
             .data(insets)
             .enter()
             .filter((f) => {
-                let id = f.featureCollection.features[0].properties.id
+                let id =
+                    out.nutsLevel_ == 3 && f.id == 'FRY30'
+                        ? f.featureCollection.features[1].properties.id
+                        : f.featureCollection.features[0].properties.id
                 if (out.sizeIndicator[id] && out.colorIndicator[id]) {
                     return f
                 }
@@ -1345,6 +1349,7 @@ export function dorling() {
             })
             .attr('fill', '#ffffff00')
             .attr('stroke', '#40404000')
+            .attr('stroke-width', out.circleStrokeWidth_ + 'px')
     }
 
     function addZoomButtonsToDOM() {
@@ -1442,7 +1447,10 @@ export function dorling() {
                 if (out.highlightedRegion) {
                     out.unhightlightRegion() //in case highlightRegion() has been used
                 }
-                let id = f.featureCollection.features[0].properties.id
+                let id =
+                    out.nutsLevel_ == 3 && f.id == 'FRY30'
+                        ? f.featureCollection.features[1].properties.id
+                        : f.featureCollection.features[0].properties.id
                 let name = f.name
                 if (out.stage == 2) {
                     d3select.select(this).attr('stroke-width', '3px')
@@ -1576,18 +1584,24 @@ export function dorling() {
                 .transition()
                 .duration(750)
                 .attr('r', (f) => {
+                    let id =
+                        out.nutsLevel_ == 3 && f.id == 'FRY30'
+                            ? f.featureCollection.features[1].properties.id
+                            : f.featureCollection.features[0].properties.id
                     if (window.devicePixelRatio > 1) {
-                        return (
-                            sizeFunction(+out.sizeIndicator[f.featureCollection.features[0].properties.id]) /
-                            window.devicePixelRatio
-                        )
+                        return sizeFunction(+out.sizeIndicator[id]) / window.devicePixelRatio
                     } else {
-                        return sizeFunction(+out.sizeIndicator[f.featureCollection.features[0].properties.id])
+                        return sizeFunction(+out.sizeIndicator[id])
                     }
                 })
-                .attr('fill', (f) =>
-                    colorFunction(+out.colorIndicator[f.featureCollection.features[0].properties.id])
-                )
+                .attr('fill', (f) => {
+                    let id =
+                        out.nutsLevel_ == 3 && f.id == 'FRY30'
+                            ? f.featureCollection.features[1].properties.id
+                            : f.featureCollection.features[0].properties.id
+
+                    return colorFunction(+out.colorIndicator[id])
+                })
                 .attr('stroke', 'black')
         }
         //hide nuts
@@ -1968,11 +1982,11 @@ export function dorling() {
                             .duration(750)
                             .attr('fill', (f) => {
                                 //if circle color isnt that of the hovered cell
-                                if (
-                                    colorFunction(
-                                        +out.colorIndicator[f.featureCollection.features[0].properties.id]
-                                    ) !== color
-                                ) {
+                                let id =
+                                    out.nutsLevel_ == 3 && f.id == 'FRY30'
+                                        ? f.featureCollection.features[1].properties.id
+                                        : f.featureCollection.features[0].properties.id
+                                if (colorFunction(+out.colorIndicator[id]) !== color) {
                                     //
                                     return 'white'
                                 } else {
@@ -1992,11 +2006,13 @@ export function dorling() {
                         out.insetCircles
                             .transition()
                             .duration(750)
-                            .attr('fill', (f) =>
-                                colorFunction(
-                                    +out.colorIndicator[f.featureCollection.features[0].properties.id]
-                                )
-                            )
+                            .attr('fill', (f) => {
+                                let id =
+                                    out.nutsLevel_ == 3 && f.id == 'FRY30'
+                                        ? f.featureCollection.features[1].properties.id
+                                        : f.featureCollection.features[0].properties.id
+                                return colorFunction(+out.colorIndicator[id])
+                            })
                     }
                 }
             })
