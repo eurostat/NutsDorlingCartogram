@@ -113,7 +113,7 @@ export function dorling() {
             ],
         },
         labelFontSize: 15,
-        labelDelimiter: ' to ',
+        labelDelimiter: ' - ≤',
         labelUnit: ' ',
         labelWrap: 140,
         eu27: null,
@@ -2036,12 +2036,14 @@ export function dorling() {
                                 return label
                             }
                         } else {
-                            //other labels
-                            label =
-                                d.generatedLabels[d.i].split(d.labelDelimiter)[1] + out.colorLegend_.labelUnit
+                            label = d.generatedLabels[d.i] + out.colorLegend_.labelUnit
                             var m = label.match(r)
                             if (m) {
-                                return '≤ ' + formatNumber(parseFloat(m[0]))
+                                return (
+                                    formatNumber(parseFloat(m[0])) +
+                                    d.labelDelimiter +
+                                    formatNumber(parseFloat(m[1]))
+                                )
                             } else {
                                 return label
                             }
