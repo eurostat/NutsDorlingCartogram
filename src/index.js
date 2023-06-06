@@ -15,6 +15,7 @@ import './css/responsive.css'
 import './css/legend.css'
 import './css/styles.css'
 import './css/bootstrap-override.css'
+import './css/spinner.css'
 
 // font awesome
 import { library, dom } from '@fortawesome/fontawesome-svg-core'
