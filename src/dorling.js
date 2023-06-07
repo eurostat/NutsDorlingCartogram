@@ -1869,6 +1869,10 @@ export function dorling() {
         })
     }
 
+    /**
+     * Adds a toggle button to show and hide the overrseas regions inset maps
+     *
+     */
     function addOverseasButtonToDOM() {
         out.showOverseas = false
         let buttonContainer = document.createElement('div')
@@ -2097,7 +2101,7 @@ export function dorling() {
     }
 
     /**
-     * @description Adds a circle size legend to the DOM manually
+     * @description Adds a circle size legend to the DOM manually (without a third party library)
      */
     function addSizeLegend() {
         let dpr = window.devicePixelRatio
