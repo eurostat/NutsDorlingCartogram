@@ -171,16 +171,6 @@ fill:#E5E5E5;
     fill: white;
 }
 
-.dorling-color-legend-explanation {
-    font-style: italic;
-    font-weight: bold;
-}
-.dorling-size-legend {
-    width: 175px;
-    height: 100px;
-    transform: translate(77%, 31%);
-    pointer-events: none;
-}
 .dorling-attribution {
     background: white;
     opacity: 0.8;

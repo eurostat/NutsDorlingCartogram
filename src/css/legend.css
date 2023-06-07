@@ -32,12 +32,22 @@
     top: 0;
     overflow: visible;
 }
-.dorling-legend-title {
-    font-weight: bold;
-    font-style: italic;
-}
+
 .legendTitle {
     font-weight: 100;
-    font-style: italic;
     font-size: 12px;
+}
+.dorling-legend-title {
+    font-weight: bold;
+    font-size: 0.8rem;
+}
+.dorling-color-legend-explanation {
+    font-weight: bold;
+    font-size: 0.8rem;
+}
+.dorling-size-legend {
+    width: 175px;
+    height: 100px;
+    transform: translate(77%, 31%);
+    pointer-events: none;
 }
