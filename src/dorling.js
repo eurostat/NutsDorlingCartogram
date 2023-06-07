@@ -199,7 +199,7 @@ export function dorling() {
     out.colorCalculationDimension_ = null
 
     //mobile
-    out.mobileWidth_ = 768
+    out.mobileWidth_ = 479
     //standalone
     const standaloneDefault = {
         infoText: null,
@@ -271,7 +271,10 @@ export function dorling() {
         return out
     }
 
-    //initiates the construction of the visualization
+    /**
+     * @description initiates the construction of the visualization
+     *
+     */
     out.build = function () {
         if (getURLParamValue('simple')) {
             out.standalone_ = false
@@ -296,6 +299,7 @@ export function dorling() {
             //add title between standaloneNav and dorling container
             addDorlingTitleToDOM()
         }
+
         addDorlingContainerToDOM()
         addLoadingSpinnerToDOM()
         showLoadingSpinner()
@@ -309,6 +313,10 @@ export function dorling() {
         return out
     }
 
+    /**
+     * @description Append the main parent container to the DOM
+     *
+     */
     function addDorlingContainerToDOM() {
         if (out.standalone_) {
             out.containerNode_.append('div').attr('id', 'dorling-container')
@@ -320,6 +328,10 @@ export function dorling() {
         }
     }
 
+    /**
+     * @description Inject the relevant DOM nodes for the standalone version (includes header, share buttons, logo and modal)
+     *
+     */
     function addStandaloneToDOM() {
         let container = document.createElement('div')
         container.classList.add('standalone-nav')
@@ -402,6 +414,10 @@ export function dorling() {
         return out
     }
 
+    /**
+     * @description Removes all DOM nodes from all of the visualizations containers
+     *
+     */
     function clearContainers() {
         if (out.legendDiv) out.legendDiv.remove()
         if (out.legendBtn) out.legendBtn.remove()
@@ -413,16 +429,29 @@ export function dorling() {
         if (out.attributionDiv) out.attributionDiv.remove()
         if (out.sourcesDiv) out.sourcesDiv.remove()
     }
+
+    /**
+     * @description Removes all DOM nodes from all of the visualizations SVGs
+     *
+     */
     function clearSvg() {
         //empty container of svgs
         out.dorlingContainer.selectAll('g').remove()
         out.dorlingContainer.selectAll('svg').remove()
     }
+
+    /**
+     * @description Removes all DOM nodes from the bottom text container
+     *
+     */
     function clearBottomText() {
         out.dorlingContainer.selectAll('.dorling-bottom-text-container').remove()
     }
 
-    //main d3 logic
+    /**
+     * @description Our main initiator function for building the dorling
+     *
+     */
     out.main = function () {
         if (out.nutsLevel_ == 0) {
             out.showInsets_ = false
@@ -436,8 +465,10 @@ export function dorling() {
         } else {
             nutsParam = 'nuts' + out.nutsLevel_
         }
+
         //data promises
         let promises = []
+
         //add exeption for GDP at NUTS 3 level (no data for latest year so overrides to previous year)
         if (
             out.nutsLevel_ == 3 &&
@@ -876,8 +907,9 @@ export function dorling() {
             return out
         }) //Promise.all
     }
+
     /**
-     * Defines a custom geojson for the inset maps
+     * @description Defines a custom geojson for the inset maps
      *
      * @param {*} geojson The parsed topojson object
      * @returns
@@ -1182,7 +1214,7 @@ export function dorling() {
     }
 
     /**
-     * Adds inset maps to the DOM
+     * @description Adds inset maps to the DOM
      *
      * @param {TopoJSON} overseasTopo The topojson object containing the geometries of the overseas regions to show
      */
@@ -1350,6 +1382,10 @@ export function dorling() {
             .attr('stroke-width', out.circleStrokeWidth_ + 'px')
     }
 
+    /**
+     * @description Appends zoom buttons to the DOM used to control d3 zoom
+     *
+     */
     function addZoomButtonsToDOM() {
         out.zoomBtnContainer = document.createElement('div')
         out.zoomBtnContainer.classList.add('dorling-leaflet-control-zoom')
@@ -1374,6 +1410,10 @@ export function dorling() {
         })
     }
 
+    /**
+     * @description Appends attribution text to the bottom of the cartogram
+     *
+     */
     function addAttributionToDOM() {
         out.attributionDiv = document.createElement('div')
         out.attributionDiv.innerHTML = out.attributionText_
@@ -1381,6 +1421,10 @@ export function dorling() {
         out.dorlingContainer.node().appendChild(out.attributionDiv)
     }
 
+    /**
+     * @description Appends data source text to the bottom of the cartogram
+     *
+     */
     function addSourcesToDOM() {
         out.sourcesDiv = document.createElement('div')
         out.sourcesDiv.classList.add('dorling-sources-container')
@@ -1411,6 +1455,10 @@ export function dorling() {
         out.sourcesDiv.appendChild(colorSource)
     }
 
+    /**
+     * @description Appends footnotes text to the bottom of the cartogram
+     *
+     */
     function addFootnotesToDOM() {
         out.footnotesDiv = document.createElement('div')
         out.footnotesDiv.classList.add('dorling-footnotes-container')
@@ -1418,6 +1466,10 @@ export function dorling() {
         out.footnotesDiv.innerHTML = out.footnotesText_
     }
 
+    /**
+     * @description Defines the mouse events for the cartogram circles
+     *
+     */
     function addMouseEvents() {
         out.circles.on('mouseover', function (e, f) {
             if (out.stage == 2) {
@@ -1467,7 +1519,11 @@ export function dorling() {
         }
     }
 
-    //calculate new tooltip position + offsets
+    /**
+     * @description Calculates new tooltip position + offsets
+     * @param {Element} el the HTML target element of the hover event
+     * @returns {{ left: number, top: number }} object containing mouse position in screen coordinates
+     */
     function getTooltipPositionFromNode(el) {
         let matrix = el.getScreenCTM().translate(
             +el.getAttribute('cx'), //svg circle
@@ -1491,6 +1547,13 @@ export function dorling() {
         return { left: left, top: top }
     }
 
+    /**
+     * Sets the tooltip HTML and position
+     *
+     * @param {String} name
+     * @param {String} id
+     * @param {MousePosition} pos
+     */
     function setTooltip(name, id, pos) {
         if (out.tooltip_.sizeValueTextFunction) {
             if (out.tooltip_.colorUnit == '€ per inhabitant') {
@@ -1637,6 +1700,10 @@ export function dorling() {
         return n.toLocaleString('en').replace(/,/gi, ' ')
     }
 
+    /**
+     * Applies D3 force to the dorling circles, pushing them apart
+     *
+     */
     function applyForce() {
         if (out.simulation) {
             out.simulation.stop()
@@ -1689,6 +1756,10 @@ export function dorling() {
         })
     }
 
+    /**
+     * Resets the map styles to their initial state, before transitioning into the cartogram
+     *
+     */
     function restartTransition() {
         out.stage = 1
         out.tooltipElement.style('visibility', 'hidden')
@@ -1731,8 +1802,11 @@ export function dorling() {
         animate()
     }
 
+    /**
+     * Defines a D3 zoom for the map to handle zooming and panning
+     *
+     */
     function addZoom() {
-        //add d3 zoom
         out.zoom = d3zoom
             .zoom()
             .extent([
@@ -1749,6 +1823,11 @@ export function dorling() {
             })
         out.svg.call(out.zoom).on('wheel.zoom', null)
     }
+
+    /**
+     * Adds a legend explaining the meaning of both the size of the circles and their colour
+     *
+     */
     function addLegendsToDOM() {
         out.legendSvg = d3select.create('svg')
         out.legendSvg
@@ -1892,6 +1971,7 @@ export function dorling() {
             }
         })
     }
+
     /**
      * Add a radio button for a NUTS level to the DOM
      *
@@ -1916,6 +1996,10 @@ export function dorling() {
         })
     }
 
+    /**
+     * Adds a title to the colour legend. The d3-svg-legend (d3ColorLegend) title actually serves as the description.
+     *
+     */
     function addColorLegendExplanation() {
         let dpr = window.devicePixelRatio
         let explanation = out.legendContainer
@@ -2076,6 +2160,7 @@ export function dorling() {
                 ')'
         )
     }
+
     /**
      * Retrieve the translation applied to a DOM element
      *
