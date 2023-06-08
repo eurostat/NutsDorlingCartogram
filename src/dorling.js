@@ -402,9 +402,7 @@ export function dorling() {
      */
     out.rebuild = function () {
         restartTransition()
-        out.playing = false
         out.stage = 1
-        out.containerNode_ = d3select.select('#' + out.containerId_)
 
         clearSvg()
         clearContainers()
@@ -412,6 +410,41 @@ export function dorling() {
         showLoadingSpinner()
         out.main()
         return out
+    }
+
+    /**
+     * @description Redraw the cartogram, map and legends
+     */
+    function redraw() {
+        // redraw circles
+        redrawCircles()
+    }
+
+    /**
+     * @description Redraws the cartgram circles (e.g. called after nuts level change)
+     */
+    function redrawCircles() {
+        // let newCentroids =
+        // out.centroids = newCentroids
+
+        out.circles = out.map
+            .append('g')
+            .selectAll('circle')
+            .data(out.centroids.features)
+            .enter()
+            .filter((f) => {
+                if (out.sizeIndicator[f.properties.id] && out.colorIndicator[f.properties.id]) {
+                    return f
+                }
+            })
+            .append('circle')
+            .attr('id', (f) => f.properties.id)
+            .attr('cx', (f) => out.projection(f.geometry.coordinates)[0])
+            .attr('cy', (f) => out.projection(f.geometry.coordinates)[1])
+            .attr('fill', '#ffffff00')
+            .attr('stroke', '#40404000')
+            .attr('stroke-width', out.circleStrokeWidth_ + 'px')
+            .attr('vector-effect', 'non-scaling-stroke')
     }
 
     /**
@@ -877,14 +910,12 @@ export function dorling() {
                             }
                             addMouseEvents()
                             addZoom()
-                            out.playing = true //for pause/play
                             out.stage = 1 //current transition number
                             animate()
                         })
                 } else {
                     addMouseEvents()
                     addZoom()
-                    out.playing = true //for pause/play
                     out.stage = 1 //current transition number
                     animate() // initiate d3 animation
                 }
@@ -1615,22 +1646,17 @@ export function dorling() {
 
     function animate() {
         if (out.stage == 1) {
-            if (out.playing) {
-                //out.stage = 1;
-                if (out.playing) {
-                    firstTransition()
-                    out.stage = 2
-                }
-            }
+            firstTransition()
+            out.stage = 2
         } else if (out.stage == 2) {
-            if (out.playing) {
-                out.stage = 1
-                restartTransition()
-            }
+            out.stage = 1
+            restartTransition()
         }
     }
 
-    //hide nuts show circles
+    /**
+     * @description show and inflate the circles on the map and transition them into a dorling cartogram using d3-froce
+     */
     function firstTransition() {
         //show circles
         out.circles
@@ -1749,9 +1775,7 @@ export function dorling() {
             out.forceInProgress = false
             out.simulation.stop()
             if (out.loop_) {
-                if (out.playing) {
-                    restartTransition()
-                }
+                restartTransition()
             }
         })
     }
@@ -2864,7 +2888,7 @@ export function dorling() {
 }
 
 /**
- * creates an index for the retrieved eurostat data
+ * Creates an index for the retrieved eurostat data. resolves a promise when done
  *
  * @param {Object} data // The eurostat api REST query reponse data
  * @param {String} type // The type of visual variable that the data represents (colour or size)
@@ -2873,6 +2897,7 @@ export function dorling() {
  * @param {Function} reject
  * @param {Boolean} mixSizeData
  * @param {Boolean} mixColorData
+ *
  */
 function indexStat(data, type, out, resolve, reject, mixSizeData, mixColorData) {
     let ind = {} //initial index
