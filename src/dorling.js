@@ -418,6 +418,10 @@ export function dorling() {
     out.redraw = function () {
         // redraw circles
         redrawCircles()
+        // apply d3 force to the circles
+        applyForce()
+        // add mouse events to map
+        addMouseEvents()
     }
 
     /**
@@ -443,9 +447,6 @@ export function dorling() {
             .attr('r', (f) => sizeFunction(+out.sizeIndicator[f.properties.id]))
             .attr('fill', (f) => colorFunction(+out.colorIndicator[f.properties.id]))
             .attr('stroke', 'black')
-
-        // apply d3 force to the circles
-        applyForce()
     }
 
     /**
