@@ -275,7 +275,7 @@ export function dorling() {
      * @description initiates the construction of the visualization
      *
      */
-    out.build = function () {
+    out.build = () => {
         if (getURLParamValue('simple')) {
             out.standalone_ = false
         }
@@ -418,14 +418,46 @@ export function dorling() {
     out.redraw = function () {
         // redraw circles
         redrawCircles()
-        // apply d3 force to the circles
-        applyForce()
-        // add mouse events to map
-        addMouseEvents()
+        // redraw nuts borders
+        redrawBorders()
+
+        //clear legend
+        out.legendContainer.html('')
+        //add legends
+        addSizeLegend()
+        addColorLegend()
+        addColorLegendExplanation()
+        // NUTS selector is drawn inside legend container, so we need to reappend it after clearing the legend container
+        addNutsSelectorToDOM()
+
+        // show legends & nuts selector
+        out.legendContainer.transition().duration(750).attr('opacity', 0.9)
+        out.sizeLegendContainer.transition().duration(750).attr('opacity', 0.9)
+        if (out.showNutsSelector_) {
+            out.radioContainer.transition().duration(750).attr('opacity', 0.9)
+        }
     }
 
     /**
-     * @description Redraws the cartgram circles (e.g. called after nuts level change)
+     * @description Redraws the cartogram NUTS borders
+     */
+    function redrawBorders() {
+        if (out.showBorders_) {
+            out.nutsBorders.transition().duration(750).attr('stroke', 'grey')
+        } else {
+            out.nutsBorders.transition().duration(750).attr('stroke', '#1f1f1f00')
+            if (out.coastalMargins_) {
+                if (out.margins) {
+                    out.margins.forEach((margin) => {
+                        margin.attr('stroke', '#1f1f1f00').attr('stroke-width', '0px')
+                    })
+                }
+            }
+        }
+    }
+
+    /**
+     * @description Redraws the cartogram circles (e.g. called after nuts level change)
      */
     function redrawCircles() {
         //stop previous d3 simulation
@@ -436,6 +468,7 @@ export function dorling() {
 
         // clear previous circles
         d3select.selectAll('#dorling-circles').remove()
+        d3select.selectAll('#dorling-inset-circles').remove()
 
         // define new circles
         drawNUTScircles()
@@ -447,6 +480,47 @@ export function dorling() {
             .attr('r', (f) => sizeFunction(+out.sizeIndicator[f.properties.id]))
             .attr('fill', (f) => colorFunction(+out.colorIndicator[f.properties.id]))
             .attr('stroke', 'black')
+
+        if (out.showInsets_ && out.nutsLevel_ !== 0) {
+            getInsets().then((overseasTopo) => {
+                addInsets(overseasTopo)
+
+                // apply d3 force to the circles
+                applyForce()
+                // add mouse events to map
+                addMouseEvents()
+
+                // scale and color inset circles
+                out.insetCircles
+                    .transition()
+                    .duration(750)
+                    .attr('r', (f) => {
+                        let id =
+                            out.nutsLevel_ == 3 && f.id == 'FRY30'
+                                ? f.featureCollection.features[1].properties.id
+                                : f.featureCollection.features[0].properties.id
+                        if (window.devicePixelRatio > 1) {
+                            return sizeFunction(+out.sizeIndicator[id]) / window.devicePixelRatio
+                        } else {
+                            return sizeFunction(+out.sizeIndicator[id])
+                        }
+                    })
+                    .attr('fill', (f) => {
+                        let id =
+                            out.nutsLevel_ == 3 && f.id == 'FRY30'
+                                ? f.featureCollection.features[1].properties.id
+                                : f.featureCollection.features[0].properties.id
+
+                        return colorFunction(+out.colorIndicator[id])
+                    })
+                    .attr('stroke', 'black')
+            })
+        } else {
+            // apply d3 force to the circles
+            applyForce()
+            // add mouse events to map
+            addMouseEvents()
+        }
     }
 
     /**
@@ -487,7 +561,7 @@ export function dorling() {
      * @description Our main initiator function for building the dorling
      *
      */
-    out.main = function () {
+    out.main = () => {
         // country ID to country name index for tooltip
         out.countryNamesIndex_ = getCountryNamesIndex()
 
@@ -586,11 +660,24 @@ export function dorling() {
                 addLegendsToDOM()
 
                 if (out.showInsets_) {
-                    drawInsets()
+                    getInsets().then((overseasTopo) => {
+                        addInsets(overseasTopo)
+                        //hide insets on small screens by default
+                        if (
+                            window.innerWidth < out.toggleLegendWidthThreshold_ ||
+                            window.innerHeight < out.toggleLegendHeightThreshold_
+                        ) {
+                            out.insetsSvg.node().style.display = 'none'
+                        }
+                        addMouseEvents()
+                        addZoom()
+                        out.stage = 1
+                        animate()
+                    })
                 } else {
                     addMouseEvents()
                     addZoom()
-                    out.stage = 1 //current transition number
+                    out.stage = 1
                     animate() // initiate d3 animation
                 }
 
@@ -861,27 +948,12 @@ export function dorling() {
     }
 
     /**
-     * @description retrieve inset map geometries and draw them on the map in their own container
+     * @description retrieve inset map geometries
      */
-    function drawInsets() {
-        d3fetch
-            .json(
-                `https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/overseas/NUTS${out.nutsLevel_}.json` //prod
-            )
-            .then((overseasTopo) => {
-                addInsets(overseasTopo)
-                //hide insets on small screens by default
-                if (
-                    window.innerWidth < out.toggleLegendWidthThreshold_ ||
-                    window.innerHeight < out.toggleLegendHeightThreshold_
-                ) {
-                    out.insetsSvg.node().style.display = 'none'
-                }
-                addMouseEvents()
-                addZoom()
-                out.stage = 1 //current transition number
-                animate()
-            })
+    function getInsets() {
+        return d3fetch.json(
+            `https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/overseas/NUTS${out.nutsLevel_}.json` //prod
+        )
     }
 
     /**
@@ -1326,6 +1398,9 @@ export function dorling() {
      * @param {TopoJSON} overseasTopo The topojson object containing the geometries of the overseas regions to show
      */
     function addInsets(overseasTopo) {
+        // clear existing
+        if (out.insetsSvg) out.insetsSvg.html('')
+        // create new SVG
         out.insetsSvg = d3select.create('svg')
         let nutsClass = 'dorling-insets-nuts' + out.nutsLevel_
         let width
@@ -1465,6 +1540,7 @@ export function dorling() {
         //add circles
         out.insetCircles = out.insetsSvg
             .append('g')
+            .attr('id', 'dorling-inset-circles')
             .selectAll('circle')
             .data(insets)
             .enter()
@@ -1960,14 +2036,8 @@ export function dorling() {
             .attr('id', 'dorling-legend-container')
             .attr('opacity', 0)
 
+        //add legends
         addSizeLegend()
-
-        //mobile
-        // if (window.innerWidth < out.mobileWidth_) {
-        //   // move body up to account for the reduction in font sizes on mobile
-        //   out.colorLegend_.bodyYOffset[out.nutsLevel_] = out.colorLegend_.bodyYOffset[out.nutsLevel_] - 30;
-        // }
-
         addColorLegend()
         addColorLegendExplanation()
 
@@ -2289,8 +2359,6 @@ export function dorling() {
      * @description Adds a circle size legend to the DOM manually (without a third party library)
      */
     function addSizeLegend() {
-        let dpr = window.devicePixelRatio
-
         //assign default circle radiuses if none specified by user
         if (!out.sizeLegend_.values[out.nutsLevel_]) {
             out.sizeLegend_.values[out.nutsLevel_] = [
