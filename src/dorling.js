@@ -415,7 +415,7 @@ export function dorling() {
     /**
      * @description Redraw the cartogram, map and legends
      */
-    function redraw() {
+    out.redraw = function () {
         // redraw circles
         redrawCircles()
     }
@@ -424,27 +424,28 @@ export function dorling() {
      * @description Redraws the cartgram circles (e.g. called after nuts level change)
      */
     function redrawCircles() {
-        // let newCentroids =
-        // out.centroids = newCentroids
+        //stop previous d3 simulation
+        if (out.simulation) {
+            out.simulation.stop()
+            out.forceInProgress = false
+        }
 
-        out.circles = out.map
-            .append('g')
-            .selectAll('circle')
-            .data(out.centroids.features)
-            .enter()
-            .filter((f) => {
-                if (out.sizeIndicator[f.properties.id] && out.colorIndicator[f.properties.id]) {
-                    return f
-                }
-            })
-            .append('circle')
-            .attr('id', (f) => f.properties.id)
-            .attr('cx', (f) => out.projection(f.geometry.coordinates)[0])
-            .attr('cy', (f) => out.projection(f.geometry.coordinates)[1])
-            .attr('fill', '#ffffff00')
-            .attr('stroke', '#40404000')
-            .attr('stroke-width', out.circleStrokeWidth_ + 'px')
-            .attr('vector-effect', 'non-scaling-stroke')
+        // clear previous circles
+        d3select.selectAll('#dorling-circles').remove()
+
+        // define new circles
+        drawNUTScircles()
+
+        //define size and color of the circles
+        out.circles
+            .transition()
+            .duration(750)
+            .attr('r', (f) => sizeFunction(+out.sizeIndicator[f.properties.id]))
+            .attr('fill', (f) => colorFunction(+out.colorIndicator[f.properties.id]))
+            .attr('stroke', 'black')
+
+        // apply d3 force to the circles
+        applyForce()
     }
 
     /**
@@ -486,266 +487,51 @@ export function dorling() {
      *
      */
     out.main = function () {
+        // country ID to country name index for tooltip
+        out.countryNamesIndex_ = getCountryNamesIndex()
+
         if (out.nutsLevel_ == 0) {
             out.showInsets_ = false
         } else {
             out.showInsets_ = true
         }
 
-        let nutsParam
-        if (out.nutsLevel_ == 0) {
-            nutsParam = 'country'
-        } else {
-            nutsParam = 'nuts' + out.nutsLevel_
-        }
+        getGeometryData().then(([nuts, centroids]) => {
+            out.n2j = nuts
+            out.CENTROIDS = centroids
 
-        //data promises
-        let promises = []
+            getStatisticalData().then(([colorIndex, sizeIndex]) => {
+                // requests finished
+                hideLoadingSpinner()
 
-        //add exeption for GDP at NUTS 3 level (no data for latest year so overrides to previous year)
-        if (
-            out.nutsLevel_ == 3 &&
-            out.sizeDatasetCode_ == 'nama_10r_3gdp' &&
-            out.colorDatasetFilters_ == 'unit=PPS_EU27_2020_HAB&time=2021'
-        ) {
-            promises.push(
-                d3fetch.json(
-                    //centroids
-                    `${out.Nuts2jsonBaseURL_}/${out.nutsYear_}/3035/nutspt_${out.nutsLevel_}.json`
-                ),
-                d3fetch.json(
-                    //NUTS
-                    `${out.Nuts2jsonBaseURL_}/${out.nutsYear_}/3035/20M/${out.nutsLevel_}.json`
-                ),
-                d3fetch.json(
-                    //countries
-                    `https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/countries.json`
-                ),
-                d3fetch.json(
-                    //sizeData
-                    `${out.eurostatRESTBaseURL}${out.sizeDatasetCode_}?geoLevel=${nutsParam}&unit=MIO_EUR&time=2020`
-                ),
-                d3fetch.json(
-                    //colorData
-                    `${out.eurostatRESTBaseURL}${out.colorDatasetCode_}?geoLevel=${nutsParam}&unit=PPS_EU27_2020_HAB&time=2020`
-                )
-            )
-        } else {
-            promises.push(
-                d3fetch.json(
-                    //centroids
-                    `${out.Nuts2jsonBaseURL_}/${out.nutsYear_}/3035/nutspt_${out.nutsLevel_}.json`
-                ),
-                d3fetch.json(
-                    //NUTS
-                    `${out.Nuts2jsonBaseURL_}/${out.nutsYear_}/3035/20M/${out.nutsLevel_}.json`
-                ),
-                d3fetch.json(
-                    //countries
-                    `https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/countries.json`
-                ),
-                d3fetch.json(
-                    //sizeData
-                    `${out.eurostatRESTBaseURL}${out.sizeDatasetCode_}?geoLevel=${nutsParam}&${out.sizeDatasetFilters_}`
-                ),
-                d3fetch.json(
-                    //colorData
-                    `${out.eurostatRESTBaseURL}${out.colorDatasetCode_}?geoLevel=${nutsParam}&${out.colorDatasetFilters_}`
-                )
-            )
-        }
+                // color and size data used to transform the circles
+                out.colorIndicator = colorIndex
+                out.sizeIndicator = sizeIndex
 
-        //bag of mixed NUTS
-        // add specified NUTS IDs (of any NUTS level) to the current nuts level
-        if (out.mixNuts_ && out.mixNuts_[out.nutsLevel_]) {
-            out.mixNutsFilterString = ''
-            //prepare levels that need retrieving
-            out.mixNuts_[out.nutsLevel_].ids.forEach((nutsID, index) => {
-                if (index == 0) {
-                    out.mixNutsFilterString += 'geo=' + nutsID
-                } else {
-                    out.mixNutsFilterString += '&geo=' + nutsID
+                // define scaling functions
+                out.colorExtent = d3array.extent(Object.values(out.colorIndicator))
+                out.sizeExtent = d3array.extent(Object.values(out.sizeIndicator))
+                out.colorScale = defineColorScale()
+                out.sizeScale = defineSizeScale()
+
+                //stop previous d3 simulation
+                if (out.simulation) {
+                    out.simulation.stop()
+                    out.forceInProgress = false
                 }
-            })
-
-            //add promises for retrieving centroids, sizeData and ColorData of the nuts level to be merged with the current nutsLevel_
-            //not currently possible to only request data for certain countries therefore I have to request the whole dataset for the 'injected' nuts level
-            promises.push(
-                d3fetch.json(
-                    `${out.Nuts2jsonBaseURL_}/${out.nutsYear_}/3035/nutspt_${
-                        out.mixNuts_[out.nutsLevel_].level
-                    }.json`
-                ), //mixLevel centroids
-                d3fetch.json(
-                    `${out.eurostatRESTBaseURL}${out.sizeDatasetCode_}?${out.mixNutsFilterString}&${out.sizeDatasetFilters_}`
-                ), //mixLevel sizeData
-                d3fetch.json(
-                    `${out.eurostatRESTBaseURL}${out.colorDatasetCode_}?${out.mixNutsFilterString}&${out.colorDatasetFilters_}`
-                ) //mixLevel colorData
-            )
-        }
-
-        if (
-            out.mixColorData_ &&
-            out.mixColorData_[out.nutsLevel_] &&
-            out.mixSizeData_ &&
-            out.mixSizeData_[out.nutsLevel_]
-        ) {
-            // add different year for specified regions
-
-            // res[4] & res[5] when promises are executed but if mixNuts is used as well then its res[5] & res[6]
-            promises.push(
-                d3fetch.json(
-                    `${out.eurostatRESTBaseURL}${out.sizeDatasetCode_}?geoLevel=${nutsParam}&${out.mixSizeData_.filters}`
-                )
-            )
-            promises.push(
-                d3fetch.json(
-                    `${out.eurostatRESTBaseURL}${out.colorDatasetCode_}?geoLevel=${nutsParam}&${out.mixColorData_.filters}`
-                )
-            )
-        }
-
-        Promise.all(promises).then((res) => {
-            hideLoadingSpinner()
-            //stop previous d3 simulation
-            if (out.simulation) {
-                out.simulation.stop()
-                out.forceInProgress = false
-            }
-
-            out.centroids = res[0]
-            //remove excluded country codes from centroids feature array
-            if (out.exclude_) {
-                let newFeatures = []
-                out.centroids.features.forEach((f) => {
-                    if (out.exclude_.indexOf(f.properties.id.substring(0, 2)) == -1) {
-                        newFeatures.push(f)
-                    }
-                })
-                out.centroids.features = newFeatures
-            }
-
-            //remove madeira and azores when showing insets
-            if (out.showInsets_) {
-                let newFeatures = []
-                out.centroids.features.forEach((f) => {
-                    if (
-                        f.properties.id !== 'PT20' &&
-                        f.properties.id !== 'PT30' &&
-                        f.properties.id !== 'PT3' &&
-                        f.properties.id !== 'PT2' &&
-                        f.properties.id !== 'PT200' &&
-                        f.properties.id !== 'PT300'
-                    ) {
-                        newFeatures.push(f)
-                    }
-                })
-                out.centroids.features = newFeatures
-            }
-
-            //if mixing NUTS levels, add specified NUTS regions to the current level's datasets
-            if (out.mixNuts_[out.nutsLevel_]) {
-                let cent = res[5]
-                let sizeData = res[6]
-                let colorData = res[7]
-
-                //get centroids for specified nuts ids
-                cent.features.forEach((c) => {
-                    if (out.mixNuts_[out.nutsLevel_].ids.indexOf(c.properties.id) !== -1) {
-                        //add centroids of mixedNuts to current level centroids
-                        out.centroids.features.push(c)
-                    }
-                })
-
-                //index color values
-                out.mixNutsColorArr = Object.entries(colorData.dimension.geo.category.index).map(
-                    ([key, val]) => ({
-                        id: key,
-                        val: +colorData.value[val] || null,
-                    })
-                )
-                let colorInd = {}
-                for (let i = 0; i < out.mixNutsColorArr.length; i++)
-                    colorInd[out.mixNutsColorArr[i].id] = out.mixNutsColorArr[i].val
-                out.mixNutsColorInd = colorInd
-
-                //index size values
-                let sizeArr = Object.entries(sizeData.dimension.geo.category.index).map(([key, val]) => ({
-                    id: key,
-                    val: +sizeData.value[val] || null,
-                }))
-                let sizeInd = {}
-                for (let i = 0; i < sizeArr.length; i++) sizeInd[sizeArr[i].id] = sizeArr[i].val
-                out.mixNutsSizeInd = sizeInd
-            }
-
-            out.n2j = res[1]
-            out.nuts0 = res[2]
-
-            let sizeData = res[3]
-            let colorData = res[4]
-
-            let colorPromise
-            let sizePromise
-
-            if (out.mixColorData_ && out.mixColorData_[out.nutsLevel_]) {
-                // data to fill in data gaps (e.g. greece tourism 2018)
-                let sizeDataToMix = res[5]
-                let colorDataToMix = res[6]
-                sizePromise = new Promise((resolve, reject) => {
-                    indexStat(sizeData, 'size', out, resolve, reject, sizeDataToMix, null)
-                })
-                colorPromise = new Promise((resolve, reject) => {
-                    indexStat(colorData, 'color', out, resolve, reject, null, colorDataToMix)
-                })
-            } else {
-                //indexing requires the use of promises for when using colorPercentageCalculationData
-                sizePromise = new Promise((resolve, reject) => {
-                    indexStat(sizeData, 'size', out, resolve, reject)
-                })
-                colorPromise = new Promise((resolve, reject) => {
-                    indexStat(colorData, 'color', out, resolve, reject)
-                })
-            }
-
-            let promises = [colorPromise, sizePromise]
-
-            Promise.all(promises).then(() => {
-                out.totalsIndex = getTotals(out.sizeIndicator) //total of sizeIndicator for each country
-
-                // exclude values from eurostat data indices
-
-                let newSizeIndicator = {}
-                for (let key in out.sizeIndicator) {
-                    if (out.exclude_) {
-                        if (out.exclude_.indexOf(key.substring(0, 2)) == -1 && key.indexOf('EU') == -1) {
-                            newSizeIndicator[key] = out.sizeIndicator[key]
-                        }
-                    } else {
-                        //exlude eu values to not skew size legend values
-                        if (key.indexOf('EU') == -1) {
-                            newSizeIndicator[key] = out.sizeIndicator[key]
-                        }
-                    }
-                }
-                out.sizeIndicator = newSizeIndicator
-
-                out.countryNamesIndex_ = getCountryNamesIndex()
 
                 out.height_ =
                     (out.width_ * (out.n2j.bbox[3] - out.n2j.bbox[1])) / (out.n2j.bbox[2] - out.n2j.bbox[0])
 
-                //set up svg element
+                //set up main svg element
                 out.svg = d3select.create('svg')
                 out.svg
                     .attr('viewBox', [0, 0, out.width_, out.height_])
                     .attr('class', 'dorling-svg')
                     .style('background-color', out.seaColor_)
-                // .style("width", "100%")
 
                 out.dorlingContainer.node().appendChild(out.svg.node())
-                // out.dorlingContainer.attr("class", "dorling-container");
+
                 // initialize tooltip
                 if (!out.tooltipElement) {
                     out.tooltipElement = addTooltipToDOM()
@@ -760,7 +546,7 @@ export function dorling() {
                             [0, 0],
                             [out.width_ + out.fitSizePadding_, out.height_ + out.fitSizePadding_],
                         ],
-                        topojson.feature(out.n2j, out.n2j.objects.nutsbn)
+                        topojson.feature(out.n2j, out.n2j.objects['nutsbn' + out.nutsLevel_])
                     )
 
                 out.path = d3geo.geoPath().projection(out.projection)
@@ -772,13 +558,6 @@ export function dorling() {
                     out.projection.scale(out.scale_)
                 }
 
-                //d3 scale
-                out.colorExtent = d3array.extent(Object.values(out.colorIndicator))
-                out.sizeExtent = d3array.extent(Object.values(out.sizeIndicator))
-                //color scale
-                out.colorScale = defineColorScale()
-                out.sizeScale = defineSizeScale()
-
                 //container for all map stuff
                 out.map = out.svg
                     .append('g')
@@ -786,133 +565,27 @@ export function dorling() {
                     .attr('class', 'dorling-map-container')
 
                 if (out.graticule_) {
-                    out.graticule = out.map
-                        .append('g')
-                        .selectAll('path')
-                        .data(topojson.feature(out.n2j, out.n2j.objects.gra).features)
-                        .enter()
-                        .append('path')
-                        .attr('d', out.path)
-                        .attr('class', 'dorling-graticule')
+                    // draw graticule
+                    drawGraticule()
                 }
 
-                // cartograms with borders
                 if (out.showBorders_) {
-                    out.countries = out.map
-                        .append('path')
-                        .datum(
-                            topojson.mesh(out.nuts0, out.nuts0.objects.countries, function (a, b) {
-                                return a === b
-                            })
-                        )
-                        .attr('d', out.path)
-                        .attr('vector-effect', 'non-scaling-stroke')
-                        .attr('class', 'dorling-cntrg')
-                        .attr('stroke-width', out.nutsBorderWidth_ + 'px')
-
-                    // nutsrg
-                    out.nuts = out.map
-                        .append('g')
-                        .attr('id', 'dorling-nuts')
-                        .selectAll('path')
-                        .data(topojson.feature(out.n2j, out.n2j.objects.nutsrg).features)
-                        .enter()
-                        .append('path')
-                        .attr('d', out.path)
-                        .attr('class', function (rg) {
-                            //colour excluded regions differently
-                            if (out.exclude_.indexOf(rg.properties.id.substring(0, 2)) == -1) {
-                                return 'nutsrg'
-                            } else {
-                                return 'cntrg'
-                            }
-                        })
+                    // draw countries
+                    drawCountries()
+                    // draw nuts regions
+                    drawNUTSregions()
                 }
 
-                // nutsbn
-                out.nutsBorders = out.map
-                    .append('g')
-                    .attr('id', 'dorling-nuts-borders')
-                    .selectAll('path')
-                    .data(topojson.feature(out.n2j, out.n2j.objects.nutsbn).features)
-                    .enter()
-                    .append('path')
-                    .attr('d', out.path)
-                    .attr('vector-effect', 'non-scaling-stroke')
-                    .attr('stroke', out.nutsBorderColor_)
-                    .attr('stroke-width', (f) => {
-                        if (f.properties.co === 'T') return out.nutsBorderWidth_ + 0.1 + 'px'
-                        if (f.properties.lvl === 0) return '1px'
-                        return out.nutsBorderWidth_ + 'px'
-                    })
-                    .attr('fill', 'none')
-                    .attr('class', function (f) {
-                        let c
-                        if (f.properties.co === 'T') {
-                            c = 'coastal'
-                        } else {
-                            //hide non-EU / EFTA borders
-                            // https://github.com/eurostat/Nuts2json/issues/38
-                            if (f.properties.eu == 'F' && f.properties.cc == 'T') {
-                                c = 'dorling-no-data'
-                            }
-                            // exclude uk when excluded
-                            if (out.exclude_.indexOf('UK') !== -1) {
-                                if (
-                                    f.properties.eu == 'F' &&
-                                    f.properties.efta == 'F' &&
-                                    f.properties.cc == 'F' &&
-                                    f.properties.co == 'F' &&
-                                    f.properties.oth == 'T'
-                                ) {
-                                    c = 'dorling-no-data'
-                                }
-                            }
-                        }
-                        return c
-                    })
+                drawNUTSboundaries()
 
-                //define region centroids
-                out.circles = out.map
-                    .append('g')
-                    .selectAll('circle')
-                    .data(out.centroids.features)
-                    .enter()
-                    .filter((f) => {
-                        if (out.sizeIndicator[f.properties.id] && out.colorIndicator[f.properties.id]) {
-                            return f
-                        }
-                    })
-                    .append('circle')
-                    .attr('id', (f) => f.properties.id)
-                    .attr('cx', (f) => out.projection(f.geometry.coordinates)[0])
-                    .attr('cy', (f) => out.projection(f.geometry.coordinates)[1])
-                    .attr('fill', '#ffffff00')
-                    .attr('stroke', '#40404000')
-                    .attr('stroke-width', out.circleStrokeWidth_ + 'px')
-                    .attr('vector-effect', 'non-scaling-stroke')
+                // define region centroids
+                drawNUTScircles()
 
+                // add size and color legends to DOM
                 addLegendsToDOM()
 
                 if (out.showInsets_) {
-                    d3fetch
-                        .json(
-                            `https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/overseas/NUTS${out.nutsLevel_}.json` //prod
-                        )
-                        .then((overseasTopo) => {
-                            addInsets(overseasTopo)
-                            //hide insets on small screens by default
-                            if (
-                                window.innerWidth < out.toggleLegendWidthThreshold_ ||
-                                window.innerHeight < out.toggleLegendHeightThreshold_
-                            ) {
-                                out.insetsSvg.node().style.display = 'none'
-                            }
-                            addMouseEvents()
-                            addZoom()
-                            out.stage = 1 //current transition number
-                            animate()
-                        })
+                    drawInsets()
                 } else {
                     addMouseEvents()
                     addZoom()
@@ -934,9 +607,411 @@ export function dorling() {
                     addSourcesToDOM()
                 }
                 addZoomButtonsToDOM()
+                return out
             })
-            return out
-        }) //Promise.all
+        })
+    }
+    /**
+     * @description Retrieves statistical data for both size and color indicators of the circles. Also performs any preprocessing calculations on the data and 'fills in the gaps' using different nuts years or nuts levels.
+     * @return {Promise} Promise that resolves an array containing two objects: [colorIndex, sizeIndex]
+     */
+    function getStatisticalData() {
+        return new Promise((resolve, reject) => {
+            //data promises
+            let statPromises = []
+
+            // define api geo level parameter
+            let geoLevel = out.nutsLevel_ == 0 ? 'country' : 'nuts' + out.nutsLevel_
+
+            //add exeption for GDP at NUTS 3 level (no data for latest year so overrides to previous year)
+            if (
+                out.nutsLevel_ == 3 &&
+                out.sizeDatasetCode_ == 'nama_10r_3gdp' &&
+                out.colorDatasetFilters_ == 'unit=PPS_EU27_2020_HAB&time=2021'
+            ) {
+                statPromises.push(
+                    //sizeData
+                    d3fetch.json(
+                        `${out.eurostatRESTBaseURL}${out.sizeDatasetCode_}?geoLevel=${geoLevel}&unit=MIO_EUR&time=2020`
+                    ),
+                    //colorData
+                    d3fetch.json(
+                        `${out.eurostatRESTBaseURL}${out.colorDatasetCode_}?geoLevel=${geoLevel}&unit=PPS_EU27_2020_HAB&time=2020`
+                    )
+                )
+            } else {
+                statPromises.push(
+                    //sizeData
+                    d3fetch.json(
+                        `${out.eurostatRESTBaseURL}${out.sizeDatasetCode_}?geoLevel=${geoLevel}&${out.sizeDatasetFilters_}`
+                    ),
+                    //colorData
+                    d3fetch.json(
+                        `${out.eurostatRESTBaseURL}${out.colorDatasetCode_}?geoLevel=${geoLevel}&${out.colorDatasetFilters_}`
+                    )
+                )
+            }
+
+            // mix nuts: add specified NUTS IDs (of any NUTS level) to the current nuts level
+            if (out.mixNuts_ && out.mixNuts_[out.nutsLevel_]) {
+                out.mixNutsFilterString = '' // eurobase query string
+                //prepare levels that need retrieving
+                out.mixNuts_[out.nutsLevel_].ids.forEach((nutsID, index) => {
+                    if (index == 0) {
+                        out.mixNutsFilterString += 'geo=' + nutsID
+                    } else {
+                        out.mixNutsFilterString += '&geo=' + nutsID
+                    }
+                })
+
+                //add promises for retrieving sizeData and ColorData of the nuts level to be merged with the current nutsLevel_
+                // res[2] & res[3]
+                statPromises.push(
+                    d3fetch.json(
+                        `${out.eurostatRESTBaseURL}${out.sizeDatasetCode_}?${out.mixNutsFilterString}&${out.sizeDatasetFilters_}`
+                    ), //mixLevel sizeData
+                    d3fetch.json(
+                        `${out.eurostatRESTBaseURL}${out.colorDatasetCode_}?${out.mixNutsFilterString}&${out.colorDatasetFilters_}`
+                    ) //mixLevel colorData
+                )
+            }
+
+            if (
+                out.mixColorData_ &&
+                out.mixColorData_[out.nutsLevel_] &&
+                out.mixSizeData_ &&
+                out.mixSizeData_[out.nutsLevel_]
+            ) {
+                // add different year for specified regions
+                // res[4] & res[5]
+                statPromises.push(
+                    d3fetch.json(
+                        `${out.eurostatRESTBaseURL}${out.sizeDatasetCode_}?geoLevel=${geoLevel}&${out.mixSizeData_.filters}`
+                    )
+                )
+                statPromises.push(
+                    d3fetch.json(
+                        `${out.eurostatRESTBaseURL}${out.colorDatasetCode_}?geoLevel=${geoLevel}&${out.mixColorData_.filters}`
+                    )
+                )
+            }
+
+            // send eurobase requests
+            Promise.all(statPromises).then((res) => {
+                //if mixing NUTS levels, add specified NUTS regions to the current level's datasets
+                if (out.mixNuts_[out.nutsLevel_]) {
+                    let newCentroids = out.CENTROIDS[out.mixNuts_[out.nutsLevel_].level]
+                    let sizeData = res[2]
+                    let colorData = res[3]
+
+                    //get centroids for specified nuts ids
+                    newCentroids.features.forEach((c) => {
+                        if (out.mixNuts_[out.nutsLevel_].ids.indexOf(c.properties.id) !== -1) {
+                            //add centroids of mixedNuts to current level centroids
+                            out.CENTROIDS[out.nutsLevel_].features.push(c)
+                        }
+                    })
+
+                    //index color values
+                    out.mixNutsColorArr = Object.entries(colorData.dimension.geo.category.index).map(
+                        ([key, val]) => ({
+                            id: key,
+                            val: +colorData.value[val] || null,
+                        })
+                    )
+                    let colorInd = {}
+                    for (let i = 0; i < out.mixNutsColorArr.length; i++)
+                        colorInd[out.mixNutsColorArr[i].id] = out.mixNutsColorArr[i].val
+                    out.mixNutsColorInd = colorInd
+
+                    //index size values
+                    let sizeArr = Object.entries(sizeData.dimension.geo.category.index).map(([key, val]) => ({
+                        id: key,
+                        val: +sizeData.value[val] || null,
+                    }))
+                    let sizeInd = {}
+                    for (let i = 0; i < sizeArr.length; i++) sizeInd[sizeArr[i].id] = sizeArr[i].val
+                    out.mixNutsSizeInd = sizeInd
+                }
+
+                // eurostat api stats responses
+                let sizeData = res[0]
+                let colorData = res[1]
+
+                let colorPromise
+                let sizePromise
+
+                if (out.mixColorData_ && out.mixColorData_[out.nutsLevel_]) {
+                    // data of a different year to fill in data gaps (e.g. greece tourism 2018)
+                    let sizeDataToMix = res[4]
+                    let colorDataToMix = res[5]
+                    sizePromise = indexStat(sizeData, 'size', sizeDataToMix, null)
+                    colorPromise = indexStat(colorData, 'color', null, colorDataToMix)
+                } else {
+                    //indexing requires the use of promises for when using colorPercentageCalculationData
+                    sizePromise = indexStat(sizeData, 'size')
+                    colorPromise = indexStat(colorData, 'color')
+                }
+
+                let indexPromises = [colorPromise, sizePromise]
+
+                Promise.all(indexPromises).then((indexes) => {
+                    let colorResult = indexes[0]
+                    let sizeResult = indexes[1]
+
+                    // get color and size data then carry out any preprocessing
+                    out.totalsIndex = getTotals(sizeResult) //total of sizeIndicator for each country
+
+                    // exclude values from eurostat data indices
+                    let newSizeIndicator = {}
+                    for (let key in sizeResult) {
+                        if (out.exclude_) {
+                            if (out.exclude_.indexOf(key.substring(0, 2)) == -1 && key.indexOf('EU') == -1) {
+                                newSizeIndicator[key] = sizeResult[key]
+                            }
+                        } else {
+                            //exlude eu values to not skew size legend values
+                            if (key.indexOf('EU') == -1) {
+                                newSizeIndicator[key] = sizeResult[key]
+                            }
+                        }
+                    }
+                    sizeResult = newSizeIndicator
+
+                    resolve([colorResult, sizeResult])
+                })
+            })
+        }) // end of returned promise
+    }
+
+    /**
+     * @description returns a promise that resolves when all geometry data (nuts regions, boundaries, centroids etc) has been retrieved
+     * @returns {Promise} promise that resolves nuts and centroids
+     */
+    function getGeometryData() {
+        return new Promise((resolve, reject) => {
+            let promises = []
+
+            promises.push(
+                //centroids for all NUTS levels
+                d3fetch.json(`${out.Nuts2jsonBaseURL_}/${out.nutsYear_}/3035/nutspt_0.json`),
+                d3fetch.json(`${out.Nuts2jsonBaseURL_}/${out.nutsYear_}/3035/nutspt_1.json`),
+                d3fetch.json(`${out.Nuts2jsonBaseURL_}/${out.nutsYear_}/3035/nutspt_2.json`),
+                d3fetch.json(`${out.Nuts2jsonBaseURL_}/${out.nutsYear_}/3035/nutspt_3.json`),
+                //NUTS
+                d3fetch.json(`${out.Nuts2jsonBaseURL_}/${out.nutsYear_}/3035/20M/all.json`)
+            )
+
+            Promise.all(promises)
+                .catch(function (err) {
+                    console.log('A promise failed to resolve', err)
+                    reject()
+                    return promises
+                })
+                .then((res) => {
+                    // all.json
+                    let nuts = res[4]
+
+                    // centroids by nuts level
+                    let centroids = {
+                        0: res[0],
+                        1: res[1],
+                        2: res[2],
+                        3: res[3],
+                    }
+
+                    //remove excluded country codes from centroids feature array
+                    if (out.exclude_) {
+                        let levels = [0, 1, 2, 3]
+                        levels.forEach((nutsLevel) => {
+                            let newFeatures = []
+                            centroids[nutsLevel].features.forEach((f) => {
+                                if (out.exclude_.indexOf(f.properties.id.substring(0, 2)) == -1) {
+                                    newFeatures.push(f)
+                                }
+                            })
+                            centroids[nutsLevel].features = newFeatures
+                        })
+                    }
+
+                    //remove madeira and azores when showing insets
+                    if (out.showInsets_) {
+                        let levels = [0, 1, 2, 3]
+                        levels.forEach((nutsLevel) => {
+                            let newFeatures = []
+                            centroids[nutsLevel].features.forEach((f) => {
+                                if (
+                                    f.properties.id !== 'PT20' &&
+                                    f.properties.id !== 'PT30' &&
+                                    f.properties.id !== 'PT3' &&
+                                    f.properties.id !== 'PT2' &&
+                                    f.properties.id !== 'PT200' &&
+                                    f.properties.id !== 'PT300'
+                                ) {
+                                    newFeatures.push(f)
+                                }
+                            })
+                            centroids[nutsLevel].features = newFeatures
+                        })
+                    }
+                    resolve([nuts, centroids])
+                })
+        })
+    }
+
+    /**
+     * @description retrieve inset map geometries and draw them on the map in their own container
+     */
+    function drawInsets() {
+        d3fetch
+            .json(
+                `https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/overseas/NUTS${out.nutsLevel_}.json` //prod
+            )
+            .then((overseasTopo) => {
+                addInsets(overseasTopo)
+                //hide insets on small screens by default
+                if (
+                    window.innerWidth < out.toggleLegendWidthThreshold_ ||
+                    window.innerHeight < out.toggleLegendHeightThreshold_
+                ) {
+                    out.insetsSvg.node().style.display = 'none'
+                }
+                addMouseEvents()
+                addZoom()
+                out.stage = 1 //current transition number
+                animate()
+            })
+    }
+
+    /**
+     * @description draws the NUTS circles on the map. Does not scale their size or colour
+     */
+    function drawNUTScircles() {
+        out.circles = out.map
+            .append('g')
+            .attr('id', 'dorling-circles')
+            .selectAll('circle')
+            .data(out.CENTROIDS[out.nutsLevel_].features)
+            .enter()
+            .filter((f) => {
+                if (out.sizeIndicator[f.properties.id] && out.colorIndicator[f.properties.id]) {
+                    return f
+                }
+            })
+            .append('circle')
+            .attr('id', (f) => f.properties.id)
+            .attr('cx', (f) => out.projection(f.geometry.coordinates)[0])
+            .attr('cy', (f) => out.projection(f.geometry.coordinates)[1])
+            .attr('fill', '#ffffff00')
+            .attr('stroke', '#40404000')
+            .attr('stroke-width', out.circleStrokeWidth_ + 'px')
+            .attr('vector-effect', 'non-scaling-stroke')
+    }
+
+    /**
+     * @description draws the NUTS boundaries on the map
+     */
+    function drawNUTSboundaries() {
+        // nutsbn
+        out.nutsBorders = out.map
+            .append('g')
+            .attr('id', 'dorling-nuts-borders')
+            .selectAll('path')
+            .data(topojson.feature(out.n2j, out.n2j.objects['nutsbn' + out.nutsLevel_]).features)
+            .enter()
+            .append('path')
+            .attr('d', out.path)
+            .attr('vector-effect', 'non-scaling-stroke')
+            .attr('stroke', out.nutsBorderColor_)
+            .attr('stroke-width', (f) => {
+                if (f.properties.co === 'T') return out.nutsBorderWidth_ + 0.1 + 'px'
+                if (f.properties.lvl === 0) return '1px'
+                return out.nutsBorderWidth_ + 'px'
+            })
+            .attr('fill', 'none')
+            .attr('class', function (f) {
+                let c
+                if (f.properties.co === 'T') {
+                    c = 'coastal'
+                } else {
+                    //hide non-EU / EFTA borders
+                    // https://github.com/eurostat/Nuts2json/issues/38
+                    if (f.properties.eu == 'F' && f.properties.cc == 'T') {
+                        c = 'dorling-no-data'
+                    }
+                    // exclude uk when excluded
+                    if (out.exclude_.indexOf('UK') !== -1) {
+                        if (
+                            f.properties.eu == 'F' &&
+                            f.properties.efta == 'F' &&
+                            f.properties.cc == 'F' &&
+                            f.properties.co == 'F' &&
+                            f.properties.oth == 'T'
+                        ) {
+                            c = 'dorling-no-data'
+                        }
+                    }
+                }
+                return c
+            })
+    }
+
+    /**
+     * @description retrieves the statistical data that defines circle color. Defines out.colorIndicator
+     */
+    function getColorData() {}
+
+    /**
+     * @description draws the NUTS regions on the map
+     */
+    function drawNUTSregions() {
+        out.nuts = out.map
+            .append('g')
+            .attr('id', 'dorling-nuts')
+            .selectAll('path')
+            .data(topojson.feature(out.n2j, out.n2j.objects['nutsrg' + out.nutsLevel_]).features)
+            .enter()
+            .append('path')
+            .attr('d', out.path)
+            .attr('class', function (rg) {
+                //colour excluded regions differently
+                if (out.exclude_.indexOf(rg.properties.id.substring(0, 2)) == -1) {
+                    return 'nutsrg'
+                } else {
+                    return 'cntrg'
+                }
+            })
+    }
+
+    /**
+     * @description draws the countries (cntrg) on the map
+     */
+    function drawCountries() {
+        out.countries = out.map
+            .append('path')
+            .datum(
+                topojson.mesh(out.n2j, out.n2j.objects.cntrg, function (a, b) {
+                    return a === b
+                })
+            )
+            .attr('d', out.path)
+            .attr('vector-effect', 'non-scaling-stroke')
+            .attr('class', 'dorling-cntrg')
+            .attr('stroke-width', out.nutsBorderWidth_ + 'px')
+    }
+
+    /**
+     * @description draws the graticule on the map
+     */
+    function drawGraticule() {
+        out.graticule = out.map
+            .append('g')
+            .selectAll('path')
+            .data(topojson.feature(out.n2j, out.n2j.objects.gra).features)
+            .enter()
+            .append('path')
+            .attr('d', out.path)
+            .attr('class', 'dorling-graticule')
     }
 
     /**
@@ -1736,7 +1811,7 @@ export function dorling() {
             out.forceInProgress = false
         }
         out.simulation = d3force
-            .forceSimulation(out.centroids.features)
+            .forceSimulation(out.CENTROIDS[out.nutsLevel_].features)
             .force(
                 'x',
                 d3force
@@ -1760,7 +1835,7 @@ export function dorling() {
             )
 
         //set initial position of the circles
-        for (const f of out.centroids.features) {
+        for (const f of out.CENTROIDS[out.nutsLevel_].features) {
             f.x = out.projection(f.geometry.coordinates)[0]
             f.y = out.projection(f.geometry.coordinates)[1]
         }
@@ -2419,7 +2494,6 @@ export function dorling() {
         let radioCxy = 5
         let backgroundHeight = 160
         let radioDotOpacity = 0.3
-        let outlineSelectedColor = '#022B58'
 
         //add to its own svg container on smaller screens and legendsSvg for larger screens
         if (window.innerHeight < out.nutsLevelToggleHeightThreshold_) {
@@ -2467,7 +2541,7 @@ export function dorling() {
 
         //RADIO 0
         if (out.nutsAvailable_.indexOf(0) != -1) {
-            var radio0 = out.radioContainer
+            out.radio0 = out.radioContainer
                 .append('g')
                 .attr('fill', 'currentColor')
                 .attr('class', 'dorling-radio-button')
@@ -2477,7 +2551,7 @@ export function dorling() {
                 .attr('viewBox', '0 0 ' + radioWidth + ' ' + radioHeight + '')
                 .attr('transform', 'translate(' + marginLeft + ',' + marginTop + ')')
 
-            var outline0 = radio0
+            out.outline0 = out.radio0
                 .append('circle')
                 .attr('class', 'dorling-radio-outline')
                 .attr('cx', '' + radioCxy + '')
@@ -2487,7 +2561,7 @@ export function dorling() {
                 .attr('stroke', 'black')
                 .attr('stroke-width', '1')
 
-            var dot0 = radio0
+            out.dot0 = out.radio0
                 .append('circle')
                 .attr('opacity', radioDotOpacity)
                 .attr('cx', '' + radioCxy + '')
@@ -2495,12 +2569,12 @@ export function dorling() {
                 .attr('r', '' + radioDotRadius + '')
                 .attr('class', 'dorling-radio-dot')
 
-            var label0 = radio0.append('text').text('Country').attr('transform', 'translate(25,10)')
+            out.label0 = out.radio0.append('text').text('Country').attr('transform', 'translate(25,10)')
         }
 
         //RADIO 1
         if (out.nutsAvailable_.indexOf(1) !== -1) {
-            var radio1 = out.radioContainer
+            out.radio1 = out.radioContainer
                 .append('g')
                 .attr('fill', 'currentColor')
                 .attr('class', 'dorling-radio-button')
@@ -2513,7 +2587,7 @@ export function dorling() {
                     'translate(' + marginLeft + ',' + (radioHeight + padding + marginTop) + ')'
                 )
 
-            var outline1 = radio1
+            out.outline1 = out.radio1
                 .append('circle')
                 .attr('class', 'dorling-radio-outline')
                 .attr('cx', '' + radioCxy + '')
@@ -2523,7 +2597,7 @@ export function dorling() {
                 .attr('stroke', 'black')
                 .attr('stroke-width', '1')
 
-            var dot1 = radio1
+            out.dot1 = out.radio1
                 .append('circle')
                 .attr('opacity', radioDotOpacity)
                 .attr('cx', '' + radioCxy + '')
@@ -2531,12 +2605,12 @@ export function dorling() {
                 .attr('r', '' + radioDotRadius + '')
                 .attr('class', 'dorling-radio-dot')
 
-            var label1 = radio1.append('text').text('NUTS 1').attr('transform', 'translate(25,10)')
+            out.radio1.append('text').text('NUTS 1').attr('transform', 'translate(25,10)')
         }
 
         //RADIO 2
         if (out.nutsAvailable_.indexOf(2) !== -1) {
-            var radio2 = out.radioContainer
+            out.radio2 = out.radioContainer
                 .append('g')
                 .attr('fill', 'currentColor')
                 .attr('class', 'dorling-radio-button')
@@ -2549,7 +2623,7 @@ export function dorling() {
                     'translate(' + marginLeft + ',' + (radioHeight * 2 + padding * 2 + marginTop) + ')'
                 )
 
-            var outline2 = radio2
+            out.outline2 = out.radio2
                 .append('circle')
                 .attr('class', 'dorling-radio-outline')
                 .attr('cx', '' + radioCxy + '')
@@ -2559,7 +2633,7 @@ export function dorling() {
                 .attr('stroke', 'black')
                 .attr('stroke-width', '1')
 
-            var dot2 = radio2
+            out.dot2 = out.radio2
                 .append('circle')
                 .attr('opacity', radioDotOpacity)
                 .attr('cx', '' + radioCxy + '')
@@ -2567,12 +2641,12 @@ export function dorling() {
                 .attr('r', '' + radioDotRadius + '')
                 .attr('class', 'dorling-radio-dot')
 
-            var label2 = radio2.append('text').text('NUTS 2').attr('transform', 'translate(25,10)')
+            out.radio2.append('text').text('NUTS 2').attr('transform', 'translate(25,10)')
         }
 
         //RADIO 3
         if (out.nutsAvailable_.indexOf(3) !== -1) {
-            var radio3 = out.radioContainer
+            out.radio3 = out.radioContainer
                 .append('g')
                 .attr('fill', 'currentColor')
                 .attr('class', 'dorling-radio-button')
@@ -2585,7 +2659,7 @@ export function dorling() {
                     'translate(' + marginLeft + ',' + (radioHeight * 3 + padding * 3 + marginTop) + ')'
                 )
 
-            var outline3 = radio3
+            out.outline3 = out.radio3
                 .append('circle')
                 .attr('class', 'dorling-radio-outline')
                 .attr('cx', '' + radioCxy + '')
@@ -2595,7 +2669,7 @@ export function dorling() {
                 .attr('stroke', 'black')
                 .attr('stroke-width', '1')
 
-            var dot3 = radio3
+            out.dot3 = out.radio3
                 .append('circle')
                 .attr('opacity', radioDotOpacity)
                 .attr('cx', '' + radioCxy + '')
@@ -2603,43 +2677,62 @@ export function dorling() {
                 .attr('r', '' + radioDotRadius + '')
                 .attr('class', 'dorling-radio-dot')
 
-            var label3 = radio3.append('text').text('NUTS 3').attr('transform', 'translate(25,10)')
+            out.label3 = out.radio3.append('text').text('NUTS 3').attr('transform', 'translate(25,10)')
         }
 
-        //current nutsLevel
-        if (out.nutsLevel_ == 0) {
-            dot0.attr('opacity', '1')
-            outline0.attr('stroke', outlineSelectedColor)
-        } else if (out.nutsLevel_ == 1) {
-            dot1.attr('opacity', '1')
-            outline1.attr('stroke', outlineSelectedColor)
-        } else if (out.nutsLevel_ == 2) {
-            dot2.attr('opacity', '1')
-            outline2.attr('stroke', outlineSelectedColor)
-        } else if (out.nutsLevel_ == 3) {
-            dot3.attr('opacity', '1')
-            outline3.attr('stroke', outlineSelectedColor)
-        }
+        // set current nutsLevel
+        updateRadios()
 
-        if (radio0) {
-            radio0.on('click', function (e) {
+        if (out.radio0) {
+            out.radio0.on('click', function (e) {
                 nutsRadioEventHandler(0)
             })
         }
-        if (radio1) {
-            radio1.on('click', function (e) {
+        if (out.radio1) {
+            out.radio1.on('click', function (e) {
                 nutsRadioEventHandler(1)
             })
         }
-        if (radio2) {
-            radio2.on('click', function (e) {
+        if (out.radio2) {
+            out.radio2.on('click', function (e) {
                 nutsRadioEventHandler(2)
             })
         }
-        if (radio3) {
-            radio3.on('click', function (e) {
+        if (out.radio3) {
+            out.radio3.on('click', function (e) {
                 nutsRadioEventHandler(3)
             })
+        }
+    }
+
+    function updateRadios() {
+        let outlineSelectedColor = '#022B58'
+        let radioDotOpacity = 0.3
+        //current nutsLevel
+        if (out.nutsLevel_ == 0) {
+            out.dot0.attr('opacity', '1')
+            out.outline0.attr('stroke', outlineSelectedColor)
+            out.dot1.attr('opacity', radioDotOpacity)
+            out.dot2.attr('opacity', radioDotOpacity)
+            out.dot3.attr('opacity', radioDotOpacity)
+        } else if (out.nutsLevel_ == 1) {
+            out.dot1.attr('opacity', '1')
+            out.outline1.attr('stroke', outlineSelectedColor)
+            out.dot0.attr('opacity', radioDotOpacity)
+            out.dot2.attr('opacity', radioDotOpacity)
+            out.dot3.attr('opacity', radioDotOpacity)
+        } else if (out.nutsLevel_ == 2) {
+            out.dot2.attr('opacity', '1')
+            out.outline2.attr('stroke', outlineSelectedColor)
+            out.dot0.attr('opacity', radioDotOpacity)
+            out.dot1.attr('opacity', radioDotOpacity)
+            out.dot3.attr('opacity', radioDotOpacity)
+        } else if (out.nutsLevel_ == 3) {
+            out.dot3.attr('opacity', '1')
+            out.outline3.attr('stroke', outlineSelectedColor)
+            out.dot0.attr('opacity', radioDotOpacity)
+            out.dot1.attr('opacity', radioDotOpacity)
+            out.dot2.attr('opacity', radioDotOpacity)
         }
     }
 
@@ -2647,7 +2740,32 @@ export function dorling() {
         // let nuts = evt.currentTarget.value;
         if (out.nutsLevel_ !== nuts) {
             out.nutsLevel_ = nuts
-            out.rebuild()
+            updateRadios()
+
+            // get new stats for the new NUTS level
+            showLoadingSpinner()
+            getStatisticalData().then(([colorIndex, sizeIndex]) => {
+                // requests finished
+                hideLoadingSpinner()
+
+                // color and size data used to transform the circles
+                out.colorIndicator = colorIndex
+                out.sizeIndicator = sizeIndex
+
+                // define scaling functions
+                out.colorExtent = d3array.extent(Object.values(out.colorIndicator))
+                out.sizeExtent = d3array.extent(Object.values(out.sizeIndicator))
+                out.colorScale = defineColorScale()
+                out.sizeScale = defineSizeScale()
+
+                //stop previous d3 simulation
+                if (out.simulation) {
+                    out.simulation.stop()
+                    out.forceInProgress = false
+                }
+
+                out.redraw()
+            })
         }
     }
 
@@ -2762,7 +2880,7 @@ export function dorling() {
     }
 
     /**
-     * Defines the d3 scale used to size the circles
+     * @description Defines the d3 scale used to size the circles
      *
      * @return d3.scale
      */
@@ -2777,7 +2895,7 @@ export function dorling() {
     }
 
     /**
-     * returns a colour from a value using the defined d3 colour scale
+     * @description returns a colour from a value using the defined d3 colour scale
      *
      * @param {float} v indicator value
      * @return {string} returns colour string
@@ -2787,7 +2905,7 @@ export function dorling() {
     }
 
     /**
-     * returns a radius from an indicator value using the defined d3 sizing scale
+     * @description returns a radius from an indicator value using the defined d3 sizing scale
      *
      * @param {float} v indicator value
      * @return {float}
@@ -2800,7 +2918,7 @@ export function dorling() {
     }
 
     /**
-     * map zoom event handler
+     * @description map zoom event handler
      *
      */
     function zoomed(event) {
@@ -2808,7 +2926,7 @@ export function dorling() {
     }
 
     /**
-     * Adds css spinner to DOM
+     * @description Adds css spinner to DOM
      *
      */
     function addLoadingSpinnerToDOM() {
@@ -2884,343 +3002,344 @@ export function dorling() {
         })
     }
 
-    return out
-}
+    /**
+     * @description Creates an index for the retrieved eurostat data. resolves a promise when done
+     *
+     * @param {Object} data // The eurostat api REST query reponse data
+     * @param {String} type // The type of visual variable that the data represents (colour or size)
+     * @param {JSON} mixSizeData // the eurobase rest response data to mix into the rest of the size index
+     * @param {JSON} mixColorData // the eurobase rest response data to mix into the rest of the color index
+     * @returns {[colorIndex, sizeIndex]} indexes of {region:value} for color and size indicators
+     *
+     */
+    function indexStat(data, type, mixSizeData, mixColorData) {
+        let colorIndex
+        let sizeIndex
+        let ind = {} //initial index
+        let arr
 
-/**
- * Creates an index for the retrieved eurostat data. resolves a promise when done
- *
- * @param {Object} data // The eurostat api REST query reponse data
- * @param {String} type // The type of visual variable that the data represents (colour or size)
- * @param {Object} out // Our dorling library output
- * @param {Function} resolve
- * @param {Function} reject
- * @param {Boolean} mixSizeData
- * @param {Boolean} mixColorData
- *
- */
-function indexStat(data, type, out, resolve, reject, mixSizeData, mixColorData) {
-    let ind = {} //initial index
+        return new Promise((resolve, reject) => {
+            //add mixed data to array here
+            if (mixColorData || mixSizeData) {
+                let dataToMix = mixColorData ? mixColorData : mixSizeData
+                arr = Object.entries(data.dimension.geo.category.index).map(([key, val]) => ({
+                    id: key,
+                    val: +data.value[val] || null,
+                }))
 
-    let arr
+                let dataToMixArr = Object.entries(dataToMix.dimension.geo.category.index).map(
+                    ([key, val]) => ({
+                        id: key,
+                        val: +dataToMix.value[val] || null,
+                    })
+                )
 
-    //add mixed data to array here
-    if (mixColorData || mixSizeData) {
-        let dataToMix = mixColorData ? mixColorData : mixSizeData
-        arr = Object.entries(data.dimension.geo.category.index).map(([key, val]) => ({
-            id: key,
-            val: +data.value[val] || null,
-        }))
+                let a = mixColorData ? out.mixColorData_[out.nutsLevel_] : out.mixSizeData_[out.nutsLevel_]
+                dataToMixArr.forEach((rg) => {
+                    // if the user has specified that this region should be used to fill in the data gaps
+                    if (a) {
+                        if (a.includes(rg.id)) {
+                            // then add it to the main color data array
+                            arr.push(rg)
+                        }
+                    }
+                })
+            } else {
+                arr = Object.entries(data.dimension.geo.category.index).map(([key, val]) => ({
+                    id: key,
+                    val: +data.value[val] || null,
+                }))
+            }
 
-        let dataToMixArr = Object.entries(dataToMix.dimension.geo.category.index).map(([key, val]) => ({
-            id: key,
-            val: +dataToMix.value[val] || null,
-        }))
+            //if the color value is a percentage, divide each colorValue by its relevant total from colorPercentageCalculationData
+            if (out.colorCalculation_ && type == 'color') {
+                // define api geo level parameter
+                let geoLevel = out.nutsLevel_ == 0 ? 'country' : 'nuts' + out.nutsLevel_
 
-        let a = mixColorData ? out.mixColorData_[out.nutsLevel_] : out.mixSizeData_[out.nutsLevel_]
-        dataToMixArr.forEach((rg) => {
-            // if the user has specified that this region should be used to fill in the data gaps
-            if (a) {
-                if (a.includes(rg.id)) {
-                    // then add it to the main color data array
-                    arr.push(rg)
+                //util function
+                const mergeById = (a1, a2) =>
+                    a1.map((itm) => ({
+                        ...a2.find((item) => item.id === itm.id && item),
+                        ...itm,
+                    }))
+
+                //if mixNuts and colorPercentageCalculationData,
+                //then the data used to calculate percentages has to be of the same nuts level as the mixNuts data
+                if (out.mixNuts_[out.nutsLevel_]) {
+                    let mixNutsLevel
+                    if (out.mixNuts_[out.nutsLevel_].level == 0) {
+                        mixNutsLevel = 'country'
+                    } else {
+                        mixNutsLevel = 'nuts' + out.mixNuts_[out.nutsLevel_].level
+                    }
+                    let totalsPromises = []
+                    //totals for current nuts level
+                    totalsPromises.push(
+                        d3fetch.json(
+                            `${out.eurostatRESTBaseURL}${out.colorCalculationDatasetCode_}?geoLevel=${geoLevel}&${out.colorCalculationDatasetFilters_}`
+                        )
+                    )
+                    //totals for mixNuts injected data (of a different nuts level)
+                    totalsPromises.push(
+                        d3fetch.json(
+                            `${out.eurostatRESTBaseURL}${out.colorCalculationDatasetCode_}?${out.mixNutsFilterString}&${out.colorCalculationDatasetFilters_}`
+                        )
+                    )
+
+                    Promise.all(totalsPromises)
+                        .catch((err) => {
+                            // log that I have an error, return the entire array;
+                            console.log('A promise failed to resolve', err)
+                            return promises
+                        })
+                        .then((res) => {
+                            let totals = res[0] //(current nuts level)
+                            let mixTotals = res[1] //(differnt nuts level)
+                            let mixedTotalsArr // array holding the totals of the regions being mixed in (those of a different NUTS level to the rest)
+
+                            // for multiple values of a dimension we need to add them all to the total
+                            // animals=A3100&animals=A2000&animals=A4100&animals=A4200 should be 4 iterations
+                            if (out.colorCalculationDimension_) {
+                                // NORMAL REGIONS
+
+                                let regions = Object.keys(totals.dimension.geo.category.index) // 342
+                                let values = totals.value
+                                let dimensions = Object.keys(
+                                    totals.dimension[out.colorCalculationDimension_].category.index
+                                )
+                                // totals for first dimension type of normal totals
+                                let normaltotalsArr = Object.entries(totals.dimension.geo.category.index).map(
+                                    ([k, v]) => {
+                                        return {
+                                            id: k,
+                                            tot: values[v] || null,
+                                        }
+                                    }
+                                )
+
+                                // INJECTED REGIONS
+                                let injRegions = Object.keys(mixTotals.dimension.geo.category.index) // 342
+                                let injValues = mixTotals.value
+                                let injDimensions = Object.keys(
+                                    mixTotals.dimension[out.colorCalculationDimension_].category.index
+                                )
+                                // totals for first dimension type of injected totals
+                                let injectedTotalsArr = Object.entries(
+                                    mixTotals.dimension.geo.category.index
+                                ).map(([k, v]) => {
+                                    return {
+                                        id: k,
+                                        tot: injValues[v] || null,
+                                    }
+                                })
+
+                                // loop the same number of times as there are groups of results in the eurostat REST response
+                                for (let i = 1; i < dimensions.length; i++) {
+                                    let pos = regions.length * i // position in the values index : 341 | 683 etc;
+                                    Object.entries(totals.dimension.geo.category.index).map(([k, v]) => {
+                                        let regionIndex = totals.dimension.geo.category.index[k]
+                                        let dimValue = values[regionIndex + pos]
+                                        if (dimValue) {
+                                            if (normaltotalsArr[v].tot) {
+                                                normaltotalsArr[v].tot = normaltotalsArr[v].tot + dimValue
+                                            } else {
+                                                normaltotalsArr[v].tot = dimValue
+                                            }
+                                        }
+                                    })
+                                }
+
+                                // loop the same number of times as there are groups of results in the eurostat REST response
+                                for (let b = 1; b < injDimensions.length; b++) {
+                                    let pos = injRegions.length * b // posbtion in the values index (each dimension is piled on top of the next so *2 = position in 2nd dimension)
+                                    Object.entries(mixTotals.dimension.geo.category.index).map(([k, v]) => {
+                                        let regionIndex = mixTotals.dimension.geo.category.index[k]
+                                        let dimValue = injValues[regionIndex + pos]
+                                        if (dimValue) {
+                                            if (injectedTotalsArr[v].tot) {
+                                                injectedTotalsArr[v].tot = injectedTotalsArr[v].tot + dimValue
+                                            } else {
+                                                injectedTotalsArr[v].tot = dimValue
+                                            }
+                                        }
+                                    })
+                                }
+
+                                // merge the totals of normal regions with the totals of injected regions of a different NUTS level
+                                mixedTotalsArr = normaltotalsArr.concat(injectedTotalsArr)
+
+                                // merge the values with the totals for all nuts levels
+                                let mixedValuesArr = out.mixNutsColorArr.concat(arr)
+                                let mixNutsMerged = mergeById(mixedValuesArr, mixedTotalsArr)
+                                // add the mixed nuts to the final index (ind)
+                                for (let i = 0; i < mixNutsMerged.length; i++) {
+                                    let value = mixNutsMerged[i].val
+                                    let total = mixNutsMerged[i].tot
+                                    let indicator
+                                    if (out.colorCalculation_ == 'percentage') {
+                                        indicator = (value / total) * 100
+                                    } else if (out.colorCalculation_ == 'per') {
+                                        if (out.colorCalculationFunction_) {
+                                            indicator = out.colorCalculationFunction_(value, total)
+                                        } else {
+                                            indicator = total / value
+                                        }
+                                    }
+                                    ind[mixNutsMerged[i].id] = indicator || null
+                                }
+                            } else {
+                                // without colorCalculationDimension
+                                let mixTotalsArr = Object.entries(mixTotals.dimension.geo.category.index).map(
+                                    ([k, v]) => ({ id: k, tot: +mixTotals.value[v] || null })
+                                )
+                                let mixNutsMerged = mergeById(out.mixNutsColorArr, mixTotalsArr)
+
+                                for (let i = 0; i < mixNutsMerged.length; i++) {
+                                    let value = mixNutsMerged[i].val
+                                    let total = mixNutsMerged[i].tot
+                                    let indicator
+                                    if (out.colorCalculation_ == 'percentage') {
+                                        indicator = (value / total) * 100
+                                    } else if (out.colorCalculation_ == 'per') {
+                                        if (out.colorCalculationFunction_) {
+                                            indicator = out.colorCalculationFunction_(value, total)
+                                        } else {
+                                            indicator = total / value
+                                        }
+                                    }
+                                    ind[mixNutsMerged[i].id] = indicator || null
+                                }
+
+                                //normal
+                                const totalsArr = Object.entries(totals.dimension.geo.category.index).map(
+                                    ([k, v]) => ({ id: k, tot: +totals.value[v] || null })
+                                )
+                                //merge values array with totals array
+                                let merged = mergeById(arr, totalsArr)
+                                //divide each value by the desired total
+                                for (let i = 0; i < merged.length; i++) {
+                                    let value = merged[i].val
+                                    let total = merged[i].tot
+                                    let indicator
+                                    if (out.colorCalculation_ == 'percentage') {
+                                        indicator = (value / total) * 100
+                                    } else if (out.colorCalculation_ == 'per') {
+                                        if (out.colorCalculationFunction_) {
+                                            indicator = out.colorCalculationFunction_(value, total)
+                                        } else {
+                                            indicator = total / value
+                                        }
+                                    }
+                                    ind[merged[i].id] = indicator || null
+                                }
+                            }
+
+                            colorIndex = ind
+                            resolve(colorIndex)
+                        })
+                } else {
+                    //without mixed nuts
+                    d3fetch
+                        .json(
+                            `${out.eurostatRESTBaseURL}${out.colorCalculationDatasetCode_}?geoLevel=${geoLevel}&${out.colorCalculationDatasetFilters_}`
+                        )
+                        .then((totals) => {
+                            let totalsArr
+                            // for multiple values of a dimension we need to add them all to the total
+                            // animals=A3100&animals=A2000&animals=A4100&animals=A4200 should be 4 iterations
+                            if (out.colorCalculationDimension_) {
+                                let regions = Object.keys(totals.dimension.geo.category.index) // 342
+                                let values = totals.value
+                                let dimensions = Object.keys(
+                                    totals.dimension[out.colorCalculationDimension_].category.index
+                                )
+
+                                // totals for first dimension type
+                                totalsArr = Object.entries(totals.dimension.geo.category.index).map(
+                                    ([k, v]) => {
+                                        return {
+                                            id: k,
+                                            tot: values[v] || null,
+                                        }
+                                    }
+                                )
+
+                                // loop the same number of times as there are groups of results in the eurostat REST response
+                                for (let i = 1; i < dimensions.length; i++) {
+                                    let pos = regions.length * i // position in the values index : 341 | 683 etc;
+                                    Object.entries(totals.dimension.geo.category.index).map(([k, v]) => {
+                                        let regionIndex = totals.dimension.geo.category.index[k]
+                                        let dimValue = values[regionIndex + pos]
+                                        if (dimValue) {
+                                            if (totalsArr[v].tot) {
+                                                totalsArr[v].tot = totalsArr[v].tot + dimValue
+                                            } else {
+                                                totalsArr[v].tot = dimValue
+                                            }
+                                        }
+                                    })
+                                }
+                            } else {
+                                totalsArr = Object.entries(totals.dimension.geo.category.index).map(
+                                    ([k, v]) => ({
+                                        id: k,
+                                        tot: +totals.value[v] || null,
+                                    })
+                                )
+                            }
+
+                            //merge values array with totals array
+                            let merged = mergeById(arr, totalsArr)
+                            //divide each value by the desired total
+                            for (let i = 0; i < merged.length; i++) {
+                                let value = merged[i].val
+                                let total = merged[i].tot
+                                let indicator
+                                if (out.colorCalculation_ == 'percentage') {
+                                    indicator = (value / total) * 100
+                                } else if (out.colorCalculation_ == 'per') {
+                                    if (out.colorCalculationFunction_) {
+                                        indicator = out.colorCalculationFunction_(value, total)
+                                    } else {
+                                        indicator = total / value
+                                    }
+                                }
+                                ind[merged[i].id] = indicator || null
+                            }
+                            colorIndex = ind
+                            resolve(colorIndex)
+                        })
+                }
+            } else {
+                //otherwise, just index the data normally
+                for (let i = 0; i < arr.length; i++) ind[arr[i].id] = arr[i].val
+                if (type == 'size') {
+                    sizeIndex = ind
+
+                    if (out.mixNuts_[out.nutsLevel_]) {
+                        //add values to be mixed to current indices
+                        for (var attr in out.mixNutsSizeInd) {
+                            sizeIndex[attr] = out.mixNutsSizeInd[attr]
+                        }
+                    }
+
+                    resolve(sizeIndex)
+                } else if (type == 'color') {
+                    colorIndex = ind
+
+                    if (out.mixNuts_[out.nutsLevel_]) {
+                        //add values to be mixed to current indices
+                        for (var attr in out.mixNutsColorInd) {
+                            colorIndex[attr] = out.mixNutsColorInd[attr]
+                        }
+                    }
+                    resolve(colorIndex)
                 }
             }
         })
-    } else {
-        arr = Object.entries(data.dimension.geo.category.index).map(([key, val]) => ({
-            id: key,
-            val: +data.value[val] || null,
-        }))
     }
 
-    //if the color value is a percentage, divide each colorValue by its relevant total from colorPercentageCalculationData
-    if (out.colorCalculation_ && type == 'color') {
-        let nutsParam
-        if (out.nutsLevel_ == 0) {
-            nutsParam = 'country'
-        } else {
-            nutsParam = 'nuts' + out.nutsLevel_
-        }
-
-        //util function
-        const mergeById = (a1, a2) =>
-            a1.map((itm) => ({
-                ...a2.find((item) => item.id === itm.id && item),
-                ...itm,
-            }))
-
-        //if mixNuts and colorPercentageCalculationData,
-        //then the data used to calculate percentages has to be of the same nuts level as the mixNuts data
-        if (out.mixNuts_[out.nutsLevel_]) {
-            let mixNutsLevel
-            if (out.mixNuts_[out.nutsLevel_].level == 0) {
-                mixNutsLevel = 'country'
-            } else {
-                mixNutsLevel = 'nuts' + out.mixNuts_[out.nutsLevel_].level
-            }
-            let promises = []
-            //totals for current nuts level
-            promises.push(
-                d3fetch.json(
-                    `${out.eurostatRESTBaseURL}${out.colorCalculationDatasetCode_}?geoLevel=${nutsParam}&${out.colorCalculationDatasetFilters_}`
-                )
-            )
-            //totals for mixNuts injected data (of a different nuts level)
-            promises.push(
-                d3fetch.json(
-                    `${out.eurostatRESTBaseURL}${out.colorCalculationDatasetCode_}?${out.mixNutsFilterString}&${out.colorCalculationDatasetFilters_}`
-                )
-            )
-
-            Promise.all(promises)
-                .catch(function (err) {
-                    // log that I have an error, return the entire array;
-                    console.log('A promise failed to resolve', err)
-                    return promises
-                })
-                .then((res) => {
-                    //full array of resolved promises
-                    let totals = res[0] //(current nuts level)
-                    let mixTotals = res[1] //(differnt nuts level)
-
-                    let mixedTotalsArr // array holding the totals of the regions being mixed in (those of a different NUTS level to the rest)
-
-                    // for multiple values of a dimension we need to add them all to the total
-                    // animals=A3100&animals=A2000&animals=A4100&animals=A4200 should be 4 iterations
-                    if (out.colorCalculationDimension_) {
-                        // NORMAL REGIONS
-
-                        let regions = Object.keys(totals.dimension.geo.category.index) // 342
-                        let values = totals.value
-                        let dimensions = Object.keys(
-                            totals.dimension[out.colorCalculationDimension_].category.index
-                        )
-                        // totals for first dimension type of normal totals
-                        let normaltotalsArr = Object.entries(totals.dimension.geo.category.index).map(
-                            ([k, v]) => {
-                                return {
-                                    id: k,
-                                    tot: values[v] || null,
-                                }
-                            }
-                        )
-
-                        // INJECTED REGIONS
-
-                        let injRegions = Object.keys(mixTotals.dimension.geo.category.index) // 342
-                        let injValues = mixTotals.value
-                        let injDimensions = Object.keys(
-                            mixTotals.dimension[out.colorCalculationDimension_].category.index
-                        )
-                        // totals for first dimension type of injected totals
-                        let injectedTotalsArr = Object.entries(mixTotals.dimension.geo.category.index).map(
-                            ([k, v]) => {
-                                return {
-                                    id: k,
-                                    tot: injValues[v] || null,
-                                }
-                            }
-                        )
-
-                        // loop the same number of times as there are groups of results in the eurostat REST response
-                        for (let i = 1; i < dimensions.length; i++) {
-                            let pos = regions.length * i // position in the values index : 341 | 683 etc;
-                            Object.entries(totals.dimension.geo.category.index).map(([k, v]) => {
-                                let regionIndex = totals.dimension.geo.category.index[k]
-                                let dimValue = values[regionIndex + pos]
-                                if (dimValue) {
-                                    if (normaltotalsArr[v].tot) {
-                                        normaltotalsArr[v].tot = normaltotalsArr[v].tot + dimValue
-                                    } else {
-                                        normaltotalsArr[v].tot = dimValue
-                                    }
-                                }
-                            })
-                        }
-
-                        // loop the same number of times as there are groups of results in the eurostat REST response
-                        for (let b = 1; b < injDimensions.length; b++) {
-                            let pos = injRegions.length * b // posbtion in the values index (each dimension is piled on top of the next so *2 = position in 2nd dimension)
-                            Object.entries(mixTotals.dimension.geo.category.index).map(([k, v]) => {
-                                let regionIndex = mixTotals.dimension.geo.category.index[k]
-                                let dimValue = injValues[regionIndex + pos]
-                                if (dimValue) {
-                                    if (injectedTotalsArr[v].tot) {
-                                        injectedTotalsArr[v].tot = injectedTotalsArr[v].tot + dimValue
-                                    } else {
-                                        injectedTotalsArr[v].tot = dimValue
-                                    }
-                                }
-                            })
-                        }
-
-                        // merge the totals of normal regions with the totals of injected regions of a different NUTS level
-                        mixedTotalsArr = normaltotalsArr.concat(injectedTotalsArr)
-
-                        // merge the values with the totals for all nuts levels
-                        let mixedValuesArr = out.mixNutsColorArr.concat(arr)
-                        let mixNutsMerged = mergeById(mixedValuesArr, mixedTotalsArr)
-                        // add the mixed nuts to the final index (ind)
-                        for (let i = 0; i < mixNutsMerged.length; i++) {
-                            let value = mixNutsMerged[i].val
-                            let total = mixNutsMerged[i].tot
-                            let indicator
-                            if (out.colorCalculation_ == 'percentage') {
-                                indicator = (value / total) * 100
-                            } else if (out.colorCalculation_ == 'per') {
-                                if (out.colorCalculationFunction_) {
-                                    indicator = out.colorCalculationFunction_(value, total)
-                                } else {
-                                    indicator = total / value
-                                }
-                            }
-                            ind[mixNutsMerged[i].id] = indicator || null
-                        }
-                    } else {
-                        // without colorCalculationDimension
-                        let mixTotalsArr = Object.entries(mixTotals.dimension.geo.category.index).map(
-                            ([k, v]) => ({ id: k, tot: +mixTotals.value[v] || null })
-                        )
-                        let mixNutsMerged = mergeById(out.mixNutsColorArr, mixTotalsArr)
-
-                        for (let i = 0; i < mixNutsMerged.length; i++) {
-                            let value = mixNutsMerged[i].val
-                            let total = mixNutsMerged[i].tot
-                            let indicator
-                            if (out.colorCalculation_ == 'percentage') {
-                                indicator = (value / total) * 100
-                            } else if (out.colorCalculation_ == 'per') {
-                                if (out.colorCalculationFunction_) {
-                                    indicator = out.colorCalculationFunction_(value, total)
-                                } else {
-                                    indicator = total / value
-                                }
-                            }
-                            ind[mixNutsMerged[i].id] = indicator || null
-                        }
-
-                        //normal
-                        const totalsArr = Object.entries(totals.dimension.geo.category.index).map(
-                            ([k, v]) => ({ id: k, tot: +totals.value[v] || null })
-                        )
-                        //merge values array with totals array
-                        let merged = mergeById(arr, totalsArr)
-                        //divide each value by the desired total
-                        for (let i = 0; i < merged.length; i++) {
-                            let value = merged[i].val
-                            let total = merged[i].tot
-                            let indicator
-                            if (out.colorCalculation_ == 'percentage') {
-                                indicator = (value / total) * 100
-                            } else if (out.colorCalculation_ == 'per') {
-                                if (out.colorCalculationFunction_) {
-                                    indicator = out.colorCalculationFunction_(value, total)
-                                } else {
-                                    indicator = total / value
-                                }
-                            }
-                            ind[merged[i].id] = indicator || null
-                        }
-                    }
-
-                    out.colorIndicator = ind
-                    resolve()
-                })
-        } else {
-            //without mixed nuts
-            d3fetch
-                .json(
-                    `${out.eurostatRESTBaseURL}${out.colorCalculationDatasetCode_}?geoLevel=${nutsParam}&${out.colorCalculationDatasetFilters_}`
-                )
-                .then((totals) => {
-                    let totalsArr
-                    // for multiple values of a dimension we need to add them all to the total
-                    // animals=A3100&animals=A2000&animals=A4100&animals=A4200 should be 4 iterations
-                    if (out.colorCalculationDimension_) {
-                        let regions = Object.keys(totals.dimension.geo.category.index) // 342
-                        let values = totals.value
-                        let dimensions = Object.keys(
-                            totals.dimension[out.colorCalculationDimension_].category.index
-                        )
-
-                        // totals for first dimension type
-                        totalsArr = Object.entries(totals.dimension.geo.category.index).map(([k, v]) => {
-                            return {
-                                id: k,
-                                tot: values[v] || null,
-                            }
-                        })
-
-                        // loop the same number of times as there are groups of results in the eurostat REST response
-                        for (let i = 1; i < dimensions.length; i++) {
-                            let pos = regions.length * i // position in the values index : 341 | 683 etc;
-                            Object.entries(totals.dimension.geo.category.index).map(([k, v]) => {
-                                let regionIndex = totals.dimension.geo.category.index[k]
-                                let dimValue = values[regionIndex + pos]
-                                if (dimValue) {
-                                    if (totalsArr[v].tot) {
-                                        totalsArr[v].tot = totalsArr[v].tot + dimValue
-                                    } else {
-                                        totalsArr[v].tot = dimValue
-                                    }
-                                }
-                            })
-                        }
-                    } else {
-                        totalsArr = Object.entries(totals.dimension.geo.category.index).map(([k, v]) => ({
-                            id: k,
-                            tot: +totals.value[v] || null,
-                        }))
-                    }
-
-                    //merge values array with totals array
-                    let merged = mergeById(arr, totalsArr)
-                    //divide each value by the desired total
-                    for (let i = 0; i < merged.length; i++) {
-                        let value = merged[i].val
-                        let total = merged[i].tot
-                        let indicator
-                        if (out.colorCalculation_ == 'percentage') {
-                            indicator = (value / total) * 100
-                        } else if (out.colorCalculation_ == 'per') {
-                            if (out.colorCalculationFunction_) {
-                                indicator = out.colorCalculationFunction_(value, total)
-                            } else {
-                                indicator = total / value
-                            }
-                        }
-                        ind[merged[i].id] = indicator || null
-                    }
-                    out.colorIndicator = ind
-                    resolve()
-                })
-        }
-    } else {
-        //otherwise, just index the data normally
-        for (let i = 0; i < arr.length; i++) ind[arr[i].id] = arr[i].val
-        if (type == 'size') {
-            out.sizeIndicator = ind
-
-            if (out.mixNuts_[out.nutsLevel_]) {
-                //add values to be mixed to current indices
-                for (var attr in out.mixNutsSizeInd) {
-                    out.sizeIndicator[attr] = out.mixNutsSizeInd[attr]
-                }
-            }
-        } else if (type == 'color') {
-            out.colorIndicator = ind
-
-            if (out.mixNuts_[out.nutsLevel_]) {
-                //add values to be mixed to current indices
-                for (var attr in out.mixNutsColorInd) {
-                    out.colorIndicator[attr] = out.mixNutsColorInd[attr]
-                }
-            }
-        }
-
-        resolve()
-    }
+    return out
 }
 
 /**
