@@ -91,7 +91,7 @@ export function dorling() {
         cells: null,
         shape: 'circle',
         shapeRadius: 10,
-        shapePadding: 5,
+        shapePadding: 3,
         labelAlign: 'middle',
         labelOffset: 10,
         labelFormat: d3format.format('.1f'),
@@ -510,6 +510,10 @@ export function dorling() {
             .attr('fill', (f) => colorFunction(+out.colorIndicator[f.properties.id]))
             .attr('stroke', 'black')
 
+        // clear insets
+        d3select.selectAll('.dorling-insets').remove()
+
+        // add new insets
         if (out.showInsets_ && out.nutsLevel_ !== 0) {
             getInsets().then((overseasTopo) => {
                 addInsets(overseasTopo)
@@ -825,7 +829,8 @@ export function dorling() {
                     newCentroids.features.forEach((c) => {
                         if (out.mixNuts_[out.nutsLevel_].ids.indexOf(c.properties.id) !== -1) {
                             //add centroids of mixedNuts to current level centroids
-                            out.CENTROIDS[out.nutsLevel_].features.push(c)
+                            if (!out.CENTROIDS[out.nutsLevel_].features.push(c))
+                                out.CENTROIDS[out.nutsLevel_].features.push(c)
                         }
                     })
 
@@ -1427,10 +1432,7 @@ export function dorling() {
      * @param {TopoJSON} overseasTopo The topojson object containing the geometries of the overseas regions to show
      */
     function addInsets(overseasTopo) {
-        // clear existing
-        if (out.insetsSvg) out.insetsSvg.html('')
         // create new SVG
-        out.insetsSvg = d3select.create('svg')
         let nutsClass = 'dorling-insets-nuts' + out.nutsLevel_
         let width
         if (out.nutsLevel_ == 1) {
@@ -1438,11 +1440,13 @@ export function dorling() {
         } else {
             width = out.insets_.overseasWidth * 2 + out.insets_.padding * 2 + 2
         }
-        out.insetsSvg
+        out.insetsSvg = d3select
+            .create('svg')
             // .attr("viewBox", [0, 0, 272, 605])
             .attr('width', width)
             .attr('height', out.insets_.height[out.nutsLevel_])
             .attr('class', 'dorling-insets ' + nutsClass)
+
         out.dorlingContainer.node().appendChild(out.insetsSvg.node())
 
         let objectName = 'NUTS' + out.nutsLevel_
