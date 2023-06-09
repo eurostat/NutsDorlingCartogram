@@ -62,7 +62,7 @@ export function dorling() {
     out.pauseButton_ = false
     out.showBorders_ = true
     out.legendHeight_ = 550
-    out.legendWidth_ = window.innerWidth > 1000 ? 300 : 230
+    out.legendWidth_ = window.innerWidth > 1000 ? 300 : 220
     out.legendOpacity_ = 0.5
     //size legend (circle radiuses)
     out.sizeLegend_ = {
@@ -2810,6 +2810,10 @@ export function dorling() {
         }
     }
 
+    /**
+     * @description Handles a change of NUTS level
+     * @param {Number} nuts the new nuts level
+     */
     function nutsRadioEventHandler(nuts) {
         // let nuts = evt.currentTarget.value;
         if (out.nutsLevel_ !== nuts) {
