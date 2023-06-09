@@ -416,26 +416,50 @@ export function dorling() {
      * @description Redraw the cartogram, map and legends
      */
     out.redraw = function () {
-        // redraw nuts borders
-        redrawBorders()
-        // redraw circles
-        redrawCircles()
+        showLoadingSpinner()
 
-        //clear legend
-        out.legendContainer.html('')
-        //add legends
-        addSizeLegend()
-        addColorLegend()
-        addColorLegendExplanation()
-        // NUTS selector is drawn inside legend container, so we need to reappend it after clearing the legend container
-        addNutsSelectorToDOM()
+        // get new stats for the new NUTS level
+        getStatisticalData().then(([colorIndex, sizeIndex]) => {
+            // requests finished
+            hideLoadingSpinner()
 
-        // show legends & nuts selector
-        out.legendContainer.transition().duration(750).attr('opacity', 0.9)
-        out.sizeLegendContainer.transition().duration(750).attr('opacity', 0.9)
-        if (out.showNutsSelector_) {
-            out.radioContainer.transition().duration(750).attr('opacity', 0.9)
-        }
+            // color and size data used to transform the circles
+            out.colorIndicator = colorIndex
+            out.sizeIndicator = sizeIndex
+
+            // define scaling functions
+            out.colorExtent = d3array.extent(Object.values(out.colorIndicator))
+            out.sizeExtent = d3array.extent(Object.values(out.sizeIndicator))
+            out.colorScale = defineColorScale()
+            out.sizeScale = defineSizeScale()
+
+            //stop previous d3 simulation
+            if (out.simulation) {
+                out.simulation.stop()
+                out.forceInProgress = false
+            }
+
+            // redraw nuts borders
+            redrawBorders()
+            // redraw circles
+            redrawCircles()
+
+            //clear legend
+            out.legendContainer.html('')
+            //add legends
+            addSizeLegend()
+            addColorLegend()
+            addColorLegendExplanation()
+            // NUTS selector is drawn inside legend container, so we need to reappend it after clearing the legend container
+            addNutsSelectorToDOM()
+
+            // show legends & nuts selector
+            out.legendContainer.transition().duration(750).attr('opacity', 0.9)
+            out.sizeLegendContainer.transition().duration(750).attr('opacity', 0.9)
+            if (out.showNutsSelector_) {
+                out.radioContainer.transition().duration(750).attr('opacity', 0.9)
+            }
+        })
     }
 
     /**
@@ -2831,30 +2855,7 @@ export function dorling() {
                 }
             }
 
-            // get new stats for the new NUTS level
-            showLoadingSpinner()
-            getStatisticalData().then(([colorIndex, sizeIndex]) => {
-                // requests finished
-                hideLoadingSpinner()
-
-                // color and size data used to transform the circles
-                out.colorIndicator = colorIndex
-                out.sizeIndicator = sizeIndex
-
-                // define scaling functions
-                out.colorExtent = d3array.extent(Object.values(out.colorIndicator))
-                out.sizeExtent = d3array.extent(Object.values(out.sizeIndicator))
-                out.colorScale = defineColorScale()
-                out.sizeScale = defineSizeScale()
-
-                //stop previous d3 simulation
-                if (out.simulation) {
-                    out.simulation.stop()
-                    out.forceInProgress = false
-                }
-
-                out.redraw()
-            })
+            out.redraw()
         }
     }
 
