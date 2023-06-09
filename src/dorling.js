@@ -416,10 +416,10 @@ export function dorling() {
      * @description Redraw the cartogram, map and legends
      */
     out.redraw = function () {
-        // redraw circles
-        redrawCircles()
         // redraw nuts borders
         redrawBorders()
+        // redraw circles
+        redrawCircles()
 
         //clear legend
         out.legendContainer.html('')
@@ -442,6 +442,11 @@ export function dorling() {
      * @description Redraws the cartogram NUTS borders
      */
     function redrawBorders() {
+        //clear existing
+        d3select.selectAll('#dorling-nuts-borders').remove()
+        // darw new
+        drawNUTSboundaries()
+
         if (out.showBorders_) {
             out.nutsBorders.transition().duration(750).attr('stroke', 'grey')
         } else {
@@ -2809,7 +2814,18 @@ export function dorling() {
         // let nuts = evt.currentTarget.value;
         if (out.nutsLevel_ !== nuts) {
             out.nutsLevel_ = nuts
+
             updateRadios()
+
+            if (out.overseasBtn) {
+                if (out.nutsLevel_ == 0) {
+                    // hide insets button
+                    out.overseasBtn.style.display = 'none'
+                } else {
+                    // show insets button
+                    out.overseasBtn.style.display = 'block'
+                }
+            }
 
             // get new stats for the new NUTS level
             showLoadingSpinner()
