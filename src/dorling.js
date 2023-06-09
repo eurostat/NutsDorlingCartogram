@@ -2786,27 +2786,27 @@ export function dorling() {
         if (out.nutsLevel_ == 0) {
             out.dot0.attr('opacity', '1')
             out.outline0.attr('stroke', outlineSelectedColor)
-            out.dot1.attr('opacity', radioDotOpacity)
-            out.dot2.attr('opacity', radioDotOpacity)
-            out.dot3.attr('opacity', radioDotOpacity)
+            if (out.nutsAvailable_.indexOf(1) !== -1) out.dot1.attr('opacity', radioDotOpacity)
+            if (out.nutsAvailable_.indexOf(2) !== -1) out.dot2.attr('opacity', radioDotOpacity)
+            if (out.nutsAvailable_.indexOf(3) !== -1) out.dot3.attr('opacity', radioDotOpacity)
         } else if (out.nutsLevel_ == 1) {
             out.dot1.attr('opacity', '1')
             out.outline1.attr('stroke', outlineSelectedColor)
-            out.dot0.attr('opacity', radioDotOpacity)
-            out.dot2.attr('opacity', radioDotOpacity)
-            out.dot3.attr('opacity', radioDotOpacity)
+            if (out.nutsAvailable_.indexOf(0) !== -1) out.dot0.attr('opacity', radioDotOpacity)
+            if (out.nutsAvailable_.indexOf(2) !== -1) out.dot2.attr('opacity', radioDotOpacity)
+            if (out.nutsAvailable_.indexOf(3) !== -1) out.dot3.attr('opacity', radioDotOpacity)
         } else if (out.nutsLevel_ == 2) {
             out.dot2.attr('opacity', '1')
             out.outline2.attr('stroke', outlineSelectedColor)
-            out.dot0.attr('opacity', radioDotOpacity)
-            out.dot1.attr('opacity', radioDotOpacity)
-            out.dot3.attr('opacity', radioDotOpacity)
+            if (out.nutsAvailable_.indexOf(0) !== -1) out.dot0.attr('opacity', radioDotOpacity)
+            if (out.nutsAvailable_.indexOf(1) !== -1) out.dot1.attr('opacity', radioDotOpacity)
+            if (out.nutsAvailable_.indexOf(3) !== -1) out.dot3.attr('opacity', radioDotOpacity)
         } else if (out.nutsLevel_ == 3) {
             out.dot3.attr('opacity', '1')
             out.outline3.attr('stroke', outlineSelectedColor)
-            out.dot0.attr('opacity', radioDotOpacity)
-            out.dot1.attr('opacity', radioDotOpacity)
-            out.dot2.attr('opacity', radioDotOpacity)
+            if (out.nutsAvailable_.indexOf(0) !== -1) out.dot0.attr('opacity', radioDotOpacity)
+            if (out.nutsAvailable_.indexOf(1) !== -1) out.dot1.attr('opacity', radioDotOpacity)
+            if (out.nutsAvailable_.indexOf(2) !== -1) out.dot2.attr('opacity', radioDotOpacity)
         }
     }
 
