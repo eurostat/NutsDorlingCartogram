@@ -114,7 +114,7 @@ export function dorling() {
             ],
         },
         labelFontSize: 15,
-        labelDelimiter: ' - ≤',
+        labelDelimiter: ' - ≤ ',
         labelUnit: ' ',
         labelWrap: 140,
         eu27: null,
