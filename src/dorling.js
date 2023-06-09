@@ -829,8 +829,15 @@ export function dorling() {
                     newCentroids.features.forEach((c) => {
                         if (out.mixNuts_[out.nutsLevel_].ids.indexOf(c.properties.id) !== -1) {
                             //add centroids of mixedNuts to current level centroids
-                            if (!out.CENTROIDS[out.nutsLevel_].features.push(c))
+
+                            if (
+                                !out.CENTROIDS[out.nutsLevel_].features.some(
+                                    (e) => e.properties.id === c.properties.id
+                                )
+                            ) {
+                                /* centroid hasnt already been added yet so we can push */
                                 out.CENTROIDS[out.nutsLevel_].features.push(c)
+                            }
                         }
                     })
 
