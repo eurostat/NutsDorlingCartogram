@@ -523,6 +523,13 @@ export function dorling() {
         if (out.showInsets_ && out.nutsLevel_ !== 0) {
             getInsets().then((overseasTopo) => {
                 addInsets(overseasTopo)
+                //hide insets on small screens by default
+                if (
+                    window.innerWidth < out.toggleLegendWidthThreshold_ ||
+                    window.innerHeight < out.toggleLegendHeightThreshold_
+                ) {
+                    out.insetsSvg.node().style.display = 'none'
+                }
 
                 // apply d3 force to the circles
                 applyForce()
