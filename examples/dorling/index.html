@@ -14,6 +14,10 @@
             var dorling = NutsDorlingCartogram.dorling()
                 .containerId('containerDiv')
                 .title('Population change')
+                // .nuts2JsonBaseURL('https://ec.europa.eu/assets/estat/E/E4/gisco/pub/nuts2json/v2/')
+                // .overseasGeometriesBaseURL(
+                //     'https://ec.europa.eu/eurostat/cache/interactive-publications/regions/2023/vis/cartograms/assets/topojson/overseas/'
+                // )
                 .nutsLevel(2)
                 .colors(['#2d50a0', '#6487c3', '#aab9e1', '#f0cd91', '#e6a532', '#d76e2d'])
                 .thresholdValues([-15, -10, 0, 10, 15, 20])
