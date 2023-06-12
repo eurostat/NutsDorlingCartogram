@@ -175,7 +175,9 @@ export function dorling() {
     out.mixSizeData_ = null
 
     out.eurostatRESTBaseURL = 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/'
-    out.Nuts2jsonBaseURL_ = 'https://raw.githubusercontent.com/eurostat/Nuts2json/master/pub/v1'
+    out.Nuts2jsonBaseURL_ = 'https://ec.europa.eu/assets/estat/E/E4/gisco/pub/nuts2json/v2/'
+    out.overseasGeometriesBaseURL_ =
+        'https://ec.europa.eu/eurostat/cache/interactive-publications/regions/2023/vis/cartograms/assets/topojson/overseas/'
     out.dataExplorerBaseURL_ = 'https://appsso.eurostat.ec.europa.eu/nui/show.do?dataset='
     out.dataBrowserBaseURL_ = 'https://ec.europa.eu/eurostat/databrowser/bookmark/'
     out.customSourceURL_ = null
@@ -992,9 +994,7 @@ export function dorling() {
      * @description retrieve inset map geometries
      */
     function getInsets() {
-        return d3fetch.json(
-            `https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/overseas/NUTS${out.nutsLevel_}.json` //prod
-        )
+        return d3fetch.json(`${out.overseasGeometriesBaseURL_}/NUTS${out.nutsLevel_}.json`)
     }
 
     /**
