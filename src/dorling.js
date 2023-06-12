@@ -1101,9 +1101,9 @@ export function dorling() {
             .attr('class', function (rg) {
                 //colour excluded regions differently
                 if (out.exclude_.indexOf(rg.properties.id.substring(0, 2)) == -1) {
-                    return 'nutsrg'
+                    return 'dorling-nutsrg'
                 } else {
-                    return 'cntrg'
+                    return 'dorling-cntrg'
                 }
             })
     }
@@ -1112,17 +1112,38 @@ export function dorling() {
      * @description draws the countries (cntrg) on the map
      */
     function drawCountries() {
-        out.countries = out.map
+        out.cntrg = out.map
+            .append('g')
+            .attr('id', 'dorling-cntrg')
+            .selectAll('path')
+            .data(topojson.feature(out.n2j, out.n2j.objects.cntrg).features)
+            .enter()
             .append('path')
-            .datum(
-                topojson.mesh(out.n2j, out.n2j.objects.cntrg, function (a, b) {
-                    return a === b
-                })
-            )
             .attr('d', out.path)
             .attr('vector-effect', 'non-scaling-stroke')
             .attr('class', 'dorling-cntrg')
-            .attr('stroke-width', out.nutsBorderWidth_ + 'px')
+
+        out.cntbn = out.map
+            .append('g')
+            .attr('id', 'dorling-cntbn')
+            .selectAll('path')
+            .data(topojson.feature(out.n2j, out.n2j.objects.cntbn).features)
+            .enter()
+            .append('path')
+            .attr('d', out.path)
+            .attr('vector-effect', 'non-scaling-stroke')
+            .attr('class', 'dorling-cntbn')
+            .attr('fill', 'none')
+            .attr('stroke-width', (rg) => {
+                if (rg.properties.co === 'T') {
+                    return out.nutsBorderWidth_ + 0.1 + 'px'
+                }
+            })
+            .attr('stroke', (rg) => {
+                if (rg.properties.co === 'T') {
+                    return '#444444'
+                }
+            })
     }
 
     /**

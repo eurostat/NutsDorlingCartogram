@@ -1,6 +1,6 @@
 {
     "name": "nutsdorlingcartogram",
-    "version": "1.2.18",
+    "version": "1.2.19",
     "description": "Library for creating dorling cartograms of NUTS regions",
     "main": "build/dorling.min.js",
     "files": [

@@ -119,12 +119,9 @@ fill:#E5E5E5;
 /* map styles */
 .dorling-cntrg {
     fill: #e5e5e5;
-    stroke: #444444;
+    stroke: 'none';
 }
-.cntrg {
-    fill: #e5e5e5;
-}
-.nutsrg {
+.dorling-nutsrg {
     fill: white;
 }
 .dorling-no-data {
@@ -144,10 +141,6 @@ fill:#E5E5E5;
 }
 .thin {
     stroke-width: 0.5px;
-}
-.coastal {
-    /* stroke: #1f78b4;  */
-    /* stroke: #444444; */
 }
 
 .dorling-tooltip {
