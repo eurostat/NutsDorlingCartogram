@@ -175,9 +175,13 @@ export function dorling() {
     out.mixSizeData_ = null
 
     out.eurostatRESTBaseURL = 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/'
-    out.Nuts2jsonBaseURL_ = 'https://ec.europa.eu/assets/estat/E/E4/gisco/pub/nuts2json/v2/'
+    out.nuts2JsonBaseURL_ = 'https://raw.githubusercontent.com/eurostat/Nuts2json/master/pub/v1/'
+    //'https://ec.europa.eu/assets/estat/E/E4/gisco/pub/nuts2json/v2/'
+    // 'https://raw.githubusercontent.com/eurostat/Nuts2json/master/pub/v1/'
     out.overseasGeometriesBaseURL_ =
-        'https://ec.europa.eu/eurostat/cache/interactive-publications/regions/2023/vis/cartograms/assets/topojson/overseas/'
+        'https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/overseas/'
+    // 'https://ec.europa.eu/eurostat/cache/interactive-publications/regions/2023/vis/cartograms/assets/topojson/overseas/'
+    // 'https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/overseas/'
     out.dataExplorerBaseURL_ = 'https://appsso.eurostat.ec.europa.eu/nui/show.do?dataset='
     out.dataBrowserBaseURL_ = 'https://ec.europa.eu/eurostat/databrowser/bookmark/'
     out.customSourceURL_ = null
@@ -925,12 +929,12 @@ export function dorling() {
 
             promises.push(
                 //centroids for all NUTS levels
-                d3fetch.json(`${out.Nuts2jsonBaseURL_}/${out.nutsYear_}/3035/nutspt_0.json`),
-                d3fetch.json(`${out.Nuts2jsonBaseURL_}/${out.nutsYear_}/3035/nutspt_1.json`),
-                d3fetch.json(`${out.Nuts2jsonBaseURL_}/${out.nutsYear_}/3035/nutspt_2.json`),
-                d3fetch.json(`${out.Nuts2jsonBaseURL_}/${out.nutsYear_}/3035/nutspt_3.json`),
+                d3fetch.json(`${out.nuts2JsonBaseURL_}/${out.nutsYear_}/3035/nutspt_0.json`),
+                d3fetch.json(`${out.nuts2JsonBaseURL_}/${out.nutsYear_}/3035/nutspt_1.json`),
+                d3fetch.json(`${out.nuts2JsonBaseURL_}/${out.nutsYear_}/3035/nutspt_2.json`),
+                d3fetch.json(`${out.nuts2JsonBaseURL_}/${out.nutsYear_}/3035/nutspt_3.json`),
                 //NUTS
-                d3fetch.json(`${out.Nuts2jsonBaseURL_}/${out.nutsYear_}/3035/20M/all.json`)
+                d3fetch.json(`${out.nuts2JsonBaseURL_}/${out.nutsYear_}/3035/20M/all.json`)
             )
 
             Promise.all(promises)
