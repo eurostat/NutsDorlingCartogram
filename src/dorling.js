@@ -147,7 +147,7 @@ export function dorling() {
         circleXOffset: window.innerWidth > 1000 ? 37 : 30,
         circleYOffset: window.innerWidth > 1000 ? 45 : 33,
         spacingX: window.innerWidth > 1000 ? 78 : 65, // between the start of each rect
-        spacingY: window.innerWidth > 1000 ? 78 : 60, // between the start of each rect
+        spacingY: window.innerWidth > 1000 ? 78 : 55, // between the start of each rect
         padding: window.innerWidth > 1000 ? 15 : 3, // inside the rect. so that the geometries arent touching the rect borders
     }
     //tooltip html
