@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="shortcut icon" type="image/x-icon" href="../../assets/images/favicon.ico" />
+        <title>Dorling Cartograms in iframes</title>
+
+        <style>
+            .flexbox-container {
+                display: flex;
+            }
+            .flexbox-container.wrap {
+                flex-wrap: wrap;
+            }
+        </style>
+    </head>
+
+    <body style="margin: 0">
+        <div class="flexbox-container wrap">
+            <div>
+                <iframe
+                    src="http://localhost:5500/NutsDorlingCartogram/examples/population/?simple=true"
+                    height="800px"
+                    width="710px"
+                ></iframe>
+            </div>
+        </div>
+    </body>
+</html>

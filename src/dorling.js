@@ -525,8 +525,9 @@ export function dorling() {
                 addInsets(overseasTopo)
                 //hide insets on small screens by default
                 if (
-                    window.innerWidth < out.toggleLegendWidthThreshold_ ||
-                    window.innerHeight < out.toggleLegendHeightThreshold_
+                    (window.innerWidth < out.toggleLegendWidthThreshold_ ||
+                        window.innerHeight < out.toggleLegendHeightThreshold_) &&
+                    out.showOverseas === false
                 ) {
                     out.insetsSvg.node().style.display = 'none'
                 }
@@ -2629,7 +2630,7 @@ export function dorling() {
         let radioHeight = 30
         let radioRadius = 8
         let radioDotRadius = 6
-        let padding = 0 //vertical padding between radios
+        let padding = -10 //vertical padding between radios
         let marginTop = 40
         let marginLeft = 5
         let radioCxy = 5
