@@ -133,8 +133,8 @@ export function dorling() {
     out.insets_ = {
         height: { 1: 340, 2: 340, 3: 550 },
         titleWidth: 120,
-        overseasHeight: 60,
-        overseasWidth: 60,
+        overseasHeight: window.innerWidth > 1000 ? 60 : 50,
+        overseasWidth: window.innerWidth > 1000 ? 60 : 60,
         translateX: 0,
         translateY: 0,
         // captionY: 65,
@@ -142,12 +142,13 @@ export function dorling() {
         captionY: 12,
         captionX: 3,
         captionFontSize: 9,
-        yOffset: 15,
-        xOffset: 15,
-        circleYOffset: 45,
-        circleXOffset: 37,
-        spacing: 78, //between the start of each rect
-        padding: 15, //so that the geometries arent touching the rect borders
+        offsetX: window.innerWidth > 1000 ? 10 : 0, // d3 projection fitExtent
+        offsetY: window.innerWidth > 1000 ? 30 : 20,
+        circleXOffset: window.innerWidth > 1000 ? 37 : 30,
+        circleYOffset: window.innerWidth > 1000 ? 45 : 33,
+        spacingX: window.innerWidth > 1000 ? 78 : 65, // between the start of each rect
+        spacingY: window.innerWidth > 1000 ? 78 : 60, // between the start of each rect
+        padding: window.innerWidth > 1000 ? 15 : 3, // inside the rect. so that the geometries arent touching the rect borders
     }
     //tooltip html
     out.tooltip_ = {
@@ -1407,7 +1408,7 @@ export function dorling() {
                     .reflectY(true)
                     .fitExtent(
                         [
-                            [10, 30],
+                            [out.insets_.offsetX, out.insets_.offsetY],
                             [out.insets_.overseasWidth, out.insets_.overseasHeight],
                         ],
                         fc
@@ -1425,7 +1426,7 @@ export function dorling() {
                     .reflectY(true)
                     .fitExtent(
                         [
-                            [10, 30],
+                            [out.insets_.offsetX, out.insets_.offsetY],
                             [out.insets_.overseasWidth, out.insets_.overseasHeight],
                         ],
                         fc
@@ -1436,7 +1437,7 @@ export function dorling() {
                     .reflectY(true)
                     .fitExtent(
                         [
-                            [10, 30],
+                            [out.insets_.offsetX, out.insets_.offsetY],
                             [out.insets_.overseasWidth, out.insets_.overseasHeight],
                         ],
                         inset.featureCollection
@@ -1448,17 +1449,17 @@ export function dorling() {
             inset.projection = proj
             inset.path = d3geo.geoPath().projection(proj)
             //add Y spacing
-            translateY = translateY + out.insets_.spacing
+            translateY = translateY + out.insets_.spacingY
             //split into 2 columns according to inset index...
             if (out.nutsLevel_ == 3) {
                 if (i == 6) {
                     translateY = out.insets_.translateY
-                    translateX = out.insets_.translateX + out.insets_.spacing
+                    translateX = out.insets_.translateX + out.insets_.spacingX
                 }
             } else {
                 if (i == 3) {
                     translateY = out.insets_.translateY
-                    translateX = out.insets_.translateX + out.insets_.spacing
+                    translateX = out.insets_.translateX + out.insets_.spacingX
                 }
             }
         })
@@ -1476,8 +1477,10 @@ export function dorling() {
         let nutsClass = 'dorling-insets-nuts' + out.nutsLevel_
         let width
         if (out.nutsLevel_ == 1) {
+            // single column
             width = out.insets_.overseasWidth + out.insets_.padding
         } else {
+            // 2 columns
             width = out.insets_.overseasWidth * 2 + out.insets_.padding * 2 + 2
         }
         out.insetsSvg = d3select
