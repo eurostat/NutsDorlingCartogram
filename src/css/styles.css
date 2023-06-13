@@ -80,6 +80,13 @@ body {
 }
 
 /* insets */
+/* allow mouse events to travel through insets background svg */
+.dorling-insets {
+    pointer-events: none;
+}
+.dorling-insets * {
+    pointer-events: auto;
+}
 .dorling-insets {
     position: absolute;
     top: 5px;
