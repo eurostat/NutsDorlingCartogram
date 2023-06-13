@@ -15,9 +15,10 @@ const colorLegend = function () {
         cells = [5],
         cellFilter,
         labels = [],
-        classPrefix = '',
+        classPrefix = 'dorling-',
         useClass = false,
         title = '',
+        subtitle = '',
         locale = helper.d3_defaultLocale,
         specifier = helper.d3_defaultFormatSpecifier,
         labelOffset = 10,
@@ -44,14 +45,14 @@ const colorLegend = function () {
         legendG
             .enter()
             .append('g')
-            .attr('class', classPrefix + 'legendCells')
+            .attr('class', classPrefix + 'legend-cells')
 
         if (cellFilter) {
             helper.d3_filterCells(type, cellFilter)
         }
 
         let cell = svg
-            .select('.' + classPrefix + 'legendCells')
+            .select('.' + classPrefix + 'legend-cells')
             .selectAll('.' + classPrefix + 'cell')
             .data(type.data)
 
@@ -104,21 +105,23 @@ const colorLegend = function () {
 
             cellTrans = (d, i) => {
                 const height = sum(cellSize.slice(0, i))
-                return `translate(0, ${height + i * shapePadding})`
+                return `translate(0px, ${height + i * shapePadding}px)`
             }
 
             textTrans = (d, i) =>
-                `translate( ${shapeSize[i].width + shapeSize[i].x + labelOffset}, ${
+                `translate( ${shapeSize[i].width + shapeSize[i].x + labelOffset}px, ${
                     shapeSize[i].y + shapeSize[i].height / 2 + 5
-                })`
+                }px)`
         } else if (orient === 'horizontal') {
-            cellTrans = (d, i) => `translate(${i * (shapeSize[i].width + shapePadding)},0)`
-            textTrans = (d, i) => `translate(${shapeSize[i].width * textAlign + shapeSize[i].x},
-          ${shapeSize[i].height + shapeSize[i].y + labelOffset + 8})`
+            cellTrans = (d, i) => `translate(${i * (shapeSize[i].width + shapePadding)}px,0px)`
+            textTrans = (d, i) => `translate(${shapeSize[i].width * textAlign + shapeSize[i].x}px,
+          ${shapeSize[i].height + shapeSize[i].y + labelOffset + 8}px)`
         }
 
         helper.d3_placement(orient, cell, cellTrans, text, textTrans, labelAlign)
+
         helper.d3_title(svg, title, classPrefix, titleWidth)
+        helper.d3_subtitle(svg, subtitle, classPrefix, titleWidth)
 
         cell.transition().style('opacity', 1)
     }
@@ -252,6 +255,12 @@ const colorLegend = function () {
     legend.title = function (_) {
         if (!arguments.length) return title
         title = _
+        return legend
+    }
+
+    legend.subtitle = function (_) {
+        if (!arguments.length) return subtitle
+        subtitle = _
         return legend
     }
 

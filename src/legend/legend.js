@@ -185,8 +185,8 @@ export default {
     },
 
     d3_placement: (orient, cell, cellTrans, text, textTrans, labelAlign) => {
-        cell.attr('transform', cellTrans)
-        text.attr('transform', textTrans)
+        cell.style('transform', cellTrans)
+        text.style('transform', textTrans)
         if (orient === 'horizontal') {
             text.style('text-anchor', labelAlign)
         }
@@ -207,29 +207,63 @@ export default {
 
     d3_title: (svg, title, classPrefix, titleWidth) => {
         if (title !== '') {
-            const titleText = svg.selectAll('text.' + classPrefix + 'legendTitle')
+            const titleText = svg.selectAll('text.' + classPrefix + 'legend-title')
 
             titleText
                 .data([title])
                 .enter()
                 .append('text')
-                .attr('class', classPrefix + 'legendTitle')
+                .attr('class', classPrefix + 'legend-title')
 
-            svg.selectAll('text.' + classPrefix + 'legendTitle').text(title)
+            svg.selectAll('text.' + classPrefix + 'legend-title').text(title)
 
             if (titleWidth) {
-                svg.selectAll('text.' + classPrefix + 'legendTitle').call(d3_textWrapping, titleWidth)
+                svg.selectAll('text.' + classPrefix + 'legend-title').call(d3_textWrapping, titleWidth)
             }
 
-            const cellsSvg = svg.select('.' + classPrefix + 'legendCells')
-            const yOffset = svg
-                    .select('.' + classPrefix + 'legendTitle')
+            const cellsSvg = svg.select('.' + classPrefix + 'legend-cells')
+            let yOffset = svg
+                    .select('.' + classPrefix + 'legend-title')
                     .nodes()
                     .map((d) => d.getBBox().height)[0],
                 xOffset = -cellsSvg.nodes().map(function (d) {
                     return d.getBBox().x
                 })[0]
-            cellsSvg.attr('transform', 'translate(' + xOffset + ',' + yOffset + ')')
+
+            cellsSvg.style('transform', 'translate(' + xOffset + 'px,' + yOffset + 'px)')
+        }
+    },
+
+    d3_subtitle: (svg, subtitle, classPrefix, titleWidth) => {
+        if (subtitle !== '') {
+            const subtitleText = svg.selectAll('text.' + classPrefix + 'legend-subtitle')
+
+            subtitleText
+                .data([subtitle])
+                .enter()
+                .append('text')
+                .attr('class', classPrefix + 'legend-subtitle')
+
+            svg.selectAll('text.' + classPrefix + 'legend-subtitle').text(subtitle)
+
+            if (titleWidth) {
+                svg.selectAll('text.' + classPrefix + 'legend-subtitle').call(d3_textWrapping, titleWidth)
+            }
+
+            const cellsSvg = svg.select('.' + classPrefix + 'legend-cells')
+            const yOffset = svg
+                    .select('.' + classPrefix + 'legend-subtitle')
+                    .nodes()
+                    .map((d) => d.getBBox().height)[0],
+                xOffset = -cellsSvg.nodes().map(function (d) {
+                    return d.getBBox().x
+                })[0]
+
+            let titleOffsetY = svg
+                .select('.' + classPrefix + 'legend-title')
+                .nodes()
+                .map((d) => d.getBBox().height)[0]
+            cellsSvg.style('transform', 'translate(' + xOffset + 'px,' + yOffset + titleOffsetY + 'px)')
         }
     },
 

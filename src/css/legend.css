@@ -33,9 +33,9 @@
     overflow: visible;
 }
 
-.legendTitle {
+.dorling-legend-subtitle {
     font-weight: 100;
-    font-size: 12px;
+    font-size: 0.7rem;
 }
 .dorling-legend-title {
     font-weight: bold;
@@ -50,4 +50,23 @@
     height: 100px;
     transform: translate(77%, 31%);
     pointer-events: none;
+}
+
+circle.dorling-swatch {
+    stroke: black;
+    cursor: pointer;
+}
+circle.dorling-swatch:hover {
+    stroke-width: 3;
+}
+rect.dorling-swatch {
+    stroke: black;
+    cursor: pointer;
+}
+rect.dorling-swatch:hover {
+    stroke-width: 3;
+}
+text.dorling-label {
+    cursor: pointer;
+    font-size: 14px;
 }

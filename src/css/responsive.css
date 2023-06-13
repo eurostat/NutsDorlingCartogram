@@ -12,7 +12,7 @@
         left: 40% !important;
     }
     .dorling-leaflet-control-zoom {
-        top: 45px !important;
+        top: 40px !important;
         bottom: unset !important;
     }
     .dorling-attribution {
@@ -30,7 +30,6 @@
         height: 551px !important;
         width: 196px !important;
     }
-    .legendTitle,
     .dorling-size-legend-title,
     .dorling-legend-title {
         font-size: 12px;
@@ -66,7 +65,7 @@
         width: 189px !important;
     }
     .dorling-leaflet-control-zoom {
-        top: 55px !important;
+        top: 40px !important;
         bottom: unset !important;
     }
 }
@@ -82,7 +81,6 @@
     .dorling-bottom-text-container {
         font-size: 10px !important;
     }
-    .legendTitle,
     .dorling-size-legend-title,
     .dorling-legend-title {
         font-size: 10px !important;

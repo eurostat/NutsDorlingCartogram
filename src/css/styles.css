@@ -188,24 +188,6 @@ fill:#E5E5E5;
 .dorling-attribution a:hover {
     text-decoration: underline !important;
 }
-circle.swatch {
-    stroke: black;
-    cursor: pointer;
-}
-circle.swatch:hover {
-    stroke-width: 3;
-}
-rect.swatch {
-    stroke: black;
-    cursor: pointer;
-}
-rect.swatch:hover {
-    stroke-width: 3;
-}
-text.label {
-    cursor: pointer;
-    font-size: 14px;
-}
 
 .dorling-play-button {
     border: 0;

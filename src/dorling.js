@@ -85,7 +85,7 @@ export function dorling() {
         //https://d3-legend.susielu.com/#color
         titleWidth: 250,
         title: 'Circle Colour',
-        titleYOffset: { 0: 170, 1: 160, 2: 160, 3: 160 },
+        subtitle: 'Hover over the different legend classes to highlight them on the map',
         bodyYOffset: { 0: 50, 1: 50, 2: 50, 3: 50 },
         orient: 'vertical',
         cells: null,
@@ -456,7 +456,6 @@ export function dorling() {
             //add legends
             addSizeLegend()
             addColorLegend()
-            addColorLegendExplanation()
             // NUTS selector is drawn inside legend container, so we need to reappend it after clearing the legend container
             addNutsSelectorToDOM()
 
@@ -684,7 +683,7 @@ export function dorling() {
                 //container for all map stuff
                 out.map = out.svg
                     .append('g')
-                    .attr('transform', 'translate(0,0)')
+                    .style('transform', 'translate(0px,0px)')
                     .attr('class', 'dorling-map-container')
 
                 if (out.graticule_) {
@@ -1526,11 +1525,11 @@ export function dorling() {
             .enter()
             .append('g')
             .classed('insetmap', true)
-            .attr('transform', function (d, i) {
+            .style('transform', function (d, i) {
                 let x, y
                 x = d.x
                 y = d.y
-                return 'translate(' + [x, y] + ')'
+                return 'translate(' + x + 'px ,' + y + 'px)'
             })
             .attr('id', function (d) {
                 return 'inset-' + d.id
@@ -1546,7 +1545,7 @@ export function dorling() {
             .attr('ry', '0')
             .attr('height', out.insets_.overseasHeight + out.insets_.padding)
             .attr('width', out.insets_.overseasWidth + out.insets_.padding)
-        // /.attr('transform', "translate(-" + (out.insets_.overseasWidth / 2) + ",-" + (out.insets_.overseasHeight / 2) + ")")
+        // /.style('transform', "translate(-" + (out.insets_.overseasWidth / 2) + ",-" + (out.insets_.overseasHeight / 2) + ")")
 
         //geometries
         // let features = out.insetsGeojson.features;
@@ -1602,7 +1601,7 @@ export function dorling() {
             .attr('class', 'overseas-caption')
             .attr('font-size', out.insets_.captionFontSize)
             .attr('stroke-width', 0.2)
-            .attr('transform', 'translate(' + out.insets_.captionX + ',' + out.insets_.captionY + ')')
+            .style('transform', 'translate(' + out.insets_.captionX + 'px,' + out.insets_.captionY + 'px)')
             .call(d3_textWrapping, out.insets_.titleWidth)
 
         g.append('rect')
@@ -1611,7 +1610,7 @@ export function dorling() {
             .attr('ry', '0')
             .attr('height', out.insets_.overseasHeight + out.insets_.padding - 1)
             .attr('width', out.insets_.overseasWidth + out.insets_.padding - 1)
-        //.attr('transform', "translate(-" + (out.insets_.overseasWidth / 2) + ",-" + (out.insets_.overseasHeight / 2) + ")")
+        //.style('transform', "translate(-" + (out.insets_.overseasWidth / 2) + ",-" + (out.insets_.overseasHeight / 2) + ")")
 
         //add circles
         out.insetCircles = out.insetsSvg
@@ -2115,7 +2114,6 @@ export function dorling() {
         //add legends
         addSizeLegend()
         addColorLegend()
-        addColorLegendExplanation()
 
         if (out.showNutsSelector_) {
             addNutsSelectorToDOM()
@@ -2243,55 +2241,31 @@ export function dorling() {
     }
 
     /**
-     * Adds a title to the colour legend. The d3-svg-legend (d3ColorLegend) title actually serves as the description.
-     *
-     */
-    function addColorLegendExplanation() {
-        let dpr = window.devicePixelRatio
-        let explanation = out.legendContainer
-            .append('g')
-            .attr('fill', 'black')
-            .attr('class', 'dorling-color-legend-explanation')
-            .attr('text-anchor', 'right')
-            .attr(
-                'transform',
-                'translate(' +
-                    out.colorLegend_.translateX +
-                    ',' +
-                    (out.sizeLegend_.translateY[out.nutsLevel_] +
-                        out.colorLegend_.titleYOffset[out.nutsLevel_]) +
-                    ')'
-            )
-
-        explanation
-            .append('text')
-            .attr('y', 5)
-            .attr('x', 0)
-            .attr('dy', '0em')
-            .text(out.colorLegend_.title)
-            .call(d3_textWrapping, out.legendWidth_ - 20)
-    }
-
-    /**
      * @description Adds a colour legend to the DOM using d3-svg-legend
      */
     function addColorLegend() {
+        // define Y position
+
+        let sizeLegendNode = out.sizeLegendContainer.node()
+        let sizeLegendBbox = sizeLegendNode.getBBox()
+        let sizeLegendHeight = sizeLegendBbox.height
+        let padding = 40 // buffer between size and color legends
+        out.colorLegendY = sizeLegendHeight + padding
+
+        // define container
         out.colorLegendContainer = out.legendContainer.append('g').attr('class', 'dorling-color-legend')
-        let dpr = window.devicePixelRatio
-        out.colorLegendContainer.attr(
+        // set position
+        out.colorLegendContainer.style(
             'transform',
-            'translate(' +
-                out.colorLegend_.translateX +
-                ',' +
-                (out.colorLegend_.titleYOffset[out.nutsLevel_] +
-                    out.colorLegend_.bodyYOffset[out.nutsLevel_]) +
-                ')'
+            'translate(' + out.colorLegend_.translateX + 'px ,' + out.colorLegendY + 'px)'
         )
 
+        // build using d3-svg-legend
         let colorLegend = d3ColorLegend
             .default()
             .ascending(true)
-            .title('Hover over the different legend classes to highlight them on the map')
+            .title(window.innerWidth > out.mobileWidth_ ? out.colorLegend_.title : null)
+            .subtitle(window.innerWidth > out.mobileWidth_ ? out.colorLegend_.subtitle : null)
             .titleWidth(out.legendWidth_)
             .orient(out.colorLegend_.orient)
             .shape(out.colorLegend_.shape)
@@ -2394,17 +2368,17 @@ export function dorling() {
         out.legendSvg.select('.dorling-color-legend').call(colorLegend)
 
         //apply indentation to legend cells
-        let legendCells = d3select.select('.legendCells')
-        let transform = legendCells.attr('transform')
-        let translation = getTranslation(transform)
-        legendCells.attr(
-            'transform',
-            'translate(' +
-                (translation[0] + out.colorLegend_.cellsTranslateX) +
-                ',' +
-                (translation[1] + out.colorLegend_.cellsTranslateY) +
-                ')'
-        )
+        // let legendCells = d3select.select('.dorling-legend-cells')
+        // let transform = legendCells.style('transform')
+        // let translation = getTranslation(transform)
+        // legendCells.style(
+        //     'transform',
+        //     'translate(' +
+        //         (translation[0] + out.colorLegend_.cellsTranslateX) +
+        //         'px,' +
+        //         (translation[1] + out.colorLegend_.cellsTranslateY) +
+        //         'px)'
+        // )
     }
 
     /**
@@ -2452,32 +2426,28 @@ export function dorling() {
         //ff positioning fix
         if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
             // Do Firefox-related activities
-            out.sizeLegendContainer.attr(
+            out.sizeLegendContainer.style(
                 'transform',
-                'translate(0,' + (out.sizeLegend_.translateY[out.nutsLevel_] + 2) + ')'
+                'translate(0px,' + (out.sizeLegend_.translateY[out.nutsLevel_] + 2) + 'px)'
             )
         } else {
-            out.sizeLegendContainer.attr(
+            out.sizeLegendContainer.style(
                 'transform',
-                'translate(0,' + out.sizeLegend_.translateY[out.nutsLevel_] + ')'
+                'translate(0px,' + out.sizeLegend_.translateY[out.nutsLevel_] + 'px)'
             )
         }
 
-        // let sizeLegendBackground = out.sizeLegendContainer
-        //   .append("rect")
-        //   .attr("id", "dorling-size-legend-container-background")
-        //   .attr("transform", "translate(0,0)");
         const legendTitle = out.sizeLegendContainer
             .append('g')
             .attr('fill', 'black')
             .attr('class', 'dorling-size-legend-title')
-            .attr(
+            .style(
                 'transform',
                 'translate(' +
                     out.sizeLegend_.titleXOffset[out.nutsLevel_] +
-                    ',' +
+                    'px,' +
                     out.sizeLegend_.titleYOffset[out.nutsLevel_] +
-                    ')'
+                    'px)'
             )
             .attr('text-anchor', 'right')
         legendTitle
@@ -2493,13 +2463,13 @@ export function dorling() {
         const legC = out.sizeLegendContainer
             .append('g')
             .attr('fill', 'black')
-            .attr(
+            .style(
                 'transform',
                 'translate(' +
                     out.sizeLegend_.bodyXOffset[out.nutsLevel_] +
-                    ',' +
+                    'px,' +
                     out.sizeLegend_.bodyYOffset[out.nutsLevel_] +
-                    ')'
+                    'px)'
             ) //TODO: make dynamic
             .attr('text-anchor', 'right')
             .selectAll('g')
@@ -2660,13 +2630,12 @@ export function dorling() {
                 .append('g')
                 .attr('id', 'dorling-nuts-selector')
                 .attr('opacity', 1)
-                .attr('transform', 'translate(10,0)')
+                .style('transform', 'translate(10px,0px)')
         } else {
             // add radios to legend container
 
             let colorLegendHeight = out.colorLegendContainer.node().getBBox().height || 0
-            let clegendY =
-                out.colorLegend_.titleYOffset[out.nutsLevel_] + out.colorLegend_.bodyYOffset[out.nutsLevel_]
+            let clegendY = out.colorLegendY + out.colorLegend_.bodyYOffset[out.nutsLevel_]
             let padding = 0
             let translateY = clegendY + colorLegendHeight + padding
 
@@ -2674,14 +2643,14 @@ export function dorling() {
                 .append('g')
                 .attr('id', 'dorling-nuts-selector')
                 .attr('opacity', 0)
-                .attr('transform', 'translate(0, ' + translateY + ')')
+                .style('transform', 'translate(0px, ' + translateY + 'px)')
 
             //title only on larger screens
             out.radioContainer
                 .append('text')
                 .text('Select geographic level')
                 .attr('class', 'dorling-legend-title')
-                .attr('transform', 'translate(0,28)')
+                .style('transform', 'translate(0px,28px)')
         }
 
         //RADIO 0
@@ -2694,7 +2663,7 @@ export function dorling() {
                 .attr('height', '' + radioHeight + 'px')
                 .attr('width', '' + radioWidth + 'px')
                 .attr('viewBox', '0 0 ' + radioWidth + ' ' + radioHeight + '')
-                .attr('transform', 'translate(' + marginLeft + ',' + marginTop + ')')
+                .style('transform', 'translate(' + marginLeft + 'px ,' + marginTop + 'px)')
 
             out.outline0 = out.radio0
                 .append('circle')
@@ -2714,7 +2683,7 @@ export function dorling() {
                 .attr('r', '' + radioDotRadius + '')
                 .attr('class', 'dorling-radio-dot')
 
-            out.label0 = out.radio0.append('text').text('Country').attr('transform', 'translate(25,10)')
+            out.label0 = out.radio0.append('text').text('Country').style('transform', 'translate(25px,10px)')
         }
 
         //RADIO 1
@@ -2727,9 +2696,9 @@ export function dorling() {
                 .attr('height', '' + radioHeight + 'px')
                 .attr('width', '' + radioWidth + 'px')
                 .attr('viewBox', '0 0 ' + radioWidth + ' ' + radioHeight + '')
-                .attr(
+                .style(
                     'transform',
-                    'translate(' + marginLeft + ',' + (radioHeight + padding + marginTop) + ')'
+                    'translate(' + marginLeft + 'px ,' + (radioHeight + padding + marginTop) + 'px)'
                 )
 
             out.outline1 = out.radio1
@@ -2750,7 +2719,7 @@ export function dorling() {
                 .attr('r', '' + radioDotRadius + '')
                 .attr('class', 'dorling-radio-dot')
 
-            out.radio1.append('text').text('NUTS 1').attr('transform', 'translate(25,10)')
+            out.radio1.append('text').text('NUTS 1').style('transform', 'translate(25px,10px)')
         }
 
         //RADIO 2
@@ -2763,9 +2732,9 @@ export function dorling() {
                 .attr('height', '' + radioHeight + 'px')
                 .attr('width', '' + radioWidth + 'px')
                 .attr('viewBox', '0 0 ' + radioWidth + ' ' + radioHeight + '')
-                .attr(
+                .style(
                     'transform',
-                    'translate(' + marginLeft + ',' + (radioHeight * 2 + padding * 2 + marginTop) + ')'
+                    'translate(' + marginLeft + 'px,' + (radioHeight * 2 + padding * 2 + marginTop) + 'px)'
                 )
 
             out.outline2 = out.radio2
@@ -2786,7 +2755,7 @@ export function dorling() {
                 .attr('r', '' + radioDotRadius + '')
                 .attr('class', 'dorling-radio-dot')
 
-            out.radio2.append('text').text('NUTS 2').attr('transform', 'translate(25,10)')
+            out.radio2.append('text').text('NUTS 2').style('transform', 'translate(25px,10px)')
         }
 
         //RADIO 3
@@ -2799,9 +2768,9 @@ export function dorling() {
                 .attr('height', '' + radioHeight + 'px')
                 .attr('width', '' + radioWidth + 'px')
                 .attr('viewBox', '0 0 ' + radioWidth + ' ' + radioHeight + '')
-                .attr(
+                .style(
                     'transform',
-                    'translate(' + marginLeft + ',' + (radioHeight * 3 + padding * 3 + marginTop) + ')'
+                    'translate(' + marginLeft + 'px ,' + (radioHeight * 3 + padding * 3 + marginTop) + 'px)'
                 )
 
             out.outline3 = out.radio3
@@ -2822,7 +2791,7 @@ export function dorling() {
                 .attr('r', '' + radioDotRadius + '')
                 .attr('class', 'dorling-radio-dot')
 
-            out.label3 = out.radio3.append('text').text('NUTS 3').attr('transform', 'translate(25,10)')
+            out.label3 = out.radio3.append('text').text('NUTS 3').style('transform', 'translate(25px ,10px)')
         }
 
         // set current nutsLevel
@@ -3059,7 +3028,7 @@ export function dorling() {
      *
      */
     function zoomed(event) {
-        out.map.attr('transform', event.transform)
+        out.map.style('transform', event.transform)
     }
 
     /**
