@@ -44,7 +44,6 @@
 
                 .nutsLevel(2)
                 .nutsYear(2021)
-                // .colors(["#3A6ABD", "#789BD8", "#D1D9F1", "#EBC2DE", "#E18FC8", "#A74177"])
                 .colors(['#ffeb99', '#c7e9b4', '#7fcdbb', '#41b6c4', '#104f99', '#17256b'])
                 .thresholdValues([15000, 20000, 30000, 40000, 50000, 1000000])
                 .sizeDatasetCode('nama_10r_3gdp')
@@ -64,7 +63,6 @@
                     labelUnit: ' ',
                     labelOffset: 10,
                     shape: 'circle',
-                    bodyYOffset: { 0: 50, 1: 50, 2: 50, 3: 50 },
                 })
                 .sizeLegend({
                     title: 'Gross domestic product (€ million)',
@@ -77,9 +75,6 @@
                         2: [764000, 100000],
                         3: [226000, 10000],
                     },
-                    bodyXOffset: { 0: 50, 1: 30, 2: 30, 3: 30 },
-                    bodyYOffset: { 0: 150, 1: 70, 2: 70, 3: 70 },
-                    labelsTranslateX: { 0: 80, 1: 45, 2: 40, 3: 40 },
                 })
                 .tooltip({
                     colorLabel: 'Gross domestic product',

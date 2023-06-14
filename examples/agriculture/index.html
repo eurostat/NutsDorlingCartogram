@@ -33,7 +33,7 @@
 
             /* move legend down to make room for select */
             .dorling-legend-div {
-                top: 40px !important;
+                top: 55px !important;
             }
 
             .dorling-standalone-dropdown {
@@ -118,92 +118,48 @@
                     maxCircleRadius: { 2: 40 },
                     sizeLegend: {
                         values: { 2: [5000, 2000, 100] },
-                        bodyYOffset: { 2: 130 },
-                        bodyXOffset: { 2: 55 },
-                    },
-                    colorLegend: {
-                        titleYOffset: { 2: 170 },
                     },
                 },
                 C1200: {
                     maxCircleRadius: { 2: 40 },
                     sizeLegend: {
                         values: { 2: [5000, 2000, 100] },
-                        bodyYOffset: { 2: 135 },
-                        bodyXOffset: { 2: 55 },
-                        labelsTranslateX: {
-                            2: 50,
-                        },
-                    },
-                    colorLegend: {
-                        titleYOffset: { 2: 170 },
                     },
                 },
                 C1120: {
                     maxCircleRadius: { 2: 40 },
                     sizeLegend: {
                         values: { 2: [5000, 2000, 100] },
-                        bodyYOffset: { 2: 130 },
-                        bodyXOffset: { 2: 55 },
-                    },
-                    colorLegend: {
-                        titleYOffset: { 2: 170 },
                     },
                 },
                 C1300: {
                     maxCircleRadius: { 2: 40 },
                     sizeLegend: {
                         values: { 2: [5000, 2000, 100] },
-                        bodyYOffset: { 2: 130 },
-                        bodyXOffset: { 2: 55 },
-                    },
-                    colorLegend: {
-                        titleYOffset: { 2: 170 },
                     },
                 },
                 C1410: {
                     maxCircleRadius: { 2: 40 },
                     sizeLegend: {
                         values: { 2: [5000, 2000, 100] },
-                        bodyYOffset: { 2: 178 },
-                        bodyXOffset: { 2: 70 },
-                        labelsTranslateX: { 2: 70 },
-                    },
-                    colorLegend: {
-                        titleYOffset: { 2: 210 },
                     },
                 },
                 C1500: {
                     maxCircleRadius: { 2: 30 },
                     sizeLegend: {
                         values: { 2: [5000, 2000, 100] },
-                        bodyYOffset: { 2: 130 },
-                        bodyXOffset: { 2: 55 },
-                    },
-                    colorLegend: {
-                        titleYOffset: { 2: 170 },
                     },
                 },
                 C1600: {
                     maxCircleRadius: { 2: 30 },
                     sizeLegend: {
                         values: { 2: [5000, 2000, 100] },
-                        bodyYOffset: { 2: 130 },
-                        bodyXOffset: { 2: 55 },
-                    },
-                    colorLegend: {
-                        titleYOffset: { 2: 170 },
                     },
                 },
                 C2000: {
                     maxCircleRadius: { 2: 30 },
                     sizeLegend: {
                         values: { 2: [5000, 2000, 100] },
-                        bodyYOffset: { 2: 130 },
-                        bodyXOffset: { 2: 55 },
-                    },
-                    colorLegend: {
-                        titleYOffset: { 2: 170 },
                     },
                 },
             }
@@ -270,14 +226,11 @@
                     title: 'Share of total regional cereal production (%)',
                     orient: 'vertical',
                     shapeRadius: 10,
-
                     labelAlign: 'middle',
                     labelFormat: '.1f',
                     labelUnit: ' ',
                     labelOffset: 10,
                     shape: 'circle',
-                    translateY: 145,
-                    titleYOffset: { 2: 170 },
                 })
                 .sizeLegend({
                     title: 'Harvested production (1 000 tonnes)',
@@ -285,8 +238,6 @@
                         return d.toLocaleString('en').replace(/,/gi, ' ')
                     },
                     values: { 2: [5000, 2000, 100] },
-                    bodyXOffset: { 2: 55 },
-                    bodyYOffset: { 2: 128 },
                 })
                 .tooltip({
                     colorLabel: 'Share of total regional cereal production',

@@ -97,8 +97,6 @@
                     labelUnit: ' ',
                     labelOffset: 10,
                     shape: 'circle',
-                    titleYOffset: { 0: 210, 1: 160, 2: 160, 3: 160 }, // set distance between size legend and colour legend
-                    bodyYOffset: { 0: 75, 1: 70, 2: 70, 3: 70 }, // distance between title and body
                 })
                 .sizeLegend({
                     title: 'Total number of nights spent (million)',
@@ -112,9 +110,6 @@
                         2: [100000000, 25000000, 1000000],
                         3: [50000000, 15000000, 1000000],
                     },
-                    bodyXOffset: { 0: 85, 1: 55, 2: 50, 3: 50 },
-                    bodyYOffset: { 0: 185, 1: 130, 2: 115, 3: 100 },
-                    labelsTranslateX: { 0: 90, 1: 45, 2: 40, 3: 40 },
                 })
                 .tooltip({
                     colorLabel: 'Foreign tourism dependency (share of total nights spent by non-residents)',

@@ -33,7 +33,7 @@
 
             /* move legend down to make room for select */
             .dorling-legend-div {
-                top: 40px !important;
+                top: 55px !important;
             }
 
             .dorling-standalone-dropdown {
@@ -114,11 +114,6 @@
                     maxCircleRadius: { 2: 40 },
                     sizeLegend: {
                         values: { 2: [9000, 3000, 1000] },
-                        bodyYOffset: { 2: 120 },
-                        bodyXOffset: { 2: 55 },
-                    },
-                    colorLegend: {
-                        titleYOffset: { 2: 170 },
                     },
                 },
                 // bovine
@@ -126,11 +121,6 @@
                     maxCircleRadius: { 2: 40 },
                     sizeLegend: {
                         values: { 2: [9000, 3000, 1000] },
-                        bodyYOffset: { 2: 130 },
-                        bodyXOffset: { 2: 55 },
-                    },
-                    colorLegend: {
-                        titleYOffset: { 2: 170 },
                     },
                 },
                 // sheep
@@ -138,22 +128,12 @@
                     maxCircleRadius: { 2: 40 },
                     sizeLegend: {
                         values: { 2: [9000, 3000, 1000] },
-                        bodyYOffset: { 2: 130 },
-                        bodyXOffset: { 2: 65 },
-                    },
-                    colorLegend: {
-                        titleYOffset: { 2: 170 },
                     },
                 }, // goats
                 A4200: {
                     maxCircleRadius: { 2: 40 },
                     sizeLegend: {
                         values: { 2: [9000, 3000, 1000] },
-                        bodyYOffset: { 2: 120 },
-                        bodyXOffset: { 2: 55 },
-                    },
-                    colorLegend: {
-                        titleYOffset: { 2: 170 },
                     },
                 },
             }
@@ -221,14 +201,11 @@
                     title: 'Share of total regional livestock (%)',
                     orient: 'vertical',
                     shapeRadius: 10,
-
                     labelAlign: 'middle',
                     labelFormat: '.1f',
                     labelUnit: ' ',
                     labelOffset: 10,
                     shape: 'circle',
-                    translateY: 145,
-                    titleYOffset: animalConfig.A3100.colorLegend.titleYOffset,
                 })
                 .sizeLegend({
                     title: 'Livestock (1 000 head)',
@@ -236,9 +213,6 @@
                         return d.toLocaleString('en').replace(/,/gi, ' ')
                     },
                     values: animalConfig.A3100.sizeLegend.values,
-                    bodyXOffset: animalConfig.A3100.sizeLegend.bodyXOffset,
-                    bodyYOffset: animalConfig.A3100.sizeLegend.bodyYOffset,
-                    labelsTranslateX: { 0: 80, 1: 80, 2: 80 },
                 })
                 .tooltip({
                     colorLabel: 'Share of total regional livestock',

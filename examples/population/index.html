@@ -73,22 +73,15 @@
                         2: [15e6, 5e6, 5e5],
                         3: [7e6, 1e6],
                     },
-                    bodyXOffset: { 0: 85, 1: 50, 2: 50, 3: 50 },
-                    bodyYOffset: { 0: 140, 1: 105, 2: 105, 3: 95 },
-                    labelsTranslateX: { 0: 75, 1: 45, 2: 40, 3: 40 },
                 })
                 .colorLegend({
                     title: 'Population change, 2021 (per 1 000 inhabitants)',
                     orient: 'vertical',
                     shapeRadius: 10,
-
                     labelAlign: 'middle',
                     labelUnit: ' ',
                     labelOffset: 10,
                     shape: 'circle',
-                    //labelFormat: d3.format('.0f'),
-                    titleYOffset: { 0: 190, 1: 145, 2: 145, 3: 145 }, // space between size legend and color legend
-                    bodyYOffset: { 0: 50, 1: 50, 2: 50, 3: 50 }, // space between color legend title and legend 'body'
                 })
 
                 .tooltip({
