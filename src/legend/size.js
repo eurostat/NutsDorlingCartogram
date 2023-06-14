@@ -122,11 +122,7 @@ const sizeLegend = function () {
             .attr('stroke', 'none')
 
         // get its width
-        let circleWidthPixels = testCircle.nodes().map((d) => {
-            console.log(d.getBoundingClientRect().width)
-            return d.getBoundingClientRect().width
-        })[0]
-
+        let circleWidthPixels = testCircle.nodes().map((d) => d.getBoundingClientRect().width)[0]
         return circleWidthPixels
     }
 
