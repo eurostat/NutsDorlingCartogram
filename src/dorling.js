@@ -68,18 +68,10 @@ export function dorling() {
     //size legend (circle radiuses)
     out.sizeLegend_ = {
         title: 'Circle Size',
-        titleYOffset: { 0: 20, 1: 20, 2: 20, 3: 20 },
-        titleXOffset: { 0: 0, 1: 0, 2: 0, 3: 0 },
         textFunction: function (d) {
             return d.toLocaleString()
         },
         values: {},
-        translateY: { 0: 0, 1: 0, 2: 0, 3: 0 },
-        bodyXOffset: { 0: 50, 1: 50, 2: 50, 3: 50 },
-        bodyYOffset: { 0: 140, 1: 100, 2: 100, 3: 90 },
-        labelsTranslateX: { 0: 40, 1: 40, 2: 40, 3: 40 },
-        textOffsetY: { 0: -12, 1: -12, 2: -12, 3: -12 },
-        labelsOffsetY: { 0: 2, 1: 2, 2: 2, 3: 2 },
     }
     //color legend
     out.colorLegend_ = {
@@ -87,7 +79,6 @@ export function dorling() {
         titleWidth: 250,
         title: 'Circle Colour',
         subtitle: 'Hover over the different legend classes to highlight them on the map',
-        bodyYOffset: { 0: 50, 1: 50, 2: 50, 3: 50 },
         orient: 'vertical',
         cells: null,
         shape: 'circle',
@@ -119,13 +110,8 @@ export function dorling() {
         labelUnit: ' ',
         labelWrap: 140,
         eu27: null,
-        translateX: 0,
-        translateY: 135,
-        cellsTranslateX: 3,
-        cellsTranslateY: 2,
     }
     //selectors
-    out.nutsSelectorTranslateY_ = { 0: 375, 1: 375, 2: 375, 3: 375 }
     out.showNutsSelector_ = true
     out.nutsSelectorSvgHeight_ = 140
     out.nutsSelectorSvgWidth_ = 100
@@ -2102,7 +2088,6 @@ export function dorling() {
             if (!out.showLegend) {
                 out.legendDiv.style.visibility = 'hidden'
             }
-            out.legendDiv.classList.add('dorling-legend-compact')
         }
 
         //background container
@@ -2119,7 +2104,7 @@ export function dorling() {
             addNutsSelectorToDOM()
         }
 
-        //add background fill rect to legend svg
+        //add background rect to legend svg for legibility when zooming
         var ctx = out.legendSvg.node(),
             textElem = out.legendContainer.node(),
             SVGRect = textElem.getBBox()
@@ -2247,18 +2232,15 @@ export function dorling() {
         // define Y position
 
         let sizeLegendNode = out.sizeLegendContainer.node()
-        let sizeLegendBbox = sizeLegendNode.getBBox()
+        let sizeLegendBbox = sizeLegendNode.getBoundingClientRect()
         let sizeLegendHeight = sizeLegendBbox.height
-        let padding = 40 // buffer between size and color legends
+        let padding = 30 // buffer in px between size and color legends
         out.colorLegendY = sizeLegendHeight + padding
 
         // define container
         out.colorLegendContainer = out.legendContainer.append('g').attr('class', 'dorling-color-legend')
         // set position
-        out.colorLegendContainer.style(
-            'transform',
-            'translate(' + out.colorLegend_.translateX + 'px ,' + out.colorLegendY + 'px)'
-        )
+        out.colorLegendContainer.style('transform', 'translate(0px ,' + out.colorLegendY + 'px)')
 
         // build using d3-svg-legend
         let colorLegend = ColorLegend.default()

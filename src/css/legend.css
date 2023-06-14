@@ -1,10 +1,7 @@
-.dorling-legend-compact {
-    top: 35px !important;
-}
 .dorling-legend-container {
     font-size: 14px;
 }
-.dorling-size-legend-label {
+.dorling-legend-label {
     font-size: 14px;
 }
 .dorling-legend-background-rect {
@@ -20,8 +17,8 @@
 }
 .dorling-legend-div {
     position: absolute;
-    top: 0px;
-    left: 0px;
+    top: 45px;
+    left: 15px;
 }
 .dorling-legend-svg {
     position: absolute;

@@ -54,7 +54,7 @@ const sizeLegend = function () {
         //labels
 
         legC.append('text')
-            .attr('class', 'dorling-size-legend-label')
+            .attr('class', 'dorling-legend-label')
             //.attr("y", (d) => 9 - 2 * sizeFunction(d))
             .attr('y', (d, i) => {
                 let r = getScreenCircleSize(sizeFunction(d)) / 2

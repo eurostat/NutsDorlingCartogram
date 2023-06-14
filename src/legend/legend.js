@@ -143,14 +143,17 @@ export default {
     },
 
     d3_addText: function (svg, enter, labels, classPrefix, labelWidth) {
-        enter.append('text').attr('class', classPrefix + 'label')
+        enter.append('text').attr('class', classPrefix + 'legend-label')
         const text = svg
-            .selectAll(`g.${classPrefix}cell text.${classPrefix}label`)
+            .selectAll(`g.${classPrefix}cell text.${classPrefix}legend-label`)
             .data(labels)
             .text(d3_identity)
 
         if (labelWidth) {
-            svg.selectAll(`g.${classPrefix}cell text.${classPrefix}label`).call(d3_textWrapping, labelWidth)
+            svg.selectAll(`g.${classPrefix}cell text.${classPrefix}legend-label`).call(
+                d3_textWrapping,
+                labelWidth
+            )
         }
 
         return text
