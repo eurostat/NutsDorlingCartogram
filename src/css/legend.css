@@ -7,11 +7,8 @@
 .dorling-size-legend-label {
     font-size: 14px;
 }
-.dorling-legend-container-background {
-    fill: white;
-}
 .dorling-legend-background-rect {
-    /* fill: white; */
+    fill: 'none';
     pointer-events: none !important;
 }
 /* allow mouse events to travel through legend background svg */
@@ -46,9 +43,6 @@
     font-size: 0.8rem;
 }
 .dorling-size-legend {
-    width: 175px;
-    height: 100px;
-    transform: translate(77%, 31%);
     pointer-events: none;
 }
 
@@ -69,4 +63,7 @@ rect.dorling-swatch:hover {
 text.dorling-label {
     cursor: pointer;
     font-size: 14px;
+}
+.dorling-opaque {
+    fill: white !important;
 }

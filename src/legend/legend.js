@@ -230,9 +230,11 @@ export default {
                     return d.getBBox().x
                 })[0]
 
-            cellsSvg.style('transform', 'translate(' + xOffset + 'px,' + yOffset + 'px)')
+            //cellsSvg.style('transform', 'translate(' + xOffset + 'px,' + yOffset + 'px)')
         }
     },
+
+    d3_textWrapping: d3_textWrapping,
 
     d3_subtitle: (svg, subtitle, classPrefix, titleWidth) => {
         if (subtitle !== '') {
@@ -244,7 +246,7 @@ export default {
                 .append('text')
                 .attr('class', classPrefix + 'legend-subtitle')
 
-            svg.selectAll('text.' + classPrefix + 'legend-subtitle').text(subtitle)
+            let subtit = svg.selectAll('text.' + classPrefix + 'legend-subtitle').text(subtitle)
 
             if (titleWidth) {
                 svg.selectAll('text.' + classPrefix + 'legend-subtitle').call(d3_textWrapping, titleWidth)
@@ -263,7 +265,15 @@ export default {
                 .select('.' + classPrefix + 'legend-title')
                 .nodes()
                 .map((d) => d.getBBox().height)[0]
-            cellsSvg.style('transform', 'translate(' + xOffset + 'px,' + yOffset + titleOffsetY + 'px)')
+
+            // move the subtitle down by the amount of space occupied by the title
+            let padding = 5
+            let translateY = titleOffsetY + padding
+            subtit.style('transform', 'translate(0px,' + translateY + 'px)')
+
+            // move the cells down by the amount of space occupied by the title and subtitle
+            translateY = yOffset + titleOffsetY + padding * 2
+            cellsSvg.style('transform', 'translate(' + xOffset + 'px,' + translateY + 'px)')
         }
     },
 

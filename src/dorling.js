@@ -8,7 +8,8 @@ import * as d3array from 'd3-array'
 import * as d3select from 'd3-selection'
 import * as d3geo from 'd3-geo'
 import * as topojson from 'topojson'
-import * as d3ColorLegend from './legend/color'
+import * as ColorLegend from './legend/color'
+import * as SizeLegend from './legend/size'
 import $ from 'jquery'
 
 const createStandaloneHTMLString = require('./templates/standalone')
@@ -62,8 +63,8 @@ export function dorling() {
     out.pauseButton_ = false
     out.showBorders_ = true
     out.legendHeight_ = 550
-    out.legendWidth_ = window.innerWidth > 1000 ? 300 : 220
-    out.legendOpacity_ = 0.5
+    out.legendWidth_ = window.innerWidth > 1000 ? 400 : 220
+    out.legendOpacity_ = 0.8
     //size legend (circle radiuses)
     out.sizeLegend_ = {
         title: 'Circle Size',
@@ -683,7 +684,7 @@ export function dorling() {
                 //container for all map stuff
                 out.map = out.svg
                     .append('g')
-                    .style('transform', 'translate(0px,0px)')
+                    .attr('transform', 'translate(0,0)')
                     .attr('class', 'dorling-map-container')
 
                 if (out.graticule_) {
@@ -1602,7 +1603,6 @@ export function dorling() {
             .attr('font-size', out.insets_.captionFontSize)
             .attr('stroke-width', 0.2)
             .style('transform', 'translate(' + out.insets_.captionX + 'px,' + out.insets_.captionY + 'px)')
-            .call(d3_textWrapping, out.insets_.titleWidth)
 
         g.append('rect')
             .classed('outline', true)
@@ -2261,8 +2261,7 @@ export function dorling() {
         )
 
         // build using d3-svg-legend
-        let colorLegend = d3ColorLegend
-            .default()
+        let colorLegend = ColorLegend.default()
             .ascending(true)
             .title(window.innerWidth > out.mobileWidth_ ? out.colorLegend_.title : null)
             .subtitle(window.innerWidth > out.mobileWidth_ ? out.colorLegend_.subtitle : null)
@@ -2364,51 +2363,23 @@ export function dorling() {
 
         if (out.colorLegend_.shape == 'circle') colorLegend.shapeRadius(out.colorLegend_.shapeRadius)
 
-        //init svg-color-legend
+        // append to container
         out.legendSvg.select('.dorling-color-legend').call(colorLegend)
-
-        //apply indentation to legend cells
-        // let legendCells = d3select.select('.dorling-legend-cells')
-        // let transform = legendCells.style('transform')
-        // let translation = getTranslation(transform)
-        // legendCells.style(
-        //     'transform',
-        //     'translate(' +
-        //         (translation[0] + out.colorLegend_.cellsTranslateX) +
-        //         'px,' +
-        //         (translation[1] + out.colorLegend_.cellsTranslateY) +
-        //         'px)'
-        // )
-    }
-
-    /**
-     * Retrieve the translation applied to a DOM element
-     *
-     * @param {*} transform
-     * @returns
-     */
-    function getTranslation(transform) {
-        // Create a dummy g for calculation purposes only. This will never
-        // be appended to the DOM and will be discarded once this function
-        // returns.
-        var g = document.createElementNS('http://www.w3.org/2000/svg', 'g')
-
-        // Set the transform attribute to the provided string value.
-        g.setAttributeNS(null, 'transform', transform)
-
-        // consolidate the SVGTransformList containing all transformations
-        // to a single SVGTransform of type SVG_TRANSFORM_MATRIX and get
-        // its SVGMatrix.
-        var matrix = g.transform.baseVal.consolidate().matrix
-
-        // As per definition values e and f are the ones for the translation.
-        return [matrix.e, matrix.f]
     }
 
     /**
      * @description Adds a circle size legend to the DOM manually (without a third party library)
      */
     function addSizeLegend() {
+        // define container
+        out.sizeLegendContainer = out.legendContainer
+            .append('g')
+            .attr('class', 'dorling-size-legend')
+            .attr('opacity', 0)
+
+        // set position
+        out.sizeLegendContainer.style('transform', 'translate(0px ,0px)')
+
         //assign default circle radiuses if none specified by user
         if (!out.sizeLegend_.values[out.nutsLevel_]) {
             out.sizeLegend_.values[out.nutsLevel_] = [
@@ -2418,179 +2389,16 @@ export function dorling() {
             ]
         }
 
-        out.sizeLegendContainer = out.legendContainer
-            .append('g')
-            .attr('id', 'dorling-size-legend-container')
-            .attr('opacity', 0)
+        // build legend
+        let sizeLegend = SizeLegend.default()
+            .title(out.sizeLegend_.title)
+            .maxWidth(out.legendWidth_)
+            .values(out.sizeLegend_.values[out.nutsLevel_])
+            .sizeFunction(out.sizeScale)
+            .textFunction(out.sizeLegend_.textFunction)
 
-        //ff positioning fix
-        if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
-            // Do Firefox-related activities
-            out.sizeLegendContainer.style(
-                'transform',
-                'translate(0px,' + (out.sizeLegend_.translateY[out.nutsLevel_] + 2) + 'px)'
-            )
-        } else {
-            out.sizeLegendContainer.style(
-                'transform',
-                'translate(0px,' + out.sizeLegend_.translateY[out.nutsLevel_] + 'px)'
-            )
-        }
-
-        const legendTitle = out.sizeLegendContainer
-            .append('g')
-            .attr('fill', 'black')
-            .attr('class', 'dorling-size-legend-title')
-            .style(
-                'transform',
-                'translate(' +
-                    out.sizeLegend_.titleXOffset[out.nutsLevel_] +
-                    'px,' +
-                    out.sizeLegend_.titleYOffset[out.nutsLevel_] +
-                    'px)'
-            )
-            .attr('text-anchor', 'right')
-        legendTitle
-            .append('text')
-            .attr('y', 5)
-            .attr('x', 0)
-            .attr('dy', '0em')
-            .text(out.sizeLegend_.title)
-            .attr('class', 'dorling-legend-title')
-            .call(d3_textWrapping, out.legendWidth_)
-
-        //circles
-        const legC = out.sizeLegendContainer
-            .append('g')
-            .attr('fill', 'black')
-            .style(
-                'transform',
-                'translate(' +
-                    out.sizeLegend_.bodyXOffset[out.nutsLevel_] +
-                    'px,' +
-                    out.sizeLegend_.bodyYOffset[out.nutsLevel_] +
-                    'px)'
-            ) //TODO: make dynamic
-            .attr('text-anchor', 'right')
-            .selectAll('g')
-            // .data([20e6, 10e6, 1e6])
-            .data(out.sizeLegend_.values[out.nutsLevel_])
-            .join('g')
-        legC.append('circle')
-            .attr('fill', 'none')
-            .attr('stroke', 'black')
-            .attr('cy', (d) => {
-                if (window.devicePixelRatio > 1) {
-                    return -sizeFunction(d) / window.devicePixelRatio
-                } else {
-                    return -sizeFunction(d)
-                }
-            })
-            .attr('r', (d) => {
-                if (window.devicePixelRatio > 1) {
-                    return sizeFunction(d) / window.devicePixelRatio
-                } else {
-                    return sizeFunction(d)
-                }
-            })
-
-        //labels
-        legC.append('text')
-            .attr('class', 'dorling-size-legend-label')
-            //.attr("y", (d) => 9 - 2 * sizeFunction(d))
-            .attr('y', (d, i) => {
-                let r
-                if (window.devicePixelRatio > 1) {
-                    r = sizeFunction(d) / window.devicePixelRatio
-                } else {
-                    r = sizeFunction(d)
-                }
-                let y
-                if (i == 0) {
-                    y = -1 - 2 * r + out.sizeLegend_.textOffsetY[out.nutsLevel_] //add padding for first item
-                } else {
-                    y = -1 - 2 * r + out.sizeLegend_.textOffsetY[out.nutsLevel_]
-                }
-                return y + out.sizeLegend_.labelsOffsetY[out.nutsLevel_]
-            })
-            .attr('x', out.sizeLegend_.labelsTranslateX[out.nutsLevel_])
-            .attr('dy', '1.2em')
-            .attr('xml:space', 'preserve')
-            .text((d) => {
-                return out.sizeLegend_.textFunction(d)
-                //return d.toLocaleString("en").replace(/,/gi, " ");
-            })
-        //line pointing to top of corresponding circle:
-        legC.append('line')
-            .style('stroke-dasharray', 2)
-            .style('stroke', 'grey')
-            .attr('x1', 2)
-            .attr('y1', (d, i) => {
-                let y
-                let r
-                if (window.devicePixelRatio > 1) {
-                    r = sizeFunction(d) / window.devicePixelRatio
-                } else {
-                    r = sizeFunction(d)
-                }
-                if (i == 0) {
-                    y = -1 - 2 * r //add padding
-                } else {
-                    y = -1 - 2 * r
-                }
-                return y + out.sizeLegend_.labelsOffsetY[out.nutsLevel_]
-            })
-            .attr('xml:space', 'preserve')
-            .attr('x2', out.sizeLegend_.labelsTranslateX[out.nutsLevel_] - 3)
-            .attr('y2', (d, i) => {
-                let y
-                let r
-                if (window.devicePixelRatio > 1) {
-                    r = sizeFunction(d) / window.devicePixelRatio
-                } else {
-                    r = sizeFunction(d)
-                }
-                if (i == 0) {
-                    y = -1 - 2 * r //add padding
-                } else {
-                    y = -1 - 2 * r
-                }
-                return y + out.sizeLegend_.labelsOffsetY[out.nutsLevel_]
-            })
-    }
-
-    var d3_textWrapping = function d3_textWrapping(text, width) {
-        text.each(function () {
-            var text = (0, d3select.select)(this),
-                words = text.text().split(/\s+/).reverse(),
-                word,
-                line = [],
-                lineNumber = 0,
-                lineHeight = 1.2,
-                //ems
-                y = text.attr('y'),
-                dy = parseFloat(text.attr('dy')) || 0,
-                tspan = text
-                    .text(null)
-                    .append('tspan')
-                    .attr('x', 0)
-                    .attr('dy', dy + 'em')
-
-            while ((word = words.pop())) {
-                line.push(word)
-                tspan.text(line.join(' '))
-                if (tspan.node().getComputedTextLength() > width && line.length > 1) {
-                    line.pop()
-                    tspan.text(line.join(' '))
-                    line = [word]
-                    tspan = text
-                        .append('tspan')
-                        .attr('x', 0)
-                        .attr('dy', lineHeight + dy + 'em')
-                        .text(word)
-                }
-            }
-        })
+        // append to container
+        out.legendSvg.select('.dorling-size-legend').call(sizeLegend)
     }
 
     /**
@@ -2635,9 +2443,8 @@ export function dorling() {
             // add radios to legend container
 
             let colorLegendHeight = out.colorLegendContainer.node().getBBox().height || 0
-            let clegendY = out.colorLegendY + out.colorLegend_.bodyYOffset[out.nutsLevel_]
             let padding = 0
-            let translateY = clegendY + colorLegendHeight + padding
+            let translateY = out.colorLegendY + colorLegendHeight + padding
 
             out.radioContainer = out.legendContainer
                 .append('g')
@@ -3028,7 +2835,16 @@ export function dorling() {
      *
      */
     function zoomed(event) {
-        out.map.style('transform', event.transform)
+        out.map.attr('transform', event.transform)
+
+        // give legend backlground a fill for legibility when zxooming in
+        let backg = d3select.select('.dorling-legend-background-rect')
+
+        if (event.transform.k > 1) {
+            backg.node().classList.add('dorling-opaque')
+        } else {
+            backg.node().classList.remove('dorling-opaque')
+        }
     }
 
     /**
