@@ -100,7 +100,7 @@
             </select>
         </div>
 
-        <div id="containerDiv"></div>
+        <div id="dorling-container-div"></div>
         <script>
             let transportConfig = {
                 air: {
@@ -216,7 +216,7 @@
 
             let dorling = NutsDorlingCartogram.dorling()
                 .standalone(standalone)
-                .containerId('containerDiv')
+                .containerId('dorling-container-div')
                 .title(transportConfig.air.title)
                 // .nuts2JsonBaseURL('https://ec.europa.eu/assets/estat/E/E4/gisco/pub/nuts2json/v2/')
                 // .overseasGeometriesBaseURL(

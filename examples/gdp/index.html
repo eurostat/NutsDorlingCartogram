@@ -25,7 +25,15 @@
     </head>
 
     <body style="margin: 0">
-        <div id="containerDiv"></div>
+        <div class="dorling-header">
+            <div id="title-col" class="text-center">
+                <h4 id="chart_title" class="h4-tcg flex-grow-0">GDP</h4>
+            </div>
+            <div id="subtitle-col" class="text-center">
+                <h5 id="chart_subtitle" class="h5-norm">2021</h5>
+            </div>
+        </div>
+        <div id="dorling-container-div"></div>
         <script src="../../build/dorling.js"></script>
         <script>
             let standalone = true
@@ -36,7 +44,7 @@
 
             let dorling = NutsDorlingCartogram.dorling()
                 .standalone(standalone)
-                .containerId('containerDiv')
+                .containerId('dorling-container-div')
                 .title('Gross domestic product, 2021')
                 // .nuts2JsonBaseURL('https://ec.europa.eu/assets/estat/E/E4/gisco/pub/nuts2json/v2/')
                 // .overseasGeometriesBaseURL(
