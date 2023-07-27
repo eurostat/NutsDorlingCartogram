@@ -11,13 +11,9 @@
         <script type="text/javascript">
             var parentLocation = parent.location
             if (parentLocation.hostname.indexOf('ec.europa.eu') !== -1) {
-                document.write(
-                    '<script defer src="//europa.eu/webtools/load.js" type="text/javascript"></sc' + 'ript>'
-                )
+                document.write('<script defer src="//europa.eu/webtools/load.js" type="text/javascript"></sc' + 'ript>')
                 document.write('<script type="application/json">')
-                document.write(
-                    '{ "utility" : "piwik", "siteID" : 59, "sitePath" : ["ec.europa.eu\/eurostat"] }'
-                )
+                document.write('{ "utility" : "piwik", "siteID" : 59, "sitePath" : ["ec.europa.eu\/eurostat"] }')
                 document.write('</sc' + 'ript>')
             }
         </script>
@@ -25,16 +21,16 @@
     </head>
 
     <body style="margin: 0">
-        <div class="dorling-header">
+        <!-- <div class="dorling-header">
             <div id="title-col" class="text-center">
                 <h4 id="chart_title" class="h4-tcg flex-grow-0">GDP</h4>
             </div>
             <div id="subtitle-col" class="text-center">
                 <h5 id="chart_subtitle" class="h5-norm">2021</h5>
             </div>
-        </div>
+        </div> -->
         <div id="dorling-container-div"></div>
-        <script src="../../build/dorling.js"></script>
+        <script src="../../build/dorling.min.js"></script>
         <script>
             let standalone = true
             let simple = getURLParamValue('simple')

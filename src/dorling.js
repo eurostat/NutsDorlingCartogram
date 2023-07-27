@@ -629,8 +629,7 @@ export function dorling() {
                     out.forceInProgress = false
                 }
 
-                out.height_ =
-                    (out.width_ * (out.n2j.bbox[3] - out.n2j.bbox[1])) / (out.n2j.bbox[2] - out.n2j.bbox[0])
+                out.height_ = (out.width_ * (out.n2j.bbox[3] - out.n2j.bbox[1])) / (out.n2j.bbox[2] - out.n2j.bbox[0])
 
                 //set up main svg element
                 out.svg = d3select.create('svg')
@@ -668,10 +667,7 @@ export function dorling() {
                 }
 
                 //container for all map stuff
-                out.map = out.svg
-                    .append('g')
-                    .attr('transform', 'translate(0,0)')
-                    .attr('class', 'dorling-map-container')
+                out.map = out.svg.append('g').attr('transform', 'translate(0,0)').attr('class', 'dorling-map-container')
 
                 if (out.graticule_) {
                     // draw graticule
@@ -832,9 +828,7 @@ export function dorling() {
                             //add centroids of mixedNuts to current level centroids
 
                             if (
-                                !out.CENTROIDS[out.nutsLevel_].features.some(
-                                    (e) => e.properties.id === c.properties.id
-                                )
+                                !out.CENTROIDS[out.nutsLevel_].features.some((e) => e.properties.id === c.properties.id)
                             ) {
                                 /* centroid hasnt already been added yet so we can push */
                                 out.CENTROIDS[out.nutsLevel_].features.push(c)
@@ -843,12 +837,10 @@ export function dorling() {
                     })
 
                     //index color values
-                    out.mixNutsColorArr = Object.entries(colorData.dimension.geo.category.index).map(
-                        ([key, val]) => ({
-                            id: key,
-                            val: +colorData.value[val] || null,
-                        })
-                    )
+                    out.mixNutsColorArr = Object.entries(colorData.dimension.geo.category.index).map(([key, val]) => ({
+                        id: key,
+                        val: +colorData.value[val] || null,
+                    }))
                     let colorInd = {}
                     for (let i = 0; i < out.mixNutsColorArr.length; i++)
                         colorInd[out.mixNutsColorArr[i].id] = out.mixNutsColorArr[i].val
@@ -997,7 +989,7 @@ export function dorling() {
     }
 
     /**
-     * @description draws the NUTS circles on the map. Does not scale their size or colour
+     * @description draws the NUTS circles on the map. Does not scale their size or colour, which occurs in firstTransition()
      */
     function drawNUTScircles() {
         out.circles = out.map
@@ -1007,8 +999,15 @@ export function dorling() {
             .data(out.CENTROIDS[out.nutsLevel_].features)
             .enter()
             .filter((f) => {
-                if (out.sizeIndicator[f.properties.id] && out.colorIndicator[f.properties.id]) {
+                if (out.sizeIndicator[f.properties.id]) {
                     return f
+                } else {
+                    // console.log(
+                    //     f.properties.na,
+                    //     ':',
+                    //     out.sizeIndicator[f.properties.id],
+                    //     out.colorIndicator[f.properties.id]
+                    // )
                 }
             })
             .append('circle')
@@ -1068,11 +1067,6 @@ export function dorling() {
                 return c
             })
     }
-
-    /**
-     * @description retrieves the statistical data that defines circle color. Defines out.colorIndicator
-     */
-    function getColorData() {}
 
     /**
      * @description draws the NUTS regions on the map
@@ -1606,11 +1600,13 @@ export function dorling() {
             .data(insets)
             .enter()
             .filter((f) => {
+                // special case for FRY30
                 let id =
                     out.nutsLevel_ == 3 && f.id == 'FRY30'
                         ? f.featureCollection.features[1].properties.id
                         : f.featureCollection.features[0].properties.id
-                if (out.sizeIndicator[id] && out.colorIndicator[id]) {
+                // only show circles with both size and color data
+                if (out.sizeIndicator[id]) {
                     return f
                 }
             })
@@ -1838,9 +1834,9 @@ export function dorling() {
             } else {
                 out.tooltipElement.html(`<strong>${name}</strong>
         (${id}) <i>${out.countryNamesIndex_[id[0] + id[1]]}</i><br>
-        ${out.tooltip_.colorLabel}: <strong>${formatNumber(
-                    roundToOneDecimal(out.colorIndicator[id])
-                )}</strong> ${out.tooltip_.colorUnit}<br>
+        ${out.tooltip_.colorLabel}: <strong>${formatNumber(roundToOneDecimal(out.colorIndicator[id]))}</strong> ${
+                    out.tooltip_.colorUnit
+                }<br>
         ${out.tooltip_.sizeLabel}: ${formatNumber(roundToOneDecimal(out.sizeIndicator[id]))} ${
                     out.tooltip_.sizeUnit
                 }<br>
@@ -1871,13 +1867,15 @@ export function dorling() {
      * @description show and inflate the circles on the map and transition them into a dorling cartogram using d3-froce
      */
     function firstTransition() {
-        //show circles
+        //scale the circle sizes
         out.circles
             .transition()
             .duration(750)
             .attr('r', (f) => sizeFunction(+out.sizeIndicator[f.properties.id]))
             .attr('fill', (f) => colorFunction(+out.colorIndicator[f.properties.id]))
             .attr('stroke', 'black')
+
+        // insets
         if (out.showInsets_) {
             out.insetCircles
                 .transition()
@@ -2021,10 +2019,7 @@ export function dorling() {
                         margin
                             .attr('stroke', '#404040ff')
                             .attr('stroke-width', m * 10 + 'px')
-                            .attr(
-                                'stroke',
-                                d3scaleChromatic.interpolateBlues(1 - Math.sqrt(m / out.marginNb))
-                            )
+                            .attr('stroke', d3scaleChromatic.interpolateBlues(1 - Math.sqrt(m / out.marginNb)))
                             .attr('fill', 'none')
                             .attr('opacity', '0.6')
                             .attr('stroke-linecap', 'round')
@@ -2091,10 +2086,7 @@ export function dorling() {
         }
 
         //background container
-        out.legendContainer = out.legendSvg
-            .append('g')
-            .attr('id', 'dorling-legend-container')
-            .attr('opacity', 0)
+        out.legendContainer = out.legendSvg.append('g').attr('id', 'dorling-legend-container').attr('opacity', 0)
 
         //add legends
         addSizeLegend()
@@ -2485,10 +2477,7 @@ export function dorling() {
                 .attr('height', '' + radioHeight + 'px')
                 .attr('width', '' + radioWidth + 'px')
                 .attr('viewBox', '0 0 ' + radioWidth + ' ' + radioHeight + '')
-                .style(
-                    'transform',
-                    'translate(' + marginLeft + 'px ,' + (radioHeight + padding + marginTop) + 'px)'
-                )
+                .style('transform', 'translate(' + marginLeft + 'px ,' + (radioHeight + padding + marginTop) + 'px)')
 
             out.outline1 = out.radio1
                 .append('circle')
@@ -2728,11 +2717,7 @@ export function dorling() {
         }
         if (out.colors_) {
             if (out.thresholdValues_) {
-                return d3scale
-                    .scaleThreshold()
-                    .domain(out.thresholdValues_)
-                    .range(out.colors_)
-                    .unknown('#ccc')
+                return d3scale.scaleThreshold().domain(out.thresholdValues_).range(out.colors_).unknown('#ccc')
             } else {
                 //split range into equal parts, rounding up or down to nearest n
                 const split = function (left, right, parts) {
@@ -2882,10 +2867,7 @@ export function dorling() {
         } else {
             text = 'Digital Regional Yearbook: ' + out.title_
         }
-        $('#tweet').attr(
-            'href',
-            generateTwitterURL(text, out.standalone_.twitterURL, out.standalone_.twitterTags)
-        )
+        $('#tweet').attr('href', generateTwitterURL(text, out.standalone_.twitterURL, out.standalone_.twitterTags))
     }
     function generateFacebook() {
         $('#facebook-button').click(function () {
@@ -2898,10 +2880,7 @@ export function dorling() {
             }
 
             let url =
-                'https://www.facebook.com/sharer/sharer.php?u=' +
-                encodeURIComponent(u) +
-                '&t=' +
-                encodeURIComponent(t)
+                'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(u) + '&t=' + encodeURIComponent(t)
             window.open(url + '?redirect=facebook', 'sharer', 'toolbar=0,status=0,width=626,height=436')
         })
     }
@@ -2931,12 +2910,10 @@ export function dorling() {
                     val: +data.value[val] || null,
                 }))
 
-                let dataToMixArr = Object.entries(dataToMix.dimension.geo.category.index).map(
-                    ([key, val]) => ({
-                        id: key,
-                        val: +dataToMix.value[val] || null,
-                    })
-                )
+                let dataToMixArr = Object.entries(dataToMix.dimension.geo.category.index).map(([key, val]) => ({
+                    id: key,
+                    val: +dataToMix.value[val] || null,
+                }))
 
                 let a = mixColorData ? out.mixColorData_[out.nutsLevel_] : out.mixSizeData_[out.nutsLevel_]
                 dataToMixArr.forEach((rg) => {
@@ -3028,14 +3005,14 @@ export function dorling() {
                                     mixTotals.dimension[out.colorCalculationDimension_].category.index
                                 )
                                 // totals for first dimension type of injected totals
-                                let injectedTotalsArr = Object.entries(
-                                    mixTotals.dimension.geo.category.index
-                                ).map(([k, v]) => {
-                                    return {
-                                        id: k,
-                                        tot: injValues[v] || null,
+                                let injectedTotalsArr = Object.entries(mixTotals.dimension.geo.category.index).map(
+                                    ([k, v]) => {
+                                        return {
+                                            id: k,
+                                            tot: injValues[v] || null,
+                                        }
                                     }
-                                })
+                                )
 
                                 // loop the same number of times as there are groups of results in the eurostat REST response
                                 for (let i = 1; i < dimensions.length; i++) {
@@ -3115,9 +3092,10 @@ export function dorling() {
                                 }
 
                                 //normal
-                                const totalsArr = Object.entries(totals.dimension.geo.category.index).map(
-                                    ([k, v]) => ({ id: k, tot: +totals.value[v] || null })
-                                )
+                                const totalsArr = Object.entries(totals.dimension.geo.category.index).map(([k, v]) => ({
+                                    id: k,
+                                    tot: +totals.value[v] || null,
+                                }))
                                 //merge values array with totals array
                                 let merged = mergeById(arr, totalsArr)
                                 //divide each value by the desired total
@@ -3159,14 +3137,12 @@ export function dorling() {
                                 )
 
                                 // totals for first dimension type
-                                totalsArr = Object.entries(totals.dimension.geo.category.index).map(
-                                    ([k, v]) => {
-                                        return {
-                                            id: k,
-                                            tot: values[v] || null,
-                                        }
+                                totalsArr = Object.entries(totals.dimension.geo.category.index).map(([k, v]) => {
+                                    return {
+                                        id: k,
+                                        tot: values[v] || null,
                                     }
-                                )
+                                })
 
                                 // loop the same number of times as there are groups of results in the eurostat REST response
                                 for (let i = 1; i < dimensions.length; i++) {
@@ -3184,12 +3160,10 @@ export function dorling() {
                                     })
                                 }
                             } else {
-                                totalsArr = Object.entries(totals.dimension.geo.category.index).map(
-                                    ([k, v]) => ({
-                                        id: k,
-                                        tot: +totals.value[v] || null,
-                                    })
-                                )
+                                totalsArr = Object.entries(totals.dimension.geo.category.index).map(([k, v]) => ({
+                                    id: k,
+                                    tot: +totals.value[v] || null,
+                                }))
                             }
 
                             //merge values array with totals array

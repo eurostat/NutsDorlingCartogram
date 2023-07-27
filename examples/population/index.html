@@ -10,13 +10,9 @@
         <script type="text/javascript">
             var parentLocation = parent.location
             if (parentLocation.hostname.indexOf('ec.europa.eu') !== -1) {
-                document.write(
-                    '<script defer src="//europa.eu/webtools/load.js" type="text/javascript"></sc' + 'ript>'
-                )
+                document.write('<script defer src="//europa.eu/webtools/load.js" type="text/javascript"></sc' + 'ript>')
                 document.write('<script type="application/json">')
-                document.write(
-                    '{ "utility" : "piwik", "siteID" : 59, "sitePath" : ["ec.europa.eu\/eurostat"] }'
-                )
+                document.write('{ "utility" : "piwik", "siteID" : 59, "sitePath" : ["ec.europa.eu\/eurostat"] }')
                 document.write('</sc' + 'ript>')
             }
         </script>
