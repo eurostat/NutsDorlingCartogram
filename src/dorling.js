@@ -120,7 +120,7 @@ export function dorling() {
     out.insets_ = {
         height: { 1: 340, 2: 340, 3: 550 },
         titleWidth: 120,
-        overseasHeight: window.innerWidth > 1000 ? 60 : 50,
+        overseasHeight: window.innerWidth > 1000 ? 60 : 60,
         overseasWidth: window.innerWidth > 1000 ? 60 : 60,
         translateX: 0,
         translateY: 0,
@@ -130,12 +130,12 @@ export function dorling() {
         captionX: 3,
         captionFontSize: 9,
         offsetX: window.innerWidth > 1000 ? 10 : 0, // d3 projection fitExtent
-        offsetY: window.innerWidth > 1000 ? 30 : 20,
-        circleXOffset: window.innerWidth > 1000 ? 37 : 30,
-        circleYOffset: window.innerWidth > 1000 ? 45 : 33,
-        spacingX: window.innerWidth > 1000 ? 78 : 65, // between the start of each rect
-        spacingY: window.innerWidth > 1000 ? 78 : 55, // between the start of each rect
-        padding: window.innerWidth > 1000 ? 15 : 3, // inside the rect. so that the geometries arent touching the rect borders
+        offsetY: window.innerWidth > 1000 ? 30 : 30,
+        circleXOffset: window.innerWidth > 1000 ? 37 : 37,
+        circleYOffset: window.innerWidth > 1000 ? 45 : 45,
+        spacingX: window.innerWidth > 1000 ? 78 : 78, // between the start of each rect
+        spacingY: window.innerWidth > 1000 ? 78 : 78, // between the start of each rect
+        padding: window.innerWidth > 1000 ? 15 : 15, // inside the rect. so that the geometries arent touching the rect borders
     }
     //tooltip html
     out.tooltip_ = {
@@ -1674,21 +1674,18 @@ export function dorling() {
         //let sizeURL = out.dataExplorerBaseURL_+ out.sizeDatasetCode_
         let colorSource = document.createElement('div')
 
+        //<i class='fas fa-external-link-alt'>
         if (out.sourcesPopupContent_) {
             // add popup trigger
             colorSource.innerHTML =
-                "Source: Eurostat - <a target='_blank' href='' data-toggle='modal' data-target='#sources_overlay' > access to dataset <i class='fas fa-external-link-alt'>  </i></a>"
+                "Source: Eurostat - <a target='_blank' href='' data-toggle='modal' data-target='#sources_overlay' > access to dataset  </a>"
         } else {
             if (out.customSourceURL_) {
                 colorSource.innerHTML =
-                    "Source: Eurostat - <a target='_blank' href='" +
-                    out.customSourceURL_ +
-                    "'> access to dataset <i class='fas fa-external-link-alt'>  </i></a>"
+                    "Source: Eurostat - <a target='_blank' href='" + out.customSourceURL_ + "'> access to dataset </a>"
             } else {
                 colorSource.innerHTML =
-                    "Source: Eurostat - <a target='_blank' href='" +
-                    colorURL +
-                    "'> access to dataset <i class='fas fa-external-link-alt'>  </i></a>"
+                    "Source: Eurostat - <a target='_blank' href='" + colorURL + "'> access to dataset </a>"
             }
         }
 
@@ -1934,7 +1931,7 @@ export function dorling() {
      * @returns
      */
     function formatNumber(n) {
-        return n.toLocaleString('en').replace(/,/gi, ' ')
+        return n.toLocaleString('en').replace(/,/gi, '&nbsp;')
     }
 
     /**
@@ -2316,7 +2313,7 @@ export function dorling() {
                     if (d.i === 0) {
                         // first label
                         let thresholdValue = d.domain[d.i]
-                        return '≤ ' + formatNumber(parseFloat(thresholdValue))
+                        return '< ' + formatNumber(parseFloat(thresholdValue))
                     } else if (d.i === d.genLength - 1) {
                         //last label
                         let thresholdValue = d.domain[d.i - 1]
@@ -2390,7 +2387,7 @@ export function dorling() {
         let marginLeft = 5
         let radioCxy = 5
         let backgroundHeight = 160
-        let radioDotOpacity = 0.3
+        let radioDotOpacity = 0
 
         //add to its own svg container on smaller screens and legendsSvg for larger screens
         if (window.innerHeight < out.nutsLevelToggleHeightThreshold_) {
@@ -2599,7 +2596,7 @@ export function dorling() {
 
     function updateRadios() {
         let outlineSelectedColor = '#022B58'
-        let radioDotOpacity = 0.3
+        let radioDotOpacity = 0
         //current nutsLevel
         if (out.nutsLevel_ == 0) {
             out.dot0.attr('opacity', '1')
