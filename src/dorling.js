@@ -638,7 +638,12 @@ export function dorling() {
                     .attr('class', 'dorling-svg')
                     .style('background-color', out.seaColor_)
 
+                // append map svg
                 out.dorlingContainer.node().appendChild(out.svg.node())
+
+                if (out.showAttribution_) {
+                    addAttributionToDOM()
+                }
 
                 // initialize tooltip
                 if (!out.tooltipElement) {
@@ -711,9 +716,6 @@ export function dorling() {
                     animate() // initiate d3 animation
                 }
 
-                if (out.showAttribution_) {
-                    addAttributionToDOM()
-                }
                 //additional texts
                 out.bottomTextContainer = document.createElement('div')
                 out.bottomTextContainer.classList.add('dorling-bottom-text-container')
@@ -1931,7 +1933,7 @@ export function dorling() {
      * @returns
      */
     function formatNumber(n) {
-        return n.toLocaleString('en').replace(/,/gi, '&nbsp;')
+        return n.toLocaleString('en').replace(/,/gi, '\xA0')
     }
 
     /**

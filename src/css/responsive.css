@@ -16,7 +16,7 @@
         bottom: unset !important;
     }
     .dorling-attribution {
-        display: none !important;
+        bottom: 0px !important;
     }
 }
 
@@ -101,12 +101,5 @@
     }
     .dorling-tooltip {
         font-size: 13px !important;
-    }
-}
-
-/* between 1050w and 600h the copyright hides crete and malta */
-@media only screen and (max-width: 1050px) and (max-height: 700px) {
-    .dorling-attribution {
-        bottom: 7.5% !important;
     }
 }
