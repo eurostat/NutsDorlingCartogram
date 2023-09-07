@@ -60,6 +60,7 @@ body {
 
 .dorling-bottom-text-container {
     /* height:7%; */
+    padding-top: 15px;
     margin-top: 10px;
     font-size: 14px;
     color: #212529;
@@ -176,7 +177,6 @@ fill:#E5E5E5;
     opacity: 0.8;
     padding: 3px;
     position: absolute;
-    bottom: 10%;
     right: 3px;
     font-size: 10px;
     font-family: 'Open Sans', sans-serif;
