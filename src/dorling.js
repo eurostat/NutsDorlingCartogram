@@ -2324,7 +2324,7 @@ export function dorling() {
                         // other labels
                         let thresholdValue = d.domain[d.i]
                         let previous = d.domain[d.i - 1]
-                        return formatNumber(previous) + d.labelDelimiter + formatNumber(thresholdValue)
+                        return  formatNumber(previous) + d.labelDelimiter + '< ' + formatNumber(thresholdValue)
                     }
                 })
             }
