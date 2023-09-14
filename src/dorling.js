@@ -170,8 +170,7 @@ export function dorling() {
         'https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/overseas/'
     // 'https://ec.europa.eu/eurostat/cache/interactive-publications/regions/2023/vis/cartograms/assets/topojson/overseas/'
     // 'https://raw.githubusercontent.com/eurostat/NutsDorlingCartogram/master/assets/topojson/overseas/'
-    out.dataExplorerBaseURL_ = 'https://appsso.eurostat.ec.europa.eu/nui/show.do?dataset='
-    out.dataBrowserBaseURL_ = 'https://ec.europa.eu/eurostat/databrowser/bookmark/'
+    out.dataBrowserBaseURL_ = 'https://ec.europa.eu/eurostat/databrowser/product/view/'
     out.customSourceURL_ = null
     out.sourcesPopupContent_ = null
 
@@ -1672,7 +1671,7 @@ export function dorling() {
         out.sourcesDiv.classList.add('dorling-sources-container')
         out.bottomTextContainer.appendChild(out.sourcesDiv)
 
-        let colorURL = out.dataExplorerBaseURL_ + out.colorDatasetCode_
+        let colorURL = out.dataBrowserBaseURL_ + out.colorDatasetCode_
         //let sizeURL = out.dataExplorerBaseURL_+ out.sizeDatasetCode_
         let colorSource = document.createElement('div')
 

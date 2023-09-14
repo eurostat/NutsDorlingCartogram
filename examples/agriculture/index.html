@@ -10,13 +10,9 @@
         <script type="text/javascript">
             var parentLocation = parent.location
             if (parentLocation.hostname.indexOf('ec.europa.eu') !== -1) {
-                document.write(
-                    '<script defer src="//europa.eu/webtools/load.js" type="text/javascript"></sc' + 'ript>'
-                )
+                document.write('<script defer src="//europa.eu/webtools/load.js" type="text/javascript"></sc' + 'ript>')
                 document.write('<script type="application/json">')
-                document.write(
-                    '{ "utility" : "piwik", "siteID" : 59, "sitePath" : ["ec.europa.eu\/eurostat"] }'
-                )
+                document.write('{ "utility" : "piwik", "siteID" : 59, "sitePath" : ["ec.europa.eu\/eurostat"] }')
                 document.write('</sc' + 'ript>')
             }
         </script>
@@ -251,6 +247,9 @@
                 .footnotesText('Germany, NUTS level 1 regions.')
                 .exclude(['MK', 'ME', 'TR', 'AL', 'RS', 'UK'])
                 .showNutsSelector(false)
+                .customSourceURL(
+                    'https://ec.europa.eu/eurostat/databrowser/bookmark/6ab93ae3-58c7-4a5d-9721-fb2b5586262d?lang=en'
+                )
                 .build()
 
             function getURLParamValue(paramName) {
