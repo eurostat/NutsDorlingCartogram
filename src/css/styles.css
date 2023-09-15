@@ -62,19 +62,19 @@ body {
     /* height:7%; */
     padding-top: 15px;
     margin-top: 10px;
-    font-size: 14px;
+    font-size: 1rem;
     color: #212529;
     font-weight: 400;
-    font-family: 'Open Sans', 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
 }
 
 .dorling-sources-container a {
-    color: #0d4da1;
-    text-decoration: none;
-    background-color: transparent;
+    color: #0e47cb !important;
+    text-decoration: underline;
+    font-size: 1rem;
+    font-weight: 400;
 }
 .dorling-sources-container a:hover {
-    text-decoration: underline;
+    color: #082b7a !important;
 }
 .dorling-sources-container i {
     color: #cccccc;
@@ -162,7 +162,7 @@ fill:#E5E5E5;
     padding: 6px;
     box-shadow: 2px 2px 3px 1px #cccccc;
     font-size: 14px;
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 1);
     /* border-radius: 8px; */
     pointer-events: none;
     cursor: none;

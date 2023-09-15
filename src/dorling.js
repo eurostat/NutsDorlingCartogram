@@ -1805,7 +1805,7 @@ export function dorling() {
                 )}  <br>
                 ${out.tooltip_.shareLabel}: ${roundToOneDecimal(
                     (out.sizeIndicator[id] / out.totalsIndex[id.substring(0, 2)]) * 100
-                )} ${out.tooltip_.shareUnit} <br>`)
+                )}${out.tooltip_.shareUnit} <br>`)
             } else {
                 out.tooltipElement.html(`<strong>${name}</strong>
                 (${id}) <i>${out.countryNamesIndex_[id[0] + id[1]]}</i><br>
@@ -1816,7 +1816,7 @@ export function dorling() {
                 <br>
                 ${out.tooltip_.shareLabel}: ${roundToOneDecimal(
                     (out.sizeIndicator[id] / out.totalsIndex[id.substring(0, 2)]) * 100
-                )} ${out.tooltip_.shareUnit} <br>`)
+                )}${out.tooltip_.shareUnit} <br>`)
             }
         } else {
             if (out.tooltip_.colorUnit == '€ per inhabitant') {
@@ -1828,7 +1828,7 @@ export function dorling() {
         ${out.tooltip_.sizeLabel}: €${formatNumber(roundToOneDecimal(out.sizeIndicator[id]))} million<br>
         ${out.tooltip_.shareLabel}: ${roundToOneDecimal(
                     (out.sizeIndicator[id] / out.totalsIndex[id.substring(0, 2)]) * 100
-                )} ${out.tooltip_.shareUnit} <br>`)
+                )}${out.tooltip_.shareUnit} <br>`)
             } else {
                 out.tooltipElement.html(`<strong>${name}</strong>
         (${id}) <i>${out.countryNamesIndex_[id[0] + id[1]]}</i><br>
@@ -1840,7 +1840,7 @@ export function dorling() {
                 }<br>
         ${out.tooltip_.shareLabel}: ${roundToOneDecimal(
                     (out.sizeIndicator[id] / out.totalsIndex[id.substring(0, 2)]) * 100
-                )} ${out.tooltip_.shareUnit} <br>`)
+                )}${out.tooltip_.shareUnit} <br>`)
             }
         }
         out.tooltipElement.style('visibility', 'visible')
