@@ -18,12 +18,28 @@
         </script>
         <!-- End Piwik Code -->
 
+        <!-- js -->
+        <script src="../assets/js/d3-array.v2.min.js"></script>
+        <script src="../assets/js/d3-color.v2.min.js"></script>
+        <script src="../assets/js/d3-format.v2.min.js"></script>
+        <script src="../assets/js/d3-interpolate.v2.min.js"></script>
+        <script src="../assets/js/d3-scale.v3.min.js"></script>
+        <script src="../../build/dorling.min.js"></script>
+        <script src="../assets/js/slimselect.min.js"></script>
+        <script src="../assets/js/d3-fetch.min.js"></script>
+        <script src="../assets/js/region-selector.js"></script>
+
+        <!-- css -->
+        <link href="../assets/css/slimselect.css" rel="stylesheet" />
+        <link href="../assets/css/region-selector.css" rel="stylesheet" />
+        <link href="../assets/css/tooltip.css" rel="stylesheet" />
+
         <style>
             #dorling-cereal-select-container {
-                width: 458px;
+                width: 350px;
                 position: absolute;
                 left: 15px;
-                top: 15px;
+                top: 60px;
                 z-index: 9;
             }
 
@@ -33,8 +49,8 @@
             }
 
             .dorling-standalone-dropdown {
-                top: calc(6vh + 5px + 1rem + 5px) !important;
-                left: 25px !important;
+                top: calc(6vh + 5px + 1rem + 35px) !important;
+                left: 65px !important;
             }
 
             @media only screen and (max-width: 850px) {
@@ -43,7 +59,7 @@
                 }
 
                 #dorling-cereal-select-container {
-                    top: 5px;
+                    top: 57px;
                     left: 45px;
                 }
             }
@@ -54,9 +70,8 @@
                 }
 
                 #dorling-cereal-select-container {
-                    left: 70px;
-                    top: 5px;
-                    width: 180px;
+                    left: 50px;
+                    width: 150px;
                 }
 
                 #cereal-selector-prepend {
@@ -69,45 +84,43 @@
             }
 
             /* height threshold for legend toggle button */
-            @media only screen and (max-height: 700px) {
+            @media only screen and (max-height: 600px) {
                 .dorling-standalone-dropdown {
                     left: 70px !important;
                 }
 
                 #dorling-cereal-select-container {
                     left: 50px;
-                    top: 5px;
+                    top: 57px;
                 }
             }
         </style>
     </head>
 
     <body style="margin: 0">
-        <!-- crop selector -->
-        <div class="input-group mb-3" id="dorling-cereal-select-container">
-            <div class="input-group-prepend" id="cereal-selector-prepend">
-                <label class="input-group-text" for="dorling-cereal-select">Type of cereal..</label>
+
+        <div class="dorling-header">
+            <!-- TITLE -->
+            <div class="dorling-title">Cereal production, 2021</div>
+
+            <!-- REGION SELECTOR -->
+            <div class="dorling-region-selector-wrapper">
+                <div class="dorling-region-selector">
+                    <select id="dorling-region-select"></select>
+                </div>
             </div>
-            <select class="custom-select" id="dorling-cereal-select" onchange="optionSelected()">
-                <option value="C1110" selected>Common wheat and spelt</option>
-                <option value="C1500">Grain maize and corn-cob mix</option>
-                <option value="C1300">Barley</option>
-                <option value="C1600">Triticale</option>
-                <option value="C1120">Durum wheat</option>
-                <option value="C1410">Oats</option>
-                <option value="C1200">Rye and winter cereal mixtures (maslin)</option>
-                <option value="C2000">Rice</option>
-            </select>
+
+            <!-- CROP SELECTOR -->
+            <div class="dorling-region-selector-wrapper">
+                <div class="dorling-region-selector">
+                    <select id="dorling-crop-select"></select>
+                </div>
+            </div>
         </div>
 
         <!-- dorling container -->
         <div id="dorling-container-div"></div>
-        <script src="./lib/d3-array.v2.min.js"></script>
-        <script src="./lib/d3-color.v2.min.js"></script>
-        <script src="./lib/d3-format.v2.min.js"></script>
-        <script src="./lib/d3-interpolate.v2.min.js"></script>
-        <script src="./lib/d3-scale.v3.min.js"></script>
-        <script src="../../build/dorling.min.js"></script>
+
         <script>
             let cropConfig = {
                 C1110: {
@@ -169,15 +182,15 @@
                 standalone = false
             }
 
+            let nutsLevel = 2
             var dorling = NutsDorlingCartogram.dorling()
                 .standalone(standalone)
                 .containerId('dorling-container-div')
-                .title('Cereal production, 2021')
-                // .nuts2JsonBaseURL('https://ec.europa.eu/assets/estat/E/E4/gisco/pub/nuts2json/v2/')
-                // .overseasGeometriesBaseURL(
-                //     'https://ec.europa.eu/eurostat/cache/interactive-publications/regions/2023/vis/cartograms/assets/topojson/overseas/'
-                // )
-                .nutsLevel(2)
+                .nuts2JsonBaseURL('https://ec.europa.eu/assets/estat/E/E4/gisco/pub/nuts2json/v2/')
+                .overseasGeometriesBaseURL(
+                    'https://ec.europa.eu/eurostat/cache/interactive-publications/regions/2023/vis/cartograms/assets/topojson/overseas/'
+                )
+                .nutsLevel(nutsLevel)
                 .nutsYear(2016)
                 .mixNuts({
                     // use level 1 instead of level 2 for the following regions:
@@ -250,6 +263,7 @@
                 .customSourceURL(
                     'https://ec.europa.eu/eurostat/databrowser/bookmark/6ab93ae3-58c7-4a5d-9721-fb2b5586262d?lang=en'
                 )
+                .onNutsLevelChange((nutsLevel) => updateRegionSelect(nutsLevel))
                 .build()
 
             function getURLParamValue(paramName) {
@@ -264,8 +278,7 @@
                 }
             }
 
-            function optionSelected() {
-                let id = document.getElementById('dorling-cereal-select').value
+            function optionSelected(id) {
                 dorling
                     .sizeDatasetFilters('crops=' + id + '&strucpro=PR_HU_EU&time=2021')
                     .colorDatasetFilters('crops=' + id + '&strucpro=PR_HU_EU&time=2021')
@@ -278,6 +291,30 @@
                 }
                 dorling.redraw()
             }
+
+            buildSlimSelect(nutsLevel)
+
+            let cropOptions = [
+                { value: 'C1110', text: 'Common wheat and spelt' },
+                { value: 'C1500', text: 'Grain maize and corn-cob mix' },
+                { value: 'C1300', text: 'Barley' },
+                { value: 'C1600', text: 'Triticale' },
+                { value: 'C1120', text: 'Durum wheat' },
+                { value: 'C1410', text: 'Oats' },
+                { value: 'C1200', text: 'Rye and winter cereal mixtures (maslin)' },
+                { value: 'C2000', text: 'Rice' },
+            ]
+            let cropSelect = new SlimSelect({
+                select: '#dorling-crop-select',
+                //allowDeselect: true,
+                searchPlaceholder: 'Search',
+                placeholder: 'Select a crop',
+                data: cropOptions,
+                onChange: function (info) {
+                   if (info.value) optionSelected(info.value)
+                },
+            })
+            cropSelect.setSelected('C1110')
         </script>
     </body>
 </html>

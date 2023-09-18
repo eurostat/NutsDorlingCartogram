@@ -12,95 +12,48 @@
         <script type="text/javascript">
             var parentLocation = parent.location
             if (parentLocation.hostname.indexOf('ec.europa.eu') !== -1) {
-                document.write(
-                    '<script defer src="//europa.eu/webtools/load.js" type="text/javascript"></sc' + 'ript>'
-                )
+                document.write('<script defer src="//europa.eu/webtools/load.js" type="text/javascript"></sc' + 'ript>')
                 document.write('<script type="application/json">')
-                document.write(
-                    '{ "utility" : "piwik", "siteID" : 59, "sitePath" : ["ec.europa.eu\/eurostat"] }'
-                )
+                document.write('{ "utility" : "piwik", "siteID" : 59, "sitePath" : ["ec.europa.eu\/eurostat"] }')
                 document.write('</sc' + 'ript>')
             }
         </script>
         <!-- End Piwik Code -->
 
-        <!-- overrides when using a select -->
-        <style>
-            #dorling-transport-select-container {
-                width: 350px;
-                position: absolute;
-                left: 15px;
-                top: 5px;
-                z-index: 9;
-            }
+        <!-- js -->
+        <script src="../../build/dorling.min.js"></script>
+        <script src="../assets/js/slimselect.min.js"></script>
+        <script src="../assets/js/d3-fetch.min.js"></script>
+        <script src="../assets/js/region-selector.js"></script>
 
-            /* move legend down to make room for select */
-            .dorling-legend-div {
-                top: 55px !important;
-            }
-
-            .dorling-standalone-dropdown {
-                top: calc(6vh + 5px + 1rem + 5px) !important;
-                left: 25px !important;
-            }
-
-            @media only screen and (max-width: 850px) {
-                .dorling-standalone-dropdown {
-                    left: 80px !important;
-                }
-
-                #dorling-transport-select-container {
-                    top: 5px;
-                    left: 45px;
-                }
-            }
-
-            @media only screen and (max-width: 450px) {
-                .dorling-standalone-dropdown {
-                    left: 50px !important;
-                }
-
-                #dorling-transport-select-container {
-                    left: 50px;
-                    width: 150px;
-                }
-
-                #transport-selector-prepend {
-                    display: none;
-                }
-
-                #dorling-transport-select {
-                    font-size: 11px;
-                }
-            }
-
-            /* height threshold for legend toggle button */
-            @media only screen and (max-height: 600px) {
-                .dorling-standalone-dropdown {
-                    left: 70px !important;
-                }
-
-                #dorling-transport-select-container {
-                    left: 50px;
-                    top: 5px;
-                }
-            }
-        </style>
+        <!-- css -->
+        <link href="../assets/css/slimselect.css" rel="stylesheet" />
+        <link href="../assets/css/region-selector.css" rel="stylesheet" />
+        <link href="../assets/css/tooltip.css" rel="stylesheet" />
     </head>
 
     <body>
-        <!-- air passenger / freight selector -->
-        <div class="input-group mb-3" id="dorling-transport-select-container">
-            <div class="input-group-prepend" id="transport-selector-prepend">
-                <label class="input-group-text" for="dorling-transport-select">Type of transport..</label>
+
+        <div class="dorling-header">
+            <!-- TITLE -->
+            <div class="dorling-title"> Air transport of passengers and freight, 2021</div>
+
+            <!-- REGION SELECTOR -->
+            <div class="dorling-region-selector-wrapper">
+                <div class="dorling-region-selector">
+                    <select id="dorling-region-select"></select>
+                </div>
             </div>
-            <select class="custom-select" id="dorling-transport-select" onchange="optionSelected()">
-                <option value="air" selected>Air passengers</option>
-                <option value="freight">Freight</option>
-            </select>
+
+            <!-- CROP SELECTOR -->
+            <div class="dorling-region-selector-wrapper">
+                <div class="dorling-region-selector">
+                    <select id="dorling-transport-select"></select>
+                </div>
+            </div>
         </div>
 
-        <div id="dorling-container-div"></div>
+        <div id="containerDiv"></div>
         <script>
             let transportConfig = {
                 air: {
@@ -155,11 +108,11 @@
                         sizeValueTextFunction: function (d) {
                             let m = (d * 1000) / 1000000
                             let n = Math.round(m * 10) / 10
-                            return n.toLocaleString('en').replace(/,/gi, ' ') + 'million'
+                            return n.toLocaleString('en').replace(/,/gi, ' ') + ' million'
                         },
                         shareLabel: 'Share of national air passengers',
                     },
-                    title: 'Air transport of passengers and freight, 2021',
+                    
                 },
                 freight: {
                     maxCircleRadius: { 0: 70, 1: 50, 2: 50 },
@@ -201,7 +154,7 @@
                             return n.toLocaleString('en').replace(/,/gi, ' ') + ' tonnes'
                         },
                     },
-                    title: 'Air transport of passengers and freight, 2021',
+                   
                 },
             }
 
@@ -214,15 +167,15 @@
                 standalone = false
             }
 
+            let nutsLevel = 2
             var dorling = NutsDorlingCartogram.dorling()
                 .standalone(standalone)
-                .containerId('dorling-container-div')
-                .title(transportConfig.air.title)
-                // .nuts2JsonBaseURL('https://ec.europa.eu/assets/estat/E/E4/gisco/pub/nuts2json/v2/')
-                // .overseasGeometriesBaseURL(
-                //     'https://ec.europa.eu/eurostat/cache/interactive-publications/regions/2023/vis/cartograms/assets/topojson/overseas/'
-                // )
-                .nutsLevel(2)
+                .containerId('containerDiv')
+                .nuts2JsonBaseURL('https://ec.europa.eu/assets/estat/E/E4/gisco/pub/nuts2json/v2/')
+                .overseasGeometriesBaseURL(
+                    'https://ec.europa.eu/eurostat/cache/interactive-publications/regions/2023/vis/cartograms/assets/topojson/overseas/'
+                )
+                .nutsLevel(nutsLevel)
                 .nutsYear(2021)
                 .nutsAvailable([0, 1, 2])
                 // .colors(["#3A6ABD", "#789BD8", "#D1D9F1", "#EBC2DE", "#E18FC8", "#A74177"])
@@ -252,6 +205,7 @@
                 .pauseButton(false)
                 .showBorders(true)
                 .positionStrength(0.3)
+                .onNutsLevelChange((nutsLevel) => updateRegionSelect(nutsLevel))
                 .build()
 
             function getURLParamValue(paramName) {
@@ -273,7 +227,29 @@
                     dorling[p](transportConfig[id][p])
                 }
                 dorling.redraw()
+
+                // title: 'Air transport of passengers and freight, 2021',
+                // title: 'Air transport of passengers and freight, 2021',
             }
+
+            buildSlimSelect(nutsLevel)
+
+            let transportOptions = [
+                { value: 'air', text: 'Air passengers' },
+                { value: 'freight', text: 'Freight' },
+            ]
+            let transportSelect = new SlimSelect({
+                select: '#dorling-transport-select',
+                //allowDeselect: true,
+                searchPlaceholder: 'Search',
+                placeholder: 'Type of transport',
+                data: transportOptions,
+                onChange: function (info) {
+                    if (info.value) optionSelected(info.value)
+                },
+            })
+            transportSelect.setSelected('air')
+
         </script>
     </body>
 </html>

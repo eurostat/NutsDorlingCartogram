@@ -17,30 +17,56 @@
             }
         </script>
         <!-- End Piwik Code -->
+
+         <!-- js -->
+        <script src="../assets/js/d3format.js"></script>
+        <script src="../../build/dorling.min.js"></script>
+        <script src="../assets/js/slimselect.min.js"></script>
+        <script src="../assets/js/d3-fetch.min.js"></script>
+        <script src="../assets/js/region-selector.js"></script>
+
+        <!-- css -->
+        <link href="../assets/css/slimselect.css" rel="stylesheet" />
+        <link href="../assets/css/region-selector.css" rel="stylesheet" />
+        <link href="../assets/css/tooltip.css" rel="stylesheet" />
+
+    
     </head>
 
     <body style="margin: 0">
-        <div id="dorling-container-div"></div>
+        <div class="dorling-header">
+            <!-- TITLE -->
+            <div class="dorling-title">Population, 2021</div>
 
-        <script src="./lib/d3format.js"></script>
-        <script src="../../build/dorling.min.js"></script>
+            <!-- REGION SELECTOR -->
+            <div class="dorling-region-selector-wrapper">
+                <div class="dorling-region-selector">
+                    <select id="dorling-region-select"></select>
+                </div>
+            </div>
+        </div>
+
+        <!-- DORLING CONTAINER  -->
+        <div id="containerDiv"></div>
+
         <script>
+            // DORLING LOGIC
             let standalone = true
             let simple = getURLParamValue('simple')
             if (simple) {
                 standalone = false
             }
 
+            let nutsLevel = 2
             var dorling = NutsDorlingCartogram.dorling()
                 .standalone(standalone)
-                .containerId('dorling-container-div')
-                .title('Population')
-                .nutsLevel(2)
+                .containerId('containerDiv')
+                .nutsLevel(nutsLevel)
                 .nutsYear(2021)
-                // .nuts2JsonBaseURL('https://ec.europa.eu/assets/estat/E/E4/gisco/pub/nuts2json/v2/')
-                // .overseasGeometriesBaseURL(
-                //     'https://ec.europa.eu/eurostat/cache/interactive-publications/regions/2023/vis/cartograms/assets/topojson/overseas/'
-                // )
+                .nuts2JsonBaseURL('https://ec.europa.eu/assets/estat/E/E4/gisco/pub/nuts2json/v2/')
+                .overseasGeometriesBaseURL(
+                    'https://ec.europa.eu/eurostat/cache/interactive-publications/regions/2023/vis/cartograms/assets/topojson/overseas/'
+                )
                 .colors([
                     'rgb(153,122,0)',
                     'rgb(226,200,34)',
@@ -80,6 +106,7 @@
                     labelOffset: 10,
                     shape: 'circle',
                 })
+
                 .tooltip({
                     colorLabel: 'Population change, 2021',
                     colorUnit: 'per 1 000 inhabitants',
@@ -98,6 +125,7 @@
                 .loop(false)
                 .pauseButton(false)
                 .showBorders(true)
+                .onNutsLevelChange((nutsLevel) => updateRegionSelect(nutsLevel))
                 .build()
 
             function getURLParamValue(paramName) {
@@ -111,6 +139,10 @@
                     }
                 }
             }
+
+
+            buildSlimSelect(nutsLevel)
+
         </script>
     </body>
 </html>

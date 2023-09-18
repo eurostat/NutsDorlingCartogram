@@ -18,19 +18,35 @@
             }
         </script>
         <!-- End Piwik Code -->
+
+        <!-- js -->
+        <script src="../../build/dorling.min.js"></script>
+        <script src="../assets/js/slimselect.min.js"></script>
+        <script src="../assets/js/d3-fetch.min.js"></script>
+        <script src="../assets/js/region-selector.js"></script>
+
+        <!-- css -->
+        <link href="../assets/css/slimselect.css" rel="stylesheet" />
+        <link href="../assets/css/region-selector.css" rel="stylesheet" />
+        <link href="../assets/css/tooltip.css" rel="stylesheet" />
     </head>
 
     <body style="margin: 0">
-        <!-- <div class="dorling-header">
-            <div id="title-col" class="text-center">
-                <h4 id="chart_title" class="h4-tcg flex-grow-0">GDP</h4>
+        <div class="dorling-header">
+            <!-- TITLE -->
+            <div class="dorling-title">Gross domestic product, 2021</div>
+
+            <!-- REGION SELECTOR -->
+            <div class="dorling-region-selector-wrapper">
+                <div class="dorling-region-selector">
+                    <select id="dorling-region-select"></select>
+                </div>
             </div>
-            <div id="subtitle-col" class="text-center">
-                <h5 id="chart_subtitle" class="h5-norm">2021</h5>
-            </div>
-        </div> -->
+        </div>
+
+        <!-- DORLING CONTAINER  -->
         <div id="dorling-container-div"></div>
-        <script src="../../build/dorling.js"></script>
+
         <script>
             let standalone = true
             let simple = getURLParamValue('simple')
@@ -38,15 +54,15 @@
                 standalone = false
             }
 
+            let nutsLevel = 2
             var dorling = NutsDorlingCartogram.dorling()
                 .standalone(standalone)
                 .containerId('dorling-container-div')
-                .title('Gross domestic product, 2021')
-                // .nuts2JsonBaseURL('https://ec.europa.eu/assets/estat/E/E4/gisco/pub/nuts2json/v2/')
-                // .overseasGeometriesBaseURL(
-                //     'https://ec.europa.eu/eurostat/cache/interactive-publications/regions/2023/vis/cartograms/assets/topojson/overseas/'
-
-                .nutsLevel(2)
+                .nuts2JsonBaseURL('https://ec.europa.eu/assets/estat/E/E4/gisco/pub/nuts2json/v2/')
+                .overseasGeometriesBaseURL(
+                    'https://ec.europa.eu/eurostat/cache/interactive-publications/regions/2023/vis/cartograms/assets/topojson/overseas/'
+                )
+                .nutsLevel(nutsLevel)
                 .nutsYear(2021)
                 .colors(['#ffeb99', '#c7e9b4', '#7fcdbb', '#41b6c4', '#104f99', '#17256b'])
                 .thresholdValues([15000, 20000, 30000, 40000, 50000, 1000000])
@@ -100,6 +116,7 @@
                 .footnotesText(
                     'Data for NUTS level 3 regions are for 2020 (note this period was during the COVID-19 pandemic – caution advised if comparing with data for higher NUTS aggregates that refer to 2021).'
                 )
+                .onNutsLevelChange((nutsLevel) => updateRegionSelect(nutsLevel))
                 .build()
 
             function getURLParamValue(paramName) {
@@ -113,6 +130,8 @@
                     }
                 }
             }
+
+            buildSlimSelect(nutsLevel)
         </script>
     </body>
 </html>

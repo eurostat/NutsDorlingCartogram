@@ -157,6 +157,7 @@ export function dorling() {
 
     //data params
     out.nutsAvailable_ = [0, 1, 2, 3] //available nuts levels
+    out.onNutsLevelChange_ = null // custom callback
 
     out.mixNuts_ = { 0: null, 1: null, 2: null, 3: null } // e.g. {2:{UK:1, DE:1}} adds UK and DE level 1 nuts to level 2
     out.mixColorData_ = null
@@ -288,10 +289,10 @@ export function dorling() {
             out.containerNode_.attr('class', 'dorling-main-container')
         }
 
-        if (out.standalone_) {
-            //add title between standaloneNav and dorling container
-            addDorlingTitleToDOM()
-        }
+        // if (out.standalone_) {
+        //add title between standaloneNav and dorling container
+        addDorlingTitleToDOM()
+        // }
 
         addDorlingContainerToDOM()
         addLoadingSpinnerToDOM()
@@ -387,7 +388,12 @@ export function dorling() {
         titleDiv.classList.add('dorling-title')
         titleDiv.innerHTML = out.title_
 
-        out.containerNode_.node().appendChild(titleDiv)
+        if (out.standalone_) {
+            out.containerNode_.node().appendChild(titleDiv)
+        } else {
+            let containerParent = out.containerNode_.node().parentNode
+            containerParent.insertBefore(titleDiv, containerParent.firstChild)
+        }
     }
 
     /**
@@ -1208,7 +1214,7 @@ export function dorling() {
                 },
                 {
                     id: 'FRY4',
-                    name: 'Réunion (FR)',
+                    name: 'La Réunion (FR)',
                     featureCollection: {
                         type: 'FeatureCollection',
                         features: [geojson.features[4]],
@@ -1267,7 +1273,7 @@ export function dorling() {
                 },
                 {
                     id: 'ES704',
-                    name: 'Fuertaventura (ES)',
+                    name: 'Fuerteventura (ES)',
                     featureCollection: {
                         type: 'FeatureCollection',
                         features: [geojson.features[1]],
@@ -1339,7 +1345,7 @@ export function dorling() {
                 },
                 {
                     id: 'FRY40',
-                    name: 'Réunion (FR)',
+                    name: 'La Réunion (FR)',
                     featureCollection: {
                         type: 'FeatureCollection',
                         features: [geojson.features[10]],
@@ -1714,7 +1720,10 @@ export function dorling() {
                 if (out.highlightedRegion) {
                     out.unhightlightRegion() //in case highlightRegion() has been used
                 }
+
+                //highlight
                 d3select.select(this).attr('stroke-width', '3px')
+
                 //calculate tooltip position + offsets
                 let pos = getTooltipPositionFromNode(this)
                 let name = f.properties.na
@@ -1725,6 +1734,8 @@ export function dorling() {
         out.circles.on('mouseout', function () {
             if (out.stage == 2) {
                 out.tooltipElement.style('visibility', 'hidden')
+
+                //unhighlight
                 d3select.select(this).attr('stroke-width', out.circleStrokeWidth_ + 'px')
             }
         })
@@ -1741,6 +1752,7 @@ export function dorling() {
                         : f.featureCollection.features[0].properties.id
                 let name = f.name
                 if (out.stage == 2) {
+                    //highlight
                     d3select.select(this).attr('stroke-width', '3px')
                     out.tooltipElement.style('visibility', 'visible')
                     let pos = getTooltipPositionFromNode(this)
@@ -1750,6 +1762,7 @@ export function dorling() {
             out.insetCircles.on('mouseout', function () {
                 if (out.stage == 2) {
                     out.tooltipElement.style('visibility', 'hidden')
+                    //unhighlight
                     d3select.select(this).attr('stroke-width', out.circleStrokeWidth_ + 'px')
                     out.unhightlightRegion() //in case highlightRegion() has been used
                 }
@@ -1770,17 +1783,17 @@ export function dorling() {
         let tooltipNode = out.tooltipElement.node()
         let tooltipWidth = tooltipNode.offsetWidth
         let tooltipHeight = tooltipNode.offsetHeight
-        let left = window.pageXOffset + matrix.e + 20
+        let left = window.pageXOffset + matrix.e
         let top = window.pageYOffset + matrix.f - 105
         let containerNode = out.dorlingContainer.node()
         if (left > containerNode.clientWidth - tooltipWidth) {
-            left = left - (tooltipWidth + 40) //offset
+            left = left - (tooltipWidth + 2) //offset
         }
         if (left < 0) {
             left = 1
         }
         if (top < 0) {
-            top = top + (tooltipHeight + 40) //offset
+            top = top + (tooltipHeight + 2) //offset
         }
         return { left: left, top: top }
     }
@@ -1795,52 +1808,88 @@ export function dorling() {
     function setTooltip(name, id, pos) {
         if (out.tooltip_.sizeValueTextFunction) {
             if (out.tooltip_.colorUnit == '€ per inhabitant') {
-                out.tooltipElement.html(`<strong>${name}</strong>
-                (${id}) <i>${out.countryNamesIndex_[id[0] + id[1]]}</i><br>
-                ${out.tooltip_.colorLabel}: ${out.tooltip_.colorUnit} <strong>${formatNumber(
+                out.tooltipElement.html(`
+                <div class="estat-vis-tooltip-bar">
+                    <strong>${name}</strong> (${id}) <i>${out.countryNamesIndex_[id[0] + id[1]]}</i>   
+                </div>
+
+                <div class="estat-vis-tooltip-text">
+                    ${out.tooltip_.colorLabel}: ${out.tooltip_.colorUnit} <strong>${formatNumber(
                     roundToOneDecimal(out.colorIndicator[id])
                 )}</strong> per inhabitant <br>
-                ${out.tooltip_.sizeLabel}: ${out.tooltip_.sizeUnit} ${out.tooltip_.sizeValueTextFunction(
+                    ${out.tooltip_.sizeLabel}: ${out.tooltip_.sizeUnit} ${out.tooltip_.sizeValueTextFunction(
                     out.sizeIndicator[id]
                 )}  <br>
-                ${out.tooltip_.shareLabel}: ${roundToOneDecimal(
+                    ${out.tooltip_.shareLabel}: ${roundToOneDecimal(
                     (out.sizeIndicator[id] / out.totalsIndex[id.substring(0, 2)]) * 100
-                )}${out.tooltip_.shareUnit} <br>`)
+                )}${out.tooltip_.shareUnit} <br>
+                </div>
+                `)
             } else {
-                out.tooltipElement.html(`<strong>${name}</strong>
-                (${id}) <i>${out.countryNamesIndex_[id[0] + id[1]]}</i><br>
-                ${out.tooltip_.colorLabel}: <strong>${formatNumber(
+                out.tooltipElement.html(`
+                <div class="estat-vis-tooltip-bar">
+                    <strong>${name}</strong>
+                    (${id}) <i>${out.countryNamesIndex_[id[0] + id[1]]}</i>
+                </div>
+
+                <div class="estat-vis-tooltip-text">
+                    ${out.tooltip_.colorLabel}: <strong>${formatNumber(
                     roundToOneDecimal(out.colorIndicator[id])
                 )}</strong> ${out.tooltip_.colorUnit}<br>
-                ${out.tooltip_.sizeLabel}: ${out.tooltip_.sizeValueTextFunction(out.sizeIndicator[id])}
-                <br>
-                ${out.tooltip_.shareLabel}: ${roundToOneDecimal(
+                    ${out.tooltip_.sizeLabel}: ${out.tooltip_.sizeValueTextFunction(out.sizeIndicator[id])}
+                    <br>
+                    ${out.tooltip_.shareLabel}: ${roundToOneDecimal(
                     (out.sizeIndicator[id] / out.totalsIndex[id.substring(0, 2)]) * 100
-                )}${out.tooltip_.shareUnit} <br>`)
+                )}${out.tooltip_.shareUnit} <br>
+                </div>
+
+`)
             }
         } else {
             if (out.tooltip_.colorUnit == '€ per inhabitant') {
-                out.tooltipElement.html(`<strong>${name}</strong>
-        (${id}) <i>${out.countryNamesIndex_[id[0] + id[1]]}</i><br>
-        ${out.tooltip_.colorLabel}: €<strong>${formatNumber(
+                out.tooltipElement.html(`
+                
+                <div class="estat-vis-tooltip-bar">
+                    <strong>${name}</strong>
+                    (${id}) <i>${out.countryNamesIndex_[id[0] + id[1]]}</i>
+
+                </div>
+
+                <div class="estat-vis-tooltip-text">
+                            ${out.tooltip_.colorLabel}: €<strong>${formatNumber(
                     roundToOneDecimal(out.colorIndicator[id])
                 )}</strong> per inhabitant<br>
-        ${out.tooltip_.sizeLabel}: €${formatNumber(roundToOneDecimal(out.sizeIndicator[id]))} million<br>
-        ${out.tooltip_.shareLabel}: ${roundToOneDecimal(
+                    ${out.tooltip_.sizeLabel}: €${formatNumber(roundToOneDecimal(out.sizeIndicator[id]))} million<br>
+                    ${out.tooltip_.shareLabel}: ${roundToOneDecimal(
                     (out.sizeIndicator[id] / out.totalsIndex[id.substring(0, 2)]) * 100
-                )}${out.tooltip_.shareUnit} <br>`)
+                )}${out.tooltip_.shareUnit} <br>
+
+                </div>
+                
+
+`)
             } else {
-                out.tooltipElement.html(`<strong>${name}</strong>
-        (${id}) <i>${out.countryNamesIndex_[id[0] + id[1]]}</i><br>
-        ${out.tooltip_.colorLabel}: <strong>${formatNumber(roundToOneDecimal(out.colorIndicator[id]))}</strong> ${
-                    out.tooltip_.colorUnit
-                }<br>
-        ${out.tooltip_.sizeLabel}: ${formatNumber(roundToOneDecimal(out.sizeIndicator[id]))} ${
-                    out.tooltip_.sizeUnit
-                }<br>
-        ${out.tooltip_.shareLabel}: ${roundToOneDecimal(
-                    (out.sizeIndicator[id] / out.totalsIndex[id.substring(0, 2)]) * 100
-                )}${out.tooltip_.shareUnit} <br>`)
+                out.tooltipElement.html(`
+                
+                <div class="estat-vis-tooltip-bar">
+                    <strong>${name}</strong>
+                    (${id}) <i>${out.countryNamesIndex_[id[0] + id[1]]}</i>
+                </div>
+                
+                <div class="estat-vis-tooltip-text">
+                            ${out.tooltip_.colorLabel}: <strong>${formatNumber(
+                                roundToOneDecimal(out.colorIndicator[id])
+                            )}</strong> ${out.tooltip_.colorUnit}<br>
+                    ${out.tooltip_.sizeLabel}: ${formatNumber(roundToOneDecimal(out.sizeIndicator[id]))} ${
+                                out.tooltip_.sizeUnit
+                            }<br>
+                    ${out.tooltip_.shareLabel}: ${roundToOneDecimal(
+                                (out.sizeIndicator[id] / out.totalsIndex[id.substring(0, 2)]) * 100
+                            )}${out.tooltip_.shareUnit} <br>
+                </div>
+
+
+`)
             }
         }
         out.tooltipElement.style('visibility', 'visible')
@@ -2323,7 +2372,7 @@ export function dorling() {
                         // other labels
                         let thresholdValue = d.domain[d.i]
                         let previous = d.domain[d.i - 1]
-                        return  formatNumber(previous) + d.labelDelimiter + '< ' + formatNumber(thresholdValue)
+                        return formatNumber(previous) + d.labelDelimiter + '< ' + formatNumber(thresholdValue)
                     }
                 })
             }
@@ -2573,6 +2622,7 @@ export function dorling() {
         // set current nutsLevel
         updateRadios()
 
+        // add nuts level change event listeners
         if (out.radio0) {
             out.radio0.on('click', function (e) {
                 nutsRadioEventHandler(0)
@@ -2628,12 +2678,15 @@ export function dorling() {
 
     /**
      * @description Handles a change of NUTS level
-     * @param {Number} nuts the new nuts level
+     * @param {Number} nutsLevel the new nuts level
      */
-    function nutsRadioEventHandler(nuts) {
+    function nutsRadioEventHandler(nutsLevel) {
         // let nuts = evt.currentTarget.value;
-        if (out.nutsLevel_ !== nuts) {
-            out.nutsLevel_ = nuts
+        if (out.nutsLevel_ !== nutsLevel) {
+            out.nutsLevel_ = nutsLevel
+
+            // fire custom nuts level event callback
+            if (out.onNutsLevelChange_) out.onNutsLevelChange_(nutsLevel)
 
             updateRadios()
 
@@ -2657,6 +2710,21 @@ export function dorling() {
      */
     out.highlightRegion = function (nutsCode) {
         if (out.circles) {
+            out.circles.attr('fill', (f) => {
+                if (f.properties.id == nutsCode) {
+                    let name = f.properties.na
+                    let id = f.properties.id
+                    let circle = d3select.select('#' + id)
+                    let node = circle.node()
+                    let pos = getTooltipPositionFromNode(node)
+                    setTooltip(name, id, pos)
+                    out.highlightedRegion = nutsCode
+                    return 'yellow'
+                } else {
+                    return colorFunction(+out.colorIndicator[f.properties.id])
+                }
+            })
+
             out.circles.attr('stroke-width', (f) => {
                 if (f.properties.id == nutsCode) {
                     let name = f.properties.na
@@ -2674,6 +2742,21 @@ export function dorling() {
         }
 
         if (out.insetCircles) {
+            out.insetCircles.attr('fill', (f) => {
+                if (f.id == nutsCode) {
+                    let name = f.name
+                    let id = f.id
+                    let circle = d3select.select('#' + 'inset-' + id)
+                    let node = circle.node()
+                    let pos = getTooltipPositionFromNode(node)
+                    setTooltip(name, id, pos)
+                    out.highlightedRegion = nutsCode
+                    return 'yellow'
+                } else {
+                    return colorFunction(+out.colorIndicator[f.id])
+                }
+            })
+
             out.insetCircles.attr('stroke-width', (f) => {
                 if (f.id == nutsCode) {
                     let name = f.name
@@ -2694,6 +2777,9 @@ export function dorling() {
     out.unhightlightRegion = function () {
         out.circles.attr('stroke-width', (f) => {
             return out.circleStrokeWidth_ + 'px'
+        })
+        out.circles.attr('fill', (f) => {
+            return colorFunction(+out.colorIndicator[f.properties.id])
         })
         out.highlightedRegion = null
     }

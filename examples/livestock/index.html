@@ -18,12 +18,28 @@
         </script>
         <!-- End Piwik Code -->
 
+        <!-- js -->
+        <script src="../assets/js/d3-array.v2.min.js"></script>
+        <script src="../assets/js/d3-color.v2.min.js"></script>
+        <script src="../assets/js/d3-format.v2.min.js"></script>
+        <script src="../assets/js/d3-interpolate.v2.min.js"></script>
+        <script src="../assets/js/d3-scale.v3.min.js"></script>
+        <script src="../../build/dorling.js"></script>
+        <script src="../assets/js/slimselect.min.js"></script>
+        <script src="../assets/js/d3-fetch.min.js"></script>
+        <script src="../assets/js/region-selector.js"></script>
+
+        <!-- css -->
+        <link href="../assets/css/slimselect.css" rel="stylesheet" />
+        <link href="../assets/css/region-selector.css" rel="stylesheet" />
+        <link href="../assets/css/tooltip.css" rel="stylesheet" />
+
         <style>
             #dorling-livestock-select-container {
                 width: 350px;
                 position: absolute;
                 left: 15px;
-                top: 15px;
+                top: 60px;
                 z-index: 9;
             }
 
@@ -33,7 +49,7 @@
             }
 
             .dorling-standalone-dropdown {
-                top: calc(6vh + 5px + 1rem + 5px) !important;
+                top: calc(6vh + 5px + 1rem + 57px) !important;
                 left: 25px !important;
             }
 
@@ -43,7 +59,7 @@
                 }
 
                 #dorling-livestock-select-container {
-                    top: 5px;
+                    top: 57px;
                     left: 45px;
                 }
             }
@@ -82,27 +98,28 @@
     </head>
 
     <body style="margin: 0">
-        <!-- crop selector -->
-        <div class="input-group mb-3" id="dorling-livestock-select-container">
-            <div class="input-group-prepend" id="transport-selector-prepend">
-                <label class="input-group-text" for="dorling-livestock-select">Type of livestock..</label>
+        <div class="dorling-header">
+            <!-- TITLE -->
+            <div class="dorling-title">Livestock, December 2022</div>
+
+            <!-- REGION SELECTOR -->
+            <div class="dorling-region-selector-wrapper">
+                <div class="dorling-region-selector">
+                    <select id="dorling-region-select"></select>
+                </div>
             </div>
-            <select class="custom-select" id="dorling-livestock-select" onchange="optionSelected()">
-                <option value="A3100" selected>Swine</option>
-                <option value="A2000">Bovine animals</option>
-                <option value="A4100">Sheep</option>
-                <option value="A4200">Goats</option>
-            </select>
+
+            <!-- ANIMAL SELECTOR -->
+            <div class="dorling-region-selector-wrapper">
+                <div class="dorling-region-selector">
+                    <select id="dorling-animal-select"></select>
+                </div>
+            </div>
         </div>
 
         <!-- dorling container -->
-        <div id="dorling-container-div"></div>
-        <script src="./lib/d3-array.v2.min.js"></script>
-        <script src="./lib/d3-color.v2.min.js"></script>
-        <script src="./lib/d3-format.v2.min.js"></script>
-        <script src="./lib/d3-interpolate.v2.min.js"></script>
-        <script src="./lib/d3-scale.v3.min.js"></script>
-        <script src="../../build/dorling.js"></script>
+        <div id="containerDiv"></div>
+
         <script>
             let animalConfig = {
                 // swine
@@ -143,15 +160,15 @@
                 standalone = false
             }
 
+            let nutsLevel = 2
             var dorling = NutsDorlingCartogram.dorling()
                 .standalone(standalone)
-                .containerId('dorling-container-div')
-                .title('Livestock, December 2022')
-                // .nuts2JsonBaseURL('https://ec.europa.eu/assets/estat/E/E4/gisco/pub/nuts2json/v2/')
-                // .overseasGeometriesBaseURL(
-                //     'https://ec.europa.eu/eurostat/cache/interactive-publications/regions/2023/vis/cartograms/assets/topojson/overseas/'
-                // )
-                .nutsLevel(2)
+                .containerId('containerDiv')
+                .nuts2JsonBaseURL('https://ec.europa.eu/assets/estat/E/E4/gisco/pub/nuts2json/v2/')
+                .overseasGeometriesBaseURL(
+                    'https://ec.europa.eu/eurostat/cache/interactive-publications/regions/2023/vis/cartograms/assets/topojson/overseas/'
+                )
+                .nutsLevel(nutsLevel)
                 .nutsYear(2021)
                 .mixNuts({
                     // use level 1 instead of level 2 for the following regions (adds them to level 2)
@@ -224,9 +241,10 @@
                 )
                 .exclude(['MK', 'ME', 'TR', 'AL', 'RS', 'UK'])
                 .customSourceURL(
-                    'https://ec.europa.eu/eurostat/databrowser/bookmark/53e9ec0b-437c-4563-ba27-9237a1d93cef?lang=en'
+                    'https://ec.europa.eu/eurostat/databrowser/bookmark/6ab93ae3-58c7-4a5d-9721-fb2b5586262d?lang=en'
                 )
                 .showNutsSelector(false)
+                .onNutsLevelChange((nutsLevel) => updateRegionSelect(nutsLevel))
                 .build()
 
             function getURLParamValue(paramName) {
@@ -241,8 +259,7 @@
                 }
             }
 
-            function optionSelected() {
-                let id = document.getElementById('dorling-livestock-select').value
+            function optionSelected(id) {
                 dorling
                     .sizeDatasetFilters('animals=' + id + '&unit=THS_HD&time=2022')
                     .colorDatasetFilters('animals=' + id + '&unit=THS_HD&time=2022')
@@ -255,6 +272,27 @@
                 }
                 dorling.redraw()
             }
+
+            buildSlimSelect(nutsLevel)
+
+            let animalOptions = [
+                { value: 'A3100', text: 'Swine' },
+                { value: 'A2000', text: 'Bovine animals' },
+                { value: 'A4100', text: 'Sheep' },
+                { value: 'A4200', text: 'Goats' },
+            ]
+            let animalSelect = new SlimSelect({
+                select: '#dorling-animal-select',
+                //allowDeselect: true,
+                searchPlaceholder: 'Search',
+                placeholder: 'Select a type of livestock',
+                data: animalOptions,
+                onChange: function (info) {
+                    if (info.value) optionSelected(info.value)
+                  
+                },
+            })
+            animalSelect.setSelected('A3100')
         </script>
     </body>
 </html>
