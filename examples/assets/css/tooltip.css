@@ -8,6 +8,7 @@
     pointer-events: none;
     cursor: none;
     color: black;
+    padding: 0px !important;
 }
 .estat-vis-tooltip-text {
     background: #ffffff;

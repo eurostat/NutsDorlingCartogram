@@ -1810,7 +1810,7 @@ export function dorling() {
             if (out.tooltip_.colorUnit == '€ per inhabitant') {
                 out.tooltipElement.html(`
                 <div class="estat-vis-tooltip-bar">
-                    <strong>${name}</strong> (${id}) <i>${out.countryNamesIndex_[id[0] + id[1]]}</i>   
+                    <strong>${name}</strong> (${id}) ${out.countryNamesIndex_[id[0] + id[1]]}   
                 </div>
 
                 <div class="estat-vis-tooltip-text">
@@ -1829,7 +1829,7 @@ export function dorling() {
                 out.tooltipElement.html(`
                 <div class="estat-vis-tooltip-bar">
                     <strong>${name}</strong>
-                    (${id}) <i>${out.countryNamesIndex_[id[0] + id[1]]}</i>
+                    (${id}) ${out.countryNamesIndex_[id[0] + id[1]]}
                 </div>
 
                 <div class="estat-vis-tooltip-text">
@@ -1851,7 +1851,7 @@ export function dorling() {
                 
                 <div class="estat-vis-tooltip-bar">
                     <strong>${name}</strong>
-                    (${id}) <i>${out.countryNamesIndex_[id[0] + id[1]]}</i>
+                    (${id}) ${out.countryNamesIndex_[id[0] + id[1]]}
 
                 </div>
 
@@ -1873,7 +1873,7 @@ export function dorling() {
                 
                 <div class="estat-vis-tooltip-bar">
                     <strong>${name}</strong>
-                    (${id}) <i>${out.countryNamesIndex_[id[0] + id[1]]}</i>
+                    (${id}) ${out.countryNamesIndex_[id[0] + id[1]]}
                 </div>
                 
                 <div class="estat-vis-tooltip-text">
