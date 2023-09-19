@@ -1784,7 +1784,7 @@ export function dorling() {
         let tooltipWidth = tooltipNode.offsetWidth
         let tooltipHeight = tooltipNode.offsetHeight
         let left = window.pageXOffset + matrix.e
-        let top = window.pageYOffset + matrix.f - 105
+        let top = window.pageYOffset + matrix.f - 115
         let containerNode = out.dorlingContainer.node()
         if (left > containerNode.clientWidth - tooltipWidth) {
             left = left - (tooltipWidth + 2) //offset

@@ -58,7 +58,7 @@ body {
     padding-top: 15px;
     margin-top: 10px;
     font-size: 1rem;
-    color: #212529;
+    color: #515560;
     font-weight: 400;
 }
 
@@ -177,11 +177,12 @@ fill:#E5E5E5;
     font-family: Arial;
 }
 .dorling-attribution a {
-    color: #0078a8;
-    text-decoration: none;
+    color: #0e47cb !important;
+    text-decoration: underline;
 }
 .dorling-attribution a:hover {
     text-decoration: underline !important;
+    color: #082b7a !important;
 }
 
 .dorling-play-button {
