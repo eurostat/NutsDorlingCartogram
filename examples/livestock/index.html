@@ -153,12 +153,7 @@
 
             let standalone = true
             let simple = getURLParamValue('simple')
-            if (!simple) {
-                let dropdown = document.getElementById('dorling-livestock-select-container')
-                dropdown.classList.add('dorling-standalone-dropdown')
-            } else {
-                standalone = false
-            }
+            if (simple) standalone = false
 
             let nutsLevel = 2
             var dorling = NutsDorlingCartogram.dorling()
@@ -223,7 +218,7 @@
                 .sizeLegend({
                     title: 'Livestock (1 000 head)',
                     textFunction: function (d) {
-                        return d.toLocaleString('en').replace(/,/gi, ' ')
+                        return d.toLocaleString('en').replace(/,/gi, '\xA0')
                     },
                     values: animalConfig.A3100.sizeLegend.values,
                 })

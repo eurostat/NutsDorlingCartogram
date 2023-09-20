@@ -133,7 +133,7 @@
                         sizeValueTextFunction: function (d) {
                             let m = (d * 1000) / 1000000
                             let n = Math.round(m * 10) / 10
-                            return n.toLocaleString('en').replace(/,/gi, ' ')
+                            return n.toLocaleString('en').replace(/,/gi, '\xA0')
                         },
                         shareLabel: 'Share of national air passengers',
                     },
@@ -160,7 +160,7 @@
                             3: [2000, 1000, 500],
                         },
                         textFunction: function (d) {
-                            return d.toLocaleString('en').replace(/,/gi, ' ')
+                            return d.toLocaleString('en').replace(/,/gi, '\xA0')
                         },
                         bodyXOffset: { 0: 80, 1: 80, 2: 80 },
                         bodyYOffset: { 0: 170, 1: 170, 2: 170 },
@@ -180,7 +180,7 @@
                         sizeValueTextFunction: function (d) {
                             let m = d * 1000
                             let n = Math.round(m * 10) / 10
-                            return n.toLocaleString('en').replace(/,/gi, ' ')
+                            return n.toLocaleString('en').replace(/,/gi, '\xA0')
                         },
                     },
                     nutsSelectorTranslateY: { 0: 460, 1: 460, 2: 460 },
@@ -229,11 +229,6 @@
                         return pArr[1] //return value
                     }
                 }
-            }
-            let simple = getURLParamValue('simple')
-            if (!simple) {
-                let dropdown = document.getElementById('dorling-transport-select-container')
-                dropdown.classList.add('dorling-standalone-dropdown')
             }
 
             function transportSelected() {

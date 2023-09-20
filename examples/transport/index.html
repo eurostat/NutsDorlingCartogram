@@ -108,7 +108,7 @@
                         sizeValueTextFunction: function (d) {
                             let m = (d * 1000) / 1000000
                             let n = Math.round(m * 10) / 10
-                            return n.toLocaleString('en').replace(/,/gi, ' ') + ' million'
+                            return n.toLocaleString('en').replace(/,/gi, '\xA0') + ' million'
                         },
                         shareLabel: 'Share of national air passengers',
                     },
@@ -136,7 +136,7 @@
                             3: [2000, 1000, 500],
                         },
                         textFunction: function (d) {
-                            return d.toLocaleString('en').replace(/,/gi, ' ')
+                            return d.toLocaleString('en').replace(/,/gi, '\xA0')
                         },
                     },
                     colorLegend: {
@@ -151,7 +151,7 @@
                         sizeValueTextFunction: function (d) {
                             let m = d * 1000
                             let n = Math.round(m * 10) / 10
-                            return n.toLocaleString('en').replace(/,/gi, ' ') + ' tonnes'
+                            return n.toLocaleString('en').replace(/,/gi, '\xA0') + ' tonnes'
                         },
                     },
                    
@@ -160,12 +160,7 @@
 
             let standalone = true
             let simple = getURLParamValue('simple')
-            if (!simple) {
-                let dropdown = document.getElementById('dorling-transport-select-container')
-                dropdown.classList.add('dorling-standalone-dropdown')
-            } else {
-                standalone = false
-            }
+            if (simple) standalone = false
 
             let nutsLevel = 2
             var dorling = NutsDorlingCartogram.dorling()

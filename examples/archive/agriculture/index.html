@@ -244,7 +244,7 @@
                 .sizeLegend({
                     title: 'Harvested production (1 000 tonnes)',
                     textFunction: function (d) {
-                        return d.toLocaleString('en').replace(/,/gi, ' ')
+                        return d.toLocaleString('en').replace(/,/gi, '\xA0')
                     },
                     values: { 2: [5000, 2500, 1000] },
                     bodyXOffset: { 2: 55 },
@@ -276,10 +276,7 @@
                 }
             }
             let simple = getURLParamValue('simple')
-            if (!simple) {
-                let dropdown = document.getElementById('dorling-cereal-select-container')
-                dropdown.classList.add('dorling-standalone-dropdown')
-            }
+            if (simple) standalone = false
 
             function cerealSelected() {
                 let id = document.getElementById('dorling-cereal-select').value

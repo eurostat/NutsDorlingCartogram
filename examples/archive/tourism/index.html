@@ -66,7 +66,7 @@
                     sizeValueTextFunction: function (d) {
                         let m = d / 1000000
                         let n = Math.round(m * 10) / 10
-                        return n.toLocaleString('en').replace(/,/gi, ' ')
+                        return n.toLocaleString('en').replace(/,/gi, '\xA0')
                     },
                     shareLabel: 'Share of total nights spent in national total',
                 })

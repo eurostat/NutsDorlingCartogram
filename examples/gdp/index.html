@@ -87,7 +87,7 @@
                 .sizeLegend({
                     title: 'Gross domestic product (€ million)',
                     textFunction: function (d) {
-                        return d.toLocaleString('en').replace(/,/gi, ' ')
+                        return d.toLocaleString('en').replace(/,/gi, '\xA0')
                     },
                     values: {
                         0: [3500000, 1000000, 250000],
@@ -103,7 +103,7 @@
                     shareLabel: 'Share of national gross domestic product',
                     sizeValueTextFunction: function (d) {
                         let v = Math.floor(d)
-                        return '€' + v.toLocaleString('en').replace(/,/gi, ' ') + ' million'
+                        return '€' + v.toLocaleString('en').replace(/,/gi, '\xA0') + ' million'
                     },
                 })
                 .exclude(['MK', 'ME', 'TR', 'AL', 'RS', 'UK'])

@@ -42,7 +42,7 @@
                 .sizeLegend({
                     title: 'Gross domestic product (€ million)',
                     textFunction: function (d) {
-                        return d.toLocaleString('en').replace(/,/gi, ' ')
+                        return d.toLocaleString('en').replace(/,/gi, '\xA0')
                     },
                     values: {
                         0: [3500000, 1000000, 250000],
