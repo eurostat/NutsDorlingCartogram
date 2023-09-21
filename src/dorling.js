@@ -1844,13 +1844,13 @@ export function dorling() {
                 </div>
 
                 <div class="estat-vis-tooltip-text">
-                    ${out.tooltip_.colorLabel}: ${out.tooltip_.colorUnit} <strong>${formatNumber(
+                    ${out.tooltip_.colorLabel}:\xA0${out.tooltip_.colorUnit} <strong>${formatNumber(
                     roundToOneDecimal(out.colorIndicator[id])
                 )}</strong> per inhabitant <br>
-                    ${out.tooltip_.sizeLabel}: ${out.tooltip_.sizeUnit} ${out.tooltip_.sizeValueTextFunction(
+                    ${out.tooltip_.sizeLabel}:\xA0${out.tooltip_.sizeUnit}\xA0${out.tooltip_.sizeValueTextFunction(
                     out.sizeIndicator[id]
                 )}  <br>
-                    ${out.tooltip_.shareLabel}: ${roundToOneDecimal(
+                    ${out.tooltip_.shareLabel}:\xA0${roundToOneDecimal(
                     (out.sizeIndicator[id] / out.totalsIndex[id.substring(0, 2)]) * 100
                 )}${out.tooltip_.shareUnit} <br>
                 </div>
@@ -1863,12 +1863,12 @@ export function dorling() {
                 </div>
 
                 <div class="estat-vis-tooltip-text">
-                    ${out.tooltip_.colorLabel}: <strong>${formatNumber(
+                    ${out.tooltip_.colorLabel}:\xA0<strong>${formatNumber(
                     roundToOneDecimal(out.colorIndicator[id])
-                )}</strong> ${out.tooltip_.colorUnit}<br>
-                    ${out.tooltip_.sizeLabel}: ${out.tooltip_.sizeValueTextFunction(out.sizeIndicator[id])}
+                )}</strong>\xA0${out.tooltip_.colorUnit}<br>
+                    ${out.tooltip_.sizeLabel}:\xA0${out.tooltip_.sizeValueTextFunction(out.sizeIndicator[id])}
                     <br>
-                    ${out.tooltip_.shareLabel}: ${roundToOneDecimal(
+                    ${out.tooltip_.shareLabel}:\xA0${roundToOneDecimal(
                     (out.sizeIndicator[id] / out.totalsIndex[id.substring(0, 2)]) * 100
                 )}${out.tooltip_.shareUnit} <br>
                 </div>
@@ -1886,11 +1886,11 @@ export function dorling() {
                 </div>
 
                 <div class="estat-vis-tooltip-text">
-                            ${out.tooltip_.colorLabel}: €<strong>${formatNumber(
+                            ${out.tooltip_.colorLabel}:\xA0€<strong>${formatNumber(
                     roundToOneDecimal(out.colorIndicator[id])
-                )}</strong> per inhabitant<br>
-                    ${out.tooltip_.sizeLabel}: €${formatNumber(roundToOneDecimal(out.sizeIndicator[id]))} million<br>
-                    ${out.tooltip_.shareLabel}: ${roundToOneDecimal(
+                )}</strong>\xA0per inhabitant<br>
+                    ${out.tooltip_.sizeLabel}:\xA0€${formatNumber(roundToOneDecimal(out.sizeIndicator[id]))}\xA0million<br>
+                    ${out.tooltip_.shareLabel}:\xA0${roundToOneDecimal(
                     (out.sizeIndicator[id] / out.totalsIndex[id.substring(0, 2)]) * 100
                 )}${out.tooltip_.shareUnit} <br>
 
@@ -1911,11 +1911,11 @@ export function dorling() {
                 <div class="estat-vis-tooltip-text">
                             ${out.tooltip_.colorLabel}: <strong>${formatNumber(
                     roundToOneDecimal(out.colorIndicator[id])
-                )}</strong> ${out.tooltip_.colorUnit}<br>
-                    ${out.tooltip_.sizeLabel}: ${formatNumber(roundToOneDecimal(out.sizeIndicator[id]))} ${
+                )}</strong>\xA0${out.tooltip_.colorUnit}<br>
+                    ${out.tooltip_.sizeLabel}:\xA0${formatNumber(roundToOneDecimal(out.sizeIndicator[id]))}\xA0${
                     out.tooltip_.sizeUnit
                 }<br>
-                    ${out.tooltip_.shareLabel}: ${roundToOneDecimal(
+                    ${out.tooltip_.shareLabel}:\xA0${roundToOneDecimal(
                     (out.sizeIndicator[id] / out.totalsIndex[id.substring(0, 2)]) * 100
                 )}${out.tooltip_.shareUnit} <br>
                 </div>
