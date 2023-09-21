@@ -2774,6 +2774,11 @@ export function dorling() {
         }
 
         if (out.insetCircles) {
+            
+            if (!out.showOverseas) {
+                out.insetsSvg.node().style.display = 'block'
+                out.showOverseas = true
+            }
             out.insetCircles.attr('fill', (f) => {
                 if (f.id == nutsCode) {
                     let name = f.name
