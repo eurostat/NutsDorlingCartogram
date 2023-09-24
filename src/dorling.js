@@ -1839,6 +1839,8 @@ export function dorling() {
         let containerNode = out.dorlingContainer.node()
         let containerBoundingRect = containerNode.getBoundingClientRect()
         let circleRect = el.getBoundingClientRect()
+        let mapContainer = document.getElementsByClassName('dorling-svg')[0]
+        let mapContainerRect = mapContainer.getBoundingClientRect()
         let padding = 10
 
         // prevent going off screen right
@@ -1850,7 +1852,7 @@ export function dorling() {
                 tooltipLeft = tooltipLeft - padding
             }
             // make sure y value is also lower then the circle
-            if (circleRect.top + circleRect.height >= tooltipTop + tooltipHeight ) {
+            if (circleRect.top + circleRect.height >= tooltipTop + tooltipHeight) {
                 tooltipTop = circleRect.top + padding
             }
         }
@@ -1859,6 +1861,11 @@ export function dorling() {
         if (tooltipTop < containerBoundingRect.top) {
             // y value is lower than top of container y value
             tooltipTop = tooltipTop + (tooltipHeight + padding)
+        }
+        //prevent going out of bottom of map container
+        if (tooltipTop + tooltipHeight + padding > mapContainerRect.bottom) {
+            // y value is lower than top of container y value
+            tooltipTop = tooltipTop - (tooltipHeight + padding)
         }
 
         if (tooltipLeft < 0) {
