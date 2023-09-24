@@ -16,7 +16,7 @@ body {
 
 .dorling-main-container {
     position: absolute;
-    height: calc(100vh - 165px);
+    height: calc(100vh);
     width: 100%;
     text-align: center;
     overflow: hidden;

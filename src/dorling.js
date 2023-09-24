@@ -639,7 +639,9 @@ export function dorling() {
                 //set up main svg element
                 out.svg = d3select.create('svg')
                 out.svg
-                    .attr('viewBox', [0, 0, out.width_, out.height_])
+                    .attr('viewBox', () =>
+                        window.innerWidth < out.mobileWidth_ ? [0, 0, 1076, 1267] : [0, 0, out.width_, out.height_]
+                    )
                     .attr('class', 'dorling-svg')
                     .style('background-color', out.seaColor_)
 
@@ -668,6 +670,12 @@ export function dorling() {
                     )
 
                 out.path = d3geo.geoPath().projection(out.projection)
+
+                if (window.innerWidth < out.mobileWidth_) {
+                    // mobile
+                    out.translateX_ += 50
+                    out.translateY_ += 100
+                }
 
                 if (out.translateX_ && out.translateY_) {
                     out.projection.translate([out.translateX_, out.translateY_])
@@ -1600,8 +1608,8 @@ export function dorling() {
                         }
                     })
 
-                    let inset = d3select.select('#inset-' + d.id)  //inset-ES7
-                  
+                    let inset = d3select.select('#inset-' + d.id) //inset-ES7
+
                     words.forEach((word) => {
                         inset
                             .append('text')
@@ -1653,6 +1661,15 @@ export function dorling() {
             })
             .attr('cy', (d) => {
                 return d.y + out.insets_.circleYOffset
+            })
+            .attr('id', (f) => {
+                // special case for FRY30
+                let id =
+                    out.nutsLevel_ == 3 && f.id == 'FRY30'
+                        ? f.featureCollection.features[1].properties.id
+                        : f.featureCollection.features[0].properties.id
+
+                return 'inset-circle-' + id
             })
             .attr('fill', '#ffffff00')
             .attr('stroke', '#40404000')
@@ -1755,10 +1772,12 @@ export function dorling() {
                 d3select.select(this).attr('stroke-width', '3px')
 
                 //calculate tooltip position + offsets
-                let pos = getTooltipPositionFromNode(this)
                 let name = f.properties.na
                 let id = f.properties.id
+                let pos = getTooltipPositionFromNode(this)
                 setTooltip(name, id, pos)
+                let pos2 = getTooltipPositionFromNode(this)
+                setTooltip(name, id, pos2)
             }
         })
         out.circles.on('mouseout', function () {
@@ -1787,6 +1806,8 @@ export function dorling() {
                     out.tooltipElement.style('visibility', 'visible')
                     let pos = getTooltipPositionFromNode(this)
                     setTooltip(name, id, pos)
+                    let pos2 = getTooltipPositionFromNode(this)
+                    setTooltip(name, id, pos2)
                 }
             })
             out.insetCircles.on('mouseout', function () {
@@ -1813,19 +1834,41 @@ export function dorling() {
         let tooltipNode = out.tooltipElement.node()
         let tooltipWidth = tooltipNode.offsetWidth
         let tooltipHeight = tooltipNode.offsetHeight
-        let left = window.pageXOffset + matrix.e
-        let top = window.pageYOffset + matrix.f - 115
+        let tooltipLeft = window.pageXOffset + matrix.e
+        let tooltipTop = window.pageYOffset + matrix.f - 115
         let containerNode = out.dorlingContainer.node()
-        if (left > containerNode.clientWidth - tooltipWidth) {
-            left = left - (tooltipWidth + 2) //offset
+        let containerBoundingRect = containerNode.getBoundingClientRect()
+        let circleRect = el.getBoundingClientRect()
+        let padding = 10
+
+        // prevent going off screen right
+        if (tooltipLeft > containerNode.clientWidth - tooltipWidth) {
+            // move to left side of circle
+            tooltipLeft = tooltipLeft - (tooltipWidth + 10 + circleRect.width)
+            //make sure tooltip doesnt cover circle
+            if (circleRect.left <= tooltipLeft + tooltipWidth + circleRect.width + padding) {
+                tooltipLeft = tooltipLeft - padding
+            }
+            // make sure y value is also lower then the circle
+            if (circleRect.top + circleRect.height >= tooltipTop + tooltipHeight ) {
+                tooltipTop = circleRect.top + padding
+            }
         }
-        if (left < 0) {
-            left = 1
+
+        //prevent going out of top of container
+        if (tooltipTop < containerBoundingRect.top) {
+            // y value is lower than top of container y value
+            tooltipTop = tooltipTop + (tooltipHeight + padding)
         }
-        if (top < 0) {
-            top = top + (tooltipHeight + 2) //offset
+
+        if (tooltipLeft < 0) {
+            tooltipLeft = 1
         }
-        return { left: left, top: top }
+        if (tooltipTop < 0) {
+            tooltipTop = tooltipTop + (tooltipHeight + 2) //offset
+        }
+
+        return { left: tooltipLeft, top: tooltipTop }
     }
 
     /**
@@ -1886,17 +1929,16 @@ export function dorling() {
                 </div>
 
                 <div class="estat-vis-tooltip-text">
-                            ${out.tooltip_.colorLabel}:\xA0€<strong>${formatNumber(
+                                ${out.tooltip_.colorLabel}:\xA0€<strong>${formatNumber(
                     roundToOneDecimal(out.colorIndicator[id])
                 )}</strong>\xA0per inhabitant<br>
-                    ${out.tooltip_.sizeLabel}:\xA0€${formatNumber(roundToOneDecimal(out.sizeIndicator[id]))}\xA0million<br>
-                    ${out.tooltip_.shareLabel}:\xA0${roundToOneDecimal(
+                        ${out.tooltip_.sizeLabel}:\xA0€${formatNumber(
+                    roundToOneDecimal(out.sizeIndicator[id])
+                )}\xA0million<br>
+                        ${out.tooltip_.shareLabel}:\xA0${roundToOneDecimal(
                     (out.sizeIndicator[id] / out.totalsIndex[id.substring(0, 2)]) * 100
                 )}${out.tooltip_.shareUnit} <br>
-
                 </div>
-                
-
 `)
             } else {
                 //default
@@ -1911,7 +1953,9 @@ export function dorling() {
                 <div class="estat-vis-tooltip-text">
                             ${out.tooltip_.colorLabel}: <strong>${formatNumber(
                     roundToOneDecimal(out.colorIndicator[id])
-                )}</strong>\xA0${out.tooltip_.colorUnit}<br>
+                )}</strong>${
+                    out.tooltip_.colorUnit == '%' ? out.tooltip_.colorUnit : '\xA0' + out.tooltip_.colorUnit
+                }<br>
                     ${out.tooltip_.sizeLabel}:\xA0${formatNumber(roundToOneDecimal(out.sizeIndicator[id]))}\xA0${
                     out.tooltip_.sizeUnit
                 }<br>
@@ -2144,7 +2188,8 @@ export function dorling() {
         out.legendSvg
             // .attr("width", out.legendWidth_) //this is defined in the background size calculations
             .attr('class', 'dorling-legend-svg')
-            .attr('height', out.legendHeight_)
+            .attr('viewBox', () => (window.innerWidth < out.mobileWidth_ ? '0,0,235,380' : undefined))
+            .attr('height', () => (window.innerWidth < out.mobileWidth_ ? 290 : out.legendHeight_))
 
         //append legend div to main container
         // if (!out.legendDiv) {
@@ -2750,6 +2795,8 @@ export function dorling() {
                     let node = circle.node()
                     let pos = getTooltipPositionFromNode(node)
                     setTooltip(name, id, pos)
+                    let pos2 = getTooltipPositionFromNode(node)
+                    setTooltip(name, id, pos2)
                     out.highlightedRegion = nutsCode
                     return 'yellow'
                 } else {
@@ -2759,13 +2806,6 @@ export function dorling() {
 
             out.circles.attr('stroke-width', (f) => {
                 if (f.properties.id == nutsCode) {
-                    let name = f.properties.na
-                    let id = f.properties.id
-                    let circle = d3select.select('#' + id)
-                    let node = circle.node()
-                    let pos = getTooltipPositionFromNode(node)
-                    setTooltip(name, id, pos)
-                    out.highlightedRegion = nutsCode
                     return '3px'
                 } else {
                     return out.circleStrokeWidth_ + 'px'
@@ -2774,8 +2814,9 @@ export function dorling() {
         }
 
         if (out.insetCircles) {
-            
-            if (!out.showOverseas) {
+            // if highlighted region is overseas region then open insets
+            let isInset = out.insetsGeojson.features.find((f) => f.properties.id == nutsCode)
+            if (!out.showOverseas && isInset) {
                 out.insetsSvg.node().style.display = 'block'
                 out.showOverseas = true
             }
@@ -2783,10 +2824,14 @@ export function dorling() {
                 if (f.id == nutsCode) {
                     let name = f.name
                     let id = f.id
-                    let circle = d3select.select('#' + 'inset-' + id)
+                    let circle = d3select.select('#inset-circle-' + id)
                     let node = circle.node()
                     let pos = getTooltipPositionFromNode(node)
                     setTooltip(name, id, pos)
+                    let pos2 = getTooltipPositionFromNode(node)
+                    setTooltip(name, id, pos2)
+                    let pos3 = getTooltipPositionFromNode(node)
+                    setTooltip(name, id, pos3)
                     out.highlightedRegion = nutsCode
                     return 'yellow'
                 } else {
@@ -2796,13 +2841,6 @@ export function dorling() {
 
             out.insetCircles.attr('stroke-width', (f) => {
                 if (f.id == nutsCode) {
-                    let name = f.name
-                    let id = f.id
-                    let circle = d3select.select('#' + 'inset-' + id)
-                    let node = circle.node()
-                    let pos = getTooltipPositionFromNode(node)
-                    setTooltip(name, id, pos)
-                    out.highlightedRegion = nutsCode
                     return '3px'
                 } else {
                     return out.circleStrokeWidth_ + 'px'
