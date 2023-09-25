@@ -66,7 +66,14 @@ NutsDorlingCartogram.dorling()
         sizeLabel: 'Total population',
         shareLabel: 'Share of national population',
     })
-    .build()
+          // pan and zoom for screen widths between 1081 and 500px
+      if (window.innerWidth < 1081 && window.innerWidth > 500) {
+        dorling.translateX(-550); //-390;
+        dorling.translateY(1480); //1126;
+        dorling.scale(0.0002665379208173783); //  0.0002065379208173783
+      }
+
+      dorling.build();
 ```
 
 Check out [this notebook](https://observablehq.com/@joewdavies/nuts-dorling-cartogram-npm-package) for an interactive example.

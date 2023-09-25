@@ -20,7 +20,7 @@
         <!-- End Piwik Code -->
 
         <!-- js -->
-        <script src="../../build/dorling.min.js"></script>
+        <script src="../../../build/dorling.js"></script>
         <script src="../assets/js/slimselect.min.js"></script>
         <script src="../assets/js/d3-fetch.min.js"></script>
         <script src="../assets/js/region-selector.js"></script>
@@ -29,6 +29,12 @@
         <link href="../assets/css/slimselect.css" rel="stylesheet" />
         <link href="../assets/css/region-selector.css" rel="stylesheet" />
         <link href="../assets/css/tooltip.css" rel="stylesheet" />
+
+        <style>
+            .dorling-svg {
+                max-height: 70%;
+            }
+        </style>
     </head>
 
     <body style="margin: 0">
@@ -117,7 +123,14 @@
                     'Data for NUTS level 3 regions are for 2020 (note this period was during the COVID-19 pandemic – caution advised if comparing with data for higher NUTS aggregates that refer to 2021).'
                 )
                 .onNutsLevelChange((nutsLevel) => updateRegionSelect(nutsLevel))
-                .build()
+            // pan and zoom for screen widths between 1081 and 500px
+            if (window.innerWidth < 1081 && window.innerWidth > 500) {
+                dorling.translateX(-550) //-390;
+                dorling.translateY(1480) //1126;
+                dorling.scale(0.0002665379208173783) //  0.0002065379208173783
+            }
+
+            dorling.build()
 
             function getURLParamValue(paramName) {
                 var url = window.location.search.substring(1) //get rid of "?" in querystring

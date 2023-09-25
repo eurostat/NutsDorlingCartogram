@@ -194,6 +194,8 @@ export function dorling() {
 
     //mobile
     out.mobileWidth_ = 479
+    out.tabletWidth_ = 1000
+
     //standalone
     const standaloneDefault = {
         infoText: null,
@@ -637,11 +639,13 @@ export function dorling() {
                 out.height_ = (out.width_ * (out.n2j.bbox[3] - out.n2j.bbox[1])) / (out.n2j.bbox[2] - out.n2j.bbox[0])
 
                 //set up main svg element
+                let viewbox = [0, 0, out.width_, out.height_]
+                if (window.innerWidth < out.mobileWidth_) viewbox = [0, 0, 1076, 1267]
+                if (window.innerWidth < out.tabletWidth_) viewbox = [0, 0, 992,1181]
+
                 out.svg = d3select.create('svg')
                 out.svg
-                    .attr('viewBox', () =>
-                        window.innerWidth < out.mobileWidth_ ? [0, 0, 1076, 1267] : [0, 0, out.width_, out.height_]
-                    )
+                    .attr('viewBox', viewbox)
                     .attr('class', 'dorling-svg')
                     .style('background-color', out.seaColor_)
 
@@ -676,6 +680,7 @@ export function dorling() {
                     out.translateX_ += 50
                     out.translateY_ += 100
                 }
+
 
                 if (out.translateX_ && out.translateY_) {
                     out.projection.translate([out.translateX_, out.translateY_])
@@ -1889,17 +1894,26 @@ export function dorling() {
         if (out.tooltip_.sizeValueTextFunction) {
             if (out.tooltip_.colorUnit == '€ per inhabitant') {
                 out.tooltipElement.html(`
+
+                ${/* HEADER */ ''}
                 <div class="estat-vis-tooltip-bar">
                     <strong>${name}</strong> (${id}) ${out.countryNamesIndex_[id[0] + id[1]]}   
                 </div>
 
                 <div class="estat-vis-tooltip-text">
+
+                ${/*  SIZE UNIT / VALUE */ ''}
+                ${out.tooltip_.sizeLabel}:\xA0${out.tooltip_.sizeUnit}\xA0${out.tooltip_.sizeValueTextFunction(
+                out.sizeIndicator[id]
+            )}  <br>
+
+                ${/*  COLOR UNIT / VALUE */ ''}
                     ${out.tooltip_.colorLabel}:\xA0${out.tooltip_.colorUnit} <strong>${formatNumber(
                     roundToOneDecimal(out.colorIndicator[id])
                 )}</strong> per inhabitant <br>
-                    ${out.tooltip_.sizeLabel}:\xA0${out.tooltip_.sizeUnit}\xA0${out.tooltip_.sizeValueTextFunction(
-                    out.sizeIndicator[id]
-                )}  <br>
+
+
+                ${/*  SHARE UNIT / VALUE */ ''}
                     ${out.tooltip_.shareLabel}:\xA0${roundToOneDecimal(
                     (out.sizeIndicator[id] / out.totalsIndex[id.substring(0, 2)]) * 100
                 )}${out.tooltip_.shareUnit} <br>
@@ -1913,11 +1927,17 @@ export function dorling() {
                 </div>
 
                 <div class="estat-vis-tooltip-text">
+
+                ${/*  SIZE UNIT / VALUE */ ''}
+                ${out.tooltip_.sizeLabel}:\xA0${out.tooltip_.sizeValueTextFunction(out.sizeIndicator[id])}
+                <br>
+
+                ${/*  COLOR UNIT / VALUE */ ''}
                     ${out.tooltip_.colorLabel}:\xA0<strong>${formatNumber(
                     roundToOneDecimal(out.colorIndicator[id])
                 )}</strong>\xA0${out.tooltip_.colorUnit}<br>
-                    ${out.tooltip_.sizeLabel}:\xA0${out.tooltip_.sizeValueTextFunction(out.sizeIndicator[id])}
-                    <br>
+
+                ${/*  SHARE UNIT / VALUE */ ''}
                     ${out.tooltip_.shareLabel}:\xA0${roundToOneDecimal(
                     (out.sizeIndicator[id] / out.totalsIndex[id.substring(0, 2)]) * 100
                 )}${out.tooltip_.shareUnit} <br>
@@ -1929,19 +1949,28 @@ export function dorling() {
             if (out.tooltip_.colorUnit == '€ per inhabitant') {
                 out.tooltipElement.html(`
                 
+                ${/* HEADER */ ''}
                 <div class="estat-vis-tooltip-bar">
                     <strong>${name}</strong>
                     (${id}) ${out.countryNamesIndex_[id[0] + id[1]]}
 
                 </div>
 
+                ${/*  BODY */ ''}
                 <div class="estat-vis-tooltip-text">
-                                ${out.tooltip_.colorLabel}:\xA0€<strong>${formatNumber(
-                    roundToOneDecimal(out.colorIndicator[id])
-                )}</strong>\xA0per inhabitant<br>
+
+
+                ${/*  SIZE UNIT / VALUE */ ''}
                         ${out.tooltip_.sizeLabel}:\xA0€${formatNumber(
                     roundToOneDecimal(out.sizeIndicator[id])
                 )}\xA0million<br>
+
+                ${/*  COLOR UNIT / VALUE */ ''}
+                ${out.tooltip_.colorLabel}:\xA0€<strong>${formatNumber(
+                    roundToOneDecimal(out.colorIndicator[id])
+                )}</strong>\xA0per inhabitant<br>
+
+                ${/*  SHARE UNIT / VALUE */ ''}
                         ${out.tooltip_.shareLabel}:\xA0${roundToOneDecimal(
                     (out.sizeIndicator[id] / out.totalsIndex[id.substring(0, 2)]) * 100
                 )}${out.tooltip_.shareUnit} <br>
@@ -1952,26 +1981,36 @@ export function dorling() {
 
                 out.tooltipElement.html(`
                 
+                ${/* HEADER */ ''}
                 <div class="estat-vis-tooltip-bar">
                     <strong>${name}</strong>
                     (${id}) ${out.countryNamesIndex_[id[0] + id[1]]}
                 </div>
                 
+                ${/*  BODY */ ''}
                 <div class="estat-vis-tooltip-text">
-                            ${out.tooltip_.colorLabel}: <strong>${formatNumber(
+
+                ${/*  SIZE UNIT / VALUE */ ''}
+                    ${out.tooltip_.sizeLabel}:\xA0${formatNumber(roundToOneDecimal(out.sizeIndicator[id]))}\xA0${
+                    out.tooltip_.sizeUnit
+                }<br>
+
+                ${/*  COLOR UNIT / VALUE */ ''}
+                ${out.tooltip_.colorLabel}: <strong>${formatNumber(
                     roundToOneDecimal(out.colorIndicator[id])
                 )}</strong>${
                     out.tooltip_.colorUnit == '%' ? out.tooltip_.colorUnit : '\xA0' + out.tooltip_.colorUnit
                 }<br>
-                    ${out.tooltip_.sizeLabel}:\xA0${formatNumber(roundToOneDecimal(out.sizeIndicator[id]))}\xA0${
-                    out.tooltip_.sizeUnit
-                }<br>
+
+                ${/*  SHARE UNIT / VALUE */ ''}
                     ${out.tooltip_.shareLabel}:\xA0${roundToOneDecimal(
                     (out.sizeIndicator[id] / out.totalsIndex[id.substring(0, 2)]) * 100
                 )}${out.tooltip_.shareUnit} <br>
+
+
+
+
                 </div>
-
-
 `)
             }
         }

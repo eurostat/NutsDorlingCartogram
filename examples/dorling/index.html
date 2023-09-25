@@ -9,7 +9,7 @@
 
     <body>
         <div id="dorling-container-div"></div>
-        <script src="../../build/dorling.min.js"></script>
+        <script src="../../../build/dorling.js"></script>
         <script>
             var dorling = NutsDorlingCartogram.dorling()
                 .containerId('dorling-container-div')
@@ -49,7 +49,14 @@
                 .showBorders(false)
                 .seaColor('white')
                 .translateX(-490) // d3 projection.translate()
-                .build()
+            // pan and zoom for screen widths between 1081 and 500px
+            if (window.innerWidth < 1081 && window.innerWidth > 500) {
+                dorling.translateX(-550) //-390;
+                dorling.translateY(1480) //1126;
+                dorling.scale(0.0002665379208173783) //  0.0002065379208173783
+            }
+
+            dorling.build()
         </script>
     </body>
 </html>
