@@ -34,13 +34,21 @@
             .dorling-svg {
                 max-height: 70%;
             }
+            @media only screen and (max-width: 1080px) {
+                .dorling-svg {
+                    max-height: 67%;
+                }
+            }
         </style>
     </head>
 
     <body style="margin: 0">
         <div class="dorling-header">
             <!-- TITLE -->
-            <div class="dorling-title">Gross domestic product, 2021</div>
+            <div class="dorling-title">
+                <h4>Gross domestic product, 2021</h4>
+                <h5>(€ million and PPS per inhabitant)</h5>
+            </div>
 
             <!-- REGION SELECTOR -->
             <div class="dorling-region-selector-wrapper">
@@ -124,7 +132,7 @@
                 )
                 .onNutsLevelChange((nutsLevel) => updateRegionSelect(nutsLevel))
             // pan and zoom for screen widths between 1081 and 500px
-            if (window.innerWidth < 1081 && window.innerWidth > 500) {
+            if (window.innerWidth < 900 && window.innerWidth > 500) {
                 dorling.translateX(-550) //-390;
                 dorling.translateY(1480) //1126;
                 dorling.scale(0.0002665379208173783) //  0.0002065379208173783

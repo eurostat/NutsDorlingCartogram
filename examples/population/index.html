@@ -44,9 +44,11 @@
     <link href="../assets/css/tooltip.css" rel="stylesheet" />
 
     <style>
+
         .dorling-svg{
           max-height: 70%;
         }
+      
     </style>
   </head>
 
@@ -153,18 +155,12 @@
         .showBorders(true)
         .onNutsLevelChange((nutsLevel) => updateRegionSelect(nutsLevel))
         
-        if (window.innerWidth < 1081 && window.innerWidth  > 500) {
+        if (window.innerWidth < 900 && window.innerWidth  > 500) {
           dorling.translateX(-550) //-390;
           dorling.translateY(1480) //1126;
           dorling.scale(0.0002665379208173783) //  0.0002065379208173783
         }
 
-        dorling      // pan and zoom for screen widths between 1081 and 500px
-      if (window.innerWidth < 1081 && window.innerWidth > 500) {
-        dorling.translateX(-550); //-390;
-        dorling.translateY(1480); //1126;
-        dorling.scale(0.0002665379208173783); //  0.0002065379208173783
-      }
 
       dorling.build();
 

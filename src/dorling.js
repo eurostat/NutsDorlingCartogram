@@ -2234,7 +2234,7 @@ export function dorling() {
         out.legendSvg
             // .attr("width", out.legendWidth_) //this is defined in the background size calculations
             .attr('class', 'dorling-legend-svg')
-            .attr('viewBox', () => (window.innerWidth < out.mobileWidth_ ? '0,0,235,380' : undefined))
+            .attr('viewBox', () => (window.innerWidth < out.mobileWidth_ ? '0,0,235,380' : undefined)) // 194,329 @ 588
             .attr('height', () => (window.innerWidth < out.mobileWidth_ ? 290 : out.legendHeight_))
 
         //append legend div to main container
