@@ -65,8 +65,7 @@ NutsDorlingCartogram.dorling()
         sizeLabel: 'Total population',
         shareLabel: 'Share of national population',
     })
-
-      dorling.build();
+    .build();
 ```
 
 Check out [this notebook](https://observablehq.com/@joewdavies/nuts-dorling-cartogram-npm-package) for an interactive example.
