@@ -7,7 +7,7 @@ Dorling cartograms from NUTS regions with Eurostat statistics
 ![license](https://img.shields.io/badge/license-EUPL-success)
 
 <div>
-  <a href="https://eurostat.github.io/NutsDorlingCartogram/examples/dorling/" target="_blank">
+  <a href="https://eurostat.github.io/NutsDorlingCartogram/examples/population/" target="_blank">
     <img src="assets/images/dorlingPreview.png" alt="preview"/>
   </a>
 <div>
