@@ -32,17 +32,16 @@
         <link href="../assets/css/tooltip.css" rel="stylesheet" />
 
         <style>
-            .dorling-svg{
+            .dorling-svg {
                 max-height: 73%;
             }
         </style>
     </head>
 
     <body>
-
         <div class="dorling-header">
             <!-- TITLE -->
-            <div class="dorling-title"> Air transport of passengers and freight, 2021</div>
+            <div class="dorling-title">Air transport of passengers and freight, 2021</div>
 
             <!-- REGION SELECTOR -->
             <div class="dorling-region-selector-wrapper">
@@ -78,14 +77,14 @@
                     colorCalculationDatasetCode: 'demo_r_d2jan',
                     colorCalculationDatasetFilters: 'sex=T&unit=NR&time=2021&age=TOTAL',
                     thresholdValues: [1, 2, 4, 6, 8, 9999],
-                    maxCircleRadius: { 0: 60, 1: 40, 2: 40 },
+                    maxCircleRadius: { 0: 90, 1: 60, 2: 60 },
                     sizeLegend: {
                         title: 'Air passengers (million)',
                         values: {
-                            0: [60e3, 30e3, 5e3],
-                            1: [40e3, 20e3, 5e3],
-                            2: [40e3, 20e3, 5e3],
-                            3: [40e3, 20e3, 5e3],
+                            0: [60e3, 5e3],
+                            1: [40e3, 5e3],
+                            2: [40e3, 5e3],
+                            3: [40e3, 5e3],
                         },
                         textFunction: function (d) {
                             let n = (d * 1000) / 1000000
@@ -118,10 +117,9 @@
                         },
                         shareLabel: 'Share of national air passengers',
                     },
-                    
                 },
                 freight: {
-                    maxCircleRadius: { 0: 70, 1: 50, 2: 50 },
+                    maxCircleRadius: { 0: 90, 1: 60, 2: 60 },
                     sizeDatasetCode: 'tran_r_avgo_nm',
                     sizeDatasetFilters: 'tra_meas=FRM_LD_NLD&unit=THS_T&time=2021',
                     colorDatasetCode: 'tran_r_avgo_nm',
@@ -136,10 +134,10 @@
                     sizeLegend: {
                         title: 'Freight and mail carried (1 000 tonnes)',
                         values: {
-                            0: [2000, 1000, 500],
-                            1: [2000, 1000, 500],
-                            2: [2000, 1000, 500],
-                            3: [2000, 1000, 500],
+                            0: [5000, 500],
+                            1: [2000, 500],
+                            2: [2000, 500],
+                            3: [2000, 500],
                         },
                         textFunction: function (d) {
                             return d.toLocaleString('en').replace(/,/gi, '\xA0')
@@ -160,7 +158,6 @@
                             return n.toLocaleString('en').replace(/,/gi, '\xA0') + ' tonnes'
                         },
                     },
-                   
                 },
             }
 
@@ -207,14 +204,14 @@
                 .showBorders(true)
                 .positionStrength(0.3)
                 .onNutsLevelChange((nutsLevel) => updateRegionSelect(nutsLevel))
-                      // pan and zoom for screen widths between 1081 and 500px
-      if (window.innerWidth < 900 && window.innerWidth > 500) {
-        dorling.translateX(-550); //-390;
-        dorling.translateY(1480); //1126;
-        dorling.scale(0.0002665379208173783); //  0.0002065379208173783
-      }
+            // pan and zoom for screen widths between 1081 and 500px
+            if (window.innerWidth < 900 && window.innerWidth > 500) {
+                dorling.translateX(-550) //-390;
+                dorling.translateY(1480) //1126;
+                dorling.scale(0.0002665379208173783) //  0.0002065379208173783
+            }
 
-      dorling.build();
+            dorling.build()
 
             function getURLParamValue(paramName) {
                 var url = window.location.search.substring(1) //get rid of "?" in querystring
@@ -257,7 +254,6 @@
                 },
             })
             transportSelect.setSelected('air')
-
         </script>
     </body>
 </html>

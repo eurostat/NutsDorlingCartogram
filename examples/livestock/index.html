@@ -74,27 +74,27 @@
                 A3100: {
                     maxCircleRadius: { 2: 40 },
                     sizeLegend: {
-                        values: { 2: [9000, 3000, 1000] },
+                        values: { 2: [9000, 1000] },
                     },
                 },
                 // bovine
                 A2000: {
                     maxCircleRadius: { 2: 40 },
                     sizeLegend: {
-                        values: { 2: [9000, 3000, 1000] },
+                        values: { 2: [9000, 1000] },
                     },
                 },
                 // sheep
                 A4100: {
                     maxCircleRadius: { 2: 40 },
                     sizeLegend: {
-                        values: { 2: [9000, 3000, 1000] },
+                        values: { 2: [9000, 1000] },
                     },
                 }, // goats
                 A4200: {
                     maxCircleRadius: { 2: 40 },
                     sizeLegend: {
-                        values: { 2: [9000, 3000, 1000] },
+                        values: { 2: [9000, 1000] },
                     },
                 },
             }
@@ -151,7 +151,7 @@
                     'animals=A3100&animals=A2000&animals=A4100&animals=A4200&unit=THS_HD&time=2022'
                 )
                 //.maxCircleRadius(animalConfig.A3100.maxCircleRadius)
-                .circleSizeFunction(d3.scaleSqrt().range([5, 40]).domain([0, 8200]))
+                .circleSizeFunction(d3.scaleSqrt().range([5, 50]).domain([0, 8200]))
                 .colorLegend({
                     //https://d3-legend.susielu.com/#color
                     title: 'Share of total regional livestock (%)',
