@@ -7,14 +7,13 @@ Dorling cartograms from NUTS regions with Eurostat statistics
 ![license](https://img.shields.io/badge/license-EUPL-success)
 
 <div>
-  <a href="https://eurostat.github.io/NutsDorlingCartogram/examples/dorling/" target="_blank">
+  <a href="https://eurostat.github.io/NutsDorlingCartogram/examples/population/" target="_blank">
     <img src="assets/images/dorlingPreview.png" alt="preview"/>
   </a>
 <div>
   
 ## Examples
 
--   [Population without borders](https://eurostat.github.io/NutsDorlingCartogram/examples/dorling/)
 -   [Population](https://eurostat.github.io/NutsDorlingCartogram/examples/population/)
 -   [GDP](https://eurostat.github.io/NutsDorlingCartogram/examples/gdp/)
 -   [Tourism](https://eurostat.github.io/NutsDorlingCartogram/examples/tourism/)
@@ -66,14 +65,7 @@ NutsDorlingCartogram.dorling()
         sizeLabel: 'Total population',
         shareLabel: 'Share of national population',
     })
-          // pan and zoom for screen widths between 1081 and 500px
-      if (window.innerWidth < 900 && window.innerWidth > 500) {
-        dorling.translateX(-550); //-390;
-        dorling.translateY(1480); //1126;
-        dorling.scale(0.0002665379208173783); //  0.0002065379208173783
-      }
-
-      dorling.build();
+    .build();
 ```
 
 Check out [this notebook](https://observablehq.com/@joewdavies/nuts-dorling-cartogram-npm-package) for an interactive example.

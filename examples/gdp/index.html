@@ -20,7 +20,7 @@
         <!-- End Piwik Code -->
 
         <!-- js -->
-        <script src="../../../build/dorling.js"></script>
+        <script src="../../build/dorling.js"></script>
         <script src="../assets/js/slimselect.min.js"></script>
         <script src="../assets/js/d3-fetch.min.js"></script>
         <script src="../assets/js/region-selector.js"></script>
@@ -72,7 +72,7 @@
             var dorling = NutsDorlingCartogram.dorling()
                 .standalone(standalone)
                 .containerId('dorling-container-div')
-                .nuts2JsonBaseURL('https://ec.europa.eu/assets/estat/E/E4/gisco/pub/nuts2json/v2/')
+                // .nuts2JsonBaseURL('https://ec.europa.eu/assets/estat/E/E4/gisco/pub/nuts2json/v2/')
                 .overseasGeometriesBaseURL(
                     'https://ec.europa.eu/eurostat/cache/interactive-publications/regions/2023/vis/cartograms/assets/topojson/overseas/'
                 )
