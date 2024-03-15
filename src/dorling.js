@@ -514,7 +514,11 @@ export function dorling() {
             .transition()
             .duration(750)
             .attr('r', (f) => sizeFunction(+out.sizeIndicator[f.properties.id]))
-            .attr('fill', (f) => colorFunction(out.colorIndicator[f.properties.id]))
+            .attr('fill', (f) => {
+                let val = out.colorIndicator[f.properties.id]
+                // if (val == 0 || val == null || val == ':') console.log (val)
+               return colorFunction(val)
+            })
 
         // clear insets
         d3select.selectAll('.dorling-insets').remove()
@@ -1963,7 +1967,11 @@ export function dorling() {
             .transition()
             .duration(750)
             .attr('r', (f) => sizeFunction(+out.sizeIndicator[f.properties.id]))
-            .attr('fill', (f) => colorFunction(out.colorIndicator[f.properties.id]))
+            .attr('fill', (f) => {
+                let val = out.colorIndicator[f.properties.id]
+                if (val == 0 || val == null || val == ':') console.log (f)
+               return colorFunction(val)
+            })
             .attr('stroke', out.circleStroke_)
 
         // insets
@@ -2929,7 +2937,7 @@ export function dorling() {
      * @return {string} returns colour string
      */
     function colorFunction(v) {
-        return v == ':' || v == null ? out.noDataColor_ : out.colorScale(v)
+        return v == ':' || v == null || v == undefined ? out.noDataColor_ : out.colorScale(v)
     }
 
     /**
@@ -3074,10 +3082,12 @@ export function dorling() {
                     }
                 })
             } else {
+                // data color index {id:val}
                 arr = Object.entries(data.dimension.geo.category.index).map(([key, val]) => ({
                     id: key,
-                    val: +data.value[val] || null,
+                    val: data.value[val],
                 }))
+                // console.log(arr)
             }
 
             //if the color value is a percentage, divide each colorValue by its relevant total from colorPercentageCalculationData
