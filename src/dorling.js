@@ -32,10 +32,14 @@ export function dorling() {
     out.coastalMargins_ = false
     out.graticule_ = false
     out.nutsBorderColor_ = 'grey'
-    out.nutsBorderWidth_ = 0.2
+    out.nutsBorderWidth_ = 0.15
     out.toggleLegendWidthThreshold_ = 850
     out.toggleLegendHeightThreshold_ = 700 //height (px) at which the legend is loaded in "collapsable" mode
     out.nutsLevelToggleHeightThreshold_ = 600 // the minimum height for the legend and toggle to be in the same container, otherwise they are separated.
+
+    // no data
+    out.noDataText_ = 'No data'
+    out.noDataColor_ = 'grey'
 
     //d3 force
     // out.circleExaggerationFactor_ = 1.2; //deprecated
@@ -146,6 +150,7 @@ export function dorling() {
         shareLabel: 'Share value',
         shareUnit: '%',
         sizeValueTextFunction: null,
+        colorValueTextFunction: null,
     }
     //additional text and links
     out.showAttribution_ = true
@@ -208,7 +213,9 @@ export function dorling() {
     out.standalone_ = false
     out.standaloneUrl_ = ''
 
-    out.circleStrokeWidth_ = 0.2
+    out.circleStrokeWidth_ = 0.1
+    out.circleStroke_ = '#ffffff'
+    out.circleHighlightStroke_ = '#000'
 
     //definition of generic accessors based on the name of each parameter name
     for (let p in out)
@@ -507,8 +514,7 @@ export function dorling() {
             .transition()
             .duration(750)
             .attr('r', (f) => sizeFunction(+out.sizeIndicator[f.properties.id]))
-            .attr('fill', (f) => colorFunction(+out.colorIndicator[f.properties.id]))
-            .attr('stroke', 'black')
+            .attr('fill', (f) => colorFunction(out.colorIndicator[f.properties.id]))
 
         // clear insets
         d3select.selectAll('.dorling-insets').remove()
@@ -552,9 +558,9 @@ export function dorling() {
                                 ? f.featureCollection.features[1].properties.id
                                 : f.featureCollection.features[0].properties.id
 
-                        return colorFunction(+out.colorIndicator[id])
+                        return colorFunction(out.colorIndicator[id])
                     })
-                    .attr('stroke', 'black')
+                    .attr('stroke', out.circleStroke_)
             })
         } else {
             // apply d3 force to the circles
@@ -641,13 +647,10 @@ export function dorling() {
                 //set up main svg element
                 let viewbox = [0, 0, out.width_, out.height_]
                 if (window.innerWidth < out.mobileWidth_) viewbox = [0, 0, 1076, 1267]
-                if (window.innerWidth < out.tabletWidth_) viewbox = [0, 0, 992,1181]
+                if (window.innerWidth < out.tabletWidth_) viewbox = [0, 0, 992, 1181]
 
                 out.svg = d3select.create('svg')
-                out.svg
-                    .attr('viewBox', viewbox)
-                    .attr('class', 'dorling-svg')
-                    .style('background-color', out.seaColor_)
+                out.svg.attr('viewBox', viewbox).attr('class', 'dorling-svg').style('background-color', out.seaColor_)
 
                 // append map svg
                 out.dorlingContainer.node().appendChild(out.svg.node())
@@ -680,7 +683,6 @@ export function dorling() {
                     out.translateX_ += 50
                     out.translateY_ += 100
                 }
-
 
                 if (out.translateX_ && out.translateY_) {
                     out.projection.translate([out.translateX_, out.translateY_])
@@ -1021,13 +1023,6 @@ export function dorling() {
             .filter((f) => {
                 if (out.sizeIndicator[f.properties.id]) {
                     return f
-                } else {
-                    // console.log(
-                    //     f.properties.na,
-                    //     ':',
-                    //     out.sizeIndicator[f.properties.id],
-                    //     out.colorIndicator[f.properties.id]
-                    // )
                 }
             })
             .append('circle')
@@ -1035,7 +1030,7 @@ export function dorling() {
             .attr('cx', (f) => out.projection(f.geometry.coordinates)[0])
             .attr('cy', (f) => out.projection(f.geometry.coordinates)[1])
             .attr('fill', '#ffffff00')
-            .attr('stroke', '#40404000')
+            .attr('stroke', out.circleStroke_)
             .attr('stroke-width', out.circleStrokeWidth_ + 'px')
             .attr('vector-effect', 'non-scaling-stroke')
     }
@@ -1677,7 +1672,7 @@ export function dorling() {
                 return 'inset-circle-' + id
             })
             .attr('fill', '#ffffff00')
-            .attr('stroke', '#40404000')
+            .attr('stroke', out.circleStroke_)
             .attr('stroke-width', out.circleStrokeWidth_ + 'px')
     }
 
@@ -1774,7 +1769,7 @@ export function dorling() {
                 }
 
                 //highlight
-                d3select.select(this).attr('stroke-width', '3px')
+                d3select.select(this).attr('stroke-width', '3px').attr('stroke', out.circleHighlightStroke_)
 
                 //calculate tooltip position + offsets
                 let name = f.properties.na
@@ -1790,7 +1785,7 @@ export function dorling() {
                 out.tooltipElement.style('visibility', 'hidden')
 
                 //unhighlight
-                d3select.select(this).attr('stroke-width', out.circleStrokeWidth_ + 'px')
+                d3select.select(this).attr('stroke-width', out.circleStrokeWidth_ + 'px').attr('stroke', out.circleStroke_)
             }
         })
 
@@ -1807,7 +1802,7 @@ export function dorling() {
                 let name = f.name
                 if (out.stage == 2) {
                     //highlight
-                    d3select.select(this).attr('stroke-width', '3px')
+                    d3select.select(this).attr('stroke-width', '3px').attr('stroke', out.circleHighlightStroke_)
                     out.tooltipElement.style('visibility', 'visible')
                     let pos = getTooltipPositionFromNode(this)
                     setTooltip(name, id, pos)
@@ -1819,7 +1814,7 @@ export function dorling() {
                 if (out.stage == 2) {
                     out.tooltipElement.style('visibility', 'hidden')
                     //unhighlight
-                    d3select.select(this).attr('stroke-width', out.circleStrokeWidth_ + 'px')
+                    d3select.select(this).attr('stroke-width', out.circleStrokeWidth_ + 'px').attr('stroke', out.circleStroke_)
                     out.unhightlightRegion() //in case highlightRegion() has been used
                 }
             })
@@ -1891,129 +1886,48 @@ export function dorling() {
      * @param {MousePosition} pos
      */
     function setTooltip(name, id, pos) {
-        if (out.tooltip_.sizeValueTextFunction) {
-            if (out.tooltip_.colorUnit == '€ per inhabitant') {
-                out.tooltipElement.html(`
-
-                ${/* HEADER */ ''}
-                <div class="estat-vis-tooltip-bar">
-                    <strong>${name}</strong> (${id}) ${out.countryNamesIndex_[id[0] + id[1]]}   
-                </div>
-
-                <div class="estat-vis-tooltip-text">
-
-                ${/*  SIZE UNIT / VALUE */ ''}
-                ${out.tooltip_.sizeLabel}:\xA0${out.tooltip_.sizeUnit}\xA0${out.tooltip_.sizeValueTextFunction(
-                out.sizeIndicator[id]
-            )}  <br>
-
-                ${/*  COLOR UNIT / VALUE */ ''}
-                    ${out.tooltip_.colorLabel}:\xA0${out.tooltip_.colorUnit} <strong>${formatNumber(
-                    roundToOneDecimal(out.colorIndicator[id])
-                )}</strong> per inhabitant <br>
-
-
-                ${/*  SHARE UNIT / VALUE */ ''}
-                    ${out.tooltip_.shareLabel}:\xA0${roundToOneDecimal(
-                    (out.sizeIndicator[id] / out.totalsIndex[id.substring(0, 2)]) * 100
-                )}${out.tooltip_.shareUnit} <br>
-                </div>
-                `)
-            } else {
-                out.tooltipElement.html(`
-                <div class="estat-vis-tooltip-bar">
-                    <strong>${name}</strong>
-                    (${id}) ${out.countryNamesIndex_[id[0] + id[1]]}
-                </div>
-
-                <div class="estat-vis-tooltip-text">
-
-                ${/*  SIZE UNIT / VALUE */ ''}
-                ${out.tooltip_.sizeLabel}:\xA0${out.tooltip_.sizeValueTextFunction(out.sizeIndicator[id])}
-                <br>
-
-                ${/*  COLOR UNIT / VALUE */ ''}
-                    ${out.tooltip_.colorLabel}:\xA0<strong>${formatNumber(
-                    roundToOneDecimal(out.colorIndicator[id])
-                )}</strong>\xA0${out.tooltip_.colorUnit}<br>
-
-                ${/*  SHARE UNIT / VALUE */ ''}
-                    ${out.tooltip_.shareLabel}:\xA0${roundToOneDecimal(
-                    (out.sizeIndicator[id] / out.totalsIndex[id.substring(0, 2)]) * 100
-                )}${out.tooltip_.shareUnit} <br>
-                </div>
-
-`)
-            }
-        } else {
-            if (out.tooltip_.colorUnit == '€ per inhabitant') {
-                out.tooltipElement.html(`
-                
-                ${/* HEADER */ ''}
-                <div class="estat-vis-tooltip-bar">
-                    <strong>${name}</strong>
-                    (${id}) ${out.countryNamesIndex_[id[0] + id[1]]}
-
-                </div>
-
-                ${/*  BODY */ ''}
-                <div class="estat-vis-tooltip-text">
-
-
-                ${/*  SIZE UNIT / VALUE */ ''}
-                        ${out.tooltip_.sizeLabel}:\xA0€${formatNumber(
-                    roundToOneDecimal(out.sizeIndicator[id])
-                )}\xA0million<br>
-
-                ${/*  COLOR UNIT / VALUE */ ''}
-                ${out.tooltip_.colorLabel}:\xA0€<strong>${formatNumber(
-                    roundToOneDecimal(out.colorIndicator[id])
-                )}</strong>\xA0per inhabitant<br>
-
-                ${/*  SHARE UNIT / VALUE */ ''}
-                        ${out.tooltip_.shareLabel}:\xA0${roundToOneDecimal(
-                    (out.sizeIndicator[id] / out.totalsIndex[id.substring(0, 2)]) * 100
-                )}${out.tooltip_.shareUnit} <br>
-                </div>
-`)
-            } else {
-                //default
-
-                out.tooltipElement.html(`
-                
-                ${/* HEADER */ ''}
-                <div class="estat-vis-tooltip-bar">
-                    <strong>${name}</strong>
-                    (${id}) ${out.countryNamesIndex_[id[0] + id[1]]}
-                </div>
-                
-                ${/*  BODY */ ''}
-                <div class="estat-vis-tooltip-text">
-
-                ${/*  SIZE UNIT / VALUE */ ''}
-                    ${out.tooltip_.sizeLabel}:\xA0${formatNumber(roundToOneDecimal(out.sizeIndicator[id]))}\xA0${
-                    out.tooltip_.sizeUnit
-                }<br>
-
-                ${/*  COLOR UNIT / VALUE */ ''}
-                ${out.tooltip_.colorLabel}: <strong>${formatNumber(
-                    roundToOneDecimal(out.colorIndicator[id])
+        // set default text functions if left undefined by user
+        if (!out.tooltip_.sizeValueTextFunction) {
+            out.tooltip_.sizeValueTextFunction = (sizeValue) => {
+                return sizeValue == null || sizeValue == ':' ? out.noDataText_ : `${formatNumber(roundToOneDecimal(sizeValue))}\xA0${out.tooltip_.sizeUnit}` 
+        }
+        }
+        if (!out.tooltip_.colorValueTextFunction) {
+            out.tooltip_.colorValueTextFunction = (colorValue) => {
+                return colorValue == null || colorValue == ':' ? out.noDataText_ :`<strong>${formatNumber(
+                    roundToOneDecimal(colorValue)
                 )}</strong>${
                     out.tooltip_.colorUnit == '%' ? out.tooltip_.colorUnit : '\xA0' + out.tooltip_.colorUnit
-                }<br>
+                }`
+            }
+        }
+
+        //set tooltip content
+        out.tooltipElement.html(`
+                
+                ${/* HEADER */ ''}
+                <div class="estat-vis-tooltip-bar">
+                    <strong>${name}</strong>
+                    (${id}) ${out.countryNamesIndex_[id[0] + id[1]]}
+                </div>
+                
+                ${/*  BODY */ ''}
+                <div class="estat-vis-tooltip-text">
+
+                ${/*  SIZE UNIT / VALUE */ ''}
+                    ${out.tooltip_.sizeLabel}:\xA0${out.tooltip_.sizeValueTextFunction(out.sizeIndicator[id])}<br>
+
+                ${/*  COLOR UNIT / VALUE */ ''}
+                ${out.tooltip_.colorLabel}: ${out.tooltip_.colorValueTextFunction(out.colorIndicator[id])}<br>
 
                 ${/*  SHARE UNIT / VALUE */ ''}
                     ${out.tooltip_.shareLabel}:\xA0${roundToOneDecimal(
                     (out.sizeIndicator[id] / out.totalsIndex[id.substring(0, 2)]) * 100
                 )}${out.tooltip_.shareUnit} <br>
 
-
-
-
                 </div>
 `)
-            }
-        }
+
         out.tooltipElement.style('visibility', 'visible')
         out.tooltipElement.style('left', pos.left + 'px').style('top', pos.top + 'px')
     }
@@ -2041,8 +1955,8 @@ export function dorling() {
             .transition()
             .duration(750)
             .attr('r', (f) => sizeFunction(+out.sizeIndicator[f.properties.id]))
-            .attr('fill', (f) => colorFunction(+out.colorIndicator[f.properties.id]))
-            .attr('stroke', 'black')
+            .attr('fill', (f) => colorFunction(out.colorIndicator[f.properties.id]))
+            .attr('stroke', out.circleStroke_)
 
         // insets
         if (out.showInsets_) {
@@ -2066,9 +1980,9 @@ export function dorling() {
                             ? f.featureCollection.features[1].properties.id
                             : f.featureCollection.features[0].properties.id
 
-                    return colorFunction(+out.colorIndicator[id])
+                    return colorFunction(out.colorIndicator[id])
                 })
-                .attr('stroke', 'black')
+                .attr('stroke', out.circleStroke_)
         }
         //hide nuts
         if (out.showBorders_) {
@@ -2169,7 +2083,7 @@ export function dorling() {
         out.tooltipElement.style('visibility', 'hidden')
         //reset styles and restart animation
         //fade circles
-        out.circles.transition().duration(500).attr('fill', '#40404000').attr('stroke', '#40404000')
+        out.circles.transition().duration(500).attr('fill', '#40404000').attr('stroke', out.circleStroke_)
         // fade-in countries
         if (out.nuts) {
             out.nuts
@@ -2420,6 +2334,7 @@ export function dorling() {
             .labelDelimiter(out.colorLegend_.labelDelimiter)
             .labelWrap(out.colorLegend_.labelWrap)
             .on('cellover', function (event) {
+                // legend hover mouseover
                 let color = event.currentTarget.__data__
                 if (out.stage == 2) {
                     out.circles
@@ -2427,8 +2342,7 @@ export function dorling() {
                         .duration(750)
                         .attr('fill', (f) => {
                             //if circle color isnt that of the hovered cell
-                            if (colorFunction(+out.colorIndicator[f.properties.id]) !== color) {
-                                //
+                            if (colorFunction(out.colorIndicator[f.properties.id]) !== color) {
                                 return 'white'
                             } else {
                                 return color
@@ -2444,8 +2358,7 @@ export function dorling() {
                                     out.nutsLevel_ == 3 && f.id == 'FRY30'
                                         ? f.featureCollection.features[1].properties.id
                                         : f.featureCollection.features[0].properties.id
-                                if (colorFunction(+out.colorIndicator[id]) !== color) {
-                                    //
+                                if (colorFunction(out.colorIndicator[id]) !== color) {
                                     return 'white'
                                 } else {
                                     return color
@@ -2459,7 +2372,7 @@ export function dorling() {
                     out.circles
                         .transition()
                         .duration(750)
-                        .attr('fill', (f) => colorFunction(+out.colorIndicator[f.properties.id]))
+                        .attr('fill', (f) => colorFunction(out.colorIndicator[f.properties.id]))
                     if (out.insetCircles) {
                         out.insetCircles
                             .transition()
@@ -2469,7 +2382,7 @@ export function dorling() {
                                     out.nutsLevel_ == 3 && f.id == 'FRY30'
                                         ? f.featureCollection.features[1].properties.id
                                         : f.featureCollection.features[0].properties.id
-                                return colorFunction(+out.colorIndicator[id])
+                                return colorFunction(out.colorIndicator[id])
                             })
                     }
                 }
@@ -2846,7 +2759,7 @@ export function dorling() {
                     out.highlightedRegion = nutsCode
                     return 'yellow'
                 } else {
-                    return colorFunction(+out.colorIndicator[f.properties.id])
+                    return colorFunction(out.colorIndicator[f.properties.id])
                 }
             })
 
@@ -2881,7 +2794,7 @@ export function dorling() {
                     out.highlightedRegion = nutsCode
                     return 'yellow'
                 } else {
-                    return colorFunction(+out.colorIndicator[f.id])
+                    return colorFunction(out.colorIndicator[f.id])
                 }
             })
 
@@ -2900,14 +2813,14 @@ export function dorling() {
             return out.circleStrokeWidth_ + 'px'
         })
         out.circles.attr('fill', (f) => {
-            return colorFunction(+out.colorIndicator[f.properties.id])
+            return colorFunction(out.colorIndicator[f.properties.id])
         })
         if (out.insetCircles) {
             out.insetCircles.attr('stroke-width', (f) => {
                 return out.circleStrokeWidth_ + 'px'
             })
             out.insetCircles.attr('fill', (f) => {
-                return colorFunction(+out.colorIndicator[f.id])
+                return colorFunction(out.colorIndicator[f.id])
             })
         }
         out.highlightedRegion = null
@@ -2994,7 +2907,7 @@ export function dorling() {
      * @return {string} returns colour string
      */
     function colorFunction(v) {
-        return out.colorScale(v)
+        return v == ':' || v == null ? out.noDataColor_ : out.colorScale(v)
     }
 
     /**
