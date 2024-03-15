@@ -1785,7 +1785,10 @@ export function dorling() {
                 out.tooltipElement.style('visibility', 'hidden')
 
                 //unhighlight
-                d3select.select(this).attr('stroke-width', out.circleStrokeWidth_ + 'px').attr('stroke', out.circleStroke_)
+                d3select
+                    .select(this)
+                    .attr('stroke-width', out.circleStrokeWidth_ + 'px')
+                    .attr('stroke', out.circleStroke_)
             }
         })
 
@@ -1814,7 +1817,10 @@ export function dorling() {
                 if (out.stage == 2) {
                     out.tooltipElement.style('visibility', 'hidden')
                     //unhighlight
-                    d3select.select(this).attr('stroke-width', out.circleStrokeWidth_ + 'px').attr('stroke', out.circleStroke_)
+                    d3select
+                        .select(this)
+                        .attr('stroke-width', out.circleStrokeWidth_ + 'px')
+                        .attr('stroke', out.circleStroke_)
                     out.unhightlightRegion() //in case highlightRegion() has been used
                 }
             })
@@ -1889,16 +1895,18 @@ export function dorling() {
         // set default text functions if left undefined by user
         if (!out.tooltip_.sizeValueTextFunction) {
             out.tooltip_.sizeValueTextFunction = (sizeValue) => {
-                return sizeValue == null || sizeValue == ':' ? out.noDataText_ : `${formatNumber(roundToOneDecimal(sizeValue))}\xA0${out.tooltip_.sizeUnit}` 
-        }
+                return sizeValue == null || sizeValue == ':'
+                    ? out.noDataText_
+                    : `${formatNumber(roundToOneDecimal(sizeValue))}\xA0${out.tooltip_.sizeUnit}`
+            }
         }
         if (!out.tooltip_.colorValueTextFunction) {
             out.tooltip_.colorValueTextFunction = (colorValue) => {
-                return colorValue == null || colorValue == ':' ? out.noDataText_ :`<strong>${formatNumber(
-                    roundToOneDecimal(colorValue)
-                )}</strong>${
-                    out.tooltip_.colorUnit == '%' ? out.tooltip_.colorUnit : '\xA0' + out.tooltip_.colorUnit
-                }`
+                return colorValue == null || colorValue == ':'
+                    ? out.noDataText_
+                    : `<strong>${formatNumber(roundToOneDecimal(colorValue))}</strong>${
+                          out.tooltip_.colorUnit == '%' ? out.tooltip_.colorUnit : '\xA0' + out.tooltip_.colorUnit
+                      }`
             }
         }
 
@@ -1922,8 +1930,8 @@ export function dorling() {
 
                 ${/*  SHARE UNIT / VALUE */ ''}
                     ${out.tooltip_.shareLabel}:\xA0${roundToOneDecimal(
-                    (out.sizeIndicator[id] / out.totalsIndex[id.substring(0, 2)]) * 100
-                )}${out.tooltip_.shareUnit} <br>
+            (out.sizeIndicator[id] / out.totalsIndex[id.substring(0, 2)]) * 100
+        )}${out.tooltip_.shareUnit} <br>
 
                 </div>
 `)
@@ -2763,13 +2771,21 @@ export function dorling() {
                 }
             })
 
-            out.circles.attr('stroke-width', (f) => {
-                if (f.properties.id == nutsCode) {
-                    return '3px'
-                } else {
-                    return out.circleStrokeWidth_ + 'px'
-                }
-            })
+            out.circles
+                .attr('stroke-width', (f) => {
+                    if (f.properties.id == nutsCode) {
+                        return '3px'
+                    } else {
+                        return out.circleStrokeWidth_ + 'px'
+                    }
+                })
+                .attr('stroke', (f) => {
+                    if (f.properties.id == nutsCode) {
+                        return out.circleHighlightStroke_
+                    } else {
+                        return out.circleStroke_
+                    }
+                })
         }
 
         if (out.insetCircles) {
@@ -2803,6 +2819,12 @@ export function dorling() {
                     return '3px'
                 } else {
                     return out.circleStrokeWidth_ + 'px'
+                }
+            }).attr('stroke', (f) => {
+                if (f.id == nutsCode) {
+                    return out.circleHighlightStroke_
+                } else {
+                    return out.circleStroke_
                 }
             })
         }
