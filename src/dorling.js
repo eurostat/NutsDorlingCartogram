@@ -1915,6 +1915,10 @@ export function dorling() {
         }
 
         //set tooltip content
+        let share = roundToOneDecimal(
+            (out.sizeIndicator[id] / out.totalsIndex[id.substring(0, 2)]) * 100
+        )
+        
         out.tooltipElement.html(`
                 
                 ${/* HEADER */ ''}
@@ -1933,9 +1937,7 @@ export function dorling() {
                 ${out.tooltip_.colorLabel}: ${out.tooltip_.colorValueTextFunction(out.colorIndicator[id])}<br>
 
                 ${/*  SHARE UNIT / VALUE */ ''}
-                    ${out.tooltip_.shareLabel}:\xA0${roundToOneDecimal(
-            (out.sizeIndicator[id] / out.totalsIndex[id.substring(0, 2)]) * 100
-        )}${out.tooltip_.shareUnit} <br>
+                    ${out.tooltip_.shareLabel}:\xA0${share ? share + ' ' + out.tooltip_.shareUnit : 'no data'} <br>
 
                 </div>
 `)
