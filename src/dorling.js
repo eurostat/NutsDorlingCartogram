@@ -517,7 +517,7 @@ export function dorling() {
             .attr('fill', (f) => {
                 let val = out.colorIndicator[f.properties.id]
                 // if (val == 0 || val == null || val == ':') console.log (val)
-               return colorFunction(val)
+                return colorFunction(val)
             })
 
         // clear insets
@@ -1915,10 +1915,8 @@ export function dorling() {
         }
 
         //set tooltip content
-        let share = roundToOneDecimal(
-            (out.sizeIndicator[id] / out.totalsIndex[id.substring(0, 2)]) * 100
-        )
-        
+        let share = roundToOneDecimal((out.sizeIndicator[id] / out.totalsIndex[id.substring(0, 2)]) * 100)
+
         out.tooltipElement.html(`
                 
                 ${/* HEADER */ ''}
@@ -1971,8 +1969,8 @@ export function dorling() {
             .attr('r', (f) => sizeFunction(+out.sizeIndicator[f.properties.id]))
             .attr('fill', (f) => {
                 let val = out.colorIndicator[f.properties.id]
-                if (val == 0 || val == null || val == ':') console.log (f)
-               return colorFunction(val)
+                if (val == 0 || val == null || val == ':') console.log(f)
+                return colorFunction(val)
             })
             .attr('stroke', out.circleStroke_)
 
@@ -2361,7 +2359,7 @@ export function dorling() {
                         .attr('fill', (f) => {
                             //if circle color isnt that of the hovered cell
                             if (colorFunction(out.colorIndicator[f.properties.id]) !== color) {
-                                return 'white'
+                                return 'rgba(255,255,255,0)'
                             } else {
                                 return color
                             }
@@ -2377,7 +2375,7 @@ export function dorling() {
                                         ? f.featureCollection.features[1].properties.id
                                         : f.featureCollection.features[0].properties.id
                                 if (colorFunction(out.colorIndicator[id]) !== color) {
-                                    return 'white'
+                                    return 'rgba(255,255,255,0)'
                                 } else {
                                     return color
                                 }
@@ -2824,19 +2822,21 @@ export function dorling() {
                 }
             })
 
-            out.insetCircles.attr('stroke-width', (f) => {
-                if (f.id == nutsCode) {
-                    return '3px'
-                } else {
-                    return out.circleStrokeWidth_ + 'px'
-                }
-            }).attr('stroke', (f) => {
-                if (f.id == nutsCode) {
-                    return out.circleHighlightStroke_
-                } else {
-                    return out.circleStroke_
-                }
-            })
+            out.insetCircles
+                .attr('stroke-width', (f) => {
+                    if (f.id == nutsCode) {
+                        return '3px'
+                    } else {
+                        return out.circleStrokeWidth_ + 'px'
+                    }
+                })
+                .attr('stroke', (f) => {
+                    if (f.id == nutsCode) {
+                        return out.circleHighlightStroke_
+                    } else {
+                        return out.circleStroke_
+                    }
+                })
         }
     }
 
