@@ -124,8 +124,12 @@ export function dorling() {
     out.insets_ = {
         height: { 1: 340, 2: 340, 3: 550 }, // NUTS 1, 2, 3
         titleWidth: 120,
-        overseasHeight: { 1: 60, 2: 60, 3: 55 },
-        overseasWidth: { 1: 70, 2: 70, 3: 70 },
+        overseasHeight: { 1: 60, 2: 60, 3: 50 },
+        overseasWidth: { 1: 70, 2: 60, 3: 60 },
+
+        spacingY: { 1: 77, 2: 77, 3: 67 }, // between the start of each rect
+        spacingX: { 1: 87, 2: 77, 3: 77 }, // between the start of each rect
+
         translateX: 0,
         translateY: 0,
         // captionY: 65,
@@ -137,8 +141,7 @@ export function dorling() {
         offsetY: window.innerWidth > 1000 ? 30 : 30,
         circleXOffset: window.innerWidth > 1000 ? 37 : 37,
         circleYOffset: window.innerWidth > 1000 ? 45 : 45,
-        spacingX: { 1: 87, 2: 87, 3: 87 }, // between the start of each rect
-        spacingY: { 1: 77, 2: 77, 3: 72 }, // between the start of each rect
+
         padding: window.innerWidth > 1000 ? 15 : 15, // inside the rect. so that the geometries arent touching the rect borders
     }
     //tooltip html
@@ -542,6 +545,7 @@ export function dorling() {
                 addMouseEvents()
 
                 // scale and color inset circles
+                const scalingFactor = calculateScalingFactor()
                 out.insetCircles
                     .transition()
                     .duration(750)
@@ -550,11 +554,8 @@ export function dorling() {
                             out.nutsLevel_ == 3 && f.id == 'FRY30'
                                 ? f.featureCollection.features[1].properties.id
                                 : f.featureCollection.features[0].properties.id
-                        if (window.devicePixelRatio > 1) {
-                            return sizeFunction(+out.sizeIndicator[id]) / window.devicePixelRatio
-                        } else {
-                            return sizeFunction(+out.sizeIndicator[id])
-                        }
+
+                        return insetCircleRadius(sizeFunction(+out.sizeIndicator[id]), scalingFactor)
                     })
                     .attr('fill', (f) => {
                         let id =
@@ -573,6 +574,52 @@ export function dorling() {
             addMouseEvents()
         }
     }
+
+    // Pre-calculate the scaling factor between the two SVGs
+    function calculateScalingFactor() {
+        const firstSVGCircle = document.querySelector('#dorling-svg circle')
+        let r = firstSVGCircle.getAttribute('r')
+        let DOMsize = firstSVGCircle.getBoundingClientRect().width
+        let factor = DOMsize / (2 * r)
+        // Return the scaling factor for use in the radius adjustment
+        return factor // Direct ratio between the two
+    }
+
+    // Adjust radius dynamically based on the pre-calculated scaling factor
+    function insetCircleRadius(originalRadius, scalingFactor) {
+        // Adjust the original radius using the scaling factor
+        const adjustedRadius = originalRadius * scalingFactor
+
+        // Return the adjusted radius for consistent circle sizing
+        return adjustedRadius
+    }
+
+    // Select the SVG element by its ID
+    // const svgElement = document.getElementById('dorling-svg');
+
+    // // Get the bounding rectangle (rendered size in the browser)
+    // const boundingRect = svgElement.getBoundingClientRect();
+
+    // // Extract the width and height from the bounding rectangle
+    // const renderedWidth = boundingRect.width;
+    // const renderedHeight = boundingRect.height;
+
+    //         const viewBox1Width = out.viewbox[2]
+    //         const viewBox1Height = out.viewbox[3]
+
+    //         const svg2Width = 85 // Second SVG's width
+    //         const svg2Height = 340 // Second SVG's height
+
+    //         // Scale factors
+    //         const widthScale = viewBox1Width / svg2Width // 982 / 500 = 1.964
+    //         const heightScale = viewBox1Height / svg2Height // 1181 / 500 = 2.362
+
+    //         // Average scale factor
+    //         const scaleFactor = (widthScale + heightScale) / 2 // ~2.163
+
+    //         const adjustedRadius = radius / scaleFactor // 20 / 2.163 ≈ 9.25
+    //         return adjustedRadius
+    // }
 
     /**
      * @description Removes all DOM nodes from all of the visualizations containers
@@ -649,12 +696,16 @@ export function dorling() {
                 out.height_ = (out.width_ * (out.n2j.bbox[3] - out.n2j.bbox[1])) / (out.n2j.bbox[2] - out.n2j.bbox[0])
 
                 //set up main svg element
-                let viewbox = [0, 0, out.width_, out.height_]
-                if (window.innerWidth < out.mobileWidth_) viewbox = [0, 0, 1076, 1267]
-                if (window.innerWidth < out.tabletWidth_) viewbox = [0, 0, 992, 1181]
+                out.viewbox = [0, 0, out.width_, out.height_]
+                if (window.innerWidth < out.mobileWidth_) out.viewbox = [0, 0, 1076, 1267]
+                if (window.innerWidth < out.tabletWidth_) out.viewbox = [0, 0, 992, 1181]
 
                 out.svg = d3select.create('svg')
-                out.svg.attr('viewBox', viewbox).attr('class', 'dorling-svg').style('background-color', out.seaColor_)
+                out.svg
+                    .attr('viewBox', out.viewbox)
+                    .attr('id', 'dorling-svg')
+                    .attr('class', 'dorling-svg')
+                    .style('background-color', out.seaColor_)
 
                 // append map svg
                 out.dorlingContainer.node().appendChild(out.svg.node())
@@ -1487,6 +1538,7 @@ export function dorling() {
             // .attr("viewBox", [0, 0, 272, 605])
             .attr('width', width)
             .attr('height', out.insets_.height[out.nutsLevel_])
+            .attr('id', 'dorling-insets-svg')
             .attr('class', 'dorling-insets ' + nutsClass)
 
         out.dorlingContainer.node().appendChild(out.insetsSvg.node())
@@ -1973,33 +2025,35 @@ export function dorling() {
                 return colorFunction(val)
             })
             .attr('stroke', out.circleStroke_)
+            .on('end', () => {
+                // Code to execute when the transition ends
 
-        // insets
-        if (out.showInsets_) {
-            out.insetCircles
-                .transition()
-                .duration(750)
-                .attr('r', (f) => {
-                    let id =
-                        out.nutsLevel_ == 3 && f.id == 'FRY30'
-                            ? f.featureCollection.features[1].properties.id
-                            : f.featureCollection.features[0].properties.id
-                    if (window.devicePixelRatio > 1) {
-                        return sizeFunction(+out.sizeIndicator[id]) / window.devicePixelRatio
-                    } else {
-                        return sizeFunction(+out.sizeIndicator[id])
-                    }
-                })
-                .attr('fill', (f) => {
-                    let id =
-                        out.nutsLevel_ == 3 && f.id == 'FRY30'
-                            ? f.featureCollection.features[1].properties.id
-                            : f.featureCollection.features[0].properties.id
+                // insets
+                if (out.showInsets_) {
+                    const scalingFactor = calculateScalingFactor()
+                    out.insetCircles
+                        .transition()
+                        .duration(750)
+                        .attr('r', (f) => {
+                            let id =
+                                out.nutsLevel_ == 3 && f.id == 'FRY30'
+                                    ? f.featureCollection.features[1].properties.id
+                                    : f.featureCollection.features[0].properties.id
 
-                    return colorFunction(out.colorIndicator[id])
-                })
-                .attr('stroke', out.circleStroke_)
-        }
+                            return insetCircleRadius(sizeFunction(+out.sizeIndicator[id]), scalingFactor)
+                        })
+                        .attr('fill', (f) => {
+                            let id =
+                                out.nutsLevel_ == 3 && f.id == 'FRY30'
+                                    ? f.featureCollection.features[1].properties.id
+                                    : f.featureCollection.features[0].properties.id
+
+                            return colorFunction(out.colorIndicator[id])
+                        })
+                        .attr('stroke', out.circleStroke_)
+                }
+            })
+
         //hide nuts
         if (out.showBorders_) {
             out.nutsBorders.transition().duration(750).attr('stroke', 'grey')
