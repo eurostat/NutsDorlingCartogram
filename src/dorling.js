@@ -1960,7 +1960,7 @@ export function dorling() {
             out.tooltip_.colorValueTextFunction = (colorValue) => {
                 return colorValue == null || colorValue == ':'
                     ? out.noDataText_
-                    : `<strong>${formatNumber(roundToOneDecimal(colorValue))}</strong>${
+                    : `${formatNumber(roundToOneDecimal(colorValue))}${
                           out.tooltip_.colorUnit == '%' ? out.tooltip_.colorUnit : '\xA0' + out.tooltip_.colorUnit
                       }`
             }
