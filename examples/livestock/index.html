@@ -24,7 +24,7 @@
         <script src="../assets/js/d3-format.v2.min.js"></script>
         <script src="../assets/js/d3-interpolate.v2.min.js"></script>
         <script src="../assets/js/d3-scale.v3.min.js"></script>
-        <script src="../../build/dorling.js"></script>
+        <script src="../../build/dorling.min.js"></script>
         <script src="../assets/js/slimselect.min.js"></script>
         <script src="../assets/js/d3-fetch.min.js"></script>
         <script src="../assets/js/region-selector.js"></script>
@@ -39,6 +39,11 @@
             .dorling-svg {
                 max-height: 70%;
             }
+            @media only screen and (max-width: 1080px) {
+                .dorling-svg {
+                    max-height: 67%;
+                }
+            }
         </style>
     </head>
 
@@ -46,7 +51,7 @@
         <div class="dorling-header">
             <!-- TITLE -->
             <div class="dorling-title">
-                <h4>Livestock and share of total regional livestock, December 2022</h4>
+                <h4>Livestock and share of total regional livestock, December 2023</h4>
                 <h5>(1 000 head and %)</h5>
             </div>
 
@@ -107,7 +112,7 @@
             var dorling = NutsDorlingCartogram.dorling()
                 .standalone(standalone)
                 .containerId('containerDiv')
-                // .nuts2JsonBaseURL('https://ec.europa.eu/assets/estat/E/E4/gisco/pub/nuts2json/v2/')
+                .nuts2JsonBaseURL('https://ec.europa.eu/assets/estat/E/E4/gisco/pub/nuts2json/v2/')
                 .overseasGeometriesBaseURL(
                     'https://ec.europa.eu/eurostat/cache/interactive-publications/regions/2023/vis/cartograms/assets/topojson/overseas/'
                 )
@@ -140,15 +145,15 @@
                 .colors(['#ffeb99', '#c7e9b4', '#7fcdbb', '#41b6c4', '#104f99', '#17256b'])
                 .thresholdValues([10, 25, 50, 75, 90, 100])
                 .sizeDatasetCode('agr_r_animal')
-                .sizeDatasetFilters('animals=A3100&unit=THS_HD&time=2022')
+                .sizeDatasetFilters('animals=A3100&unit=THS_HD&time=2023')
                 .colorDatasetCode('agr_r_animal')
                 .colorDatasetName('Animal populations')
-                .colorDatasetFilters('animals=A3100&unit=THS_HD&time=2022')
+                .colorDatasetFilters('animals=A3100&unit=THS_HD&time=2023')
                 .colorCalculation('percentage')
                 .colorCalculationDatasetCode('agr_r_animal')
                 .colorCalculationDimension('animals')
                 .colorCalculationDatasetFilters(
-                    'animals=A3100&animals=A2000&animals=A4100&animals=A4200&unit=THS_HD&time=2022'
+                    'animals=A3100&animals=A2000&animals=A4100&animals=A4200&unit=THS_HD&time=2023'
                 )
                 //.maxCircleRadius(animalConfig.A3100.maxCircleRadius)
                 .circleSizeFunction(d3.scaleSqrt().range([5, 50]).domain([0, 8200]))
@@ -164,7 +169,7 @@
                     shape: 'circle',
                 })
                 .sizeLegend({
-                    title: 'Livestock, 2022 (1 000 head)',
+                    title: 'Livestock, 2023 (1 000 head)',
                     textFunction: function (d) {
                         return d.toLocaleString('en').replace(/,/gi, '\xA0')
                     },
@@ -188,6 +193,7 @@
                 .exclude(['MK', 'ME', 'TR', 'AL', 'RS', 'UK'])
                 .showNutsSelector(false)
                 .onNutsLevelChange((nutsLevel) => updateRegionSelect(nutsLevel))
+
             // pan and zoom for screen widths between 1081 and 500px
             if (window.innerWidth < 900 && window.innerWidth > 500) {
                 dorling.translateX(-550) //-390;
@@ -211,8 +217,8 @@
 
             function optionSelected(id) {
                 dorling
-                    .sizeDatasetFilters('animals=' + id + '&unit=THS_HD&time=2022')
-                    .colorDatasetFilters('animals=' + id + '&unit=THS_HD&time=2022')
+                    .sizeDatasetFilters('animals=' + id + '&unit=THS_HD&time=2023')
+                    .colorDatasetFilters('animals=' + id + '&unit=THS_HD&time=2023')
                     .maxCircleRadius(animalConfig[id].maxCircleRadius)
                 if (animalConfig[id].sizeLegend) {
                     dorling.sizeLegend(animalConfig[id].sizeLegend)
@@ -242,6 +248,12 @@
                 },
             })
             animalSelect.setSelected('A3100')
+
+            //for DRYB codebase
+            function changeIndicator(indicatorCode) {
+                animalSelect.setSelected(indicatorCode)
+            }
+            window.changeIndicator = changeIndicator
         </script>
     </body>
 </html>

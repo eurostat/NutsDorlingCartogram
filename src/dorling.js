@@ -231,7 +231,7 @@ export function dorling() {
             }
         })()
 
-    //override some accesors whereby only the object properties specified by the user are overwritten and where defaults are maintained for the remaining properties
+    //override some accesors where only the object properties specified by the user are overwritten and where defaults are maintained for the remaining properties
     out.colorLegend = function (v) {
         for (let key in v) {
             out.colorLegend_[key] = v[key]
@@ -3082,7 +3082,7 @@ export function dorling() {
         $('#tweet').attr('href', generateTwitterURL(text, out.standalone_.twitterURL, out.standalone_.twitterTags))
     }
     function generateFacebook() {
-        $('#facebook-button').click(function () {
+        $('#facebook-button').on('click', function () {
             let u = window.location.href
             let t
             if (out.standalone_.facebookTitle) {
@@ -3448,7 +3448,10 @@ function getTotals(data) {
     dataByCountry.forEach((country) => {
         let countryTotal = 0
         for (let i = 0; i < country[1].length; i++) {
-            countryTotal = countryTotal + country[1][i][1]
+            let val = country[1][i][1]
+            if (val & !isNaN(val)) {
+                countryTotal = countryTotal + country[1][i][1]
+            }
         }
         result[country[0]] = countryTotal
     })
@@ -3503,6 +3506,7 @@ function getCountryNamesIndex() {
         UK: 'United Kingdom',
     }
 }
+
 /**
  * @description Retrieve a URL parameter
  * @param {*} paramName

@@ -3,8 +3,8 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="shortcut icon" type="image/x-icon" href="../../assets/images/favicon.ico" />
-        <script src="../../../build/dorling.js"></script>
+        <link rel="shortcut icon" type="image/x-icon" href="../assets/images/favicon.ico" />
+        <script src="../build/dorling.min.js"></script>
         <title>Air Transport Dorling Cartogram</title>
 
         <!-- Piwik  -->
@@ -21,7 +21,7 @@
         <!-- End Piwik Code -->
 
         <!-- js -->
-        <script src="../../build/dorling.js"></script>
+        <script src="../../build/dorling.min.js"></script>
         <script src="../assets/js/slimselect.min.js"></script>
         <script src="../assets/js/d3-fetch.min.js"></script>
         <script src="../assets/js/region-selector.js"></script>
@@ -33,7 +33,12 @@
 
         <style>
             .dorling-svg {
-                max-height: 73%;
+                max-height: 70%;
+            }
+            @media only screen and (max-width: 1080px) {
+                .dorling-svg {
+                    max-height: 67%;
+                }
             }
         </style>
     </head>
@@ -41,7 +46,10 @@
     <body>
         <div class="dorling-header">
             <!-- TITLE -->
-            <div class="dorling-title">Air transport of passengers and freight, 2021</div>
+            <div class="dorling-title">
+                <h4>Air transport of passengers, and of freight and mail, 2022</h4>
+                <h5>(million passengers and passengers per inhabitant, and 1 000 tonnes and kg per inhabitant)</h5>
+            </div>
 
             <!-- REGION SELECTOR -->
             <div class="dorling-region-selector-wrapper">
@@ -63,10 +71,10 @@
             let transportConfig = {
                 air: {
                     sizeDatasetCode: 'tran_r_avpa_nm',
-                    sizeDatasetFilters: 'tra_meas=PAS_CRD&unit=THS_PAS&time=2021',
+                    sizeDatasetFilters: 'tra_meas=PAS_CRD&unit=THS_PAS&time=2022',
                     colorDatasetCode: 'tran_r_avpa_nm',
                     colorDatasetName: 'air transport of passengers',
-                    colorDatasetFilters: 'tra_meas=PAS_CRD&unit=THS_PAS&time=2021',
+                    colorDatasetFilters: 'tra_meas=PAS_CRD&unit=THS_PAS&time=2022',
                     colorCalculationFunction: function (airPassengers, population) {
                         if (airPassengers && population) {
                             return (airPassengers * 1000) / population
@@ -75,7 +83,7 @@
                         }
                     },
                     colorCalculationDatasetCode: 'demo_r_d2jan',
-                    colorCalculationDatasetFilters: 'sex=T&unit=NR&time=2021&age=TOTAL',
+                    colorCalculationDatasetFilters: 'sex=T&unit=NR&time=2022&age=TOTAL',
                     thresholdValues: [1, 2, 4, 6, 8, 9999],
                     maxCircleRadius: { 0: 90, 1: 60, 2: 60 },
                     sizeLegend: {
@@ -121,20 +129,20 @@
                 freight: {
                     maxCircleRadius: { 0: 90, 1: 60, 2: 60 },
                     sizeDatasetCode: 'tran_r_avgo_nm',
-                    sizeDatasetFilters: 'tra_meas=FRM_LD_NLD&unit=THS_T&time=2021',
+                    sizeDatasetFilters: 'tra_meas=FRM_LD_NLD&unit=THS_T&time=2022',
                     colorDatasetCode: 'tran_r_avgo_nm',
                     colorDatasetName: 'air transport of freight',
-                    colorDatasetFilters: 'tra_meas=FRM_LD_NLD&unit=THS_T&time=2021',
+                    colorDatasetFilters: 'tra_meas=FRM_LD_NLD&unit=THS_T&time=2022',
                     colorCalculationFunction: function (freight, population) {
                         return (freight / population) * 1000000
                     },
                     colorCalculationDatasetCode: 'demo_r_d2jan',
-                    colorCalculationDatasetFilters: 'sex=T&unit=NR&time=2021&age=TOTAL',
+                    colorCalculationDatasetFilters: 'sex=T&unit=NR&time=2022&age=TOTAL',
                     thresholdValues: [5, 10, 50, 100, 500, 99999999],
                     sizeLegend: {
                         title: 'Freight and mail carried (1 000 tonnes)',
                         values: {
-                            0: [5000, 500],
+                            0: [2000, 500],
                             1: [2000, 500],
                             2: [2000, 500],
                             3: [2000, 500],
@@ -169,7 +177,7 @@
             var dorling = NutsDorlingCartogram.dorling()
                 .standalone(standalone)
                 .containerId('containerDiv')
-                // .nuts2JsonBaseURL('https://ec.europa.eu/assets/estat/E/E4/gisco/pub/nuts2json/v2/')
+                .nuts2JsonBaseURL('https://ec.europa.eu/assets/estat/E/E4/gisco/pub/nuts2json/v2/')
                 .overseasGeometriesBaseURL(
                     'https://ec.europa.eu/eurostat/cache/interactive-publications/regions/2023/vis/cartograms/assets/topojson/overseas/'
                 )
@@ -196,7 +204,8 @@
                 .footnotesText('Air passenger refers to passenger carried.')
                 .sourcesPopupContent(
                     "<h4>Air passengers</h4><a target='_blank' href='https://ec.europa.eu/eurostat/databrowser/bookmark/e3e4a1b4-931e-41eb-a142-2c16219260ef?lang=en'>Dataset 1</a><br><a target='_blank' href='https://ec.europa.eu/eurostat/databrowser/bookmark/4f0c2e0a-74b0-4ade-bc61-67e745c7d367?lang=en'>Dataset 2</a><h4>Freight and mail</h4><a target='_blank' href='https://ec.europa.eu/eurostat/databrowser/bookmark/cc520fd5-0a2f-416f-b63d-5e6f955aac83?lang=en'>Dataset 1</a><br><a target='_blank' href='https://ec.europa.eu/eurostat/databrowser/bookmark/4f0c2e0a-74b0-4ade-bc61-67e745c7d367?lang=en'>Dataset 2</a>"
-                ) //inerHTML
+                )
+
                 .exclude(['MK', 'ME', 'TR', 'AL', 'RS', 'UK']) // :(
                 .graticule(false)
                 .loop(false)
@@ -204,6 +213,7 @@
                 .showBorders(true)
                 .positionStrength(0.3)
                 .onNutsLevelChange((nutsLevel) => updateRegionSelect(nutsLevel))
+
             // pan and zoom for screen widths between 1081 and 500px
             if (window.innerWidth < 900 && window.innerWidth > 500) {
                 dorling.translateX(-550) //-390;
@@ -241,12 +251,12 @@
 
             let transportOptions = [
                 { value: 'air', text: 'Air passengers' },
-                { value: 'freight', text: 'Freight' },
+                { value: 'freight', text: 'Freight and mail' },
             ]
             let transportSelect = new SlimSelect({
                 select: '#dorling-transport-select',
                 //allowDeselect: true,
-                searchPlaceholder: 'Search',
+                showSearch: false,
                 placeholder: 'Type of transport',
                 data: transportOptions,
                 onChange: function (info) {
@@ -254,6 +264,12 @@
                 },
             })
             transportSelect.setSelected('air')
+
+            //for DRYB codebase
+            function changeIndicator(indicatorCode) {
+                transportSelect.setSelected(indicatorCode)
+            }
+            window.changeIndicator = changeIndicator
         </script>
     </body>
 </html>
