@@ -1987,7 +1987,7 @@ export function dorling() {
                 ${out.tooltip_.colorLabel}: ${out.tooltip_.colorValueTextFunction(out.colorIndicator[id])}<br>
 
                 ${/*  SHARE UNIT / VALUE */ ''}
-                    ${out.tooltip_.shareLabel}:\xA0${share ? share + ' ' + out.tooltip_.shareUnit : 'no data'} <br>
+                    ${out.tooltip_.shareLabel}:\xA0${share ? share + out.tooltip_.shareUnit : 'no data'} <br>
 
                 </div>
 `)
@@ -3449,7 +3449,7 @@ function getTotals(data) {
         let countryTotal = 0
         for (let i = 0; i < country[1].length; i++) {
             let val = country[1][i][1]
-            if (val & !isNaN(val)) {
+            if (val && !isNaN(val)) {
                 countryTotal = countryTotal + country[1][i][1]
             }
         }
