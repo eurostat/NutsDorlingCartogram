@@ -11,7 +11,7 @@ function buildSlimSelect(nutsLevel) {
                 regionOpts.push({ value: region, text: d[region].label + ' (' + region + ')' })
             }
         }
-    
+
         slim = new SlimSelect({
             select: '#dorling-region-select',
             //allowDeselect: true,
@@ -20,13 +20,14 @@ function buildSlimSelect(nutsLevel) {
             data: regionOpts,
             onChange: function (info) {
                 let nutsCode = info.value
-                dorling.highlightRegion(nutsCode)
+                if (nutsCode) {
+                    dorling.highlightRegion(nutsCode)
+                }
             },
         })
         slim.setSelected()
     })
 }
-
 
 // update on nuts level change
 function updateRegionSelect(nutsLevel) {

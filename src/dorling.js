@@ -12,6 +12,9 @@ import * as ColorLegend from './legend/color'
 import * as SizeLegend from './legend/size'
 import $ from 'jquery'
 
+// utils
+import { roundToNearest, roundToOneDecimal, getCountryNamesIndex, getURLParamValue } from './utils.js'
+
 const createStandaloneHTMLString = require('./templates/standalone')
 
 /**
@@ -22,6 +25,7 @@ const createStandaloneHTMLString = require('./templates/standalone')
 export function dorling() {
     //the output object
     let out = {}
+    const events = {}
 
     //default values
     out.containerId_ = ''
@@ -277,6 +281,22 @@ export function dorling() {
         return out
     }
 
+    // Method to register event listeners
+    out.on = function (eventName, handler) {
+        if (!events[eventName]) {
+            events[eventName] = []
+        }
+        events[eventName].push(handler)
+    }
+    // Method to trigger events
+    out.trigger = function (eventName, data) {
+        if (events[eventName]) {
+            events[eventName].forEach((handler) => {
+                handler(data)
+            })
+        }
+    }
+
     /**
      * @description initiates the construction of the visualization
      *
@@ -522,57 +542,62 @@ export function dorling() {
                 // if (val == 0 || val == null || val == ':') console.log (val)
                 return colorFunction(val)
             })
+            .end()
+            .then(() => {
+                // clear insets
+                d3select.selectAll('.dorling-insets').remove()
 
-        // clear insets
-        d3select.selectAll('.dorling-insets').remove()
+                // add new insets
+                if (out.showInsets_ && out.nutsLevel_ !== 0) {
+                    getInsets().then((overseasTopo) => {
+                        addInsets(overseasTopo)
+                        //hide insets on small screens by default
+                        if (
+                            (window.innerWidth < out.toggleLegendWidthThreshold_ ||
+                                window.innerHeight < out.toggleLegendHeightThreshold_) &&
+                            out.showOverseas === false
+                        ) {
+                            out.insetsSvg.node().style.display = 'none'
+                        }
 
-        // add new insets
-        if (out.showInsets_ && out.nutsLevel_ !== 0) {
-            getInsets().then((overseasTopo) => {
-                addInsets(overseasTopo)
-                //hide insets on small screens by default
-                if (
-                    (window.innerWidth < out.toggleLegendWidthThreshold_ ||
-                        window.innerHeight < out.toggleLegendHeightThreshold_) &&
-                    out.showOverseas === false
-                ) {
-                    out.insetsSvg.node().style.display = 'none'
+                        // apply d3 force to the circles
+                        applyForce()
+                        // add mouse events to map
+                        addMouseEvents()
+
+                        // scale and color inset circles
+                        const scalingFactor = calculateScalingFactor()
+                        out.insetCircles
+                            .transition()
+                            .duration(750)
+                            .attr('r', (f) => {
+                                let id =
+                                    out.nutsLevel_ == 3 && f.id == 'FRY30'
+                                        ? f.featureCollection.features[1].properties.id
+                                        : f.featureCollection.features[0].properties.id
+
+                                return insetCircleRadius(sizeFunction(+out.sizeIndicator[id]), scalingFactor)
+                            })
+                            .attr('fill', (f) => {
+                                let id =
+                                    out.nutsLevel_ == 3 && f.id == 'FRY30'
+                                        ? f.featureCollection.features[1].properties.id
+                                        : f.featureCollection.features[0].properties.id
+
+                                return colorFunction(out.colorIndicator[id])
+                            })
+                            .attr('stroke', out.circleStroke_)
+                    })
+                } else {
+                    // apply d3 force to the circles
+                    applyForce()
+                    // add mouse events to map
+                    addMouseEvents()
                 }
 
-                // apply d3 force to the circles
-                applyForce()
-                // add mouse events to map
-                addMouseEvents()
-
-                // scale and color inset circles
-                const scalingFactor = calculateScalingFactor()
-                out.insetCircles
-                    .transition()
-                    .duration(750)
-                    .attr('r', (f) => {
-                        let id =
-                            out.nutsLevel_ == 3 && f.id == 'FRY30'
-                                ? f.featureCollection.features[1].properties.id
-                                : f.featureCollection.features[0].properties.id
-
-                        return insetCircleRadius(sizeFunction(+out.sizeIndicator[id]), scalingFactor)
-                    })
-                    .attr('fill', (f) => {
-                        let id =
-                            out.nutsLevel_ == 3 && f.id == 'FRY30'
-                                ? f.featureCollection.features[1].properties.id
-                                : f.featureCollection.features[0].properties.id
-
-                        return colorFunction(out.colorIndicator[id])
-                    })
-                    .attr('stroke', out.circleStroke_)
+                // Create the custom event for redrawFinished
+                out.trigger('dorlingRedrawFinished', { message: 'dorlingRedrawFinished' })
             })
-        } else {
-            // apply d3 force to the circles
-            applyForce()
-            // add mouse events to map
-            addMouseEvents()
-        }
     }
 
     // Pre-calculate the scaling factor between the two SVGs
@@ -589,7 +614,6 @@ export function dorling() {
     function insetCircleRadius(originalRadius, scalingFactor) {
         // Adjust the original radius using the scaling factor
         const adjustedRadius = originalRadius * scalingFactor
-
         // Return the adjusted radius for consistent circle sizing
         return adjustedRadius
     }
@@ -1969,10 +1993,6 @@ export function dorling() {
         out.tooltipElement.style('left', pos.left + 'px').style('top', pos.top + 'px')
     }
 
-    function roundToOneDecimal(n) {
-        return Math.round(n * 10) / 10
-    }
-
     function animate() {
         if (out.stage == 1) {
             firstTransition()
@@ -1994,11 +2014,12 @@ export function dorling() {
             .attr('r', (f) => sizeFunction(+out.sizeIndicator[f.properties.id]))
             .attr('fill', (f) => {
                 let val = out.colorIndicator[f.properties.id]
-                if (val == 0 || val == null || val == ':') console.log(f)
+                // if (val == 0 || val == null || val == ':') console.log(f)
                 return colorFunction(val)
             })
             .attr('stroke', out.circleStroke_)
-            .on('end', () => {
+            .end()
+            .then(() => {
                 // Code to execute when the transition ends
 
                 // insets
@@ -2788,7 +2809,28 @@ export function dorling() {
      * @return {*}
      */
     out.highlightRegion = function (nutsCode) {
+        // first check that region belongs to current NUTS level. If not, change NUTS level, redraw, then highlight.
+        let regionLevel
+        if (nutsCode.length == 2) regionLevel = 0
+        if (nutsCode.length == 3) regionLevel = 1
+        if (nutsCode.length == 4) regionLevel = 2
+        if (nutsCode.length == 5) regionLevel = 3
+
+        if (out.nutsLevel_ !== regionLevel) {
+            out[`radio${regionLevel}`].dispatch('click') // this initiates radioEventHandler
+            // Listen for the custom dorlingRedrawFinished event
+
+            out.on('dorlingRedrawFinished', function (e) {
+                out.setHighlightStyles(nutsCode)
+            })
+        } else {
+            out.setHighlightStyles(nutsCode)
+        }
+    }
+
+    out.setHighlightStyles = function (nutsCode) {
         if (out.circles) {
+            // set region circle color
             out.circles.attr('fill', (f) => {
                 if (f.properties.id == nutsCode) {
                     let name = f.properties.na
@@ -2806,6 +2848,7 @@ export function dorling() {
                 }
             })
 
+            // set region circle stroke
             out.circles
                 .attr('stroke-width', (f) => {
                     if (f.properties.id == nutsCode) {
@@ -2909,10 +2952,10 @@ export function dorling() {
                     var result = [],
                         delta = (right - left) / (parts - 1)
                     while (left < right) {
-                        result.push(round(left, 5))
+                        result.push(roundToNearest(left, 5))
                         left += delta
                     }
-                    result.push(round(right, 5))
+                    result.push(roundToNearest(right, 5))
                     return result
                 }
                 let domain
@@ -3116,7 +3159,6 @@ export function dorling() {
                     id: key,
                     val: data.value[val],
                 }))
-                // console.log(arr)
             }
 
             //if the color value is a percentage, divide each colorValue by its relevant total from colorPercentageCalculationData
@@ -3429,70 +3471,4 @@ function getTotals(data) {
         result[country[0]] = countryTotal
     })
     return result
-}
-
-//rounds both positive and negative float to nearest n
-function round(v, nearest) {
-    return (v >= 0 || -1) * Math.round(Math.abs(v) / nearest) * nearest
-}
-
-function getCountryNamesIndex() {
-    return {
-        BE: 'Belgium',
-        BG: 'Bulgaria',
-        CZ: 'Czechia',
-        DK: 'Denmark',
-        DE: 'Germany',
-        EE: 'Estonia',
-        IE: 'Ireland',
-        EL: 'Greece',
-        ES: 'Spain',
-        FR: 'France',
-        HR: 'Croatia',
-        IT: 'Italy',
-        CY: 'Cyprus',
-        LV: 'Latvia',
-        LT: 'Lithuania',
-        LU: 'Luxembourg',
-        HU: 'Hungary',
-        MT: 'Malta',
-        NL: 'Netherlands',
-        AT: 'Austria',
-        PL: 'Poland',
-        PT: 'Portugal',
-        RO: 'Romania',
-        SI: 'Slovenia',
-        SK: 'Slovakia',
-        FI: 'Finland',
-        SE: 'Sweden',
-        IS: 'Iceland',
-        LI: 'Liechtenstein',
-        NO: 'Norway',
-        CH: 'Switzerland',
-        ME: 'Montenegro',
-        MK: 'North Macedonia',
-        AL: 'Albania',
-        RS: 'Serbia',
-        TR: 'Turkey',
-        BA: 'Bosnia and Herzegovina',
-        XK: 'Kosovo',
-        UK: 'United Kingdom',
-    }
-}
-
-/**
- * @description Retrieve a URL parameter
- * @param {*} paramName
- * @return {*}
- */
-function getURLParamValue(paramName) {
-    var url = window.location.search.substring(1) //get rid of "?" in querystring
-    var qArray = url.split('&') //get key-value pairs
-    for (var i = 0; i < qArray.length; i++) {
-        var pArr = qArray[i].split('=') //split key and value
-        if (pArr[0] == paramName) {
-            pArr[1] = decodeURI(pArr[1])
-            return pArr[1] //return value
-        }
-    }
 }
