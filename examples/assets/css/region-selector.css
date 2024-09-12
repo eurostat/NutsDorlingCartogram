@@ -67,6 +67,7 @@ h5 {
     min-height: 32px;
     background: #fff;
     opacity: 1;
+    cursor: pointer;
 }
 .ss-main .ss-single-selected .placeholder .ss-disabled {
     color: #000;
