@@ -594,33 +594,6 @@ export function dorling() {
         return adjustedRadius
     }
 
-    // Select the SVG element by its ID
-    // const svgElement = document.getElementById('dorling-svg');
-
-    // // Get the bounding rectangle (rendered size in the browser)
-    // const boundingRect = svgElement.getBoundingClientRect();
-
-    // // Extract the width and height from the bounding rectangle
-    // const renderedWidth = boundingRect.width;
-    // const renderedHeight = boundingRect.height;
-
-    //         const viewBox1Width = out.viewbox[2]
-    //         const viewBox1Height = out.viewbox[3]
-
-    //         const svg2Width = 85 // Second SVG's width
-    //         const svg2Height = 340 // Second SVG's height
-
-    //         // Scale factors
-    //         const widthScale = viewBox1Width / svg2Width // 982 / 500 = 1.964
-    //         const heightScale = viewBox1Height / svg2Height // 1181 / 500 = 2.362
-
-    //         // Average scale factor
-    //         const scaleFactor = (widthScale + heightScale) / 2 // ~2.163
-
-    //         const adjustedRadius = radius / scaleFactor // 20 / 2.163 ≈ 9.25
-    //         return adjustedRadius
-    // }
-
     /**
      * @description Removes all DOM nodes from all of the visualizations containers
      *
