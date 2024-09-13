@@ -13,7 +13,6 @@ body {
     color: #cccccc !important;
 }
 
-
 .dorling-main-container {
     position: absolute;
     height: calc(100vh);
@@ -34,7 +33,7 @@ body {
     overflow: visible;
 }
 .dorling-container {
-    /* position:absolute; */
+    margin-top: 5px;
     height: 100%;
     width: 100%;
     text-align: center;
@@ -169,7 +168,7 @@ fill:#E5E5E5;
 
 .dorling-attribution {
     background: white;
-    color:#515560;
+    color: #515560;
     padding: 3px;
     position: absolute;
     right: 3px;
@@ -265,7 +264,7 @@ fill:#E5E5E5;
 }
 .dorling-leaflet-control-zoom,
 .dorling-leaflet-control-nuts-selector {
-    bottom: 15%;
+    bottom: 30%;
 }
 .dorling-leaflet-control-nuts-selector {
     position: absolute;
