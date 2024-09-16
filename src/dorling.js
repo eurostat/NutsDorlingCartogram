@@ -361,7 +361,13 @@ export function dorling() {
     function addStandaloneToDOM() {
         let container = document.createElement('div')
         container.classList.add('standalone-nav')
-        out.containerNode_.node().appendChild(container)
+        let parent = document.getElementById('dorling-header')
+        if (parent) {
+            parent.appendChild(container)
+        } else {
+            out.containerNode_.node().appendChild(container)
+        }
+
         let text
         if (out.standalone_.infoText) {
             text = out.standalone_.infoText
@@ -480,8 +486,10 @@ export function dorling() {
             //add legends
             addSizeLegend()
             addColorLegend()
-            // NUTS selector is drawn inside legend container, so we need to reappend it after clearing the legend container
-            addNutsSelectorToDOM()
+            // NUTS selector is drawn inside legend container in simple mode, so we need to reappend it after clearing the legend container
+            if (!out.standalone_) {
+                addNutsSelectorToDOM()
+            }
 
             // show legends & nuts selector
             out.legendContainer.transition().duration(750).attr('opacity', 0.9)
