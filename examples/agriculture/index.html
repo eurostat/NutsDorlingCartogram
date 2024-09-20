@@ -1,53 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      rel="shortcut icon"
-      type="image/x-icon"
-      href="../../assets/images/favicon.ico"
-    />
-    <title>Agriculture Dorling Cartogram</title>
-    <!-- Piwik  -->
-    <script
-      defer
-      src="//europa.eu/webtools/load.js"
-      type="text/javascript"
-    ></script>
-    <script type="text/javascript">
-      var parentLocation = parent.location;
-      if (parentLocation.hostname.indexOf("ec.europa.eu") !== -1) {
-        document.write(
-          '<script defer src="//europa.eu/webtools/load.js" type="text/javascript"></sc' +
-            "ript>"
-        );
-        document.write('<script type="application/json">');
-        document.write(
-          '{ "utility" : "piwik", "siteID" : 59, "sitePath" : ["ec.europa.eu\/eurostat"] }'
-        );
-        document.write("</sc" + "ript>");
-      }
-    </script>
-    <!-- End Piwik Code -->
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="shortcut icon" type="image/x-icon" href="../../assets/images/favicon.ico" />
+        <title>Agriculture Dorling Cartogram</title>
+        <!-- Piwik  -->
+        <script defer src="//europa.eu/webtools/load.js" type="text/javascript"></script>
+        <script type="text/javascript">
+            var parentLocation = parent.location
+            if (parentLocation.hostname.indexOf('ec.europa.eu') !== -1) {
+                document.write('<script defer src="//europa.eu/webtools/load.js" type="text/javascript"></sc' + 'ript>')
+                document.write('<script type="application/json">')
+                document.write('{ "utility" : "piwik", "siteID" : 59, "sitePath" : ["ec.europa.eu\/eurostat"] }')
+                document.write('</sc' + 'ript>')
+            }
+        </script>
+        <!-- End Piwik Code -->
 
-    <!-- js -->
-    <script src="../../assets/js/d3-array.v2.min.js"></script>
-    <script src="../../assets/js/d3-color.v2.min.js"></script>
-    <script src="../../assets/js/d3-format.v2.min.js"></script>
-    <script src="../../assets/js/d3-interpolate.v2.min.js"></script>
-    <script src="../../assets/js/d3-scale.v3.min.js"></script>
-    <script src="../../build/dorling.min.js"></script>
-    <script src="../../assets/js/slimselect.min.js"></script>
-    <script src="../../assets/js/d3-fetch.min.js"></script>
-    <script src="../../assets/js/region-selector.js"></script>
+        <!-- js -->
+        <script src="../../assets/js/d3-array.v2.min.js"></script>
+        <script src="../../assets/js/d3-color.v2.min.js"></script>
+        <script src="../../assets/js/d3-format.v2.min.js"></script>
+        <script src="../../assets/js/d3-interpolate.v2.min.js"></script>
+        <script src="../../assets/js/d3-scale.v3.min.js"></script>
+        <script src="../../build/dorling.min.js"></script>
+        <script src="../../assets/js/slimselect.min.js"></script>
+        <script src="../../assets/js/d3-fetch.min.js"></script>
+        <script src="../../assets/js/region-selector.js"></script>
 
-    <!-- css -->
-    <link href="../../assets/css/slimselect.css" rel="stylesheet" />
-    <link href="../../assets/css/region-selector.css" rel="stylesheet" />
-    <link href="../../assets/css/tooltip.css" rel="stylesheet" />
+        <!-- css -->
+        <link href="../../assets/css/slimselect.css" rel="stylesheet" />
+        <link href="../../assets/css/region-selector.css" rel="stylesheet" />
+        <link href="../../assets/css/tooltip.css" rel="stylesheet" />
 
-    <style>
+        <style>
             .dorling-svg {
                 max-height: 70%;
             }
@@ -56,253 +43,238 @@
                     max-height: 67%;
                 }
             }
-    </style>
-  </head>
+        </style>
+    </head>
 
-  <body style="margin: 0">
-    <div class="dorling-header">
-      <!-- TITLE -->
-      <div class="dorling-title">
-        <h4>
-          Cereal production and share of total regional cereal production, 2022
-        </h4>
-        <h5>(1 000 tonnes and %)</h5>
-      </div>
+    <body style="margin: 0">
+        <div class="dorling-header">
+            <!-- TITLE -->
+            <div class="dorling-title">
+                <h4>Cereal production and share of total regional cereal production, 2022</h4>
+                <h5>(1 000 tonnes and %)</h5>
+            </div>
 
-      <!-- REGION SELECTOR -->
-      <div class="dorling-region-selector-wrapper">
-        <div class="dorling-region-selector">
-          <select id="dorling-region-select"></select>
+            <!-- REGION SELECTOR -->
+            <div class="dorling-region-selector-wrapper">
+                <div class="dorling-region-selector">
+                    <select id="dorling-region-select"></select>
+                </div>
+            </div>
+
+            <!-- CROP SELECTOR -->
+            <div class="dorling-region-selector-wrapper">
+                <div class="dorling-region-selector">
+                    <select id="dorling-crop-select"></select>
+                </div>
+            </div>
         </div>
-      </div>
 
-      <!-- CROP SELECTOR -->
-      <div class="dorling-region-selector-wrapper">
-        <div class="dorling-region-selector">
-          <select id="dorling-crop-select"></select>
-        </div>
-      </div>
-    </div>
+        <!-- dorling container -->
+        <div id="dorling-container-div"></div>
 
-    <!-- dorling container -->
-    <div id="dorling-container-div"></div>
+        <script>
+            let cropConfig = {
+                C1110: {
+                    maxCircleRadius: { 2: 40 },
+                    sizeLegend: {
+                        values: { 2: [5000, 100] },
+                    },
+                },
+                C1200: {
+                    maxCircleRadius: { 2: 40 },
+                    sizeLegend: {
+                        values: { 2: [5000, 100] },
+                    },
+                },
+                C1120: {
+                    maxCircleRadius: { 2: 40 },
+                    sizeLegend: {
+                        values: { 2: [5000, 100] },
+                    },
+                },
+                C1300: {
+                    maxCircleRadius: { 2: 40 },
+                    sizeLegend: {
+                        values: { 2: [5000, 100] },
+                    },
+                },
+                C1410: {
+                    maxCircleRadius: { 2: 40 },
+                    sizeLegend: {
+                        values: { 2: [5000, 100] },
+                    },
+                },
+                C1500: {
+                    maxCircleRadius: { 2: 30 },
+                    sizeLegend: {
+                        values: { 2: [5000, 100] },
+                    },
+                },
+                C1600: {
+                    maxCircleRadius: { 2: 30 },
+                    sizeLegend: {
+                        values: { 2: [5000, 100] },
+                    },
+                },
+                C2000: {
+                    maxCircleRadius: { 2: 30 },
+                    sizeLegend: {
+                        values: { 2: [5000, 100] },
+                    },
+                },
+            }
 
-    <script>
-      let cropConfig = {
-        C1110: {
-          maxCircleRadius: { 2: 40 },
-          sizeLegend: {
-            values: { 2: [5000,  100] },
-          },
-        },
-        C1200: {
-          maxCircleRadius: { 2: 40 },
-          sizeLegend: {
-            values: { 2: [5000,  100] },
-          },
-        },
-        C1120: {
-          maxCircleRadius: { 2: 40 },
-          sizeLegend: {
-            values: { 2: [5000,  100] },
-          },
-        },
-        C1300: {
-          maxCircleRadius: { 2: 40 },
-          sizeLegend: {
-            values: { 2: [5000,  100] },
-          },
-        },
-        C1410: {
-          maxCircleRadius: { 2: 40 },
-          sizeLegend: {
-            values: { 2: [5000,  100] },
-          },
-        },
-        C1500: {
-          maxCircleRadius: { 2: 30 },
-          sizeLegend: {
-            values: { 2: [5000,  100] },
-          },
-        },
-        C1600: {
-          maxCircleRadius: { 2: 30 },
-          sizeLegend: {
-            values: { 2: [5000,  100] },
-          },
-        },
-        C2000: {
-          maxCircleRadius: { 2: 30 },
-          sizeLegend: {
-            values: { 2: [5000,  100] },
-          },
-        },
-      };
+            let standalone = true
+            let simple = getURLParamValue('simple')
+            if (simple) standalone = false
 
-      let standalone = true;
-      let simple = getURLParamValue("simple");
-      if (simple) standalone = false;
+            let nutsLevel = 2
+            var dorling = NutsDorlingCartogram.dorling()
+                .standalone(standalone)
+                .containerId('dorling-container-div')
+                .nuts2JsonBaseURL('https://ec.europa.eu/assets/estat/E/E4/gisco/pub/nuts2json/v2/')
+                .overseasGeometriesBaseURL(
+                    'https://ec.europa.eu/eurostat/cache/interactive-publications/regions/2023/vis/cartograms/assets/topojson/overseas/'
+                )
+                .nutsLevel(nutsLevel)
+                .nutsYear(2016)
+                .mixNuts({
+                    // use level 1 instead of level 2 for the following regions:
+                    // adds them to level 2:
+                    2: {
+                        level: 1,
+                        ids: [
+                            'DE1',
+                            'DE2',
+                            'DE3',
+                            'DE4',
+                            'DE5',
+                            'DE6',
+                            'DE7',
+                            'DE8',
+                            'DE9',
+                            'DEA',
+                            'DEB',
+                            'DEC',
+                            'DED',
+                            'DEE',
+                            'DEF',
+                            'DEG',
+                        ],
+                    },
+                })
+                .colors(['#ffeb99', '#c7e9b4', '#7fcdbb', '#41b6c4', '#104f99', '#17256b'])
+                .thresholdValues([10, 25, 50, 75, 90, 100])
+                .sizeDatasetCode('apro_cpshr')
+                .sizeDatasetFilters('crops=C1110&strucpro=PR_HU_EU&time=2022')
+                .colorDatasetCode('apro_cpshr')
+                .colorDatasetName('crop production')
+                .colorDatasetFilters('crops=C1110&strucpro=PR_HU_EU&time=2022')
+                .colorCalculation('percentage')
+                .colorCalculationDatasetCode('apro_cpshr')
+                .colorCalculationDatasetFilters('crops=C0000&strucpro=PR_HU_EU&time=2022')
+                //.maxCircleRadius(cropConfig.C1110.maxCircleRadius)
+                // here we manually define the same scale for all cereal types
+                .circleSizeFunction(d3.scaleSqrt().range([5, 50]).domain([0, 4889]))
+                .colorLegend({
+                    //https://d3-legend.susielu.com/#color
+                    title: 'Share of total regional cereal production (%)',
+                    orient: 'vertical',
+                    shapeRadius: 10,
+                    labelAlign: 'middle',
+                    labelFormat: '.1f',
+                    labelUnit: ' ',
+                    labelOffset: 10,
+                    shape: 'circle',
+                })
+                .sizeLegend({
+                    title: 'Harvested production, 2022 (1 000 tonnes)',
+                    textFunction: function (d) {
+                        return d.toLocaleString('en').replace(/,/gi, '\xA0')
+                    },
+                    values: { 2: [5000, 100] },
+                })
+                .tooltip({
+                    colorLabel: 'Share of total regional cereal production',
+                    colorUnit: '%',
+                    sizeLabel: 'Harvested production',
+                    sizeUnit: '(1\xA0000 tonnes)',
+                    shareLabel: 'Share of national harvested production',
+                    shareUnit: '%',
+                })
+                .showFootnotes(true)
+                .footnotesText('Germany, NUTS level 1 regions.')
+                .exclude(['MK', 'ME', 'TR', 'AL', 'RS', 'UK'])
+                .showNutsSelector(false)
+                .customSourceURL(
+                    'https://ec.europa.eu/eurostat/databrowser/bookmark/1c7a49d7-695d-44e1-8a86-aafe3af4a3fd?lang=en'
+                )
+                .onNutsLevelChange((nutsLevel) => updateRegionSelect(nutsLevel))
 
-      let nutsLevel = 2;
-      var dorling = NutsDorlingCartogram.dorling()
-        .standalone(standalone)
-        .containerId("dorling-container-div")
-        .nuts2JsonBaseURL(
-          "https://ec.europa.eu/assets/estat/E/E4/gisco/pub/nuts2json/v2/"
-        )
-        .overseasGeometriesBaseURL(
-          "https://ec.europa.eu/eurostat/cache/interactive-publications/regions/2023/vis/cartograms/assets/topojson/overseas/"
-        )
-        .nutsLevel(nutsLevel)
-        .nutsYear(2016)
-        .mixNuts({
-          // use level 1 instead of level 2 for the following regions:
-          // adds them to level 2:
-          2: {
-            level: 1,
-            ids: [
-              "DE1",
-              "DE2",
-              "DE3",
-              "DE4",
-              "DE5",
-              "DE6",
-              "DE7",
-              "DE8",
-              "DE9",
-              "DEA",
-              "DEB",
-              "DEC",
-              "DED",
-              "DEE",
-              "DEF",
-              "DEG",
-            ],
-          },
-        })
-        .colors([
-          "#ffeb99",
-          "#c7e9b4",
-          "#7fcdbb",
-          "#41b6c4",
-          "#104f99",
-          "#17256b",
-        ])
-        .thresholdValues([10, 25, 50, 75, 90, 100])
-        .sizeDatasetCode("apro_cpshr")
-        .sizeDatasetFilters("crops=C1110&strucpro=PR_HU_EU&time=2022")
-        .colorDatasetCode("apro_cpshr")
-        .colorDatasetName("crop production")
-        .colorDatasetFilters("crops=C1110&strucpro=PR_HU_EU&time=2022")
-        .colorCalculation("percentage")
-        .colorCalculationDatasetCode("apro_cpshr")
-        .colorCalculationDatasetFilters(
-          "crops=C0000&strucpro=PR_HU_EU&time=2022"
-        )
-        //.maxCircleRadius(cropConfig.C1110.maxCircleRadius)
-        // here we manually define the same scale for all cereal types
-        .circleSizeFunction(d3.scaleSqrt().range([5, 50]).domain([0, 4889]))
-        .colorLegend({
-          //https://d3-legend.susielu.com/#color
-          title: "Share of total regional cereal production (%)",
-          orient: "vertical",
-          shapeRadius: 10,
-          labelAlign: "middle",
-          labelFormat: ".1f",
-          labelUnit: " ",
-          labelOffset: 10,
-          shape: "circle",
-        })
-        .sizeLegend({
-          title: "Harvested production, 2022 (1 000 tonnes)",
-          textFunction: function (d) {
-            return d.toLocaleString("en").replace(/,/gi, "\xA0");
-          },
-          values: { 2: [5000,  100] },
-        })
-        .tooltip({
-          colorLabel: "Share of total regional cereal production",
-          colorUnit: "%",
-          sizeLabel: "Harvested production",
-          sizeUnit: "(1\xA0000 tonnes)",
-          shareLabel: "Share of national harvested production",
-          shareUnit: "%",
-        })
-        .showFootnotes(true)
-        .footnotesText("Germany, NUTS level 1 regions.")
-        .exclude(["MK", "ME", "TR", "AL", "RS", "UK"])
-        .showNutsSelector(false)
-        .customSourceURL(
-          "https://ec.europa.eu/eurostat/databrowser/bookmark/6ab93ae3-58c7-4a5d-9721-fb2b5586262d?lang=en"
-        )
-        .onNutsLevelChange((nutsLevel) => updateRegionSelect(nutsLevel));
+            // pan and zoom for screen widths between 1081 and 500px
+            if (window.innerWidth < 900 && window.innerWidth > 500) {
+                dorling.translateX(-550) //-390;
+                dorling.translateY(1480) //1126;
+                dorling.scale(0.0002665379208173783) //  0.0002065379208173783
+            }
 
-      // pan and zoom for screen widths between 1081 and 500px
-      if (window.innerWidth < 900 && window.innerWidth > 500) {
-        dorling.translateX(-550); //-390;
-        dorling.translateY(1480); //1126;
-        dorling.scale(0.0002665379208173783); //  0.0002065379208173783
-      }
+            dorling.build()
 
-      dorling.build();
+            function getURLParamValue(paramName) {
+                var url = window.location.search.substring(1) //get rid of "?" in querystring
+                var qArray = url.split('&') //get key-value pairs
+                for (var i = 0; i < qArray.length; i++) {
+                    var pArr = qArray[i].split('=') //split key and value
+                    if (pArr[0] == paramName) {
+                        pArr[1] = decodeURI(pArr[1])
+                        return pArr[1] //return value
+                    }
+                }
+            }
 
-      function getURLParamValue(paramName) {
-        var url = window.location.search.substring(1); //get rid of "?" in querystring
-        var qArray = url.split("&"); //get key-value pairs
-        for (var i = 0; i < qArray.length; i++) {
-          var pArr = qArray[i].split("="); //split key and value
-          if (pArr[0] == paramName) {
-            pArr[1] = decodeURI(pArr[1]);
-            return pArr[1]; //return value
-          }
-        }
-      }
+            function optionSelected(id) {
+                dorling
+                    .sizeDatasetFilters('crops=' + id + '&strucpro=PR_HU_EU&time=2022')
+                    .colorDatasetFilters('crops=' + id + '&strucpro=PR_HU_EU&time=2022')
+                    .maxCircleRadius(cropConfig[id].maxCircleRadius)
+                if (cropConfig[id].sizeLegend) {
+                    dorling.sizeLegend(cropConfig[id].sizeLegend)
+                }
+                if (cropConfig[id].colorLegend) {
+                    dorling.colorLegend(cropConfig[id].colorLegend)
+                }
+                dorling.redraw()
+            }
 
-      function optionSelected(id) {
-        dorling
-          .sizeDatasetFilters("crops=" + id + "&strucpro=PR_HU_EU&time=2022")
-          .colorDatasetFilters("crops=" + id + "&strucpro=PR_HU_EU&time=2022")
-          .maxCircleRadius(cropConfig[id].maxCircleRadius);
-        if (cropConfig[id].sizeLegend) {
-          dorling.sizeLegend(cropConfig[id].sizeLegend);
-        }
-        if (cropConfig[id].colorLegend) {
-          dorling.colorLegend(cropConfig[id].colorLegend);
-        }
-        dorling.redraw();
-      }
+            buildSlimSelect(nutsLevel)
 
-      buildSlimSelect(nutsLevel);
+            let cropOptions = [
+                { value: 'C1110', text: 'Common wheat and spelt' },
+                { value: 'C1500', text: 'Grain maize and corn-cob mix' },
+                { value: 'C1300', text: 'Barley' },
+                { value: 'C1600', text: 'Triticale' },
+                { value: 'C1200', text: 'Rye and winter cereal mixtures (maslin)' },
+                { value: 'C1120', text: 'Durum wheat' },
+                { value: 'C1410', text: 'Oats' },
+                { value: 'C2000', text: 'Rice' },
+            ]
+            let cropSelect = new SlimSelect({
+                select: '#dorling-crop-select',
+                //allowDeselect: true,
+                showSearch: false,
+                placeholder: 'Select a crop',
+                data: cropOptions,
+                onChange: function (info) {
+                    if (info.value) optionSelected(info.value)
+                },
+            })
+            cropSelect.setSelected('C1110')
 
-      let cropOptions = [
-        { value: "C1110", text: "Common wheat and spelt" },
-        { value: "C1500", text: "Grain maize and corn-cob mix" },
-        { value: "C1300", text: "Barley" },
-        { value: "C1600", text: "Triticale" },
-        { value: "C1200", text: "Rye and winter cereal mixtures (maslin)" },
-        { value: "C1120", text: "Durum wheat" },
-        { value: "C1410", text: "Oats" },
-        { value: "C2000", text: "Rice" },
-      ];
-      let cropSelect = new SlimSelect({
-        select: "#dorling-crop-select",
-        //allowDeselect: true,
-        showSearch: false,
-        placeholder: "Select a crop",
-        data: cropOptions,
-        onChange: function (info) {
-          if (info.value) optionSelected(info.value);
-        },
-      });
-      cropSelect.setSelected("C1110");
-      
-      
-     //for DRYB codebase
-     function changeIndicator (indicatorCode) {
-       cropSelect.setSelected(indicatorCode);
-	 }
-	 window.changeIndicator = changeIndicator
-
-    </script>
-  </body>
+            //for DRYB codebase
+            function changeIndicator(indicatorCode) {
+                cropSelect.setSelected(indicatorCode)
+            }
+            window.changeIndicator = changeIndicator
+        </script>
+    </body>
 </html>
