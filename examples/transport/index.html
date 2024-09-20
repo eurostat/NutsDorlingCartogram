@@ -4,7 +4,7 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="shortcut icon" type="image/x-icon" href="../../assets/images/favicon.ico" />
-        <script src="../../build/dorling.min.js"></script>
+        <script src="../../build/dorling.js"></script>
         <title>Air Transport Dorling Cartogram</title>
 
         <!-- Piwik  -->
@@ -21,14 +21,14 @@
         <!-- End Piwik Code -->
 
         <!-- js -->
-        <script src="../../build/dorling.min.js"></script>
+        <script src="../../build/dorling.js"></script>
         <script src="../../assets/js/slimselect.min.js"></script>
         <script src="../../assets/js/d3-fetch.min.js"></script>
         <script src="../../assets/js/region-selector.js"></script>
 
         <!-- css -->
         <link href="../../assets/css/slimselect.css" rel="stylesheet" />
-        <link href="../../assets/css/region-selector.css" rel="stylesheet" />
+        <link href="../../assets/css/selector.css" rel="stylesheet" />
         <link href="../../assets/css/tooltip.css" rel="stylesheet" />
 
         <style>
@@ -44,29 +44,88 @@
     </head>
 
     <body>
-        <div class="dorling-header">
-            <!-- TITLE -->
-            <div class="dorling-title">
-                <h4>Air transport of passengers, and of freight and mail, 2022</h4>
-                <h5>(million passengers and passengers per inhabitant, and 1 000 tonnes and kg per inhabitant)</h5>
-            </div>
+        <div class="main-container">
+            <div id="dorling-header" class="dorling-header row">
+                <!-- TITLE -->
+                <div class="dorling-title col-12">
+                    <h4>
+                        Air transport of passengers, and of freight and mail, 2022
+                        <a class="infoIconText" data-bs-toggle="modal" data-bs-target="#info-modal" aria-label="Info">
+                            <svg
+                                focusable="false"
+                                aria-hidden="true"
+                                class="ecl-icon ecl-icon--m ecl-link__icon ecl-social-media-share__icon"
+                                width="26px"
+                                height="26px"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 512 512"
+                            >
+                                <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                                <path
+                                    d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336l24 0 0-64-24 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l48 0c13.3 0 24 10.7 24 24l0 88 8 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-80 0c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"
+                                ></path>
+                            </svg>
+                        </a>
+                    </h4>
+                    <h5>(million passengers and passengers per inhabitant, and 1 000 tonnes and kg per inhabitant)</h5>
+                </div>
 
-            <!-- REGION SELECTOR -->
-            <div class="dorling-region-selector-wrapper">
-                <div class="dorling-region-selector">
-                    <select id="dorling-region-select"></select>
+                <!-- DROPDOWN SELECTORS -->
+                <div class="dorling-selectors-container col-12">
+                    <!-- REGION SELECTOR -->
+                    <div class="dorling-selector-wrapper">
+                        <div class="dorling-selector">
+                            <select id="dorling-region-select"></select>
+                        </div>
+                    </div>
+
+                    <!-- CROP SELECTOR -->
+                    <div class="dorling-selector-wrapper">
+                        <div class="dorling-selector">
+                            <select id="dorling-transport-select"></select>
+                        </div>
+                    </div>
                 </div>
             </div>
+            <div id="containerDiv"></div>
+        </div>
 
-            <!-- CROP SELECTOR -->
-            <div class="dorling-region-selector-wrapper">
-                <div class="dorling-region-selector">
-                    <select id="dorling-transport-select"></select>
+        <!-- Modal -->
+        <div id="info-modal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" translate="instructions.title">Information</h4>
+                        <button
+                            style="float: right; margin-left: auto"
+                            type="button"
+                            class="close"
+                            data-bs-dismiss="modal"
+                        >
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="dorling-standalone-instructions-text" translate="instructions.text">
+                            Air passenger refers to passenger carried.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button
+                            type="button"
+                            class="btn btn-warning"
+                            data-bs-dismiss="modal"
+                            translate="instructions.closebutton"
+                        >
+                            Close
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div id="containerDiv"></div>
+        <!-- DORLING JS CODE -->
         <script>
             let transportConfig = {
                 air: {
@@ -200,8 +259,8 @@
                 .colorLegend(transportConfig.air.colorLegend)
                 .sizeLegend(transportConfig.air.sizeLegend)
                 .tooltip(transportConfig.air.tooltip)
-                .showFootnotes(true)
-                .footnotesText('Air passenger refers to passenger carried.')
+                .showFootnotes(false)
+                .footnotesText('')
                 .sourcesPopupContent(
                     "<h4>Air passengers</h4><a target='_blank' href='https://ec.europa.eu/eurostat/databrowser/bookmark/e3e4a1b4-931e-41eb-a142-2c16219260ef?lang=en'>Number of air passengers carried</a><br><a target='_blank' href='https://ec.europa.eu/eurostat/databrowser/bookmark/4f0c2e0a-74b0-4ade-bc61-67e745c7d367?lang=en'>Population on 1 January</a><h4>Freight and mail</h4><a target='_blank' href='https://ec.europa.eu/eurostat/databrowser/bookmark/cc520fd5-0a2f-416f-b63d-5e6f955aac83?lang=en'>Freight and mail transported</a><br><a target='_blank' href='https://ec.europa.eu/eurostat/databrowser/bookmark/4f0c2e0a-74b0-4ade-bc61-67e745c7d367?lang=en'>Population on 1 January</a>"
                 )
@@ -222,6 +281,10 @@
             }
 
             dorling.build()
+
+            // setTimeout(() => dorling.highlightRegion('ES1'), 7000)
+            // setTimeout(() => dorling.highlightRegion('ES2'), 8000)
+            // setTimeout(() => dorling.highlightRegion('ES3'), 9000)
 
             function getURLParamValue(paramName) {
                 var url = window.location.search.substring(1) //get rid of "?" in querystring
@@ -263,7 +326,7 @@
                     if (info.value) optionSelected(info.value)
                 },
             })
-            transportSelect.setSelected('air')
+            transportSelect.setSelected('air', false)
 
             //for DRYB codebase
             function changeIndicator(indicatorCode) {

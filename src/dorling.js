@@ -363,7 +363,7 @@ export function dorling() {
         container.classList.add('standalone-nav')
         let parent = document.getElementById('dorling-header')
         if (parent) {
-            parent.appendChild(container)
+            parent.insertBefore(container, parent.firstChild)
         } else {
             out.containerNode_.node().appendChild(container)
         }
@@ -487,9 +487,8 @@ export function dorling() {
             addSizeLegend()
             addColorLegend()
             // NUTS selector is drawn inside legend container in simple mode, so we need to reappend it after clearing the legend container
-            if (!out.standalone_) {
-                addNutsSelectorToDOM()
-            }
+
+            addNutsSelectorToDOM()
 
             // show legends & nuts selector
             out.legendContainer.transition().duration(750).attr('opacity', 0.9)
@@ -1099,48 +1098,50 @@ export function dorling() {
      * @description draws the NUTS boundaries on the map
      */
     function drawNUTSboundaries() {
-        // nutsbn
-        out.nutsBorders = out.map
-            .append('g')
-            .attr('id', 'dorling-nuts-borders')
-            .selectAll('path')
-            .data(topojson.feature(out.n2j, out.n2j.objects['nutsbn' + out.nutsLevel_]).features)
-            .enter()
-            .append('path')
-            .attr('d', out.path)
-            .attr('vector-effect', 'non-scaling-stroke')
-            .attr('stroke', out.nutsBorderColor_)
-            .attr('stroke-width', (f) => {
-                if (f.properties.co === 'T') return out.nutsBorderWidth_ + 0.1 + 'px'
-                if (f.properties.lvl === 0) return '1px'
-                return out.nutsBorderWidth_ + 'px'
-            })
-            .attr('fill', 'none')
-            .attr('class', function (f) {
-                let c
-                if (f.properties.co === 'T') {
-                    c = 'coastal'
-                } else {
-                    //hide non-EU / EFTA borders
-                    // https://github.com/eurostat/Nuts2json/issues/38
-                    if (f.properties.eu == 'F' && f.properties.cc == 'T') {
-                        c = 'dorling-no-data'
-                    }
-                    // exclude uk when excluded
-                    if (out.exclude_.indexOf('UK') !== -1) {
-                        if (
-                            f.properties.eu == 'F' &&
-                            f.properties.efta == 'F' &&
-                            f.properties.cc == 'F' &&
-                            f.properties.co == 'F' &&
-                            f.properties.oth == 'T'
-                        ) {
+        if (out.map) {
+            // nutsbn
+            out.nutsBorders = out.map
+                .append('g')
+                .attr('id', 'dorling-nuts-borders')
+                .selectAll('path')
+                .data(topojson.feature(out.n2j, out.n2j.objects['nutsbn' + out.nutsLevel_]).features)
+                .enter()
+                .append('path')
+                .attr('d', out.path)
+                .attr('vector-effect', 'non-scaling-stroke')
+                .attr('stroke', out.nutsBorderColor_)
+                .attr('stroke-width', (f) => {
+                    if (f.properties.co === 'T') return out.nutsBorderWidth_ + 0.1 + 'px'
+                    if (f.properties.lvl === 0) return '1px'
+                    return out.nutsBorderWidth_ + 'px'
+                })
+                .attr('fill', 'none')
+                .attr('class', function (f) {
+                    let c
+                    if (f.properties.co === 'T') {
+                        c = 'coastal'
+                    } else {
+                        //hide non-EU / EFTA borders
+                        // https://github.com/eurostat/Nuts2json/issues/38
+                        if (f.properties.eu == 'F' && f.properties.cc == 'T') {
                             c = 'dorling-no-data'
                         }
+                        // exclude uk when excluded
+                        if (out.exclude_.indexOf('UK') !== -1) {
+                            if (
+                                f.properties.eu == 'F' &&
+                                f.properties.efta == 'F' &&
+                                f.properties.cc == 'F' &&
+                                f.properties.co == 'F' &&
+                                f.properties.oth == 'T'
+                            ) {
+                                c = 'dorling-no-data'
+                            }
+                        }
                     }
-                }
-                return c
-            })
+                    return c
+                })
+        }
     }
 
     /**

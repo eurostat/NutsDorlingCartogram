@@ -21,6 +21,10 @@
         padding: 2px !important;
     }
 }
+.dorling-container {
+    margin-left: 20px;
+    margin-right: 20px;
+}
 .standalone-container {
     height: 98vh !important;
     margin-left: 20px;
@@ -43,19 +47,26 @@ div#navItems {
     z-index: 999;
 }
 
-#logo {
-    width: 6rem;
+.share-block-btn {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 7px;
+    border: 2px solid #0e47cb;
+    color: #0e47cb;
+    border-radius: 4px;
 }
 
-.logo {
-    padding: 6px 1px;
+#logo {
+    max-height: 25px;
+}
+
+.estat-logo {
+    padding: 10px 15px 10px 10px;
+    text-align: right;
 }
 
 @media screen and (min-width: 48em) {
-    #logo {
-        width: 8rem;
-    }
-
     #title {
         font-size: 1rem;
     }
@@ -66,10 +77,6 @@ div#navItems {
 }
 
 @media screen and (min-width: 62em) {
-    #logo {
-        width: 12.5rem;
-    }
-
     #title {
         font-size: 1.1rem;
     }
@@ -80,10 +87,6 @@ div#navItems {
 }
 
 @media screen and (min-width: 75em) {
-    #logo {
-        width: 12.5rem;
-    }
-
     #title {
         font-size: 1.2rem;
     }
