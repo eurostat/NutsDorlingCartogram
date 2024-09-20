@@ -47,30 +47,78 @@
     </head>
 
     <body style="margin: 0">
-        <div class="dorling-header">
-            <!-- TITLE -->
-            <div class="dorling-title">
-                <h4>Cereal production and share of total regional cereal production, 2022</h4>
-                <h5>(1 000 tonnes and %)</h5>
-            </div>
+        <div class="main-container">
+            <div id="dorling-header" class="dorling-header row">
+                <!-- TITLE -->
+                <div class="dorling-title">
+                    <h4>
+                        Cereal production and share of total regional cereal production, 2022
+                        <a class="infoIconText" data-bs-toggle="modal" data-bs-target="#info-modal" aria-label="Info">
+                            <svg
+                                focusable="false"
+                                aria-hidden="true"
+                                class="ecl-icon ecl-icon--m ecl-link__icon ecl-social-media-share__icon"
+                                width="26px"
+                                height="26px"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 512 512"
+                            >
+                                <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                                <path
+                                    d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336l24 0 0-64-24 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l48 0c13.3 0 24 10.7 24 24l0 88 8 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-80 0c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"
+                                ></path>
+                            </svg>
+                        </a>
+                    </h4>
+                    <h5>(1 000 tonnes and %)</h5>
+                </div>
 
-            <!-- REGION SELECTOR -->
-            <div class="dorling-selector-wrapper">
-                <div class="dorling-selector">
-                    <select id="dorling-region-select"></select>
+                <div class="dorling-selectors-container col-12">
+                    <!-- REGION SELECTOR -->
+                    <div class="dorling-selector-wrapper">
+                        <div class="dorling-selector">
+                            <select id="dorling-region-select"></select>
+                        </div>
+                    </div>
+
+                    <!-- CROP SELECTOR -->
+                    <div class="dorling-selector-wrapper">
+                        <div class="dorling-selector">
+                            <select id="dorling-crop-select"></select>
+                        </div>
+                    </div>
                 </div>
             </div>
+            <!-- dorling container -->
+            <div id="dorling-container-div"></div>
+        </div>
 
-            <!-- CROP SELECTOR -->
-            <div class="dorling-selector-wrapper">
-                <div class="dorling-selector">
-                    <select id="dorling-crop-select"></select>
+        <!-- Modal -->
+        <div id="info-modal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header"></div>
+                    <div class="modal-body">
+                        <p class="dorling-standalone-instructions-text" translate="instructions.text">
+                            Germany, NUTS level 1 regions.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button
+                            type="button"
+                            class="btn btn-warning"
+                            data-bs-dismiss="modal"
+                            translate="instructions.closebutton"
+                        >
+                            Close
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- dorling container -->
-        <div id="dorling-container-div"></div>
+        <!-- DORLING JS CODE -->
 
         <script>
             let cropConfig = {
@@ -202,8 +250,8 @@
                     shareLabel: 'Share of national harvested production',
                     shareUnit: '%',
                 })
-                .showFootnotes(true)
-                .footnotesText('Germany, NUTS level 1 regions.')
+                .showFootnotes(false)
+                .footnotesText('')
                 .exclude(['MK', 'ME', 'TR', 'AL', 'RS', 'UK'])
                 .showNutsSelector(false)
                 .customSourceURL(

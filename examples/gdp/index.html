@@ -43,23 +43,74 @@
     </head>
 
     <body style="margin: 0">
-        <div class="dorling-header">
-            <!-- TITLE -->
-            <div class="dorling-title">
-                <h4>Gross domestic product, 2022</h4>
-                <h5>(€ million and PPS per inhabitant)</h5>
+        <div class="main-container">
+            <div id="dorling-header" class="dorling-header row">
+                <!-- TITLE -->
+                <div class="dorling-title">
+                    <h4>
+                        Gross domestic product, 2022
+                        <a class="infoIconText" data-bs-toggle="modal" data-bs-target="#info-modal" aria-label="Info">
+                            <svg
+                                focusable="false"
+                                aria-hidden="true"
+                                class="ecl-icon ecl-icon--m ecl-link__icon ecl-social-media-share__icon"
+                                width="26px"
+                                height="26px"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 512 512"
+                            >
+                                <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                                <path
+                                    d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336l24 0 0-64-24 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l48 0c13.3 0 24 10.7 24 24l0 88 8 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-80 0c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"
+                                ></path>
+                            </svg>
+                        </a>
+                    </h4>
+                    <h5>(€ million and PPS per inhabitant)</h5>
+                </div>
+
+                <div class="dorling-selectors-container col-12">
+                    <!-- REGION SELECTOR -->
+                    <div class="dorling-selector-wrapper">
+                        <div class="dorling-selector">
+                            <select id="dorling-region-select"></select>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- REGION SELECTOR -->
-            <div class="dorling-selector-wrapper">
-                <div class="dorling-selector">
-                    <select id="dorling-region-select"></select>
+            <!-- DORLING CONTAINER  -->
+            <div id="dorling-container-div"></div>
+        </div>
+
+        <!-- Modal -->
+        <div id="info-modal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header"></div>
+                    <div class="modal-body">
+                        <p class="dorling-standalone-instructions-text" translate="instructions.text">
+                            Data for NUTS level 3 regions are for 2021 (note this period was during the COVID-19
+                            pandemic – caution advised if comparing with data for higher NUTS aggregates that refer to
+                            2022).
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button
+                            type="button"
+                            class="btn btn-warning"
+                            data-bs-dismiss="modal"
+                            translate="instructions.closebutton"
+                        >
+                            Close
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- DORLING CONTAINER  -->
-        <div id="dorling-container-div"></div>
+        <!-- DORLING JS CODE -->
 
         <script>
             let standalone = true
@@ -122,14 +173,12 @@
                 })
                 .exclude(['MK', 'ME', 'TR', 'AL', 'RS', 'UK'])
                 .graticule(false)
-                .showFootnotes(true)
+                .showFootnotes(false)
                 .positionStrength(0.3)
                 .customSourceURL(
                     'https://ec.europa.eu/eurostat/databrowser/bookmark/50e0b1b7-0a2d-4058-b7ce-3b30ea1991f5?lang=en'
                 )
-                .footnotesText(
-                    'Data for NUTS level 3 regions are for 2021 (note this period was during the COVID-19 pandemic – caution advised if comparing with data for higher NUTS aggregates that refer to 2022).'
-                )
+                .footnotesText('')
                 .onNutsLevelChange((nutsLevel) => updateRegionSelect(nutsLevel))
 
             // pan and zoom for screen widths between 1081 and 500px

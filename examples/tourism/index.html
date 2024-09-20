@@ -39,23 +39,72 @@
     </head>
 
     <body>
-        <div class="dorling-header">
-            <!-- TITLE -->
-            <div class="dorling-title">
-                <h4>Nights spent in tourist accommodation and foreign tourism dependency, 2023</h4>
-                <h5>(million nights and %)</h5>
+        <div class="main-container">
+            <div id="dorling-header" class="dorling-header row">
+                <!-- TITLE -->
+                <div class="dorling-title col-12">
+                    <h4>
+                        Nights spent in tourist accommodation and foreign tourism dependency, 2023
+                        <a class="infoIconText" data-bs-toggle="modal" data-bs-target="#info-modal" aria-label="Info">
+                            <svg
+                                focusable="false"
+                                aria-hidden="true"
+                                class="ecl-icon ecl-icon--m ecl-link__icon ecl-social-media-share__icon"
+                                width="26px"
+                                height="26px"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 512 512"
+                            >
+                                <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                                <path
+                                    d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336l24 0 0-64-24 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l48 0c13.3 0 24 10.7 24 24l0 88 8 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-80 0c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"
+                                ></path>
+                            </svg>
+                        </a>
+                    </h4>
+                    <h5>(million nights and %)</h5>
+                </div>
+
+                <!-- REGION SELECTOR -->
+                <div class="dorling-selectors-container col-12">
+                    <div class="dorling-selector-wrapper">
+                        <div class="dorling-selector">
+                            <select id="dorling-region-select"></select>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- REGION SELECTOR -->
-            <div class="dorling-selector-wrapper">
-                <div class="dorling-selector">
-                    <select id="dorling-region-select"></select>
+            <div id="containerDiv"></div>
+        </div>
+
+        <!-- Modal -->
+        <div id="info-modal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header"></div>
+                    <div class="modal-body">
+                        <p class="dorling-standalone-instructions-text" translate="instructions.text">
+                            Tourist accommodation includes: hotels; holiday and other short-stay accommodation; camping
+                            grounds, recreational vehicle parks and trailer parks.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button
+                            type="button"
+                            class="btn btn-warning"
+                            data-bs-dismiss="modal"
+                            translate="instructions.closebutton"
+                        >
+                            Close
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div id="dorling-container-div"></div>
-
+        <!-- DORLING JS CODE -->
         <script>
             let standalone = true
             let simple = getURLParamValue('simple')
@@ -66,7 +115,7 @@
             let nutsLevel = 2
             var dorling = NutsDorlingCartogram.dorling()
                 .standalone(standalone)
-                .containerId('dorling-container-div')
+                .containerId('containerDiv')
                 .nuts2JsonBaseURL('https://ec.europa.eu/assets/estat/E/E4/gisco/pub/nuts2json/v2/')
                 .overseasGeometriesBaseURL(
                     'https://ec.europa.eu/eurostat/cache/interactive-publications/regions/2023/vis/cartograms/assets/topojson/overseas/'
@@ -168,10 +217,8 @@
                     },
                     shareLabel: 'Share of total nights spent in national total',
                 })
-                .showFootnotes(true)
-                .footnotesText(
-                    'Tourist accommodation includes: hotels; holiday and other short-stay accommodation; camping grounds, recreational vehicle parks and trailer parks.'
-                )
+                .showFootnotes(false)
+                .footnotesText('')
                 .exclude(['MK', 'ME', 'TR', 'AL', 'RS', 'UK'])
                 .customSourceURL(
                     'https://ec.europa.eu/eurostat/databrowser/bookmark/81cfcb21-c407-4bb1-8ad0-3da604246558?lang=en'
