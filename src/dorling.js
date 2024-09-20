@@ -403,7 +403,7 @@ export function dorling() {
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title" translate="sources.title">Access to source datasets:</h4>
-                    <button type="button" class="close" data-dismiss="modal">
+                    <button type="button" class="close" data-bs-dismiss="modal"="modal">
                         <span>&times;</span>
                     </button>
                 </div>
@@ -823,20 +823,20 @@ export function dorling() {
             // define api geo level parameter
             let geoLevel = out.nutsLevel_ == 0 ? 'country' : 'nuts' + out.nutsLevel_
 
-            //add exeption for GDP at NUTS 3 level (no data for latest year so overrides to previous year)
+            //add HARDCODED exeption for GDP at NUTS 3 level (no data for latest year so overrides to previous year)
             if (
                 out.nutsLevel_ == 3 &&
                 out.sizeDatasetCode_ == 'nama_10r_3gdp' &&
-                out.colorDatasetFilters_ == 'unit=PPS_EU27_2020_HAB&time=2021'
+                out.colorDatasetFilters_ == 'unit=PPS_EU27_2020_HAB&time=2022'
             ) {
                 statPromises.push(
                     //sizeData
                     d3fetch.json(
-                        `${out.eurostatRESTBaseURL}${out.sizeDatasetCode_}?geoLevel=${geoLevel}&unit=MIO_EUR&time=2020`
+                        `${out.eurostatRESTBaseURL}${out.sizeDatasetCode_}?geoLevel=${geoLevel}&unit=MIO_EUR&time=2021`
                     ),
                     //colorData
                     d3fetch.json(
-                        `${out.eurostatRESTBaseURL}${out.colorDatasetCode_}?geoLevel=${geoLevel}&unit=PPS_EU27_2020_HAB&time=2020`
+                        `${out.eurostatRESTBaseURL}${out.colorDatasetCode_}?geoLevel=${geoLevel}&unit=PPS_EU27_2020_HAB&time=2021`
                     )
                 )
             } else {
@@ -1793,7 +1793,7 @@ export function dorling() {
         if (out.sourcesPopupContent_) {
             // add popup trigger
             colorSource.innerHTML =
-                "Source: Eurostat - <a target='_blank' href='' data-toggle='modal' data-target='#sources_overlay' > access to dataset  </a>"
+                'Source: Eurostat - <a href="#" data-bs-toggle="modal" data-bs-target="#sources_overlay">access to dataset</a>'
         } else {
             if (out.customSourceURL_) {
                 colorSource.innerHTML =

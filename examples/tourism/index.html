@@ -1,208 +1,201 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="shortcut icon" type="image/x-icon" href="../../assets/images/favicon.ico" />
-        <title>Tourism Dorling Cartogram</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" type="image/x-icon" href="../../assets/images/favicon.ico" />
+    <title>Tourism Dorling Cartogram</title>
 
-        <!-- Piwik  -->
-        <script defer src="//europa.eu/webtools/load.js" type="text/javascript"></script>
-        <script type="text/javascript">
-            var parentLocation = parent.location
-            if (parentLocation.hostname.indexOf('ec.europa.eu') !== -1) {
-                document.write('<script defer src="//europa.eu/webtools/load.js" type="text/javascript"></sc' + 'ript>')
-                document.write('<script type="application/json">')
-                document.write('{ "utility" : "piwik", "siteID" : 59, "sitePath" : ["ec.europa.eu\/eurostat"] }')
-                document.write('</sc' + 'ript>')
-            }
-        </script>
-        <!-- End Piwik Code -->
+    <!-- Piwik  -->
+    <script defer src="//europa.eu/webtools/load.js" type="text/javascript"></script>
+    <script type="text/javascript">
+      var parentLocation = parent.location;
+      if (parentLocation.hostname.indexOf("ec.europa.eu") !== -1) {
+        document.write('<script defer src="//europa.eu/webtools/load.js" type="text/javascript"></sc' + "ript>");
+        document.write('<script type="application/json">');
+        document.write('{ "utility" : "piwik", "siteID" : 59, "sitePath" : ["ec.europa.eu\/eurostat"] }');
+        document.write("</sc" + "ript>");
+      }
+    </script>
+    <!-- End Piwik Code -->
 
-        <!-- js -->
-        <script src="../assets/js/d3format.js"></script>
-        <script src="../../build/dorling.min.js"></script>
-        <script src="../assets/js/slimselect.min.js"></script>
-        <script src="../assets/js/d3-fetch.min.js"></script>
-        <script src="../assets/js/region-selector.js"></script>
+    <!-- js -->
+    <script src="../../assets/js/d3format.js"></script>
+    <script src="../../build/dorling.min.js"></script>
+    <script src="../../assets/js/slimselect.min.js"></script>
+    <script src="../../assets/js/d3-fetch.min.js"></script>
+    <script src="../../assets/js/region-selector.js"></script>
 
-        <!-- css -->
-        <link href="../assets/css/slimselect.css" rel="stylesheet" />
-        <link href="../assets/css/region-selector.css" rel="stylesheet" />
-        <link href="../assets/css/tooltip.css" rel="stylesheet" />
+    <!-- css -->
+    <link href="../../assets/css/slimselect.css" rel="stylesheet" />
+    <link href="../../assets/css/region-selector.css" rel="stylesheet" />
+    <link href="../../assets/css/tooltip.css" rel="stylesheet" />
 
-        <style>
-            .dorling-svg {
-                max-height: 73%;
-            }
-        </style>
-    </head>
+    <style>
+      .dorling-svg {
+        max-height: 73%;
+      }
+    </style>
+  </head>
 
-    <body>
-        <div class="dorling-header">
-            <!-- TITLE -->
-            <div class="dorling-title">
-                <h4>Nights spent in tourist accommodation and foreign tourism dependency, 2022</h4>
-                <h5>(million nights and %)</h5>
-            </div>
+  <body>
+    <div class="dorling-header">
+      <!-- TITLE -->
+      <div class="dorling-title">
+        <h4>Nights spent in tourist accommodation and foreign tourism dependency, 2023</h4>
+        <h5>(million nights and %)</h5>
+      </div>
 
-            <!-- REGION SELECTOR -->
-            <div class="dorling-region-selector-wrapper">
-                <div class="dorling-region-selector">
-                    <select id="dorling-region-select"></select>
-                </div>
-            </div>
+      <!-- REGION SELECTOR -->
+      <div class="dorling-region-selector-wrapper">
+        <div class="dorling-region-selector">
+          <select id="dorling-region-select"></select>
         </div>
+      </div>
+    </div>
 
-        <div id="dorling-container-div"></div>
+    <div id="dorling-container-div"></div>
 
-        <script>
-            let standalone = true
-            let simple = getURLParamValue('simple')
-            if (simple) {
-                standalone = false
-            }
+    <script>
+      let standalone = true;
+      let simple = getURLParamValue("simple");
+      if (simple) {
+        standalone = false;
+      }
 
-            let nutsLevel = 2
-            var dorling = NutsDorlingCartogram.dorling()
-                .standalone(standalone)
-                .containerId('dorling-container-div')
-                .nuts2JsonBaseURL('https://ec.europa.eu/assets/estat/E/E4/gisco/pub/nuts2json/v2/')
-                .overseasGeometriesBaseURL(
-                    'https://ec.europa.eu/eurostat/cache/interactive-publications/regions/2023/vis/cartograms/assets/topojson/overseas/'
-                )
-                .nutsLevel(nutsLevel)
-                .nutsYear(2021)
-                .nutsAvailable([0, 1, 2, 3])
-                // .colors(["#3A6ABD", "#789BD8", "#D1D9F1", "#EBC2DE", "#E18FC8", "#A74177"])
-                .colors([
-                    'rgb(153,122,0)',
-                    'rgb(226,200,34)',
-                    'rgb(254,234,152)',
-                    'rgb(190,235,190)',
-                    'rgb(127,204,187)',
-                    'rgb(32,132,134)',
-                ])
-                .thresholdValues([20, 40, 50, 60, 80, 1000000])
-                .sizeDatasetCode('tour_occ_nin2')
-                .sizeDatasetFilters('c_resid=TOTAL&unit=NR&time=2022&nace_r2=I551-I553')
-                .colorDatasetCode('tour_occ_nin2')
-                .colorDatasetName('tourism')
-                .colorDatasetFilters('c_resid=FOR&unit=PC_TOT&time=2022&nace_r2=I551-I553')
-                // .mixColorData({
-                //   // use 2020 data for colouring the following regions
-                //   filters:
-                //     "c_resid=FOR&unit=PC_TOT&time=2020&nace_r2=I551-I553",
-                //   1: ["EL3", "EL4", "EL5", "EL6"],
-                //   2: [
-                //     "EL30",
-                //     "EL41",
-                //     "EL42",
-                //     "EL43",
-                //     "EL51",
-                //     "EL53",
-                //     "EL54",
-                //     "EL61",
-                //     "EL62",
-                //     "EL63",
-                //     "EL64",
-                //     "EL65",
-                //   ],
-                // })
-                // .mixSizeData({
-                //   // use 2020 data for sizing the following regions
-                //   filters:
-                //     "c_resid=TOTAL&unit=NR&time=2020&nace_r2=I551-I553",
-                //   0: ["EL"],
-                //   1: ["EL3", "EL4", "EL5", "EL6"],
-                //   2: [
-                //     "EL30",
-                //     "EL41",
-                //     "EL42",
-                //     "EL43",
-                //     "EL51",
-                //     "EL53",
-                //     "EL54",
-                //     "EL61",
-                //     "EL62",
-                //     "EL63",
-                //     "EL64",
-                //     "EL65",
-                //   ],
-                // })
+      let nutsLevel = 2;
+      var dorling = NutsDorlingCartogram.dorling()
+        .standalone(standalone)
+        .containerId("dorling-container-div")
+        .nuts2JsonBaseURL("https://ec.europa.eu/assets/estat/E/E4/gisco/pub/nuts2json/v2/")
+        .overseasGeometriesBaseURL(
+          "https://ec.europa.eu/eurostat/cache/interactive-publications/regions/2023/vis/cartograms/assets/topojson/overseas/"
+        )
+        .nutsLevel(nutsLevel)
+        .nutsYear(2021)
+        .nutsAvailable([0, 1, 2, 3])
+        // .colors(["#3A6ABD", "#789BD8", "#D1D9F1", "#EBC2DE", "#E18FC8", "#A74177"])
+        .colors(["rgb(153,122,0)", "rgb(226,200,34)", "rgb(254,234,152)", "rgb(190,235,190)", "rgb(127,204,187)", "rgb(32,132,134)"])
+        .thresholdValues([20, 40, 50, 60, 80, 1000000])
+        .sizeDatasetCode("tour_occ_nin2")
+        .sizeDatasetFilters("c_resid=TOTAL&unit=NR&time=2023&nace_r2=I551-I553")
+        .colorDatasetCode("tour_occ_nin2")
+        .colorDatasetName("tourism")
+        .colorDatasetFilters("c_resid=FOR&unit=PC_TOT&time=2023&nace_r2=I551-I553")
+        // .mixColorData({
+        //   // use 2020 data for colouring the following regions
+        //   filters:
+        //     "c_resid=FOR&unit=PC_TOT&time=2020&nace_r2=I551-I553",
+        //   1: ["EL3", "EL4", "EL5", "EL6"],
+        //   2: [
+        //     "EL30",
+        //     "EL41",
+        //     "EL42",
+        //     "EL43",
+        //     "EL51",
+        //     "EL53",
+        //     "EL54",
+        //     "EL61",
+        //     "EL62",
+        //     "EL63",
+        //     "EL64",
+        //     "EL65",
+        //   ],
+        // })
+        // .mixSizeData({
+        //   // use 2020 data for sizing the following regions
+        //   filters:
+        //     "c_resid=TOTAL&unit=NR&time=2020&nace_r2=I551-I553",
+        //   0: ["EL"],
+        //   1: ["EL3", "EL4", "EL5", "EL6"],
+        //   2: [
+        //     "EL30",
+        //     "EL41",
+        //     "EL42",
+        //     "EL43",
+        //     "EL51",
+        //     "EL53",
+        //     "EL54",
+        //     "EL61",
+        //     "EL62",
+        //     "EL63",
+        //     "EL64",
+        //     "EL65",
+        //   ],
+        // })
 
-                .maxCircleRadius({ 0: 70, 1: 60, 2: 40, 3: 30 })
-                .colorLegend({
-                    //https://d3-legend.susielu.com/#color
-                    title: 'Foreign tourism dependency (% share of foreign tourists in total nights spent)',
-                    orient: 'vertical',
-                    shapeRadius: 10,
+        .maxCircleRadius({ 0: 70, 1: 60, 2: 40, 3: 30 })
+        .colorLegend({
+          //https://d3-legend.susielu.com/#color
+          title: "Foreign tourism dependency (% share of foreign tourists in total nights spent)",
+          orient: "vertical",
+          shapeRadius: 10,
 
-                    labelAlign: 'middle',
-                    labelFormat: '.0f',
-                    labelUnit: ' ',
-                    labelOffset: 10,
-                    shape: 'circle',
-                })
-                .sizeLegend({
-                    title: 'Total number of nights spent (million)',
-                    textFunction: function (d) {
-                        let n = d / 1000000
-                        return n
-                    },
-                    values: {
-                        0: [300000000, 10000000],
-                        1: [150000000, 10000000],
-                        2: [100000000, 10000000],
-                        3: [50000000, 10000000],
-                    },
-                })
-                .tooltip({
-                    colorLabel: 'Foreign tourism dependency (share of total nights spent by non-residents)',
-                    colorUnit: '%',
-                    sizeLabel: 'Total number of nights spent',
-                    sizeValueTextFunction: function (d) {
-                        let m = d / 1000000
-                        let n = Math.round(m * 10) / 10
-                        return n.toLocaleString('en').replace(/,/gi, '\xA0') + ' million'
-                    },
-                    shareLabel: 'Share of total nights spent in national total',
-                })
-                .showFootnotes(true)
-                .footnotesText('')
-                .exclude(['MK', 'ME', 'TR', 'AL', 'RS', 'UK'])
-                .customSourceURL(
-                    'https://ec.europa.eu/eurostat/databrowser/bookmark/9d59b746-1069-403c-a57a-ffb56955fb5b?lang=en'
-                )
-                .graticule(false)
-                .loop(false)
-                .pauseButton(false)
-                .showBorders(true)
-                .positionStrength(0.3)
-                .onNutsLevelChange((nutsLevel) => updateRegionSelect(nutsLevel))
+          labelAlign: "middle",
+          labelFormat: ".0f",
+          labelUnit: " ",
+          labelOffset: 10,
+          shape: "circle",
+        })
+        .sizeLegend({
+          title: "Total number of nights spent (million)",
+          textFunction: function (d) {
+            let n = d / 1000000;
+            return n;
+          },
+          values: {
+            0: [300000000, 10000000],
+            1: [150000000, 10000000],
+            2: [100000000, 10000000],
+            3: [50000000, 10000000],
+          },
+        })
+        .tooltip({
+          colorLabel: "Foreign tourism dependency (share of total nights spent by non-residents)",
+          colorUnit: "%",
+          sizeLabel: "Total number of nights spent",
+          sizeValueTextFunction: function (d) {
+            let m = d / 1000000;
+            let n = Math.round(m * 10) / 10;
+            return n.toLocaleString("en").replace(/,/gi, "\xA0") + " million";
+          },
+          shareLabel: "Share of total nights spent in national total",
+        })
+        .showFootnotes(true)
+        .footnotesText(
+          "Tourist accommodation includes: hotels; holiday and other short-stay accommodation; camping grounds, recreational vehicle parks and trailer parks."
+        )
+        .exclude(["MK", "ME", "TR", "AL", "RS", "UK"])
+        .customSourceURL("https://ec.europa.eu/eurostat/databrowser/bookmark/81cfcb21-c407-4bb1-8ad0-3da604246558?lang=en")
+        .graticule(false)
+        .loop(false)
+        .pauseButton(false)
+        .showBorders(true)
+        .positionStrength(0.3)
+        .onNutsLevelChange((nutsLevel) => updateRegionSelect(nutsLevel));
 
-            // pan and zoom for screen widths between 1081 and 500px
-            if (window.innerWidth < 900 && window.innerWidth > 500) {
-                dorling.translateX(-550) //-390;
-                dorling.translateY(1480) //1126;
-                dorling.scale(0.0002665379208173783) //  0.0002065379208173783
-            }
+      // pan and zoom for screen widths between 1081 and 500px
+      if (window.innerWidth < 900 && window.innerWidth > 500) {
+        dorling.translateX(-550); //-390;
+        dorling.translateY(1480); //1126;
+        dorling.scale(0.0002665379208173783); //  0.0002065379208173783
+      }
 
-            dorling.build()
+      dorling.build();
 
-            function getURLParamValue(paramName) {
-                var url = window.location.search.substring(1) //get rid of "?" in querystring
-                var qArray = url.split('&') //get key-value pairs
-                for (var i = 0; i < qArray.length; i++) {
-                    var pArr = qArray[i].split('=') //split key and value
-                    if (pArr[0] == paramName) {
-                        pArr[1] = decodeURI(pArr[1])
-                        return pArr[1] //return value
-                    }
-                }
-            }
+      function getURLParamValue(paramName) {
+        var url = window.location.search.substring(1); //get rid of "?" in querystring
+        var qArray = url.split("&"); //get key-value pairs
+        for (var i = 0; i < qArray.length; i++) {
+          var pArr = qArray[i].split("="); //split key and value
+          if (pArr[0] == paramName) {
+            pArr[1] = decodeURI(pArr[1]);
+            return pArr[1]; //return value
+          }
+        }
+      }
 
-            buildSlimSelect(nutsLevel)
-        </script>
-    </body>
+      buildSlimSelect(nutsLevel);
+    </script>
+  </body>
 </html>

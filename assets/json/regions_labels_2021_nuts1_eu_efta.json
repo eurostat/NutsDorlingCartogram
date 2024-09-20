@@ -1,0 +1,377 @@
+{
+    "BE1": {
+        "label": "Région de Bruxelles-Capitale/Brussels Hoofdstedelijk Gewest"
+    },
+    "BE2": {
+        "label": "Vlaams Gewest"
+    },
+    "BE3": {
+        "label": "Région wallonne"
+    },
+    "BG3": {
+        "label": "Severna i Yugoiztochna Bulgaria"
+    },
+    "BG4": {
+        "label": "Yugozapadna i Yuzhna tsentralna Bulgaria"
+    },
+    "CH0": {
+        "label": "Schweiz/Suisse/Svizzera"
+    },
+    "CY0": {
+        "label": "Kýpros"
+    },
+    "CZ0": {
+        "label": "Česko"
+    },
+    "ES1": {
+        "label": "Noroeste"
+    },
+    "DE1": {
+        "label": "Baden-Württemberg"
+    },
+    "RO1": {
+        "label": "Macroregiunea Unu"
+    },
+    "RO2": {
+        "label": "Macroregiunea Doi"
+    },
+    "RO3": {
+        "label": "Macroregiunea Trei"
+    },
+    "RO4": {
+        "label": "Macroregiunea Patru"
+    },
+    "RS1": {
+        "label": "Serbia - sever"
+    },
+    "EL5": {
+        "label": "Voreia Elláda"
+    },
+    "DE2": {
+        "label": "Bayern"
+    },
+    "DE3": {
+        "label": "Berlin"
+    },
+    "DE4": {
+        "label": "Brandenburg"
+    },
+    "DE5": {
+        "label": "Bremen"
+    },
+    "DK0": {
+        "label": "Danmark"
+    },
+    "EE0": {
+        "label": "Eesti"
+    },
+    "EL3": {
+        "label": "Attiki"
+    },
+    "PL9": {
+        "label": "Makroregion województwo mazowieckie"
+    },
+    "PT1": {
+        "label": "Continente"
+    },
+    "EL4": {
+        "label": "Nisia Aigaiou, Kriti"
+    },
+    "DE6": {
+        "label": "Hamburg"
+    },
+    "DE7": {
+        "label": "Hessen"
+    },
+    "DE8": {
+        "label": "Mecklenburg-Vorpommern"
+    },
+    "DE9": {
+        "label": "Niedersachsen"
+    },
+    "DEA": {
+        "label": "Nordrhein-Westfalen"
+    },
+    "DEB": {
+        "label": "Rheinland-Pfalz"
+    },
+    "DEC": {
+        "label": "Saarland"
+    },
+    "DED": {
+        "label": "Sachsen"
+    },
+    "DEE": {
+        "label": "Sachsen-Anhalt"
+    },
+    "DEF": {
+        "label": "Schleswig-Holstein"
+    },
+    "DEG": {
+        "label": "Thüringen"
+    },
+    "AL0": {
+        "label": "Shqipëria"
+    },
+    "AT1": {
+        "label": "Ostösterreich"
+    },
+    "AT2": {
+        "label": "Südösterreich"
+    },
+    "AT3": {
+        "label": "Westösterreich"
+    },
+    "PL5": {
+        "label": "Makroregion południowo-zachodni"
+    },
+    "PL6": {
+        "label": "Makroregion północny"
+    },
+    "PL7": {
+        "label": "Makroregion centralny"
+    },
+    "PL8": {
+        "label": "Makroregion wschodni"
+    },
+    "EL6": {
+        "label": "Kentriki Elláda"
+    },
+    "NO0": {
+        "label": "Norge"
+    },
+    "ES2": {
+        "label": "Noreste"
+    },
+    "ES3": {
+        "label": "Comunidad de Madrid"
+    },
+    "ES4": {
+        "label": "Centro (ES)"
+    },
+    "ES5": {
+        "label": "Este"
+    },
+    "ES6": {
+        "label": "Sur"
+    },
+    "FI1": {
+        "label": "Manner-Suomi"
+    },
+    "FI2": {
+        "label": "Åland"
+    },
+    "FR1": {
+        "label": "Ile-de-France"
+    },
+    "FRB": {
+        "label": "Centre — Val de Loire"
+    },
+    "FRC": {
+        "label": "Bourgogne-Franche-Comté"
+    },
+    "FRD": {
+        "label": "Normandie"
+    },
+    "FRE": {
+        "label": "Hauts-de-France"
+    },
+    "FRF": {
+        "label": "Grand Est"
+    },
+    "FRG": {
+        "label": "Pays de la Loire"
+    },
+    "FRH": {
+        "label": "Bretagne"
+    },
+    "FRI": {
+        "label": "Nouvelle-Aquitaine"
+    },
+    "FRJ": {
+        "label": "Occitanie"
+    },
+    "FRK": {
+        "label": "Auvergne-Rhône-Alpes"
+    },
+    "FRL": {
+        "label": "Provence-Alpes-Côte d’Azur"
+    },
+    "FRM": {
+        "label": "Corse"
+    },
+    "HR0": {
+        "label": "Hrvatska"
+    },
+    "HU1": {
+        "label": "Közép-Magyarország"
+    },
+    "HU2": {
+        "label": "Dunántúl"
+    },
+    "HU3": {
+        "label": "Alföld és Észak"
+    },
+    "IE0": {
+        "label": "Ireland"
+    },
+    "IS0": {
+        "label": "Ísland"
+    },
+    "ITC": {
+        "label": "Nord-Ovest"
+    },
+    "ITF": {
+        "label": "Sud"
+    },
+    "ITG": {
+        "label": "Isole"
+    },
+    "ITH": {
+        "label": "Nord-Est"
+    },
+    "ITI": {
+        "label": "Centro (IT)"
+    },
+    "LI0": {
+        "label": "Liechtenstein"
+    },
+    "LT0": {
+        "label": "Lietuva"
+    },
+    "LU0": {
+        "label": "Luxembourg"
+    },
+    "LV0": {
+        "label": "Latvija"
+    },
+    "ME0": {
+        "label": "Crna Gora"
+    },
+    "MK0": {
+        "label": "Severna Makedonija"
+    },
+    "MT0": {
+        "label": "Malta"
+    },
+    "NL1": {
+        "label": "Noord-Nederland"
+    },
+    "NL2": {
+        "label": "Oost-Nederland"
+    },
+    "NL3": {
+        "label": "West-Nederland"
+    },
+    "NL4": {
+        "label": "Zuid-Nederland"
+    },
+    "PL2": {
+        "label": "Makroregion południowy"
+    },
+    "PL4": {
+        "label": "Makroregion północno-zachodni"
+    },
+    "SI0": {
+        "label": "Slovenija"
+    },
+    "SK0": {
+        "label": "Slovensko"
+    },
+    "TR1": {
+        "label": "İstanbul"
+    },
+    "TR2": {
+        "label": "Batı Marmara"
+    },
+    "TR3": {
+        "label": "Ege"
+    },
+    "TR4": {
+        "label": "Doğu Marmara"
+    },
+    "TR5": {
+        "label": "Batı Anadolu"
+    },
+    "TR6": {
+        "label": "Akdeniz"
+    },
+    "UKJ": {
+        "label": "South East (England)"
+    },
+    "UKK": {
+        "label": "South West (England)"
+    },
+    "UKL": {
+        "label": "Wales"
+    },
+    "UKM": {
+        "label": "Scotland"
+    },
+    "UKN": {
+        "label": "Northern Ireland"
+    },
+    "RS2": {
+        "label": "Serbia - jug"
+    },
+    "SE1": {
+        "label": "Östra Sverige"
+    },
+    "SE2": {
+        "label": "Södra Sverige"
+    },
+    "SE3": {
+        "label": "Norra Sverige"
+    },
+    "TR7": {
+        "label": "Orta Anadolu"
+    },
+    "TR8": {
+        "label": "Batı Karadeniz"
+    },
+    "TR9": {
+        "label": "Doğu Karadeniz"
+    },
+    "TRA": {
+        "label": "Kuzeydoğu Anadolu"
+    },
+    "TRB": {
+        "label": "Ortadoğu Anadolu"
+    },
+    "TRC": {
+        "label": "Güneydoğu Anadolu"
+    },
+    "UKC": {
+        "label": "North East (England)"
+    },
+    "UKD": {
+        "label": "North West (England)"
+    },
+    "UKE": {
+        "label": "Yorkshire and the Humber"
+    },
+    "UKF": {
+        "label": "East Midlands (England)"
+    },
+    "UKG": {
+        "label": "West Midlands (England)"
+    },
+    "UKH": {
+        "label": "East of England"
+    },
+    "UKI": {
+        "label": "London"
+    },
+    "ES7": {
+        "label": "Canarias (ES)"
+    },
+    "FRY":{
+        "label": "Régions Ultrapériphériques Françaises (FR)"
+    },
+    "PT2":{
+        "label": "Açores (PT)"
+    },
+    "PT3":{
+        "label": "Madeira (PT)"
+    }
+}
