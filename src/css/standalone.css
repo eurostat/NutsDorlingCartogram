@@ -21,14 +21,8 @@
         padding: 2px !important;
     }
 }
-.dorling-container {
-    margin-left: 20px;
-    margin-right: 20px;
-}
 .standalone-container {
     height: 98vh !important;
-    margin-left: 20px;
-    margin-right: 20px;
 }
 .standalone-nav {
     width: 100% !important;

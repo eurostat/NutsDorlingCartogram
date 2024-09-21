@@ -1771,9 +1771,18 @@ export function dorling() {
      *
      */
     function addAttributionToDOM() {
+        // Create a div to hold the 'Credits' text
+        const creditsDiv = document.createElement('div')
+        creditsDiv.innerHTML = 'Credits'
+        creditsDiv.classList.add('credits')
+
+        // Create the div for attribution text, hidden by default
         out.attributionDiv = document.createElement('div')
         out.attributionDiv.innerHTML = out.attributionText_
         out.attributionDiv.classList.add('dorling-attribution')
+
+        // Append both elements to the container
+        out.dorlingContainer.node().appendChild(creditsDiv)
         out.dorlingContainer.node().appendChild(out.attributionDiv)
     }
 

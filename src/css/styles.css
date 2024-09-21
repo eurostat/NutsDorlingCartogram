@@ -13,6 +13,12 @@ body {
     color: #cccccc !important;
 }
 
+.main-container {
+    padding-top: 3px;
+    /* margin-left: 20px;
+    margin-right: 20px; */
+}
+
 .dorling-main-container {
     position: absolute;
     height: calc(100vh);
@@ -152,23 +158,52 @@ fill:#E5E5E5;
 .dorling-boundary {
     fill: white;
 }
-
-.dorling-attribution {
+/* Style the 'Credits' link */
+.credits {
+    cursor: pointer;
+    position: absolute;
+    right: 0px;
+    transform: translate(0px, -21px);
+    border-bottom: 1px dotted #333;
+    color: #333;
+    line-height: 1.3em;
+    cursor: pointer;
+    padding: 0 5px;
+    font-size: 11px;
     background: white;
-    color: #515560;
+    padding: 3px;
+}
+
+/* Initially hide the attribution text */
+.dorling-attribution {
+    display: none;
     padding: 3px;
     position: absolute;
-    right: 3px;
-    font-size: 10px;
+    right: 0px;
+    font-size: 11px;
     font-family: Arial;
+    background-color: rgba(55, 55, 55, 1);
+    color: #fff;
+    text-align: left;
+    border-radius: 6px;
+    padding: 10px 10px;
+    line-height: 1.3em;
+    transform: translate(-38px, -35px);
 }
+
+/* Show the attribution text when the user hovers over 'Credits' or the attribution itself */
+.credits:hover + .dorling-attribution,
+.dorling-attribution:hover {
+    display: block;
+}
+
 .dorling-attribution a {
-    color: #0e47cb !important;
+    color: #fff !important;
     text-decoration: underline;
 }
 .dorling-attribution a:hover {
     text-decoration: underline !important;
-    color: #082b7a !important;
+    color: #ffe !important;
 }
 
 .dorling-play-button {
@@ -251,7 +286,7 @@ fill:#E5E5E5;
 }
 .dorling-leaflet-control-zoom,
 .dorling-leaflet-control-nuts-selector {
-    bottom: 32%;
+    bottom: 34%;
 }
 .dorling-leaflet-control-nuts-selector {
     position: absolute;

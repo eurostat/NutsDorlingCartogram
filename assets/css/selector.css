@@ -3,12 +3,11 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    margin-left: 20px;
-    margin-right: 20px;
 }
 .dorling-selectors-container {
     flex-basis: content;
     display: flex;
+    padding-bottom: 5px;
 }
 h4 {
     margin-bottom: 0.2rem;
