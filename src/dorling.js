@@ -55,7 +55,7 @@ export function dorling() {
     out.maxCircleRadius_ = { 0: 20, 1: 20, 2: 20, 3: 20 }
     out.circleSizeFunction_ = null // lets user define custom d3 scale function
     //d3-geo
-    out.translateX_ = -350 //-390;
+    out.translateX_ = -400 //-390;
     out.translateY_ = 1120 //1126;
     out.scale_ = 0.0002065379208173783
     out.fitSizePadding_ = 0
